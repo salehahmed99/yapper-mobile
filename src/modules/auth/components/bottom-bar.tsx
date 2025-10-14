@@ -1,14 +1,17 @@
 import { View, TouchableOpacity, Text } from 'react-native';
 import bottomBarStyles from '../styles/bottom-bar-styles';
 import React from 'react';
+import { buttonOptions } from '../utils/enums';
+
 
 interface BottomBarProps {
+   text: buttonOptions;
   isNextEnabled?: boolean;
   onForgotPassword?: () => void;
   onNext?: () => void;
 }
 
-const BottomBar: React.FC<BottomBarProps> = ({ isNextEnabled = false, onForgotPassword, onNext }) => {
+const BottomBar: React.FC<BottomBarProps> = ({ text=buttonOptions.NEXT,isNextEnabled = false, onForgotPassword, onNext }) => {
   const forgotPasswordPress = () => {
     console.log('Forgot Password Pressed');
     onForgotPassword?.();
@@ -39,7 +42,9 @@ const BottomBar: React.FC<BottomBarProps> = ({ isNextEnabled = false, onForgotPa
           activeOpacity={0.7}
           disabled={!isNextEnabled}
         >
-          <Text style={[bottomBarStyles.nextButtonText, !isNextEnabled && bottomBarStyles.nextButtonTextDisabled]}>Next</Text>
+          <Text style={[bottomBarStyles.nextButtonText, !isNextEnabled && bottomBarStyles.nextButtonTextDisabled]}>
+            {text}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
