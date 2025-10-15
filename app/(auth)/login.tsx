@@ -1,7 +1,6 @@
 import { Alert, Keyboard } from 'react-native';
 import TopBar from '../../src/modules/auth/components/top-bar';
 import BottomBar from '../../src/modules/auth/components/bottom-bar';
-import validator from 'validator';
 import FirstPageLogin from '../../src/modules/auth/components/first-page-login';
 import SecondPageLogin from '../../src/modules/auth/components/second-page-login';
 import { parsePhoneNumberFromString, CountryCode } from 'libphonenumber-js/max';
@@ -22,11 +21,11 @@ const LoginScreen = () => {
 
   const detectTextType = useCallback(
     (input: string) => {
-      const trimmed = input.trim();
+      // const trimmed = input.trim();
 
-      if (validator.isEmail(trimmed)) {
-        return 'email';
-      }
+      // if (validator.isEmail(trimmed)) {
+      //   return 'email';
+      // }
       const phoneNumber = parsePhoneNumberFromString(input, defaultCountry as CountryCode);
       if (phoneNumber && phoneNumber.isValid() && phoneNumber.getType() === 'MOBILE') {
         return 'phone';

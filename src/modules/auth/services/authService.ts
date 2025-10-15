@@ -7,7 +7,7 @@ import {
 
 export const login = async (credentials: LoginCredentials): Promise<LoginResponse> => {
   try {
-    console.log('API URL:', process.env.API_URL);
+    console.log('API URL:', process.env.EXPO_PUBLIC_API_URL);
     const { data } = await api.post<LoginResponse>('/auth/login', credentials);
     console.log(data);
     return data;
