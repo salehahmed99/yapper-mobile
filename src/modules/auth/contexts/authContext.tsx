@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react';
-import { deleteToken, getToken, saveToken } from '../../../storage/secure-storage';
+import { deleteToken, getToken, saveToken } from '../../../storage/secureStorage';
 import { IUser } from '../../../types/user';
 import { login } from '../services/authService';
 import { LoginCredentials } from '../types';
@@ -29,13 +29,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const loginUser = useCallback(async (credentials: LoginCredentials) => {
-    try  {
+    try {
       const res = await login(credentials);
       setUser(res?.data?.user || null);
-      setToken(res?.data?.access_token || null);
-      await saveToken(res?.data?.access_token || '');
-    }
-    catch (error) {
+      const accessToken = res?.data?.access_token;
+      if (!accessToken) {
+        throw new Error('No access token received from server.');
+      }
+      setToken(accessToken);
+      await saveToken(accessToken);
+    } catch (error) {
       throw error;
     }
   }, []);

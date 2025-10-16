@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-const tobBarStyles = StyleSheet.create({
+const topBarStyles = StyleSheet.create({
   safeArea: {
     backgroundColor: '#000',
   },
@@ -27,4 +27,4 @@ const tobBarStyles = StyleSheet.create({
     height: 40,
   },
 });
-export default tobBarStyles;
+export default topBarStyles;

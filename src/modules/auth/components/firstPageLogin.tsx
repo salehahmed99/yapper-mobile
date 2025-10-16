@@ -1,5 +1,5 @@
 import { View, TextInput, Text, Animated } from 'react-native';
-import firstPageLoginStyle from '../styles/first-page-login';
+import firstPageLoginStyle from '../styles/firstPageStyles';
 import { useState, useRef, useEffect } from 'react';
 
 interface FirstPageLoginProps {

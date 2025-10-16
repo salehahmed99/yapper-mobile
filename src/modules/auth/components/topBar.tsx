@@ -1,5 +1,5 @@
 import { View, TouchableOpacity, Image } from 'react-native';
-import tobBarStyles from '../styles/tob-bar-styles';
+import topBarStyles from '../styles/topBarStyles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
 
@@ -9,18 +9,18 @@ interface TopBarProps {
 
 const TopBar: React.FC<TopBarProps> = ({ onBackPress }) => {
   return (
-    <SafeAreaView style={tobBarStyles.safeArea}>
-      <View style={tobBarStyles.container}>
+    <SafeAreaView style={topBarStyles.safeArea}>
+      <View style={topBarStyles.container}>
         {/* Exit/Close button on the left */}
-        <TouchableOpacity style={tobBarStyles.exitButton} onPress={onBackPress} activeOpacity={0.7}>
+        <TouchableOpacity style={topBarStyles.exitButton} onPress={onBackPress} activeOpacity={0.7}>
           <X color="white" size={24} />
         </TouchableOpacity>
 
         {/* Centered X Logo */}
-        <View style={tobBarStyles.logoContainer}>
+        <View style={topBarStyles.logoContainer}>
           <Image
             source={require('../../../../assets/images/x-new-logo.png')}
-            style={tobBarStyles.logo}
+            style={topBarStyles.logo}
           />
         </View>
       </View>

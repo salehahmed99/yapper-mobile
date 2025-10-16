@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Animated } from 'react-native';
+import secondPageStyles from '../styles/secondPageStyles';
 import {EyeOff,Eye} from 'lucide-react-native';
 
 interface SecondPageLoginProps {
@@ -58,13 +59,13 @@ const SecondPageLogin: React.FC<SecondPageLoginProps> = ({
   });
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Enter your password</Text>
+    <View style={secondPageStyles.container}>
+      <Text style={secondPageStyles.title}>Enter your password</Text>
 
       {/* Disabled User Identifier Input */}
-      <View style={styles.inputContainer}>
+      <View style={secondPageStyles.inputContainer}>
         <TextInput
-          style={[styles.input, styles.disabledInput]}
+          style={[secondPageStyles.input, secondPageStyles.disabledInput]}
           value={userIdentifier}
           editable={false}
           placeholderTextColor="#71767B"
@@ -72,10 +73,10 @@ const SecondPageLogin: React.FC<SecondPageLoginProps> = ({
       </View>
 
       {/* Password Input with Floating Label */}
-      <View style={styles.inputContainer}>
+      <View style={secondPageStyles.inputContainer}>
         <Animated.Text
           style={[
-            styles.floatingLabel,
+            secondPageStyles.floatingLabel,
             {
               top: labelTop,
               fontSize: labelFontSize,
@@ -87,8 +88,8 @@ const SecondPageLogin: React.FC<SecondPageLoginProps> = ({
         </Animated.Text>
         <TextInput
           style={[
-            styles.input,
-            passwordInputFocused && styles.inputFocused,
+            secondPageStyles.input,
+            passwordInputFocused && secondPageStyles.inputFocused,
           ]}
           value={password}
           onChangeText={onPasswordChange}
@@ -103,7 +104,7 @@ const SecondPageLogin: React.FC<SecondPageLoginProps> = ({
         {/* Eye Icon for Password Visibility Toggle */}
         {password.length > 0 && (
           <TouchableOpacity
-            style={styles.eyeIcon}
+            style={secondPageStyles.eyeIcon}
             onPress={onTogglePasswordVisibility}
           >
                 {isPasswordVisible ? <EyeOff color="#71767B" size={20}/> : <Eye color="#71767B" size={20}/>}
@@ -113,57 +114,5 @@ const SecondPageLogin: React.FC<SecondPageLoginProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000000',
-    paddingHorizontal: 15,
-    paddingTop: 32,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#E7E9EA',
-    lineHeight: 36,
-    letterSpacing: -0.3,
-    marginBottom: 32,
-  },
-  inputContainer: {
-    position: 'relative',
-    marginBottom: 24,
-  },
-  input: {
-    height: 56,
-    borderWidth: 1,
-    borderColor: '#333639',
-    borderRadius: 4,
-    paddingHorizontal: 16,
-    fontSize: 17,
-    color: '#FFFFFF',
-    backgroundColor: '#000000',
-  },
-  inputFocused: {
-    borderColor: '#1D9BF0',
-    borderWidth: 2,
-  },
-  disabledInput: {
-    color: '#71767B',
-    backgroundColor: '#0A0A0A',
-  },
-  floatingLabel: {
-    position: 'absolute',
-    left: 12,
-    backgroundColor: '#000000',
-    paddingHorizontal: 4,
-    zIndex: 1,
-  },
-  eyeIcon: {
-    position: 'absolute',
-    right: 16,
-    top: 16,
-    padding: 4,
-  },
-});
 
 export default SecondPageLogin;

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getToken } from '../storage/secure-storage';
+import { getToken } from '../storage/secureStorage';
 const api = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL,
   headers: {
@@ -10,12 +10,12 @@ const api = axios.create({
 api.interceptors.request.use(
   async (config) => {
     const token = await getToken();
-    if(token) {
+    if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
   (error) => Promise.reject(error)
-)
+);
 
 export default api;

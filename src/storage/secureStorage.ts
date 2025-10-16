@@ -2,7 +2,7 @@ import * as SecureStore from 'expo-secure-store';
 
 const TOKEN_KEY = process.env.EXPO_PUBLIC_USER_STORAGE_KEY;
 if (!TOKEN_KEY) {
-  throw new Error('USER_STORAGE_KEY is not defined in environment variables');
+  throw new Error('EXPO_PUBLIC_USER_STORAGE_KEY is not defined in environment variables');
 }
 
 export const saveToken = async (token: string) => {

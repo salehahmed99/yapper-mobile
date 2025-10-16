@@ -10,13 +10,12 @@ import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { useCallback, useState } from 'react';
 import { Alert, Keyboard } from 'react-native';
 import Toast from 'react-native-toast-message';
-import BottomBar from '../../src/modules/auth/components/bottom-bar';
-import FirstPageLogin from '../../src/modules/auth/components/first-page-login';
-import SecondPageLogin from '../../src/modules/auth/components/second-page-login';
-import TopBar from '../../src/modules/auth/components/top-bar';
-// import { login } from '../../src/modules/auth/services/authService';
+import BottomBar from '../../src/modules/auth/components/bottomBar';
+import FirstPageLogin from '../../src/modules/auth/components/firstPageLogin';
+import SecondPageLogin from '../../src/modules/auth/components/secondPageLogin';
+import TopBar from '../../src/modules/auth/components/topBar';
 import { useAuth } from '@/src/modules/auth/hooks/useAuth';
-import { buttonOptions } from '../../src/modules/auth/utils/enums';
+import { ButtonOptions } from '../../src/modules/auth/utils/enums';
 
 const LoginScreen = () => {
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
@@ -145,7 +144,7 @@ const LoginScreen = () => {
       )}
 
       <BottomBar
-        text={currentStep === 1 ? buttonOptions.NEXT : buttonOptions.SUBMIT}
+        text={currentStep === 1 ? ButtonOptions.NEXT : ButtonOptions.SUBMIT}
         isNextEnabled={nextState}
         onNext={handleNext}
         onForgotPassword={() => {
