@@ -1,14 +1,21 @@
+import {
+  emailSchema,
+  loginSchema,
+  passwordSchema,
+  phoneSchema,
+  usernameSchema,
+} from '@/src/modules/auth/schemas/schemas';
+import * as Localization from 'expo-localization';
+import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js/max';
+import { useCallback, useState } from 'react';
 import { Alert, Keyboard } from 'react-native';
-import TopBar from '../../src/modules/auth/components/top-bar';
+import Toast from 'react-native-toast-message';
 import BottomBar from '../../src/modules/auth/components/bottom-bar';
 import FirstPageLogin from '../../src/modules/auth/components/first-page-login';
 import SecondPageLogin from '../../src/modules/auth/components/second-page-login';
-import { parsePhoneNumberFromString, CountryCode } from 'libphonenumber-js/max';
-import { useCallback, useState } from 'react';
-import * as Localization from 'expo-localization';
-import { buttonOptions } from '../../src/modules/auth/utils/enums';
-import Toast from 'react-native-toast-message';
+import TopBar from '../../src/modules/auth/components/top-bar';
 import { login } from '../../src/modules/auth/services/authService';
+import { buttonOptions } from '../../src/modules/auth/utils/enums';
 
 const LoginScreen = () => {
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
@@ -21,16 +28,24 @@ const LoginScreen = () => {
 
   const detectTextType = useCallback(
     (input: string) => {
-      // const trimmed = input.trim();
+      const trimmed = input.trim();
 
-      // if (validator.isEmail(trimmed)) {
-      //   return 'email';
-      // }
+      if (emailSchema.safeParse(trimmed).success) {
+        return 'email';
+      }
       const phoneNumber = parsePhoneNumberFromString(input, defaultCountry as CountryCode);
-      if (phoneNumber && phoneNumber.isValid() && phoneNumber.getType() === 'MOBILE') {
+      if (
+        phoneNumber &&
+        phoneNumber.isValid() &&
+        phoneNumber.getType() === 'MOBILE' &&
+        phoneSchema.safeParse(trimmed).success
+      ) {
         return 'phone';
       }
-      return 'username';
+      if (usernameSchema.safeParse(trimmed).success) {
+        return 'username';
+      }
+      return null;
     },
     [defaultCountry]
   );
@@ -61,17 +76,30 @@ const LoginScreen = () => {
       setCurrentStep(2);
       setNextState(false);
     } else {
-      if (password.length < 8) {
-        Toast.show({ type: 'error', text1: 'Invalid Password', text2: 'Password must be at least 8 characters long.' });
+      if (!passwordSchema.safeParse(password).success) {
+        Alert.alert(
+          'Invalid Password',
+          'Password must be 8–64 characters long and include uppercase, lowercase, number, and special character.'
+        );
+        return;
+      }
+      const loginData = { identifier: text, password };
+      if (!loginSchema.safeParse(loginData).success) {
+        Toast.show({
+          type: 'error',
+          text1: 'Invalid Login Data',
+          text2: 'Please check your credentials and try again.',
+        });
         return;
       }
       // Submit login
       login({ email: text, password })
         .then((response) => {
+          console.log('Login response:', response);
           Toast.show({
             type: 'success',
             text1: 'Login Successful',
-            text2: `Welcome back, ${response.data.user.name}!`,
+            text2: `Welcome back, ${response?.data?.user?.name}!`,
           });
         })
         .catch((error) => {
