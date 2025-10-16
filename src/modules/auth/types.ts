@@ -1,6 +1,6 @@
 import { IUser } from '../../types/user';
 
-export interface LoginResponse {
+export interface ILoginResponse {
   data: {
     access_token: string;
     user: IUser;
@@ -9,12 +9,12 @@ export interface LoginResponse {
   message: string;
 }
 
-export interface LoginCredentials {
+export interface ILoginCredentials {
   email: string;
   password: string;
 }
 
-export interface RegisterData {
+export interface IRegisterData {
   name: string;
   email: string;
   password: string;

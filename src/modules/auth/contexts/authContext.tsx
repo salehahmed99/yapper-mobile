@@ -2,13 +2,13 @@ import React, { createContext, useCallback, useEffect, useMemo, useState } from 
 import { deleteToken, getToken, saveToken } from '../../../storage/secureStorage';
 import { IUser } from '../../../types/user';
 import { login } from '../services/authService';
-import { LoginCredentials } from '../types';
+import { ILoginCredentials } from '../types';
 
 interface AuthContextType {
   user: IUser | null;
   token: string | null;
   loading: boolean;
-  loginUser: (credentials: LoginCredentials) => Promise<void>;
+  loginUser: (credentials: ILoginCredentials) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     loadToken();
   }, []);
 
-  const loginUser = useCallback(async (credentials: LoginCredentials) => {
+  const loginUser = useCallback(async (credentials: ILoginCredentials) => {
     try {
       const res = await login(credentials);
       setUser(res?.data?.user || null);
