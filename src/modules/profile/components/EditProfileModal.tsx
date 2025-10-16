@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
-import editModalStyles from "../styles/edit-modal-styles";
+import { useTheme } from "../../../context/ThemeContext";
+import { createEditModalStyles } from "../styles/edit-modal-styles";
 import IconButton from "../ui/IconButton";
 import Input from "../ui/Input";
 
@@ -23,6 +24,9 @@ const EditProfileModal: React.FC<Props> = ({ visible, onclose }) => {
   const [location, setLocation] = React.useState("");
   const [website, setWebsite] = React.useState("");
   const [birthday, setBirthday] = React.useState("");
+
+  const { theme, isDark } = useTheme();
+  const editModalStyles = createEditModalStyles(theme);
 
   return (
     <Modal
@@ -90,7 +94,7 @@ const EditProfileModal: React.FC<Props> = ({ visible, onclose }) => {
               value={bio}
               setValue={setBio}
               style={editModalStyles.inputContainer}
-              inputStyle={[editModalStyles.input, { height: 60 }]}
+              inputStyle={editModalStyles.inputMultiline}
               placeholder="Add a bio to your profile"
               multiline
               numberOfLines={4}
@@ -131,8 +135,8 @@ const EditProfileModal: React.FC<Props> = ({ visible, onclose }) => {
 
       <StatusBar
         animated
-        backgroundColor="#ffffff"
-        barStyle="light-content"
+        backgroundColor={theme.colors.background.primary}
+        barStyle={isDark ? "light-content" : "dark-content"}
         showHideTransition="fade"
         hidden={false}
       />

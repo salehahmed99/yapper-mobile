@@ -1,12 +1,15 @@
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
 import { View } from "react-native";
+import { useTheme } from "../../../context/ThemeContext";
 import ListsComponent from "../components/ListsComponent";
-import containerStyles from "../styles/container-style";
+import { createContainerStyles } from "../styles/container-style";
 
 export default function ListsContainer() {
   const { tab } = useLocalSearchParams<{ tab?: string }>();
   const tabValue = Array.isArray(tab) ? tab[0] : tab;
+  const { theme } = useTheme();
+  const containerStyles = createContainerStyles(theme);
 
   return (
     <View style={containerStyles.container}>

@@ -1,30 +1,67 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import CustomTabView, { TabConfig } from "../../../components/CustomTabView";
+import { Theme } from "../../../constants/theme";
+import { useTheme } from "../../../context/ThemeContext";
 
-const PostsRoute = () => (
-  <View style={styles.page}>
-    <Text style={styles.placeholderText}>Tweets will be shown here.</Text>
-  </View>
-);
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
+    page: { flex: 1, backgroundColor: theme.colors.background.primary },
+    placeholderText: {
+      textAlign: "center",
+      marginTop: 40,
+      fontSize: 16,
+      color: theme.colors.text.secondary,
+    },
+  });
 
-const RepliesRoute = () => (
-  <View style={styles.page}>
-    <Text style={styles.placeholderText}>Replies will be shown here.</Text>
-  </View>
-);
+const PostsRoute = () => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+  return (
+    <View style={styles.page}>
+      <Text style={styles.placeholderText}>
+        Tweets will be shown here.
+      </Text>
+    </View>
+  );
+};
 
-const MediaRoute = () => (
-  <View style={styles.page}>
-    <Text style={styles.placeholderText}>Media will be shown here.</Text>
-  </View>
-);
+const RepliesRoute = () => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+  return (
+    <View style={styles.page}>
+      <Text style={styles.placeholderText}>
+        Replies will be shown here.
+      </Text>
+    </View>
+  );
+};
 
-const LikesRoute = () => (
-  <View style={styles.page}>
-    <Text style={styles.placeholderText}>Likes will be shown here.</Text>
-  </View>
-);
+const MediaRoute = () => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+  return (
+    <View style={styles.page}>
+      <Text style={styles.placeholderText}>
+        Media will be shown here.
+      </Text>
+    </View>
+  );
+};
+
+const LikesRoute = () => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+  return (
+    <View style={styles.page}>
+      <Text style={styles.placeholderText}>
+        Likes will be shown here.
+      </Text>
+    </View>
+  );
+};
 
 export default function ProfileTabs() {
   const tabs: TabConfig[] = [
@@ -36,13 +73,3 @@ export default function ProfileTabs() {
 
   return <CustomTabView tabs={tabs} scrollEnabled={true} />;
 }
-
-const styles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: "#fff" },
-  placeholderText: {
-    textAlign: "center",
-    marginTop: 40,
-    fontSize: 16,
-    color: "#536471",
-  },
-});

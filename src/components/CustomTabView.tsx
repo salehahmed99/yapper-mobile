@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { StyleSheet, useWindowDimensions } from "react-native";
 import type {
-    NavigationState,
-    SceneRendererProps,
+  NavigationState,
+  SceneRendererProps,
 } from "react-native-tab-view";
 import { TabBar, TabView } from "react-native-tab-view";
+import { Theme } from "../constants/theme";
+import { useTheme } from "../context/ThemeContext";
 
 type RouteType = { key: string; title: string };
 
@@ -20,12 +22,32 @@ interface CustomTabViewProps {
   scrollEnabled?: boolean;
 }
 
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
+    container: { flex: 1 },
+    tabBarContainer: {
+      borderBottomWidth: 1,
+      elevation: 0,
+      shadowOpacity: 0,
+      backgroundColor: theme.colors.background.primary,
+      borderBottomColor: theme.colors.border,
+    },
+    tab: {},
+    activeUnderline: {
+      height: 4,
+      borderRadius: 2,
+      backgroundColor: theme.colors.text.link,
+    },
+  });
+
 export default function CustomTabView({
   tabs,
   initialTab,
   scrollEnabled = false,
 }: CustomTabViewProps) {
   const layout = useWindowDimensions();
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
 
   // Map tabs to routes
   const routes: RouteType[] = tabs.map((tab) => ({
@@ -63,8 +85,8 @@ export default function CustomTabView({
       indicatorStyle={styles.activeUnderline}
       style={styles.tabBarContainer}
       tabStyle={styles.tab}
-      activeColor={styles.activeTabText.color}
-      inactiveColor={styles.inactiveTabText.color}
+      activeColor={theme.colors.text.link}
+      inactiveColor={theme.colors.text.secondary}
     />
   );
 
@@ -79,22 +101,3 @@ export default function CustomTabView({
     />
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  tabBarContainer: {
-    backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#eff3f4",
-    elevation: 0,
-    shadowOpacity: 0,
-  },
-  tab: {},
-  activeTabText: { color: "#1d9bf0" },
-  inactiveTabText: { color: "#536471" },
-  activeUnderline: {
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: "#1d9bf0",
-  },
-});

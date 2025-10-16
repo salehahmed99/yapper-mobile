@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleProp, Text, TextInput, TextStyle, View, ViewStyle } from "react-native";
-import editModalStyles from "../styles/edit-modal-styles";
+import { useTheme } from "../../../context/ThemeContext";
+import { createEditModalStyles } from "../styles/edit-modal-styles";
 
 interface InputProps {
   label: string;
@@ -23,20 +24,26 @@ const Input: React.FC<InputProps> = ({
   placeholder,
   multiline = false,
   numberOfLines,
-  placeholderTextColor = "#888",
-}) => (
-  <View style={style}>
-    <Text style={editModalStyles.label}>{label}</Text>
-    <TextInput
-      style={inputStyle}
-      value={value}
-      onChangeText={setValue}
-      placeholder={placeholder}
-      multiline={multiline}
-      numberOfLines={numberOfLines}
-      placeholderTextColor={placeholderTextColor}
-    />
-  </View>
-);
+  placeholderTextColor,
+}) => {
+  const { theme } = useTheme();
+  const editModalStyles = createEditModalStyles(theme);
+  const defaultPlaceholderColor = placeholderTextColor || theme.colors.text.secondary;
+
+  return (
+    <View style={style}>
+      <Text style={editModalStyles.label}>{label}</Text>
+      <TextInput
+        style={inputStyle}
+        value={value}
+        onChangeText={setValue}
+        placeholder={placeholder}
+        multiline={multiline}
+        numberOfLines={numberOfLines}
+        placeholderTextColor={defaultPlaceholderColor}
+      />
+    </View>
+  );
+};
 
 export default Input;

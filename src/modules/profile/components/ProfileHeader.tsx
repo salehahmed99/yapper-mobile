@@ -8,12 +8,14 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
-import headerStyles from "../styles/profile-header-styles";
+import { useTheme } from "../../../context/ThemeContext";
+import { createHeaderStyles } from "../styles/profile-header-styles";
 import EditProfileModal from "./EditProfileModal";
 
 export default function ProfileHeader() {
   const [editModalOpen, setEditModalOpen] = useState(false);
-
+  const { theme, isDark } = useTheme();
+  const headerStyles = createHeaderStyles(theme);
 
   const router = useRouter();
   const imageUri = "https://randomuser.me/api/portraits/men/1.jpg";
@@ -75,7 +77,7 @@ export default function ProfileHeader() {
           <TouchableOpacity
             onPress={() => router.push("/(profile)/Lists?tab=followers")}
           >
-            <Text style={[headerStyles.stat, { marginLeft: 10 }]}>
+            <Text style={headerStyles.statWithMargin}>
               <Text style={headerStyles.bold}>118</Text> Followers
             </Text>
           </TouchableOpacity>
@@ -88,7 +90,7 @@ export default function ProfileHeader() {
         onclose={() => setEditModalOpen(false)}
       />
 
-      <StatusBar style="light" />
+      <StatusBar style={isDark ? "light" : "dark"} />
     </View>
   );
 }
