@@ -1,11 +1,25 @@
-import { Stack } from 'expo-router';
+import { Stack } from "expo-router";
+import React from "react";
 
 export default function ProfileLayout() {
+
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-      }}
-    />
+    <Stack>
+      <Stack.Screen
+        name="index"
+        options={{
+          title: "Profile",
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Lists"
+        options={{
+          title: "Lists",
+          headerShown: true,
+          headerBackTitle: "",
+        }}
+      />
+    </Stack>
   );
 }

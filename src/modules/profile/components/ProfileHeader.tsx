@@ -12,7 +12,7 @@ import headerStyles from "../styles/profile-header-styles";
 import EditProfileModal from "./EditProfileModal";
 
 export default function ProfileHeader() {
-    const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
 
 
   const router = useRouter();
@@ -66,14 +66,14 @@ export default function ProfileHeader() {
         {/* Stats */}
         <View style={headerStyles.stats}>
           <TouchableOpacity
-            // onPress={() => router.push("/profile/Lists?tab=following")}
+            onPress={() => router.push("/(profile)/Lists?tab=following")}
           >
             <Text style={headerStyles.stat}>
               <Text style={headerStyles.bold}>217</Text> Following
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            // onPress={() => router.push("/profile/Lists?tab=followers")}
+            onPress={() => router.push("/(profile)/Lists?tab=followers")}
           >
             <Text style={[headerStyles.stat, { marginLeft: 10 }]}>
               <Text style={headerStyles.bold}>118</Text> Followers
