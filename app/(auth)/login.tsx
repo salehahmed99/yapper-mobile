@@ -14,7 +14,8 @@ import BottomBar from '../../src/modules/auth/components/bottom-bar';
 import FirstPageLogin from '../../src/modules/auth/components/first-page-login';
 import SecondPageLogin from '../../src/modules/auth/components/second-page-login';
 import TopBar from '../../src/modules/auth/components/top-bar';
-import { login } from '../../src/modules/auth/services/authService';
+// import { login } from '../../src/modules/auth/services/authService';
+import { useAuth } from '@/src/modules/auth/hooks/useAuth';
 import { buttonOptions } from '../../src/modules/auth/utils/enums';
 
 const LoginScreen = () => {
@@ -25,6 +26,7 @@ const LoginScreen = () => {
   const [nextState, setNextState] = useState(false);
   const [inputType, setInputType] = useState<'email' | 'phone' | 'username' | null>(null);
   const defaultCountry = Localization.getLocales()[0]?.regionCode || 'US';
+  const { loginUser, loading } = useAuth();
 
   const detectTextType = useCallback(
     (input: string) => {
@@ -61,7 +63,7 @@ const LoginScreen = () => {
     setNextState(input.length > 0);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     Keyboard.dismiss();
     if (currentStep === 1) {
       // Move to password step
@@ -93,18 +95,21 @@ const LoginScreen = () => {
         return;
       }
       // Submit login
-      login({ email: text, password })
-        .then((response) => {
-          console.log('Login response:', response);
-          Toast.show({
-            type: 'success',
-            text1: 'Login Successful',
-            text2: `Welcome back, ${response?.data?.user?.name}!`,
-          });
-        })
-        .catch((error) => {
-          // Error handling is done in the login service
+      try {
+        await loginUser({ email: text, password });
+        Toast.show({
+          type: 'success',
+          text1: 'Login Successful',
+          text2: 'Welcome back!',
         });
+      } catch (error : any) {
+       // Error handling is done in the loginUser function
+       Toast.show({
+      type: 'error',
+      text1: 'Login Failed',
+      text2: error.response?.data?.message,
+    });
+      }
     }
   };
 
