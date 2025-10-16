@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { ChevronLeft } from "lucide-react-native";
+import { useState } from "react";
 import {
   Image,
   Text,
@@ -8,8 +9,12 @@ import {
   View
 } from "react-native";
 import headerStyles from "../styles/profile-header-styles";
+import EditProfileModal from "./EditProfileModal";
 
 export default function ProfileHeader() {
+    const [editModalOpen, setEditModalOpen] = useState(false);
+
+
   const router = useRouter();
   const imageUri = "https://randomuser.me/api/portraits/men/1.jpg";
   const bannerUri = "https://picsum.photos/1200/400";
@@ -42,7 +47,7 @@ export default function ProfileHeader() {
         {/* Edit button */}
         <TouchableOpacity
           style={headerStyles.editButton}
-          
+          onPress={() => setEditModalOpen(true)}
         >
           <Text style={headerStyles.editText}>Edit profile</Text>
         </TouchableOpacity>
@@ -76,6 +81,12 @@ export default function ProfileHeader() {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Edit Profile Modal */}
+      <EditProfileModal
+        visible={editModalOpen}
+        onclose={() => setEditModalOpen(false)}
+      />
 
       <StatusBar style="light" />
     </View>
