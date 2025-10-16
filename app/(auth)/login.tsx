@@ -54,13 +54,15 @@ const LoginScreen = () => {
 
   const onTextChange = (input: string) => {
     setText(input);
-    setNextState(input.length > 0);
-    setInputType(detectTextType(input));
+    const type = detectTextType(input);
+    setInputType(type);
+    setNextState(type !== null);
   };
 
   const onPasswordChange = (input: string) => {
     setPassword(input);
-    setNextState(input.length > 0);
+    const isValid = passwordSchema.safeParse(input).success;
+    setNextState(isValid);
   };
 
   const handleNext = async () => {
@@ -93,7 +95,8 @@ const LoginScreen = () => {
           text2: 'Please check your credentials and try again.',
         });
         return;
-      }
+      } //todo: will change when backend is ready
+
       // Submit login
       try {
         await loginUser({ email: text, password });
@@ -102,13 +105,15 @@ const LoginScreen = () => {
           text1: 'Login Successful',
           text2: 'Welcome back!',
         });
-      } catch (error : any) {
-       // Error handling is done in the loginUser function
-       Toast.show({
-      type: 'error',
-      text1: 'Login Failed',
-      text2: error.response?.data?.message,
-    });
+      } catch (error: any) {
+        // Error handling is done in the loginUser function
+        const errorMessage = error.response?.data?.message || error.message || 'Unable to login. Please try again.';
+
+        Toast.show({
+          type: 'error',
+          text1: 'Login Failed',
+          text2: errorMessage,
+        });
       }
     }
   };

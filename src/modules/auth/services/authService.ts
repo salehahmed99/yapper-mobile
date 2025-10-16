@@ -1,4 +1,3 @@
-import Toast from 'react-native-toast-message';
 import api from '../../../api/api';
 import {
   LoginResponse,
@@ -9,7 +8,10 @@ export const login = async (login:LoginCredentials): Promise<LoginResponse | und
   try {
     const response = await api.post('/auth/login', { ...login });
     return response.data;
-  } catch (error: any) {    
+  } catch (error: any) {   
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    } 
     throw error;
   }
 };
