@@ -1,14 +1,24 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const HomeScreen = () => {
   const { theme } = useTheme();
+  const router = useRouter();
   const styles = useMemo(() => createStyles(theme), [theme]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.text}>HomeScreen</Text>
+      
+      <TouchableOpacity 
+        style={styles.button} 
+        onPress={() => router.push('/(profile)')}
+      >
+        <Text style={styles.buttonText}>Go to Profile</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -25,6 +35,18 @@ const createStyles = (theme: Theme) =>
     },
     text: {
       color: theme.colors.text.primary,
-      marginTop: theme.spacing.md,
+      fontSize: theme.typography.sizes.lg,
+      marginBottom: theme.spacing.xl,
+    },
+    button: {
+      backgroundColor: theme.colors.text.link,
+      paddingHorizontal: theme.spacing.xl,
+      paddingVertical: theme.spacing.md,
+      borderRadius: theme.borderRadius.md,
+    },
+    buttonText: {
+      color: theme.colors.text.inverse,
+      fontSize: theme.typography.sizes.md,
+      fontFamily: theme.typography.fonts.semiBold,
     },
   });
