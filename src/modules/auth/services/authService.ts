@@ -1,4 +1,4 @@
-import api from '../../../api/api';
+import api from '../../../services/apiClient';
 import { ILoginCredentials, ILoginResponse } from '../types';
 
 export const login = async (login: ILoginCredentials): Promise<ILoginResponse | undefined> => {

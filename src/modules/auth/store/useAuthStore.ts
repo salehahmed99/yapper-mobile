@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist, StateStorage } from 'zustand/middleware';
-import { deleteToken, getToken, saveToken } from '../../../storage/secureStorage';
 import { IUser } from '../../../types/user';
+import { deleteToken, getToken, saveToken } from '../../../utils/secureStorage';
 import { login } from '../services/authService';
 import { ILoginCredentials } from '../types';
 
@@ -65,7 +65,7 @@ export const useAuthStore = create<IAuthState>()(
         } catch (error) {
           console.error('Error initializing auth:', error);
         } finally {
-            set({ isInitialized: true });
+          set({ isInitialized: true });
         }
       },
 
@@ -95,10 +95,9 @@ export const useAuthStore = create<IAuthState>()(
           await deleteToken();
         } catch (error) {
           console.error('Error during logout:', error);
-        }
-        finally {
-            //! always clear user and token on logout
-          set({ loading: false, user: null, token: null }); 
+        } finally {
+          //! always clear user and token on logout
+          set({ loading: false, user: null, token: null });
         }
       },
     }),

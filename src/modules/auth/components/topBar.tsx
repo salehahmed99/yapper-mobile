@@ -1,5 +1,4 @@
-import { View, TouchableOpacity, Image } from 'react-native';
-import topBarStyles from '../styles/topBarStyles';
+import { View, TouchableOpacity, Image,StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
 
@@ -27,4 +26,33 @@ const TopBar: React.FC<ITopBarProps> = ({ onBackPress }) => {
     </SafeAreaView>
   );
 };
+
+const topBarStyles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: '#000',
+  },
+  container: {
+    width: '100%',
+    height: 40,
+    paddingHorizontal: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#000000',
+  },
+  exitButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logo: {
+    width: 40,
+    height: 40,
+  },
+});
 export default TopBar;
