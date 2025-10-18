@@ -1,6 +1,7 @@
 import {
   emailSchema,
   loginSchema,
+  passwordLogInSchema,
   passwordSchema,
   phoneSchema,
   usernameSchema,
@@ -60,7 +61,7 @@ const LoginScreen = () => {
 
   const onPasswordChange = (input: string) => {
     setPassword(input);
-    const isValid = passwordSchema.safeParse(input).success;
+    const isValid = passwordLogInSchema.safeParse(input).success;
     setNextState(isValid);
   };
 
@@ -105,7 +106,6 @@ const LoginScreen = () => {
           text2: 'Welcome back!',
         });
       } catch (error: any) {
-        // Error handling is done in the loginUser function
         const errorMessage = error.response?.data?.message || error.message || 'Unable to login. Please try again.';
 
         Toast.show({
@@ -144,7 +144,7 @@ const LoginScreen = () => {
       )}
 
       <BottomBar
-        text={currentStep === 1 ? ButtonOptions.NEXT : ButtonOptions.SUBMIT}
+        text={currentStep === 1 ? ButtonOptions.NEXT : ButtonOptions.LOGIN}
         isNextEnabled={nextState}
         onNext={handleNext}
         onForgotPassword={() => {

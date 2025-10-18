@@ -13,6 +13,11 @@ export const usernameSchema = z
   .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores');
 
 // Password
+export const passwordLogInSchema = z
+  .string({ required_error: 'Password is required' })
+  .min(8, 'Password must be at least 8 characters long')
+  .max(64, 'Password must be at most 64 characters long');
+
 export const passwordSchema = z
   .string({ required_error: 'Password is required' })
   .min(8, 'Password must be at least 8 characters long')
@@ -21,6 +26,8 @@ export const passwordSchema = z
   .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
   .regex(/[0-9]/, 'Password must contain at least one number')
   .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character');
+
+
 
 // Phone number
 export const phoneSchema = z

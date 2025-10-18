@@ -46,9 +46,20 @@ const secondPageStyles = StyleSheet.create({
   },
   eyeIcon: {
     position: 'absolute',
-    right: 16,
+    right: 40,
     top: 16,
     padding: 4,
+  },
+  statusIcon: {
+    position: 'absolute',
+    right: 12,
+    top: 20,
+    width: 20,
+    height: 20,
+    borderRadius: 12,
+    backgroundColor: '#00BA7C',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 export default secondPageStyles;

@@ -1,7 +1,7 @@
+import { Check, Eye, EyeOff } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Animated } from 'react-native';
+import { Animated, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import secondPageStyles from '../styles/secondPageStyles';
-import {EyeOff,Eye} from 'lucide-react-native';
 
 interface ISecondPageLoginProps {
   userIdentifier: string;
@@ -19,9 +19,7 @@ const SecondPageLogin: React.FC<ISecondPageLoginProps> = ({
   isPasswordVisible = false,
 }) => {
   const [passwordInputFocused, setPasswordInputFocused] = useState(false);
-  const passwordInputLabelAnimation = useState(
-    new Animated.Value(password ? 1 : 0)
-  )[0];
+  const passwordInputLabelAnimation = useState(new Animated.Value(password ? 1 : 0))[0];
 
   const handlePasswordFocus = () => {
     setPasswordInputFocused(true);
@@ -87,10 +85,7 @@ const SecondPageLogin: React.FC<ISecondPageLoginProps> = ({
           Password
         </Animated.Text>
         <TextInput
-          style={[
-            secondPageStyles.input,
-            passwordInputFocused && secondPageStyles.inputFocused,
-          ]}
+          style={[secondPageStyles.input, passwordInputFocused && secondPageStyles.inputFocused]}
           value={password}
           onChangeText={onPasswordChange}
           onFocus={handlePasswordFocus}
@@ -101,14 +96,21 @@ const SecondPageLogin: React.FC<ISecondPageLoginProps> = ({
           keyboardAppearance="dark"
           placeholderTextColor="#71767B"
         />
-        {/* Eye Icon for Password Visibility Toggle */}
         {password.length > 0 && (
-          <TouchableOpacity
-            style={secondPageStyles.eyeIcon}
-            onPress={onTogglePasswordVisibility}
-          >
-                {isPasswordVisible ? <EyeOff color="#71767B" size={20}/> : <Eye color="#71767B" size={20}/>}
-          </TouchableOpacity>
+          <>
+            <TouchableOpacity
+              style={secondPageStyles.eyeIcon}
+              onPress={onTogglePasswordVisibility}
+              accessibilityRole="button"
+              accessibilityLabel={isPasswordVisible ? 'Hide password' : 'Show password'}
+            >
+              {isPasswordVisible ? <EyeOff color="#71767B" size={20} /> : <Eye color="#71767B" size={20} />}
+            </TouchableOpacity>
+
+              <View style={secondPageStyles.statusIcon} accessibilityLabel="Valid password">
+                <Check color="#FFFFFF" size={14} />
+              </View>
+          </>
         )}
       </View>
     </View>
