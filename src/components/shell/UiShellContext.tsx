@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
 import { Animated } from 'react-native';
 
-type UiShellContextValue = {
+interface IUiShellContextValue {
   isSideMenuOpen: boolean;
   openSideMenu: () => void;
   closeSideMenu: () => void;
@@ -9,9 +9,9 @@ type UiShellContextValue = {
   activeTab: string;
   setActiveTab: (key: string) => void;
   scrollY: Animated.Value;
-};
+}
 
-const UiShellContext = createContext<UiShellContextValue | undefined>(undefined);
+const UiShellContext = createContext<IUiShellContextValue | undefined>(undefined);
 
 export const UiShellProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isSideMenuOpen, setSideMenuOpen] = useState(false);
@@ -32,7 +32,7 @@ export const UiShellProvider: React.FC<{ children: React.ReactNode }> = ({ child
   );
 };
 
-export const useUiShell = (): UiShellContextValue => {
+export const useUiShell = (): IUiShellContextValue => {
   const ctx = useContext(UiShellContext);
   if (!ctx) throw new Error('useUiShell must be used within UiShellProvider');
   return ctx;
