@@ -79,8 +79,6 @@ export const useAuthStore = create<IAuthState>()(
           if (!token) {
             throw new Error('No access token received from server.');
           }
-
-          await saveToken(token);
           set({ user, token });
         } catch (err) {
           throw err;
