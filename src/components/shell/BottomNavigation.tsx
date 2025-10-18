@@ -51,19 +51,7 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
     extrapolate: 'clamp',
   });
 
-  // Dev-only: subscribe to scrollY to verify it's updating
-  React.useEffect(() => {
-    const id = scrollY.addListener?.((v: { value: number }) => {
-      // Comment out or remove in production
-      // console.log('scrollY', v.value);
-    });
-    return () => {
-      if (id && scrollY.removeListener) scrollY.removeListener(id);
-    };
-  }, [scrollY]);
-
   const containerBg = theme.colors.background.primary;
-
   const insets = useSafeAreaInsets();
   const navHeight = 48;
   const translateStyle = anim ? { transform: [{ translateX: anim }] } : undefined;
@@ -78,8 +66,6 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
       ]}
       accessibilityRole="tablist"
     >
-      {/* Animated background sits behind the icons so only background fades.
-          Use an explicit box sized to navHeight + inset so the added padding area is covered. */}
       <Animated.View
         pointerEvents="none"
         style={{

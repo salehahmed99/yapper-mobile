@@ -32,9 +32,6 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
   const pathname = require('expo-router').usePathname();
   const insets = useSafeAreaInsets();
 
-  // All hooks at the top
-
-  // Navigation function must be defined before PanResponder
   function navigate(path: string) {
     // If already on target path, just close menu
     if (pathname === path) {
@@ -45,7 +42,6 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
     router.push(path as any);
   }
 
-  // When menu opens, animate anim to drawerWidth (open)
   React.useEffect(() => {
     if (isSideMenuOpen) {
       Animated.timing(anim, {
@@ -63,7 +59,6 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
       accessibilityElementsHidden={!isSideMenuOpen}
       importantForAccessibility={isSideMenuOpen ? 'yes' : 'no-hide-descendants'}
     >
-      {/* Drawer content, fixed width */}
       <Animated.View
         style={[styles.drawer, { left: Animated.subtract(anim, drawerWidth), opacity: isSideMenuOpen ? 1 : 0 }]}
       >
@@ -240,7 +235,6 @@ const createStyles = (theme: any) =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'flex-end',
-      // align to the right of the row
       marginLeft: theme.spacing.md,
     },
 
