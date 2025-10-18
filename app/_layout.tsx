@@ -1,6 +1,6 @@
+import AppShell from '@/src/components/shell/AppShell';
 import { ThemeProvider } from '@/src/context/ThemeContext';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 
@@ -29,7 +29,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider>
-      <Stack screenOptions={{ headerShown: false }} />
+      <AppShell />
     </ThemeProvider>
   );
 }
