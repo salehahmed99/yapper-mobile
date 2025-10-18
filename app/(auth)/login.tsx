@@ -2,7 +2,6 @@ import {
   emailSchema,
   loginSchema,
   passwordLogInSchema,
-  passwordSchema,
   phoneSchema,
   usernameSchema,
 } from '@/src/modules/auth/schemas/schemas';
@@ -80,7 +79,7 @@ const LoginScreen = () => {
       setCurrentStep(2);
       setNextState(false);
     } else {
-      if (!passwordSchema.safeParse(password).success) {
+      if (!passwordLogInSchema.safeParse(password).success) {
         Alert.alert(
           'Invalid Password',
           'Password must be 8–64 characters long and include uppercase, lowercase, number, and special character.'

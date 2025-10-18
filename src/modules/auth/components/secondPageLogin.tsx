@@ -106,10 +106,11 @@ const SecondPageLogin: React.FC<ISecondPageLoginProps> = ({
             >
               {isPasswordVisible ? <EyeOff color="#71767B" size={20} /> : <Eye color="#71767B" size={20} />}
             </TouchableOpacity>
-
+            {password.length >= 8 && (
               <View style={secondPageStyles.statusIcon} accessibilityLabel="Valid password">
                 <Check color="#FFFFFF" size={14} />
               </View>
+            )}
           </>
         )}
       </View>

@@ -27,8 +27,6 @@ export const passwordSchema = z
   .regex(/[0-9]/, 'Password must contain at least one number')
   .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character');
 
-
-
 // Phone number
 export const phoneSchema = z
   .string()
@@ -37,8 +35,6 @@ export const phoneSchema = z
 
 // Login schema
 export const loginSchema = z.object({
-  identifier: z
-    .string({ required_error: 'Email or username or phoneNumber is required' })
-    .trim(),
-  password: passwordSchema,
+  identifier: z.string({ required_error: 'Email or username or phoneNumber is required' }).trim(),
+  password: passwordLogInSchema,
 });
