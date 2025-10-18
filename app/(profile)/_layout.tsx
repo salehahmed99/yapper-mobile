@@ -25,7 +25,7 @@ export default function ProfileLayout() {
         }}
       />
       <Stack.Screen
-        name="Lists"
+        name="lists"
         options={{
           title: username,
           headerShown: true,

@@ -1,5 +1,4 @@
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { ChevronLeft } from "lucide-react-native";
 import { useState } from "react";
 import {
@@ -14,7 +13,7 @@ import EditProfileModal from "./EditProfileModal";
 
 export default function ProfileHeader() {
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const { theme, isDark } = useTheme();
+  const { theme } = useTheme();
   const headerStyles = createHeaderStyles(theme);
 
   const router = useRouter();
@@ -89,8 +88,6 @@ export default function ProfileHeader() {
         visible={editModalOpen}
         onclose={() => setEditModalOpen(false)}
       />
-
-      <StatusBar style={isDark ? "light" : "dark"} />
     </View>
   );
 }
