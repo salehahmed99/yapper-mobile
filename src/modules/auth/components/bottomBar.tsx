@@ -4,14 +4,14 @@ import React from 'react';
 import { ButtonOptions } from '../utils/enums';
 
 
-interface BottomBarProps {
+interface IBottomBarProps {
    text: ButtonOptions;
   isNextEnabled?: boolean;
   onForgotPassword?: () => void;
   onNext?: () => void;
 }
 
-const BottomBar: React.FC<BottomBarProps> = ({ text=ButtonOptions.NEXT,isNextEnabled = false, onForgotPassword, onNext }) => {
+const BottomBar: React.FC<IBottomBarProps> = ({ text=ButtonOptions.NEXT,isNextEnabled = false, onForgotPassword, onNext }) => {
   const forgotPasswordPress = () => {
     onForgotPassword?.();
   };

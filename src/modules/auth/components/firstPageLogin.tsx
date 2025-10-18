@@ -2,12 +2,12 @@ import { View, TextInput, Text, Animated } from 'react-native';
 import firstPageLoginStyle from '../styles/firstPageStyles';
 import { useState, useRef, useEffect } from 'react';
 
-interface FirstPageLoginProps {
+interface IFirstPageLoginProps {
   text: string;
   onTextChange: (text: string) => void;
 }
 
-const FirstPageLogin: React.FC<FirstPageLoginProps> = ({ text, onTextChange }) => {
+const FirstPageLogin: React.FC<IFirstPageLoginProps> = ({ text, onTextChange }) => {
   const [isFocused, setIsFocused] = useState(false);
   const labelPosition = useRef(new Animated.Value(text ? 1 : 0)).current;
 

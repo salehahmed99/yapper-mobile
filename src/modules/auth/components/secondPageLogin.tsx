@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Animated } from 'react-native'
 import secondPageStyles from '../styles/secondPageStyles';
 import {EyeOff,Eye} from 'lucide-react-native';
 
-interface SecondPageLoginProps {
+interface ISecondPageLoginProps {
   userIdentifier: string;
   password: string;
   onPasswordChange: (password: string) => void;
@@ -11,7 +11,7 @@ interface SecondPageLoginProps {
   isPasswordVisible?: boolean;
 }
 
-const SecondPageLogin: React.FC<SecondPageLoginProps> = ({
+const SecondPageLogin: React.FC<ISecondPageLoginProps> = ({
   userIdentifier,
   password,
   onPasswordChange,

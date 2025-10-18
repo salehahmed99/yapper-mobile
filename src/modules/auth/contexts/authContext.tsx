@@ -4,7 +4,7 @@ import { IUser } from '../../../types/user';
 import { login } from '../services/authService';
 import { ILoginCredentials } from '../types';
 
-interface AuthContextType {
+interface IAuthContextType {
   user: IUser | null;
   token: string | null;
   loading: boolean;
@@ -12,7 +12,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<IAuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<IUser | null>(null);
@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setToken(null);
   }, []);
 
-  const contextValue = useMemo<AuthContextType>(
+  const contextValue = useMemo<IAuthContextType>(
     () => ({ user, token, loading, loginUser, logout }),
     [user, token, loading, loginUser, logout]
   );

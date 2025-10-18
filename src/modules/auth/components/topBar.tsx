@@ -3,11 +3,11 @@ import topBarStyles from '../styles/topBarStyles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
 
-interface TopBarProps {
+interface ITopBarProps {
   onBackPress?: () => void;
 }
 
-const TopBar: React.FC<TopBarProps> = ({ onBackPress }) => {
+const TopBar: React.FC<ITopBarProps> = ({ onBackPress }) => {
   return (
     <SafeAreaView style={topBarStyles.safeArea}>
       <View style={topBarStyles.container}>
