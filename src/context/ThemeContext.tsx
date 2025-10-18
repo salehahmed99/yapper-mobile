@@ -30,7 +30,11 @@ export const ThemeProvider: React.FC<IThemeProviderProps> = (props) => {
 
   return (
     <ThemeContext.Provider value={{ theme, isDark }}>
-      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <StatusBar 
+        style={isDark ? 'light' : 'dark'} 
+        animated={true}
+        translucent={false}
+      />
       {children}
     </ThemeContext.Provider>
   );
