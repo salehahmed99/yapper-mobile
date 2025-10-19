@@ -1,3 +1,7 @@
+import LoginScreen from '@/app/(auth)/login';
+import React, { useMemo } from 'react';
+import { StyleSheet } from 'react-native';
+import Toast from 'react-native-toast-message';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { useRouter } from 'expo-router';
@@ -10,16 +14,10 @@ const HomeScreen = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>HomeScreen</Text>
-      
-      <TouchableOpacity 
-        style={styles.button} 
-        onPress={() => router.push('/(profile)')}
-      >
-        <Text style={styles.buttonText}>Go to Profile</Text>
-      </TouchableOpacity>
-    </View>
+    <>
+      <LoginScreen />
+      <Toast />
+    </>
   );
 };
 
