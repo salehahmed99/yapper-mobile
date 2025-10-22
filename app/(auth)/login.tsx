@@ -1,3 +1,4 @@
+import { useAuth } from '@/src/modules/auth/hooks/useAuth';
 import {
   emailSchema,
   loginSchema,
@@ -10,12 +11,11 @@ import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { useCallback, useState } from 'react';
 import { Alert, Keyboard } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { useAuth } from '@/src/modules/auth/hooks/useAuth';
+import BottomBar from '../../src/modules/auth/components/bottomBar';
+import FirstPageLogin from '../../src/modules/auth/components/firstPageLogin';
+import SecondPageLogin from '../../src/modules/auth/components/secondPageLogin';
+import TopBar from '../../src/modules/auth/components/topBar';
 import { ButtonOptions } from '../../src/modules/auth/utils/enums';
-import TopBar from '../../src/modules/auth/components/TopBar';
-import FirstPageLogin from '../../src/modules/auth/components/FirstPageLogin';
-import SecondPageLogin from '../../src/modules/auth/components/SecondPageLogin';
-import BottomBar from '../../src/modules/auth/components/BottomBar';
 
 const LoginScreen = () => {
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
@@ -80,10 +80,7 @@ const LoginScreen = () => {
       setNextState(false);
     } else {
       if (!passwordLogInSchema.safeParse(password).success) {
-        Alert.alert(
-          'Invalid Password',
-          'Password must be at least 8 characters long'
-        );
+        Alert.alert('Invalid Password', 'Password must be at least 8 characters long');
         return;
       }
       const loginData = { identifier: text, password };
