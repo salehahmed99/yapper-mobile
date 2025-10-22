@@ -11,10 +11,10 @@ import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { useCallback, useState } from 'react';
 import { Alert, Keyboard } from 'react-native';
 import Toast from 'react-native-toast-message';
-import BottomBar from '../../src/modules/auth/components/bottomBar';
-import FirstPageLogin from '../../src/modules/auth/components/firstPageLogin';
-import SecondPageLogin from '../../src/modules/auth/components/secondPageLogin';
-import TopBar from '../../src/modules/auth/components/topBar';
+import BottomBar from '../../src/modules/auth/components/BottomBar';
+import FirstPageLogin from '../../src/modules/auth/components/FirstPageLogin';
+import SecondPageLogin from '../../src/modules/auth/components/SecondPageLogin';
+import TopBar from '../../src/modules/auth/components/TopBar';
 import { ButtonOptions } from '../../src/modules/auth/utils/enums';
 
 const LoginScreen = () => {
