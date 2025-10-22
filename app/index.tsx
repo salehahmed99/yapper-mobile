@@ -1,12 +1,10 @@
 import LoginScreen from '@/app/(auth)/login';
-import React, { useMemo } from 'react';
-import { StyleSheet } from 'react-native';
-import Toast from 'react-native-toast-message';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 const HomeScreen = () => {
   const { theme } = useTheme();
