@@ -3,6 +3,8 @@ import { ThemeProvider } from '@/src/context/ThemeContext';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { Stack } from "expo-router";
+import { useAuthStore } from '@/src/modules/auth/store/useAuthStore';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -17,19 +19,29 @@ export default function RootLayout() {
     'PublicSans-ExtraBold': require('../assets/fonts/PublicSans-ExtraBold.ttf'),
   });
 
+  const initializeAuth = useAuthStore((state) => state.initializeAuth);
+  const isInitialized = useAuthStore((state) => state.isInitialized);
+
   useEffect(() => {
-    if (fontsLoaded) {
+    // Initialize auth state when app starts
+    initializeAuth();
+  }, [initializeAuth]);
+
+  useEffect(() => {
+    if (fontsLoaded && isInitialized) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded]);
+  }, [fontsLoaded, isInitialized]);
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded || !isInitialized) {
     return null;
   }
 
   return (
     <ThemeProvider>
-      <AppShell />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+      </Stack>
     </ThemeProvider>
   );
 }

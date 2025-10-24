@@ -1,9 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
+import { StatusBar } from "expo-status-bar";
 import React from "react";
 import {
   Image,
   Modal,
-  StatusBar,
   Text,
   TouchableOpacity,
   View
@@ -25,7 +25,7 @@ const EditProfileModal: React.FC<Props> = ({ visible, onclose }) => {
   const [website, setWebsite] = React.useState("");
   const [birthday, setBirthday] = React.useState("");
 
-  const { theme, isDark } = useTheme();
+  const { theme } = useTheme();
   const editModalStyles = createEditModalStyles(theme);
 
   return (
@@ -133,13 +133,7 @@ const EditProfileModal: React.FC<Props> = ({ visible, onclose }) => {
         </View>
       </View>
 
-      <StatusBar
-        animated
-        backgroundColor={theme.colors.background.primary}
-        barStyle={isDark ? "light-content" : "dark-content"}
-        showHideTransition="fade"
-        hidden={false}
-      />
+      <StatusBar style="light" />
     </Modal>
   );
 };

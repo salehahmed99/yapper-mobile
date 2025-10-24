@@ -1,9 +1,10 @@
-import AppBar from '@/src/components/shell/AppBar';
-import { useUiShell } from '@/src/components/shell/UiShellContext';
+import LoginScreen from '@/app/(auth)/login';
+import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { useRouter } from 'expo-router';
-import React from 'react';
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleSheet } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 export default function HomeScreenDemo() {
   const { theme } = useTheme();
@@ -11,32 +12,10 @@ export default function HomeScreenDemo() {
   const router = useRouter();
   const { scrollY } = useUiShell();
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background.primary }}>
-      <AppBar />
-      <Animated.ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ ...styles.scrollContent }}
-        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: false })}
-        scrollEventThrottle={16}
-      >
-        <View style={styles.hero}>
-          <Text style={styles.title}>Home Demo</Text>
-          <TouchableOpacity style={styles.button} onPress={() => router.push('/(profile)')}>
-            <Text style={styles.buttonText}>Open Profile</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Lots of filler content to enable scrolling */}
-        {Array.from({ length: 20 }).map((_, i) => (
-          <View key={i} style={styles.card}>
-            <Text style={styles.cardTitle}>Item {i + 1}</Text>
-            <Text style={styles.cardBody}>
-              This is sample content to demonstrate scrolling and bottom navigation opacity.
-            </Text>
-          </View>
-        ))}
-      </Animated.ScrollView>
-    </View>
+    <>
+      <LoginScreen />
+      <Toast />
+    </>
   );
 }
 

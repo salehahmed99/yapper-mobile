@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import CustomTabView, { TabConfig } from "../../../components/CustomTabView";
@@ -45,16 +44,10 @@ interface ListsComponentProps {
 }
 
 export default function ListsComponent({ initialTab }: ListsComponentProps) {
-  const { isDark } = useTheme();
   const tabs: TabConfig[] = [
     { key: "Following", title: "Following", component: FollowingRoute },
     { key: "Followers", title: "Followers", component: FollowersRoute },
   ];
 
-  return (
-    <>
-      <CustomTabView tabs={tabs} initialTab={initialTab} />
-      <StatusBar style={isDark ? "light" : "dark"} />
-    </>
-  );
+  return <CustomTabView tabs={tabs} initialTab={initialTab} />;
 }
