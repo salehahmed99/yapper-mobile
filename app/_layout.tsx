@@ -1,10 +1,9 @@
 import AppShell from '@/src/components/shell/AppShell';
 import { ThemeProvider } from '@/src/context/ThemeContext';
+import { useAuthStore } from '@/src/modules/auth/store/useAuthStore';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { Stack } from "expo-router";
-import { useAuthStore } from '@/src/modules/auth/store/useAuthStore';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -39,9 +38,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-      </Stack>
+      <AppShell />
     </ThemeProvider>
   );
 }
