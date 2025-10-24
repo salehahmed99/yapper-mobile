@@ -8,7 +8,7 @@ import en from './locales/en.json';
 
 const STORED_LANGUAGE_KEY = 'appLanguage';
 
-const getDeviceLanguage = () => getLocales()[0].languageCode || 'en';
+const getDeviceLanguage = () => getLocales()?.at(0)?.languageCode || 'en';
 
 const loadStoredLanguage = async () => {
   const storedLanguage = await AsyncStorage.getItem(STORED_LANGUAGE_KEY);
