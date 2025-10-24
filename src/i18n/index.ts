@@ -40,5 +40,7 @@ loadStoredLanguage().then((language) => {
       escapeValue: false,
     },
   });
+}).catch((error) => {
+  console.error('Error initializing i18n:', error);
 });
 export default i18n;
