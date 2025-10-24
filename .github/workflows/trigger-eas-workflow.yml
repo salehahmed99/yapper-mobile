@@ -1,0 +1,26 @@
+name: Trigger EAS Build Workflow
+
+on:
+  workflow_dispatch: # manual trigger in GitHub Actions
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
+      - name: Trigger EAS Workflow
+        id: trigger
+        run: |
+          eas workflow:run android-preview-build.yml --non-interactive --wait --json > result.json
+          cat result.json
+        env:
+          EAS_TOKEN: ${{ secrets.EAS_TOKEN }}
+
+      - name: Extract APK  URL
+        run: |
+          BUILD_URL=$(jq -r '.[0].artifacts.buildUrl' result.json)
+          echo "✅ Build complete!"
+          echo "🔗 Download APK: $BUILD_URL"
