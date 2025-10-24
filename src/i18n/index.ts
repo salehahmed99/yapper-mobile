@@ -15,12 +15,16 @@ const loadStoredLanguage = async () => {
   return storedLanguage || getDeviceLanguage();
 };
 
-export const changeLanguage = (language: string) => {
-  i18n.changeLanguage(language);
-  AsyncStorage.setItem(STORED_LANGUAGE_KEY, language);
-  const isRTL = language === 'ar';
-  if (I18nManager.isRTL !== isRTL) {
-    I18nManager.forceRTL(isRTL);
+export const changeLanguage = async (language: string) => {
+  try {
+    i18n.changeLanguage(language);
+    await AsyncStorage.setItem(STORED_LANGUAGE_KEY, language);
+    const isRTL = language === 'ar';
+    if (I18nManager.isRTL !== isRTL) {
+      I18nManager.forceRTL(isRTL);
+    }
+  } catch (error) {
+    console.error('Error changing language:', error);
   }
 };
 
