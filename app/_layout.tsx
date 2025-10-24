@@ -1,8 +1,10 @@
 import { ThemeProvider } from '@/src/context/ThemeContext';
+import i18n from '@/src/i18n';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { I18nextProvider } from 'react-i18next';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,8 +30,10 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider>
-      <Stack screenOptions={{ headerShown: false }} />
-    </ThemeProvider>
+    <I18nextProvider i18n={i18n}>
+      <ThemeProvider>
+        <Stack screenOptions={{ headerShown: false }} />
+      </ThemeProvider>
+    </I18nextProvider>
   );
 }
