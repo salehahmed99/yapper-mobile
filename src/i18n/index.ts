@@ -24,19 +24,17 @@ export const changeLanguage = (language: string) => {
   }
 };
 
-i18n.use(initReactI18next).init({
-  resources: {
-    en: { translation: en },
-    ar: { translation: ar },
-  },
-  lng: getDeviceLanguage(),
-  fallbackLng: 'en',
-  interpolation: {
-    escapeValue: false,
-  },
-});
-
 loadStoredLanguage().then((language) => {
-  changeLanguage(language);
+  i18n.use(initReactI18next).init({
+    resources: {
+      en: { translation: en },
+      ar: { translation: ar },
+    },
+    lng: language,
+    fallbackLng: 'en',
+    interpolation: {
+      escapeValue: false,
+    },
+  });
 });
 export default i18n;
