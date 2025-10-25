@@ -13,7 +13,7 @@ echo ""
 current_branch=$(git rev-parse --abbrev-ref HEAD)
 
 # Define valid branch name patterns
-valid_patterns="^(feature|feat|bugfix|fix|hotfix|release|chore|docs)/"
+valid_patterns="^(feat|refactor|bugfix|fix|hotfix|release|chore|docs|ci)/"
 
 # Check if branch follows naming convention
 if ! echo "$current_branch" | grep -Eq "$valid_patterns"; then
@@ -35,6 +35,8 @@ if ! echo "$current_branch" | grep -Eq "$valid_patterns"; then
     echo "  release/v<version>     - Release branches"
     echo "  chore/<description>    - Maintenance tasks"
     echo "  docs/<description>     - Documentation"
+    echo "  ci/<description>       - CI/CD changes"
+    echo "  refactor/<description> - Code refactoring"
     echo ""
     print_green "✅ Valid examples:"
     echo "  feature/AUTH-123-user-login"
@@ -45,6 +47,8 @@ if ! echo "$current_branch" | grep -Eq "$valid_patterns"; then
     echo "  release/v1.2.0"
     echo "  chore/update-dependencies"
     echo "  docs/api-documentation"
+    echo "  ci/setup-github-actions"
+    echo "  refactor/navbar-component"
     echo ""
     print_blue "💡 To rename your branch:"
     echo "  git branch -m $current_branch <new-valid-name>"
