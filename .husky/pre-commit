@@ -1,2 +1,12 @@
-echo "🔍 Running pre-commit checks..."
+echo "Running lint-staged..."
 npx lint-staged
+
+echo "Running TypeScript type check..."
+npm run type-check
+
+if [ $? -ne 0 ]; then
+  echo "❌ Type check failed! Fix errors before committing."
+  exit 1
+fi
+
+echo "✅ All checks passed!"
