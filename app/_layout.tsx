@@ -9,31 +9,31 @@ import { I18nextProvider } from 'react-i18next';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-    const [fontsLoaded] = useFonts({
-        'PublicSans-ExtraLight': require('../assets/fonts/PublicSans-ExtraLight.ttf'),
-        'PublicSans-Light': require('../assets/fonts/PublicSans-Light.ttf'),
-        'PublicSans-Regular': require('../assets/fonts/PublicSans-Regular.ttf'),
-        'PublicSans-Medium': require('../assets/fonts/PublicSans-Medium.ttf'),
-        'PublicSans-SemiBold': require('../assets/fonts/PublicSans-SemiBold.ttf'),
-        'PublicSans-Bold': require('../assets/fonts/PublicSans-Bold.ttf'),
-        'PublicSans-ExtraBold': require('../assets/fonts/PublicSans-ExtraBold.ttf'),
-    });
+  const [fontsLoaded] = useFonts({
+    'PublicSans-ExtraLight': require('../assets/fonts/PublicSans-ExtraLight.ttf'),
+    'PublicSans-Light': require('../assets/fonts/PublicSans-Light.ttf'),
+    'PublicSans-Regular': require('../assets/fonts/PublicSans-Regular.ttf'),
+    'PublicSans-Medium': require('../assets/fonts/PublicSans-Medium.ttf'),
+    'PublicSans-SemiBold': require('../assets/fonts/PublicSans-SemiBold.ttf'),
+    'PublicSans-Bold': require('../assets/fonts/PublicSans-Bold.ttf'),
+    'PublicSans-ExtraBold': require('../assets/fonts/PublicSans-ExtraBold.ttf'),
+  });
 
-    useEffect(() => {
-        if (fontsLoaded) {
-            SplashScreen.hideAsync();
-        }
-    }, [fontsLoaded]);
-
-    if (!fontsLoaded) {
-        return null;
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
     }
+  }, [fontsLoaded]);
 
-    return (
-        <I18nextProvider i18n={i18n}>
-            <ThemeProvider>
-                <Stack screenOptions={{ headerShown: false }} />
-            </ThemeProvider>
-        </I18nextProvider>
-    );
+  if (!fontsLoaded) {
+    return null;
+  }
+
+  return (
+    <I18nextProvider i18n={i18n}>
+      <ThemeProvider>
+        <Stack screenOptions={{ headerShown: false }} />
+      </ThemeProvider>
+    </I18nextProvider>
+  );
 }
