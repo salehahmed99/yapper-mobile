@@ -11,7 +11,6 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-
       <Text style={styles.text}>{t('home.title')}</Text>
     </View>
   );
