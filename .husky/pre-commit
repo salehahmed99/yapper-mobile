@@ -1,4 +1,2 @@
-# echo "🔍 Running pre-commit checks..."
-# npx lint-staged
-
-# uncomment this file after finishing Linters, and adding lint-staged script to package.json
+echo "🔍 Running pre-commit checks..."
+npx lint-staged
