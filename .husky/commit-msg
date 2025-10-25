@@ -2,7 +2,7 @@ msg_file=$1
 msg=$(cat "$msg_file")
 
 # Conventional commits rule
-if ! echo "$msg" | grep -Eq "^(feat|fix|chore|docs|refactor|test|style|perf|ci)\: .+"; then
+if ! echo "$msg" | grep -Eq "^(feat|fix|chore|docs|refactor|test|style|perf|ci|build)(\(.+\))?: .+"; then
   echo "❌ Invalid commit message format!"
   echo ""
   echo "📝 Format: <type>(<scope>): <description>"
