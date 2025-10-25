@@ -43,6 +43,15 @@
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.5.1"
   },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css,scss}": [
+      "prettier --write"
+    ]
+  },
   "devDependencies": {
     "@types/react": "~19.1.0",
     "@typescript-eslint/eslint-plugin": "^8.46.2",

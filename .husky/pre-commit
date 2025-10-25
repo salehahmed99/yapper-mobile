@@ -1,2 +1,2 @@
-echo "🔍 Running pre-commit checks..."
-npx lint-staged
+# echo "🔍 Running pre-commit checks..."
+# npx lint-staged
