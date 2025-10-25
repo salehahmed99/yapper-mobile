@@ -87,7 +87,7 @@ describe('LoginScreen', () => {
       fireEvent.press(screen.getByText('Next'));
 
       await waitFor(() => {
-        expect(screen.getByText('login')).toBeTruthy();
+        expect(screen.getByText('Login')).toBeTruthy();
       });
     });
 
@@ -99,7 +99,7 @@ describe('LoginScreen', () => {
       fireEvent.press(screen.getByText('Next'));
 
       await waitFor(() => {
-        expect(screen.getByText('login')).toBeTruthy();
+        expect(screen.getByText('Login')).toBeTruthy();
       });
     });
 
@@ -154,14 +154,14 @@ describe('LoginScreen', () => {
       fireEvent.press(screen.getByText('Next'));
 
       await waitFor(() => {
-        expect(screen.getByText('login')).toBeTruthy();
+        expect(screen.getByText('Login')).toBeTruthy();
       });
     });
 
     it('should call loginUser with correct credentials', async () => {
       const passwordInput = screen.getByDisplayValue('');
       fireEvent.changeText(passwordInput, 'password123');
-      fireEvent.press(screen.getByText('login'));
+      fireEvent.press(screen.getByText('Login'));
 
       await waitFor(() => {
         expect(mockLoginUser).toHaveBeenCalledWith({
@@ -177,7 +177,7 @@ describe('LoginScreen', () => {
 
       const passwordInput = screen.getByDisplayValue('');
       fireEvent.changeText(passwordInput, 'password123');
-      fireEvent.press(screen.getByText('login'));
+      fireEvent.press(screen.getByText('Login'));
 
       await waitFor(() => {
         expect(Toast.show).toHaveBeenCalledWith({
@@ -195,7 +195,7 @@ describe('LoginScreen', () => {
 
       const passwordInput = screen.getByDisplayValue('');
       fireEvent.changeText(passwordInput, 'password123');
-      fireEvent.press(screen.getByText('login'));
+      fireEvent.press(screen.getByText('Login'));
 
       await waitFor(() => {
         expect(Toast.show).toHaveBeenCalledWith({
@@ -212,7 +212,7 @@ describe('LoginScreen', () => {
 
       const passwordInput = screen.getByDisplayValue('');
       fireEvent.changeText(passwordInput, 'password123');
-      fireEvent.press(screen.getByText('login'));
+      fireEvent.press(screen.getByText('Login'));
 
       await waitFor(() => {
         expect(Toast.show).toHaveBeenCalledWith({
