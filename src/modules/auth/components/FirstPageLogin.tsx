@@ -1,0 +1,107 @@
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Animated, StyleSheet, Text, TextInput, View } from 'react-native';
+import type { Theme } from '../../../constants/theme';
+import { useTheme } from '../../../context/ThemeContext';
+
+interface IFirstPageLoginProps {
+  text: string;
+  onTextChange: (text: string) => void;
+}
+
+const FirstPageLogin: React.FC<IFirstPageLoginProps> = ({ text, onTextChange }) => {
+  const { theme } = useTheme();
+  const [isFocused, setIsFocused] = useState(false);
+  const labelPosition = useRef(new Animated.Value(text ? 1 : 0)).current;
+
+  const shouldFloat = isFocused || text.length > 0;
+
+  useEffect(() => {
+    Animated.timing(labelPosition, {
+      toValue: shouldFloat ? 1 : 0,
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+  }, [shouldFloat, labelPosition]);
+
+  const labelStyle = {
+    position: 'absolute' as const,
+    left: 16,
+    top: labelPosition.interpolate({
+      inputRange: [0, 1],
+      outputRange: [18, -10],
+    }),
+    fontSize: labelPosition.interpolate({
+      inputRange: [0, 1],
+      outputRange: [17, 13],
+    }),
+    color: labelPosition.interpolate({
+      inputRange: [0, 1],
+      outputRange: [theme.colors.text.secondary, isFocused ? theme.colors.text.link : theme.colors.text.secondary],
+    }),
+    backgroundColor: theme.colors.background.primary,
+    paddingHorizontal: 4,
+    zIndex: 1,
+  };
+
+  const styles = useMemo(() => createStyles(theme), [theme]);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>To get started, first enter your phone, email, or @username</Text>
+
+      <View style={styles.inputContainer}>
+        <Animated.Text style={labelStyle}>Phone, email, or username</Animated.Text>
+        <TextInput
+          style={[styles.input, isFocused && styles.inputFocused]}
+          value={text}
+          onChangeText={onTextChange}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardAppearance="dark"
+        />
+      </View>
+    </View>
+  );
+};
+
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background.primary,
+      paddingHorizontal: 15,
+      paddingTop: 32,
+    },
+    title: {
+      color: theme.colors.text.primary,
+      fontSize: 28,
+      fontWeight: '700',
+      lineHeight: 36,
+      marginBottom: 32,
+      letterSpacing: -0.3,
+    },
+    inputContainer: {
+      position: 'relative',
+      width: '100%',
+    },
+    input: {
+      height: 56,
+      backgroundColor: theme.colors.background.primary,
+      borderColor: theme.colors.border,
+      borderWidth: 1,
+      borderRadius: 4,
+      paddingHorizontal: 16,
+      paddingVertical: 16,
+      color: theme.colors.text.primary,
+      fontSize: 17,
+      width: '100%',
+    },
+    inputFocused: {
+      borderColor: theme.colors.text.link,
+      borderWidth: 2,
+    },
+  });
+
+export default FirstPageLogin;

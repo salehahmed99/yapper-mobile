@@ -1,33 +1,14 @@
-import { Theme } from '@/src/constants/theme';
-import { useTheme } from '@/src/context/ThemeContext';
-import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View } from 'react-native';
+import LoginScreen from '@/app/(auth)/login';
+import React from 'react';
+import Toast from 'react-native-toast-message';
 
 const HomeScreen = () => {
-  const { theme } = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
-  const { t } = useTranslation();
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>{t('home.title')}</Text>
-    </View>
+    <>
+      <LoginScreen />
+      <Toast />
+    </>
   );
 };
 
 export default HomeScreen;
-
-const createStyles = (theme: Theme) =>
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: theme.colors.background.primary,
-    },
-    text: {
-      color: theme.colors.text.primary,
-      marginTop: theme.spacing.md,
-    },
-  });
