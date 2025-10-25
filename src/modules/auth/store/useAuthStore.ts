@@ -83,7 +83,9 @@ export const useAuthStore = create<IAuthState>()(
           const token = res?.data?.access_token || null;
 
           if (!token) {
-            throw new Error('No access token received from server.');
+            throw new Error(
+              'No access token received from server. Please try logging in again or contact support if the issue persists.',
+            );
           }
           set({ user, token });
         } finally {

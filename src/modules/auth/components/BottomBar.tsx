@@ -24,7 +24,7 @@ const BottomBar: React.FC<IBottomBarProps> = ({
     onForgotPassword?.();
   };
 
-  const NextPress = () => {
+  const handleNextPress = () => {
     if (isNextEnabled) {
       onNext?.();
     }
@@ -42,7 +42,7 @@ const BottomBar: React.FC<IBottomBarProps> = ({
 
         {/* Next button on the right */}
         <TouchableOpacity
-          onPress={NextPress}
+          onPress={handleNextPress}
           style={[styles.nextButton, !isNextEnabled && styles.nextButtonDisabled]}
           activeOpacity={0.7}
           disabled={!isNextEnabled}

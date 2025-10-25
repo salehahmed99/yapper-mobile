@@ -26,9 +26,10 @@ jest.mock('react-native-toast-message', () => ({
   show: jest.fn(),
 }));
 
-// Mock the checkExists function
+// Mock the checkExists and login functions
 jest.mock('../../modules/auth/services/authService', () => ({
   checkExists: jest.fn().mockResolvedValue(true),
+  login: jest.fn().mockResolvedValue({ token: 'mockToken', user: { id: 1, email: 'test@example.com' } }),
 }));
 
 // Mock the useAuth hook

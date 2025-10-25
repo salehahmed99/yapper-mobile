@@ -1,5 +1,5 @@
 enum ButtonOptions {
   NEXT = 'Next',
-  LOGIN = 'login',
+  LOGIN = 'Login',
 }
 export { ButtonOptions };

@@ -1,9 +1,9 @@
 import api from '../../../services/apiClient';
 import { ILoginCredentials, ILoginResponse } from '../utils/types';
 
-export const login = async (login: ILoginCredentials): Promise<ILoginResponse | undefined> => {
+export const login = async (credentials: ILoginCredentials): Promise<ILoginResponse | undefined> => {
   try {
-    const response = await api.post('/auth/login', { ...login });
+    const response = await api.post('/auth/login', { ...credentials });
     return response.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
