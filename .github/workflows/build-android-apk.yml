@@ -1,5 +1,9 @@
 name: Build Android APK for Testers
 
+permissions:
+  contents: write
+
+
 on:
   workflow_dispatch: # Manual trigger - testers can click "Run workflow" button
   push:
