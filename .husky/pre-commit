@@ -1,77 +1,60 @@
 #!/usr/bin/env sh
 
-# Color codes
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# Helper functions for colors
+print_red() { printf '\033[0;31m%s\033[0m\n' "$1"; }
+print_green() { printf '\033[0;32m%s\033[0m\n' "$1"; }
+print_yellow() { printf '\033[1;33m%s\033[0m\n' "$1"; }
+print_blue() { printf '\033[0;34m%s\033[0m\n' "$1"; }
 
-echo "${BLUE}🔍 Running pre-commit checks...${NC}"
+print_blue "🔍 Running pre-commit checks..."
 echo ""
 
 # Run lint-staged (ESLint + Prettier on staged files)
-echo "${YELLOW}📝 Running lint-staged...${NC}"
+print_yellow "📝 Running lint-staged..."
 npx lint-staged
 
 if [ $? -ne 0 ]; then
   echo ""
-  echo "${RED}❌ Lint-staged failed!${NC}"
+  print_red "❌ Lint-staged failed!"
   echo ""
-  echo "${YELLOW}Common fixes:${NC}"
-  echo "  ${BLUE}•${NC} Run: npm run lint:fix"
-  echo "  ${BLUE}•${NC} Run: npm run format"
-  echo "  ${BLUE}•${NC} Fix remaining issues manually"
+  print_yellow "Common fixes:"
+  echo "  • Run: npm run lint:fix"
+  echo "  • Run: npm run format"
+  echo "  • Fix remaining issues manually"
   echo ""
-  echo "${BLUE}💡 To bypass (use sparingly):${NC}"
+  print_blue "💡 To bypass (use sparingly):"
   echo "  git commit --no-verify"
   echo ""
   exit 1
 fi
 
 echo ""
-echo "${GREEN}✅ Lint-staged passed!${NC}"
+print_green "✅ Lint-staged passed!"
 echo ""
 
-# Optional: Run TypeScript type check on staged files only
-echo "${YELLOW}🔎 Running TypeScript check on staged files...${NC}"
+# Run TypeScript type check
+print_yellow "🔎 Running TypeScript check..."
 
 npm run type-check
-  
+
 if [ $? -ne 0 ]; then
   echo ""
-  echo "${RED}❌ TypeScript type check failed!${NC}"
+  print_red "❌ TypeScript type check failed!"
   echo ""
-  echo "${YELLOW}Fix type errors before committing${NC}"
+  print_yellow "Fix type errors before committing"
   echo ""
-  echo "${BLUE}💡 To bypass (use sparingly):${NC}"
+  print_blue "💡 To bypass (use sparingly):"
   echo "  git commit --no-verify"
   echo ""
   exit 1
 fi
 
 echo ""
-echo "${GREEN}✅ TypeScript check passed!${NC}"
+print_green "✅ TypeScript check passed!"
 echo ""
 
-# Check for TODO comments (optional - just warning)
-echo "${YELLOW}🔍 Checking for TODO comments...${NC}"
-
-if [ -n "$STAGED_JS_FILES" ]; then
-  TODOS=$(echo "$STAGED_JS_FILES" | xargs grep -n "// TODO\|// FIXME\|// HACK" || true)
-  
-  if [ -n "$TODOS" ]; then
-    echo ""
-    echo "${YELLOW}ℹ️  Info: Found TODO/FIXME comments:${NC}"
-    echo "$TODOS"
-    echo ""
-    echo "${BLUE}💡 Consider creating issues for these items${NC}"
-    echo ""
-    # Not blocking - just informational
-  fi
-fi
 # Success!
 echo ""
-echo "${GREEN}✨ All pre-commit checks passed!${NC}"
-echo "${GREEN}✅ Ready to commit${NC}"
+print_green "✨ All pre-commit checks passed!"
+print_green "✅ Ready to commit"
 echo ""
