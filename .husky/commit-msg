@@ -2,8 +2,19 @@ msg_file=$1
 msg=$(cat "$msg_file")
 
 # Conventional commits rule
-if ! echo "$msg" | grep -Eq "^(feat|fix|chore|docs|refactor|test|style|perf|ci)\(.+\): .+"; then
+if ! echo "$msg" | grep -Eq "^(feat|fix|chore|docs|refactor|test|style|perf|ci|build)(\(.+\))?: .+"; then
   echo "❌ Invalid commit message format!"
-  echo "👉 Example: feat(auth): add login endpoint"
+  echo ""
+  echo "📝 Format: <type>(<scope>): <description>"
+  echo ""
+  echo "✅ Valid types: feat, fix, chore, docs, refactor, test, style, perf, ci, build"
+  echo ""
+  echo "Examples:"
+  echo "  feat(auth): add login endpoint"
+  echo "  fix(ui): resolve button alignment issue"
+  echo "  docs: update README with setup instructions"
+  echo ""
   exit 1
 fi
+
+echo "✅ Commit message is valid!"
