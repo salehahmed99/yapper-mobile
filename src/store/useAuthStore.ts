@@ -6,11 +6,9 @@ interface IAuthState {
   user: IUser | null;
   token: string | null;
   isInitialized: boolean;
-  error: string | null;
   initializeAuth: () => Promise<void>;
   loginUser: (user: IUser, token: string) => Promise<void>;
   logout: () => Promise<void>;
-  clearError: () => void;
 }
 
 export const useAuthStore = create<IAuthState>()((set) => ({
@@ -20,16 +18,15 @@ export const useAuthStore = create<IAuthState>()((set) => ({
   error: null,
 
   initializeAuth: async () => {
-    set({ error: null });
     try {
       const token = await getToken();
       if (token) {
         set({ token });
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to initialize auth';
-      console.error('Error initializing auth:', error);
-      set({ error: errorMessage });
+      await deleteToken();
+      set({ user: null, token: null });
+      console.error('Error during auth initialization:', error);
     } finally {
       set({ isInitialized: true });
     }
@@ -37,34 +34,23 @@ export const useAuthStore = create<IAuthState>()((set) => ({
 
   // Called AFTER login API succeeds
   loginUser: async (user: IUser, token: string) => {
-    if (!user || !token) {
-      set({ error: 'Invalid user or token provided' });
-      return;
-    }
+    if (!user || !token) return;
     try {
       await saveToken(token);
-      set({ user, token, error: null });
+      set({ user, token });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to save token';
-      console.error('Error saving token:', error);
-      set({ error: errorMessage });
+      set({ user: null, token: null });
+      console.error('Error logging in:', error);
     }
   },
 
   logout: async () => {
-    set({ error: null });
     try {
       await deleteToken();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to logout';
-      console.error('Error during logout:', error);
-      set({ error: errorMessage });
+      console.error('Error deleting token during logout:', error);
     } finally {
-      set({ user: null, token: null, isInitialized: true });
+      set({ user: null, token: null });
     }
-  },
-
-  clearError: () => {
-    set({ error: null });
   },
 }));
