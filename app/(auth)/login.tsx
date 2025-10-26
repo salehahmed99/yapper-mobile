@@ -63,11 +63,11 @@ const LoginScreen = () => {
       }
 
       // Check for phone number
-      const phoneNumber = parsePhoneNumberFromString(input, defaultCountry as CountryCode);
+      const parsedPhoneNumber = parsePhoneNumberFromString(input, defaultCountry as CountryCode);
       if (
-        phoneNumber &&
-        phoneNumber.isValid() &&
-        phoneNumber.getType() === 'MOBILE' &&
+        parsedPhoneNumber &&
+        parsedPhoneNumber.isValid() &&
+        parsedPhoneNumber.getType() === 'MOBILE' &&
         phoneSchema.safeParse(trimmed).success
       ) {
         return 'phone';
