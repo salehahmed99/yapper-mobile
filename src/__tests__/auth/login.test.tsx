@@ -58,7 +58,7 @@ describe('LoginScreen', () => {
       expect(screen.getByDisplayValue('')).toBeTruthy();
       expect(screen.getByText('To get started, first enter your phone, email, or @username')).toBeTruthy();
       expect(screen.getByText('Next')).toBeTruthy();
-      expect(screen.getByText('Forgot password?')).toBeTruthy();
+      expect(screen.getByText('Forgot Password?')).toBeTruthy();
     });
   });
 
