@@ -41,8 +41,14 @@ export const useAuthStore = create<IAuthState>()((set) => ({
       set({ error: 'Invalid user or token provided' });
       return;
     }
-    saveToken(token);
-    set({ user, token, error: null });
+    try {
+      await saveToken(token);
+      set({ user, token, error: null });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save token';
+      console.error('Error saving token:', error);
+      set({ error: errorMessage });
+    }
   },
 
   logout: async () => {
