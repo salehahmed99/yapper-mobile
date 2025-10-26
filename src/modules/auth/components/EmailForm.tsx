@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { Theme } from '../../../constants/theme';
 import { useTheme } from '../../../context/ThemeContext';
-import { useTranslation } from 'react-i18next';
 
-interface IFirstPageLoginProps {
+interface IEmailFormProps {
   text: string;
   onTextChange: (text: string) => void;
 }
 
-const FirstPageLogin: React.FC<IFirstPageLoginProps> = ({ text, onTextChange }) => {
+const EmailForm: React.FC<IEmailFormProps> = ({ text, onTextChange }) => {
   const { theme } = useTheme();
   const [isFocused, setIsFocused] = useState(false);
   const { t } = useTranslation();
@@ -106,4 +106,4 @@ const createStyles = (theme: Theme) =>
     },
   });
 
-export default FirstPageLogin;
+export default EmailForm;

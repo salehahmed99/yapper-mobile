@@ -1,9 +1,9 @@
 import { Check, Eye, EyeOff } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import type { Theme } from '../../../constants/theme';
 import { useTheme } from '../../../context/ThemeContext';
-import { useTranslation } from 'react-i18next';
 
 interface ISecondPageLoginProps {
   userIdentifier: string;
@@ -13,7 +13,7 @@ interface ISecondPageLoginProps {
   isPasswordVisible?: boolean;
 }
 
-const SecondPageLogin: React.FC<ISecondPageLoginProps> = ({
+const PasswordForm: React.FC<ISecondPageLoginProps> = ({
   userIdentifier,
   password,
   onPasswordChange,
@@ -195,4 +195,4 @@ const createStyles = (theme: Theme) =>
     },
   });
 
-export default SecondPageLogin;
+export default PasswordForm;

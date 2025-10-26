@@ -19,8 +19,8 @@ import { checkExists, login } from '@/src/modules/auth/services/authService';
 
 // Components
 import BottomBar from '../../src/modules/auth/components/BottomBar';
-import FirstPageLogin from '../../src/modules/auth/components/FirstPageLogin';
-import SecondPageLogin from '../../src/modules/auth/components/SecondPageLogin';
+import EmailForm from '../../src/modules/auth/components/EmailForm';
+import PasswordForm from '../../src/modules/auth/components/PasswordForm';
 import TopBar from '../../src/modules/auth/components/TopBar';
 
 // Utils
@@ -227,9 +227,9 @@ const LoginScreen = () => {
       <TopBar onBackPress={handleBack} />
 
       {currentStep === 1 ? (
-        <FirstPageLogin text={text} onTextChange={onTextChange} />
+        <EmailForm text={text} onTextChange={onTextChange} />
       ) : (
-        <SecondPageLogin
+        <PasswordForm
           userIdentifier={text}
           password={password}
           onPasswordChange={onPasswordChange}
