@@ -85,24 +85,6 @@ const createStyles = (theme: Theme) =>
       fontSize: 15,
       fontWeight: '400',
     },
-    nextButton: {
-      paddingHorizontal: 24,
-      paddingVertical: 8,
-      borderRadius: 20,
-      backgroundColor: theme.colors.text.primary,
-    },
-    nextButtonDisabled: {
-      backgroundColor: theme.colors.background.secondary,
-      opacity: 0.5,
-    },
-    nextButtonText: {
-      color: theme.colors.background.primary,
-      fontSize: 15,
-      fontWeight: '600',
-    },
-    nextButtonTextDisabled: {
-      color: theme.colors.text.secondary,
-    },
   });
 
 export default BottomBar;
