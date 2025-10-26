@@ -15,7 +15,6 @@ export const useAuthStore = create<IAuthState>()((set) => ({
   user: null,
   token: null,
   isInitialized: false,
-  error: null,
 
   initializeAuth: async () => {
     try {
