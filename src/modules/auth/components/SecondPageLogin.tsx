@@ -3,6 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { Animated, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import type { Theme } from '../../../constants/theme';
 import { useTheme } from '../../../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 interface ISecondPageLoginProps {
   userIdentifier: string;
@@ -20,6 +21,7 @@ const SecondPageLogin: React.FC<ISecondPageLoginProps> = ({
   isPasswordVisible = false,
 }) => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const [passwordInputFocused, setPasswordInputFocused] = useState(false);
   const passwordInputLabelAnimation = useState(new Animated.Value(password ? 1 : 0))[0];
 
@@ -65,7 +67,7 @@ const SecondPageLogin: React.FC<ISecondPageLoginProps> = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Enter your password</Text>
+      <Text style={styles.title}>{t('auth.login.passwordTitle')}</Text>
 
       {/* Disabled User Identifier Input */}
       <View style={styles.inputContainer}>
@@ -89,7 +91,7 @@ const SecondPageLogin: React.FC<ISecondPageLoginProps> = ({
             },
           ]}
         >
-          Password
+          {t('auth.login.passwordLabel')}
         </Animated.Text>
         <TextInput
           style={[styles.input, passwordInputFocused && styles.inputFocused]}

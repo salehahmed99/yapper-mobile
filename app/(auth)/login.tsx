@@ -1,8 +1,9 @@
-import { useCallback, useState } from 'react';
-import { Alert, Keyboard } from 'react-native';
-import Toast from 'react-native-toast-message';
 import * as Localization from 'expo-localization';
 import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js/max';
+import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Alert, Keyboard } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 // Schemas
 import {
@@ -13,19 +14,18 @@ import {
   usernameSchema,
 } from '@/src/modules/auth/schemas/schemas';
 
-// Hooks
-import { useAuth } from '@/src/modules/auth/hooks/useAuth';
-
 // Services
-import { checkExists } from '@/src/modules/auth/services/authService';
+import { checkExists, login } from '@/src/modules/auth/services/authService';
 
 // Components
-import TopBar from '../../src/modules/auth/components/TobBar';
+import BottomBar from '../../src/modules/auth/components/BottomBar';
 import FirstPageLogin from '../../src/modules/auth/components/FirstPageLogin';
 import SecondPageLogin from '../../src/modules/auth/components/SecondPageLogin';
-import BottomBar from '../../src/modules/auth/components/BottomBar';
+import TopBar from '../../src/modules/auth/components/TopBar';
 
 // Utils
+import { ILoginResponse } from '@/src/modules/auth/types';
+import { useAuthStore } from '@/src/store/useAuthStore';
 import { ButtonOptions } from '../../src/modules/auth/utils/enums';
 
 // Types
@@ -47,7 +47,8 @@ const LoginScreen = () => {
   // Hooks & Constants
   // ============================================
   const defaultCountry = Localization.getLocales()[0]?.regionCode || 'US';
-  const { loginUser } = useAuth();
+  const loginUser = useAuthStore((state) => state.loginUser);
+  const { t } = useTranslation();
 
   // ============================================
   // Input Detection & Validation
@@ -103,17 +104,11 @@ const LoginScreen = () => {
   };
 
   const handleBack = () => {
-    if (currentStep === 2) {
-      setCurrentStep(1);
-      setNextState(text.length > 0);
-      setPassword('');
-    } else {
-      Alert.alert('Back button pressed');
-    }
+    Alert.alert(t('auth.login.alerts.backButtonPressed'));
   };
 
   const handleForgotPassword = () => {
-    Alert.alert('Forgot Password pressed');
+    Alert.alert(t('auth.login.alerts.forgotPasswordPressed'));
   };
 
   // ============================================
@@ -123,8 +118,8 @@ const LoginScreen = () => {
     if (!inputType) {
       Toast.show({
         type: 'error',
-        text1: 'Invalid Input',
-        text2: 'Please enter a valid email, phone number, or username.',
+        text1: t('auth.login.errors.invalidInput'),
+        text2: t('auth.login.errors.invalidInputDescription'),
       });
       return false;
     }
@@ -132,16 +127,16 @@ const LoginScreen = () => {
     try {
       const exists = await checkExists(text);
       if (!exists) {
-        Alert.alert('User Not Found', 'This user does not exist. Please check your input or register a new account.');
+        Alert.alert(t('auth.login.errors.userNotFound'), t('auth.login.errors.userNotFoundDescription'));
         return false;
       }
       return true;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      const errorMessage = error.message || 'Unable to verify user existence. Please try again.';
+      const errorMessage = error.message || t('auth.login.errors.unableToVerify');
       Toast.show({
         type: 'error',
-        text1: 'Error',
+        text1: t('auth.login.errors.error'),
         text2: errorMessage,
       });
       return false;
@@ -154,7 +149,7 @@ const LoginScreen = () => {
   const handleStepTwo = async (): Promise<void> => {
     // Validate password
     if (!passwordLogInSchema.safeParse(password).success) {
-      Alert.alert('Invalid Password', 'Password must be at least 8 characters long');
+      Alert.alert(t('auth.login.errors.invalidPassword'), t('auth.login.errors.invalidPasswordDescription'));
       return;
     }
 
@@ -162,8 +157,8 @@ const LoginScreen = () => {
     if (!inputType) {
       Toast.show({
         type: 'error',
-        text1: 'Invalid Input',
-        text2: 'Please enter a valid email, phone number, or username.',
+        text1: t('auth.login.errors.invalidInput'),
+        text2: t('auth.login.errors.invalidInputDescription'),
       });
       return;
     }
@@ -179,27 +174,29 @@ const LoginScreen = () => {
     if (!loginSchema.safeParse(loginData).success) {
       Toast.show({
         type: 'error',
-        text1: 'Invalid Login Data',
-        text2: 'Please check your credentials and try again.',
+        text1: t('auth.login.errors.invalidLoginData'),
+        text2: t('auth.login.errors.invalidLoginDataDescription'),
       });
       return;
     }
 
     // Attempt login
     try {
-      await loginUser(loginData);
+      const data: ILoginResponse = await login(loginData);
       Toast.show({
         type: 'success',
-        text1: 'Login Successful',
-        text2: 'Welcome back!',
+        text1: t('auth.login.success.loginSuccessful'),
+        text2: t('auth.login.success.welcomeBack'),
       });
+      await loginUser(data.data.user, data.data.accessToken);
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || 'Unable to login. Please try again.';
+      const errorMessage = error.response?.data?.message || error.message || t('auth.login.errors.unableToLogin');
 
       Toast.show({
         type: 'error',
-        text1: 'Login Failed',
+        text1: t('auth.login.errors.loginFailed'),
         text2: errorMessage,
       });
     }

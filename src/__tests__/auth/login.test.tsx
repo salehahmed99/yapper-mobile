@@ -32,20 +32,6 @@ jest.mock('../../modules/auth/services/authService', () => ({
   login: jest.fn().mockResolvedValue({ token: 'mockToken', user: { id: 1, email: 'test@example.com' } }),
 }));
 
-// Mock the useAuth hook
-const mockLoginUser = jest.fn();
-jest.mock('../../modules/auth/hooks/useAuth', () => ({
-  useAuth: () => ({
-    user: null,
-    token: null,
-    loading: false,
-    isInitialized: true,
-    loginUser: mockLoginUser,
-    logout: jest.fn(),
-    initializeAuth: jest.fn(),
-  }),
-}));
-
 // Get references to mocks for testing
 const mockParsePhoneNumber = libphonenumber.parsePhoneNumberFromString as jest.Mock;
 const mockCheckExists = authService.checkExists as jest.Mock;
@@ -164,16 +150,18 @@ describe('LoginScreen', () => {
       fireEvent.press(screen.getByText('Login'));
 
       await waitFor(() => {
-        expect(mockLoginUser).toHaveBeenCalledWith({
-          identifier: 'test@example.com',
-          password: 'password123',
-          type: 'email',
-        });
+        expect(authService.login).toHaveBeenCalledWith(
+          expect.objectContaining({
+            identifier: 'test@example.com',
+            password: 'password123',
+          }),
+        );
       });
     });
 
     it('should show success toast on successful login', async () => {
-      mockLoginUser.mockResolvedValueOnce(undefined);
+      const mockLogin = authService.login as jest.Mock;
+      mockLogin.mockResolvedValueOnce(undefined);
 
       const passwordInput = screen.getByDisplayValue('');
       fireEvent.changeText(passwordInput, 'password123');
@@ -189,7 +177,8 @@ describe('LoginScreen', () => {
     });
 
     it('should show error toast on failed login', async () => {
-      mockLoginUser.mockRejectedValueOnce({
+      const mockLogin = authService.login as jest.Mock;
+      mockLogin.mockRejectedValueOnce({
         response: { data: { message: 'Invalid credentials' } },
       });
 

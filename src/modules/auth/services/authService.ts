@@ -1,10 +1,10 @@
 import api from '../../../services/apiClient';
-import { ILoginCredentials, ILoginResponse } from '../utils/types';
+import { ILoginCredentials, ILoginResponse, mapLoginResponseDTOToLoginResponse } from '../types';
 
-export const login = async (credentials: ILoginCredentials): Promise<ILoginResponse | undefined> => {
+export const login = async (credentials: ILoginCredentials): Promise<ILoginResponse> => {
   try {
     const response = await api.post('/auth/login', { ...credentials });
-    return response.data;
+    return mapLoginResponseDTOToLoginResponse(response.data);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.code === 'ERR_NETWORK') {

@@ -1,5 +1,42 @@
 {
   "home": {
     "title": "Home Screen"
+  },
+  "auth": {
+    "login": {
+      "emailTitle": "To get started, first enter your phone, email, or @username",
+      "emailLabel": "Phone, email, or @username",
+      "passwordTitle": "Enter your password",
+      "passwordLabel": "Password",
+      "next": "Next",
+      "login": "Login",
+      "forgotPassword": "Forgot Password?",
+      "buttons": {
+        "next": "Next",
+        "login": "Login"
+      },
+      "errors": {
+        "invalidInput": "Invalid Input",
+        "invalidInputDescription": "Please enter a valid email, phone number, or username.",
+        "userNotFound": "User Not Found",
+        "userNotFoundDescription": "This user does not exist. Please check your input or register a new account.",
+        "error": "Error",
+        "unableToVerify": "Unable to verify user existence. Please try again.",
+        "invalidPassword": "Invalid Password",
+        "invalidPasswordDescription": "Password must be at least 8 characters long",
+        "invalidLoginData": "Invalid Login Data",
+        "invalidLoginDataDescription": "Please check your credentials and try again.",
+        "loginFailed": "Login Failed",
+        "unableToLogin": "Unable to login. Please try again."
+      },
+      "success": {
+        "loginSuccessful": "Login Successful",
+        "welcomeBack": "Welcome back!"
+      },
+      "alerts": {
+        "backButtonPressed": "Back button pressed",
+        "forgotPasswordPressed": "Forgot Password pressed"
+      }
+    }
   }
 }

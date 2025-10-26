@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Button from '../../../components/Button';
 import type { Theme } from '../../../constants/theme';
 import { useTheme } from '../../../context/ThemeContext';
 import { ButtonOptions } from '../utils/enums';
@@ -18,6 +20,7 @@ const BottomBar: React.FC<IBottomBarProps> = ({
   onNext,
 }) => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const forgotPasswordPress = () => {
@@ -37,18 +40,15 @@ const BottomBar: React.FC<IBottomBarProps> = ({
       <View style={styles.content}>
         {/* Forgot Password button on the left */}
         <TouchableOpacity onPress={forgotPasswordPress} style={styles.forgotPasswordButton} activeOpacity={0.7}>
-          <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+          <Text style={styles.forgotPasswordText}>{t('auth.login.forgotPassword')}</Text>
         </TouchableOpacity>
 
         {/* Next button on the right */}
-        <TouchableOpacity
-          onPress={handleNextPress}
-          style={[styles.nextButton, !isNextEnabled && styles.nextButtonDisabled]}
-          activeOpacity={0.7}
-          disabled={!isNextEnabled}
-        >
-          <Text style={[styles.nextButtonText, !isNextEnabled && styles.nextButtonTextDisabled]}>{text}</Text>
-        </TouchableOpacity>
+        <Button
+          text={t(`auth.login.buttons.${String(text).toLowerCase()}`)}
+          isNextEnabled={isNextEnabled}
+          onNext={handleNextPress}
+        />
       </View>
     </View>
   );

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { Theme } from '../../../constants/theme';
 import { useTheme } from '../../../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 interface IFirstPageLoginProps {
   text: string;
@@ -11,6 +12,7 @@ interface IFirstPageLoginProps {
 const FirstPageLogin: React.FC<IFirstPageLoginProps> = ({ text, onTextChange }) => {
   const { theme } = useTheme();
   const [isFocused, setIsFocused] = useState(false);
+  const { t } = useTranslation();
   const labelPosition = useRef(new Animated.Value(text ? 1 : 0)).current;
 
   const shouldFloat = isFocused || text.length > 0;
@@ -47,10 +49,10 @@ const FirstPageLogin: React.FC<IFirstPageLoginProps> = ({ text, onTextChange }) 
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>To get started, first enter your phone, email, or @username</Text>
+      <Text style={styles.title}>{t('auth.login.emailTitle')}</Text>
 
       <View style={styles.inputContainer}>
-        <Animated.Text style={labelStyle}>Phone, email, or username</Animated.Text>
+        <Animated.Text style={labelStyle}>{t('auth.login.emailLabel')}</Animated.Text>
         <TextInput
           style={[styles.input, isFocused && styles.inputFocused]}
           value={text}
