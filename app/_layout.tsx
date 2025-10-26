@@ -1,10 +1,25 @@
 import { ThemeProvider } from '@/src/context/ThemeContext';
 import i18n from '@/src/i18n';
+import { useAuthStore } from '@/src/store/useAuthStore';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { I18nextProvider } from 'react-i18next';
+import Toast from 'react-native-toast-message';
+
+interface IAuthInitializerProps {
+  children: React.ReactNode;
+}
+const AuthInitializer: React.FC<IAuthInitializerProps> = ({ children }) => {
+  const initializeAuth = useAuthStore((state) => state.initializeAuth);
+
+  useEffect(() => {
+    initializeAuth();
+  }, [initializeAuth]);
+
+  return <>{children}</>;
+};
 
 SplashScreen.preventAutoHideAsync();
 
@@ -32,8 +47,11 @@ export default function RootLayout() {
   return (
     <I18nextProvider i18n={i18n}>
       <ThemeProvider>
-        <Stack screenOptions={{ headerShown: false }} />
+        <AuthInitializer>
+          <Stack screenOptions={{ headerShown: false }} />
+        </AuthInitializer>
       </ThemeProvider>
+      <Toast />
     </I18nextProvider>
   );
 }
