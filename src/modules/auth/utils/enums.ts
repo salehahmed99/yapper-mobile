@@ -2,6 +2,6 @@ enum ButtonOptions {
   NEXT = 'Next',
   LOGIN = 'Login',
   BACK = 'Back',
-  forgetPassword = 'Forgot password?',
+  FORGET_PASSWORD = 'Forgot password?',
 }
 export { ButtonOptions };
