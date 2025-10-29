@@ -73,6 +73,7 @@ const PasswordInput: React.FC<IPasswordInputProps> = ({
         autoCorrect={false}
         placeholderTextColor={theme.colors.text.secondary}
         allowFontScaling={true}
+        accessibilityLabel="password_input"
       />
 
       {value.length > 0 && (

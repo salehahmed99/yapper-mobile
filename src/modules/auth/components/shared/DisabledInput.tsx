@@ -18,6 +18,7 @@ const DisabledInput: React.FC<IDisabledInputProps> = ({ value }) => {
         value={value}
         editable={false}
         placeholderTextColor={theme.colors.text.tertiary}
+        accessibilityLabel="Auth_input_disabled"
       />
     </View>
   );

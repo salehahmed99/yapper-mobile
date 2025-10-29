@@ -67,6 +67,7 @@ const AuthInputScreen: React.FC<IAuthInputScreenProps> = ({ title, description, 
           autoCapitalize="none"
           autoCorrect={false}
           keyboardAppearance="dark"
+          accessibilityLabel="Auth_input"
         />
       </View>
     </View>
