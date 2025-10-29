@@ -6,7 +6,8 @@ export const typography = {
     md: 17,
     lg: 20,
     xl: 23,
-    xxl: 31,
+    xxl: 28,
+    xxxl: 31,
   },
   fonts: {
     extraLight: 'PublicSans-ExtraLight',
@@ -33,6 +34,22 @@ export const spacing = {
   lg: 16,
   xl: 20,
   xxl: 24,
+};
+
+export const ui = {
+  // App chrome
+  appBarHeight: 56,
+  sideContainerWidth: 40,
+  avatar: 32,
+  avatarLarge: 56,
+  // Navigation
+  navHeight: 48,
+};
+
+export const iconSizes = {
+  icon: 24,
+  iconSmall: 18,
+  iconLarge: 28,
 };
 
 export const colors = {
@@ -81,4 +98,6 @@ export type Theme = {
   colors: typeof colors.light;
   spacing: typeof spacing;
   borderRadius: typeof borderRadius;
+  ui: typeof ui;
+  iconSizes: typeof iconSizes;
 };

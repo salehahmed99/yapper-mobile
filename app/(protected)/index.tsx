@@ -3,11 +3,13 @@ import { useUiShell } from '@/src/components/shell/UiShellContext';
 import type { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 
 export default function HomeScreen() {
   const { theme } = useTheme();
   const styles = createStyles(theme);
+  const { t } = useTranslation();
   const { scrollY } = useUiShell();
   return (
     <View style={styles.container}>
@@ -21,10 +23,8 @@ export default function HomeScreen() {
         {/* Lots of filler content to enable scrolling */}
         {Array.from({ length: 30 }).map((_, i) => (
           <View key={i} style={styles.card}>
-            <Text style={styles.cardTitle}>Item {i + 1}</Text>
-            <Text style={styles.cardBody}>
-              This is sample content to demonstrate scrolling and bottom navigation opacity.
-            </Text>
+            <Text style={styles.cardTitle}>{t('home.item', { index: i + 1 })}</Text>
+            <Text style={styles.cardBody}>{t('home.sampleContent')}</Text>
           </View>
         ))}
       </Animated.ScrollView>
@@ -42,18 +42,18 @@ const createStyles = (theme: Theme) =>
       flex: 1,
     },
     scrollContent: {
-      paddingBottom: 120,
+      paddingBottom: theme.spacing.xxl * 5,
       backgroundColor: theme.colors.background.primary,
     },
     hero: {
-      padding: 24,
+      padding: theme.spacing.xxl,
       alignItems: 'center',
       justifyContent: 'center',
     },
     title: {
-      fontSize: 28,
+      fontSize: theme.typography.sizes.xxl,
       color: theme.colors.text.primary,
-      marginBottom: 12,
+      marginBottom: theme.spacing.md,
       fontFamily: theme.typography.fonts.semiBold,
     },
     button: {
@@ -67,16 +67,16 @@ const createStyles = (theme: Theme) =>
       fontFamily: theme.typography.fonts.semiBold,
     },
     card: {
-      marginHorizontal: 16,
-      marginVertical: 8,
-      padding: 16,
+      marginHorizontal: theme.spacing.lg,
+      marginVertical: theme.spacing.sm,
+      padding: theme.spacing.lg,
       backgroundColor: theme.colors.background.secondary,
-      borderRadius: 12,
+      borderRadius: theme.borderRadius.lg,
     },
     cardTitle: {
       color: theme.colors.text.primary,
       fontWeight: '700',
-      marginBottom: 8,
+      marginBottom: theme.spacing.sm,
     },
     cardBody: {
       color: theme.colors.text.secondary,

@@ -1,5 +1,5 @@
 import { useTheme } from '@/src/context/ThemeContext';
-import { useRouter } from 'expo-router';
+import { usePathname, useRouter } from 'expo-router';
 import {
   Bookmark,
   CircleEllipsis,
@@ -13,6 +13,7 @@ import {
   Video,
 } from 'lucide-react-native';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUiShell } from './UiShellContext';
@@ -27,9 +28,10 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
   const { anim } = props;
   const { theme } = useTheme();
   const styles = createStyles(theme);
+  const { t } = useTranslation();
   const router = useRouter();
   const { isSideMenuOpen, closeSideMenu } = useUiShell();
-  const pathname = require('expo-router').usePathname();
+  const pathname = usePathname();
   const insets = useSafeAreaInsets();
 
   function navigate(path: string) {
@@ -50,7 +52,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
         useNativeDriver: false,
       }).start();
     }
-  }, [isSideMenuOpen]);
+  }, [isSideMenuOpen, anim]);
 
   return (
     <Animated.View
@@ -98,59 +100,62 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             </Text>
           </View>
 
-          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 75 + insets.bottom }}>
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingBottom: theme.spacing.xxl * 3 + insets.bottom }}
+          >
             {/* Menu tiles */}
             <TouchableOpacity style={styles.tile} onPress={() => navigate('/(profile)')}>
-              <User color={theme.colors.text.primary} size={28} />
-              <Text style={styles.menuTileText}>Profile</Text>
+              <User color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
+              <Text style={styles.menuTileText}>{t('menu.profile')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.tile} onPress={() => navigate('/premium')}>
-              <Sparkles color={theme.colors.text.primary} size={28} />
-              <Text style={styles.menuTileText}>Premium</Text>
+              <Sparkles color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
+              <Text style={styles.menuTileText}>{t('menu.premium')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.tile} onPress={() => navigate('/videos')}>
-              <Video color={theme.colors.text.primary} size={28} />
-              <Text style={styles.menuTileText}>Videos</Text>
+              <Video color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
+              <Text style={styles.menuTileText}>{t('menu.videos')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.tile} onPress={() => navigate('/chat')}>
-              <MessageCircle color={theme.colors.text.primary} size={28} />
-              <Text style={styles.menuTileText}>Chat</Text>
+              <MessageCircle color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
+              <Text style={styles.menuTileText}>{t('menu.chat')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.tile} onPress={() => navigate('/communities')}>
-              <Users color={theme.colors.text.primary} size={28} />
-              <Text style={styles.menuTileText}>Communities</Text>
+              <Users color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
+              <Text style={styles.menuTileText}>{t('menu.communities')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.tile} onPress={() => navigate('/bookmarks')}>
-              <Bookmark color={theme.colors.text.primary} size={28} />
-              <Text style={styles.menuTileText}>Bookmarks</Text>
+              <Bookmark color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
+              <Text style={styles.menuTileText}>{t('menu.bookmarks')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.tile} onPress={() => navigate('/lists')}>
-              <LayoutList color={theme.colors.text.primary} size={28} />
-              <Text style={styles.menuTileText}>Lists</Text>
+              <LayoutList color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
+              <Text style={styles.menuTileText}>{t('menu.lists')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.tile} onPress={() => navigate('/spaces')}>
-              <User color={theme.colors.text.primary} size={28} />
-              <Text style={styles.menuTileText}>Spaces</Text>
+              <User color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
+              <Text style={styles.menuTileText}>{t('menu.spaces')}</Text>
             </TouchableOpacity>
 
             <View style={styles.divider} />
 
             {/* Utility links */}
             <TouchableOpacity style={styles.tile} onPress={() => navigate('/download')}>
-              <Download color={theme.colors.text.primary} size={18} />
-              <Text style={styles.tileText}>Download Grok</Text>
+              <Download color={theme.colors.text.primary} size={theme.iconSizes.iconSmall} />
+              <Text style={styles.tileText}>{t('menu.download')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.tile} onPress={() => navigate('/settings')}>
-              <Settings color={theme.colors.text.primary} size={18} />
-              <Text style={styles.tileText}>Settings & Privacy</Text>
+              <Settings color={theme.colors.text.primary} size={theme.iconSizes.iconSmall} />
+              <Text style={styles.tileText}>{t('menu.settings')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.tile} onPress={() => navigate('/help')}>
-              <User color={theme.colors.text.primary} size={18} />
-              <Text style={styles.tileText}>Help Center</Text>
+              <User color={theme.colors.text.primary} size={theme.iconSizes.iconSmall} />
+              <Text style={styles.tileText}>{t('menu.help')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.tile} onPress={() => navigate('/purchases')}>
-              <Download color={theme.colors.text.primary} size={18} />
-              <Text style={styles.tileText}>Purchases</Text>
+              <Download color={theme.colors.text.primary} size={theme.iconSizes.iconSmall} />
+              <Text style={styles.tileText}>{t('menu.purchases')}</Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
@@ -162,7 +167,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             left: 0,
             right: 0,
             bottom: 0,
-            height: 48 + insets.bottom,
+            height: theme.spacing.xxl * 2 + insets.bottom,
             backgroundColor: `${theme.colors.background.primary}CF`,
           }}
         />
@@ -212,9 +217,9 @@ const createStyles = (theme: any) =>
       alignItems: 'flex-start',
     },
     avatar: {
-      width: 56,
-      height: 56,
-      borderRadius: 28,
+      width: theme.ui.avatarLarge,
+      height: theme.ui.avatarLarge,
+      borderRadius: theme.ui.avatarLarge / 2,
       marginRight: theme.spacing.sm,
       marginBottom: theme.spacing.sm,
     },
@@ -249,9 +254,9 @@ const createStyles = (theme: any) =>
       alignItems: 'center',
     },
     smallAvatar: {
-      width: 32,
-      height: 32,
-      borderRadius: 18,
+      width: theme.ui.avatar,
+      height: theme.ui.avatar,
+      borderRadius: theme.ui.avatar / 2,
       marginRight: theme.spacing.xs,
     },
     optionsButton: {

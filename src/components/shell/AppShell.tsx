@@ -2,7 +2,7 @@ import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Slot } from 'expo-router';
 import React from 'react';
-import { Animated, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
+import { Animated, Dimensions, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 import BottomNavigation from './BottomNavigation';
 import SideMenu, { drawerWidth } from './SideMenu';
 import { UiShellProvider, useUiShell } from './UiShellContext';
@@ -52,8 +52,8 @@ const SlidingShell: React.FC<ISlidingShellProps> = React.memo(function SlidingSh
       duration: 250,
       useNativeDriver: false,
     }).start();
-  }, [isSideMenuOpen]);
-  const screenWidth = require('react-native').Dimensions.get('window').width;
+  }, [isSideMenuOpen, anim]);
+  const screenWidth = Dimensions.get('window').width;
   const { closeSideMenu } = useUiShell();
   // Animate overlay opacity and width with drawer
   const overlayOpacity = anim.interpolate({

@@ -1,9 +1,10 @@
+import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUiShell } from './UiShellContext';
-import { Theme } from '@/src/constants/theme';
 
 interface IAppBarProps {
   title?: string;
@@ -15,16 +16,18 @@ const AppBar: React.FC<IAppBarProps> = (props) => {
   const { title, children, rightElement } = props;
   const { theme } = useTheme();
   const styles = createStyles(theme);
+  const { t } = useTranslation();
   const { toggleSideMenu, isSideMenuOpen } = useUiShell();
   const insets = useSafeAreaInsets();
+  const appBarHeight = theme.ui.appBarHeight + insets.top;
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top, height: 56 + insets.top }]}>
+    <View style={[styles.container, { paddingTop: insets.top, height: appBarHeight }]}>
       <View style={styles.sideContainer}>
         {!isSideMenuOpen ? (
           <Pressable
             onPress={toggleSideMenu}
-            accessibilityLabel="Open menu"
+            accessibilityLabel={t('accessibility.openMenu')}
             accessibilityRole="button"
             style={styles.avatarButton}
           >
@@ -46,7 +49,7 @@ const AppBar: React.FC<IAppBarProps> = (props) => {
           children
         ) : (
           <Text numberOfLines={1} style={styles.title} accessibilityRole="header">
-            {title ?? 'Yapper'}
+            {title ?? t('app.title')}
           </Text>
         )}
       </View>
@@ -59,7 +62,6 @@ const AppBar: React.FC<IAppBarProps> = (props) => {
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
-      height: 56,
       flexDirection: 'row',
       alignItems: 'center',
       paddingHorizontal: theme.spacing.md,
@@ -68,25 +70,25 @@ const createStyles = (theme: Theme) =>
       borderBottomColor: theme.colors.border,
     },
     avatar: {
-      width: 36,
-      height: 36,
-      borderRadius: 18,
+      width: theme.ui.avatar,
+      height: theme.ui.avatar,
+      borderRadius: theme.ui.avatar / 2,
     },
     avatarBackground: {
-      width: 36,
-      height: 36,
-      borderRadius: 18,
+      width: theme.ui.avatar,
+      height: theme.ui.avatar,
+      borderRadius: theme.ui.avatar / 2,
       overflow: 'hidden',
       backgroundColor: theme?.colors?.background?.tertiary,
     },
     menuButton: {
-      width: 40,
-      height: 40,
+      width: theme.ui.sideContainerWidth,
+      height: theme.ui.sideContainerWidth,
       alignItems: 'center',
       justifyContent: 'center',
     },
     menuText: {
-      fontSize: 20,
+      fontSize: theme.typography.sizes.lg,
       color: theme.colors.text.primary,
     },
     title: {
@@ -101,8 +103,13 @@ const createStyles = (theme: Theme) =>
       justifyContent: 'center',
       flexDirection: 'row',
     },
-    sideContainer: { width: 40, alignItems: 'center', justifyContent: 'center' },
-    avatarButton: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
+    sideContainer: { width: theme.ui.sideContainerWidth, alignItems: 'center', justifyContent: 'center' },
+    avatarButton: {
+      width: theme.ui.sideContainerWidth,
+      height: theme.ui.sideContainerWidth,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
   });
 
 export default React.memo(AppBar);

@@ -2,6 +2,7 @@ import { useTheme } from '@/src/context/ThemeContext';
 import { usePathname, useRouter } from 'expo-router';
 import { Bell, Bot, Home, Mail, Search } from 'lucide-react-native';
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUiShell } from './UiShellContext';
@@ -22,6 +23,7 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
   const { anim } = props;
   const { theme } = useTheme();
   const styles = createStyles(theme);
+  const { t } = useTranslation();
   const { activeTab, setActiveTab, scrollY } = useUiShell();
   const router = useRouter();
   const pathname = usePathname();
@@ -32,7 +34,7 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
     if (match && activeTab !== match.key) {
       setActiveTab(match.key);
     }
-  }, [pathname]);
+  }, [pathname, activeTab, setActiveTab]);
 
   const onPress = (item: (typeof items)[number]) => {
     if (activeTab === item.key && pathname === item.path) {
@@ -53,17 +55,12 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
 
   const containerBg = theme.colors.background.primary;
   const insets = useSafeAreaInsets();
-  const navHeight = 48;
+  const navHeight = theme.ui.navHeight + insets.bottom;
   const translateStyle = anim ? { transform: [{ translateX: anim }] } : undefined;
 
   return (
     <Animated.View
-      style={[
-        styles.container,
-        styles.wrapper,
-        translateStyle,
-        { height: navHeight + insets.bottom, paddingBottom: insets.bottom },
-      ]}
+      style={[styles.container, styles.wrapper, translateStyle, { height: navHeight, paddingBottom: insets.bottom }]}
       accessibilityRole="tablist"
     >
       <Animated.View
@@ -73,7 +70,7 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
           left: 0,
           right: 0,
           bottom: 0,
-          height: navHeight + insets.bottom,
+          height: navHeight,
           backgroundColor: containerBg,
           opacity: bgOpacity,
           zIndex: 0,
@@ -83,18 +80,20 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
         {items.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.key;
+          const label = t(`nav.${item.key}`);
           return (
             <TouchableOpacity
               key={item.key}
               onPress={() => onPress(item)}
               style={[styles.item, isActive && styles.itemActive]}
               accessibilityRole="tab"
+              accessibilityLabel={label}
               accessibilityState={{ selected: isActive }}
             >
               <Icon
                 color={isActive ? theme.colors.text.primary : theme.colors.text.secondary}
-                size={24}
-                style={{ marginBottom: 2 }}
+                size={theme.iconSizes.icon}
+                style={{ marginBottom: theme.spacing.xs / 2 }}
               />
             </TouchableOpacity>
           );
@@ -113,7 +112,7 @@ const createStyles = (theme: any) =>
       left: 0,
       right: 0,
       bottom: 0,
-      height: 48,
+      height: theme.ui.navHeight,
       flexDirection: 'row',
       borderTopWidth: 1,
       borderTopColor: theme.colors.border,
