@@ -64,7 +64,7 @@ const VerifyCodeScreen = () => {
       }
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : t('auth.forgotPassword.genericError');
-      Toast.show({ type: 'error', text1: 'Error', text2: message });
+      Toast.show({ type: 'error', text1: t('auth.forgotPassword.errorTitle'), text2: message });
     } finally {
       setIsLoading(false);
     }

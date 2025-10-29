@@ -129,6 +129,13 @@
     "follow": "Follow",
     "following": "Following"
   },
+  "buttons": {
+    "next": "Next",
+    "back": "Back",
+    "continue": "Continue",
+    "login": "Login",
+    "logout": "Logout"
+  },
   "tweetActivity": {
     "likedBy": "Liked by",
     "repostedBy": "Reposted by",
