@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { typography, spacing, colors } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
+import { Theme } from '@/src/constants/theme';
 import DisabledInput from './shared/DisabledInput';
 import PasswordInput from './shared/PasswordInput';
 
@@ -29,7 +30,8 @@ const ResetPasswordScreen: React.FC<IResetPasswordPageProps> = ({
   isConfirmPasswordVisible = false,
 }) => {
   const { t } = useTranslation();
-  const styles = createStyles();
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   return (
     <View style={styles.container}>
@@ -45,6 +47,7 @@ const ResetPasswordScreen: React.FC<IResetPasswordPageProps> = ({
         onToggleVisibility={onToggleNewPasswordVisibility}
         isVisible={isNewPasswordVisible}
         showCheck={newPassword.length >= 1}
+        status="success"
       />
 
       <PasswordInput
@@ -54,35 +57,35 @@ const ResetPasswordScreen: React.FC<IResetPasswordPageProps> = ({
         onToggleVisibility={onToggleConfirmPasswordVisibility}
         isVisible={isConfirmPasswordVisible}
         showCheck={confirmPassword.length > 0}
-        status={confirmPassword.length > 0 && confirmPassword !== newPassword ? 'warning' : 'success'}
+        status={confirmPassword.length > 0 && confirmPassword !== newPassword ? 'error' : 'success'}
         errorMessage={confirmPassword !== newPassword ? 'Passwords do not match' : ''}
       />
     </View>
   );
 };
 
-const createStyles = () =>
+const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: colors.dark.background.primary,
-      paddingHorizontal: spacing.md - 1,
-      paddingTop: spacing.xxl + spacing.lg,
+      backgroundColor: theme.colors.background.primary,
+      paddingHorizontal: theme.spacing.mdg,
+      paddingTop: theme.spacing.xxl + theme.spacing.lg,
     },
     title: {
-      fontSize: typography.sizes.xxl + 1,
-      fontFamily: typography.fonts.bold,
-      color: colors.dark.text.primary,
+      fontSize: theme.typography.sizes.xxl + 1,
+      fontFamily: theme.typography.fonts.bold,
+      color: theme.colors.text.primary,
       lineHeight: 36,
       letterSpacing: -0.3,
-      marginBottom: spacing.sm,
+      marginBottom: theme.spacing.sm,
     },
     description: {
-      fontSize: typography.sizes.sm,
-      fontFamily: typography.fonts.regular,
-      color: colors.dark.text.secondary,
+      fontSize: theme.typography.sizes.sm,
+      fontFamily: theme.typography.fonts.regular,
+      color: theme.colors.text.secondary,
       lineHeight: 20,
-      marginBottom: spacing.xxl,
+      marginBottom: theme.spacing.xxl,
     },
   });
 

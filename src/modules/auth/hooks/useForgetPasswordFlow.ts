@@ -3,8 +3,9 @@ import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { useCallback, useMemo, useState } from 'react';
 import Toast from 'react-native-toast-message';
 
-import { emailSchema, phoneSchema, usernameSchema } from '../schemas/schemas';
+import { emailSchema, passwordSchema, phoneSchema, usernameSchema } from '../schemas/schemas';
 import { requestForgetPassword, resetPassword, verifyOTP } from '../services/forgetPasswordService';
+import { Alert } from 'react-native';
 
 // ============================================
 // Type Definitions
@@ -156,6 +157,14 @@ export const useForgetPasswordFlow = (): IUseForgetPasswordFlowReturn => {
             return false;
           }
 
+          if (passwordSchema.safeParse(formData.password).success === false) {
+            Alert.alert(
+              'Invalid Password',
+              'Password must be 8-64 characters long and include uppercase, lowercase, number, and special character.',
+            );
+            return false;
+          }
+
           return true;
         }
 
@@ -261,7 +270,11 @@ export const useForgetPasswordFlow = (): IUseForgetPasswordFlowReturn => {
     if (!validateStepInput(3)) return;
 
     try {
-      const succeeded = await resetPassword({ resetToken, newPassword: formData.password, identifier: formData.text });
+      const succeeded = await resetPassword({
+        resetToken,
+        newPassword: formData.password,
+        identifier: formData.text,
+      });
 
       if (succeeded) {
         Toast.show({
