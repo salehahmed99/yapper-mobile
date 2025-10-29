@@ -117,7 +117,7 @@ const LoginScreen = () => {
   };
 
   const handleForgotPassword = () => {
-    Alert.alert(t('auth.login.alerts.forgotPasswordPressed'));
+    router.replace('/(auth)/forgetPassword');
   };
 
   // ============================================

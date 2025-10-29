@@ -1,23 +1,61 @@
 import { IUser, IUserDTO, mapUserDTOToUser } from '../../types/user';
 
-interface ILoginResponseDTO {
-  data: {
-    access_token: string;
-    user: IUserDTO;
-  };
+/**
+ * Generic API Response
+ */
+export interface IApiResponse<T> {
+  data: T;
   count: number;
   message: string;
 }
 
-interface ILoginResponse {
-  data: {
-    accessToken: string;
-    user: IUser;
-  };
-  count: number;
-  message: string;
+/**
+ * Login
+ */
+export type ILoginResponse = IApiResponse<{ accessToken: string; user: IUser }>;
+export type ILoginResponseDTO = IApiResponse<{ access_token: string; user: IUser }>;
+
+export interface ILoginCredentials {
+  identifier: string;
+  type: 'email' | 'username' | 'phone_number';
+  password: string;
 }
 
+/**
+ * Forget Password
+ */
+export interface IForgetPasswordRequest {
+  identifier: string;
+}
+export type IForgetPasswordResponse = IApiResponse<{ isEmailSent: boolean }>;
+
+/**
+ * Verify OTP
+ */
+export interface IVerifyOTPRequest {
+  identifier: string;
+  token: string;
+}
+export type IVerifyOTPResponse = IApiResponse<{ isValid: boolean; resetToken: string }>;
+
+/**
+ * Reset Password
+ */
+export interface IResetPasswordRequest {
+  resetToken: string;
+  newPassword: string;
+  identifier: string;
+}
+export type IResetPasswordRequestDTO = {
+  reset_token: string;
+  new_password: string;
+  identifier: string;
+};
+export type IResetPasswordResponse = IApiResponse<null>;
+
+/**
+ * Mappers
+ */
 function mapLoginResponseDTOToLoginResponse(dto: ILoginResponseDTO): ILoginResponse {
   return {
     data: {
@@ -29,16 +67,17 @@ function mapLoginResponseDTOToLoginResponse(dto: ILoginResponseDTO): ILoginRespo
   };
 }
 
-interface ILoginCredentials {
-  identifier: string;
-  type: 'email' | 'username' | 'phone_number';
-  password: string;
+export function mapResetPasswordRequestToDTO(request: IResetPasswordRequest): IResetPasswordRequestDTO {
+  return {
+    reset_token: request.resetToken,
+    new_password: request.newPassword,
+    identifier: request.identifier,
+  };
 }
-
 interface IRegisterData {
   name: string;
   email: string;
   password: string;
 }
 
-export { ILoginCredentials, ILoginResponse, IRegisterData, mapLoginResponseDTOToLoginResponse };
+export { IRegisterData, mapLoginResponseDTOToLoginResponse };

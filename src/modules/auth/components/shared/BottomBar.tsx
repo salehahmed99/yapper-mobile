@@ -84,6 +84,7 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
+      paddingBottom: theme.spacing.xl,
     },
     contentRight: {
       justifyContent: 'flex-end',
