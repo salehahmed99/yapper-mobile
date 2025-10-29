@@ -4,25 +4,23 @@ import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
 import { useTranslation } from 'react-i18next';
 
-export default function SuccessScreen() {
+const SuccessResetPasswordPage: React.FC = () => {
   const { theme } = useTheme();
   const { width } = useWindowDimensions();
 
   // Responsive scale factor
   const scaleFactor = Math.min(Math.max(width / 390, 0.85), 1.1);
-
   const styles = useMemo(() => createStyles(theme, scaleFactor), [theme, scaleFactor]);
-
   const { t } = useTranslation();
 
   return (
     <View style={styles.container}>
       {/* Title */}
-      <Text style={styles.title}>You&apos;re all set</Text>
+      <Text style={styles.title}>{t('auth.forgotPassword.successTitle')}</Text>
 
       {/* Subtitle */}
       <Text style={styles.subtitle}>
-        {t('auth.forgotPassword.successDescription')}.{'\n\n'}
+        {t('auth.forgotPassword.successDescription')} {'\n\n'}
         {t('auth.forgotPassword.twoFactorPrefix')}{' '}
         <Text style={styles.link} onPress={() => Linking.openURL('https://twitter.com/settings/security')}>
           {t('auth.forgotPassword.twoFactorLink')}
@@ -30,17 +28,18 @@ export default function SuccessScreen() {
         . {t('auth.forgotPassword.twoFactorSuffix')}
       </Text>
 
-      {/* Button */}
+      {/* Continue Button */}
       <TouchableOpacity
         style={styles.button}
         activeOpacity={0.8}
         onPress={() => Linking.openURL('https://app.yapper.ai/login')}
+        accessibilityLabel="success-reset-password_continue_button"
       >
         <Text style={styles.buttonText}>{t('auth.forgotPassword.continueButton')}</Text>
       </TouchableOpacity>
     </View>
   );
-}
+};
 
 const createStyles = (theme: Theme, scaleFactor: number) =>
   StyleSheet.create({
@@ -84,3 +83,5 @@ const createStyles = (theme: Theme, scaleFactor: number) =>
       textAlign: 'center',
     },
   });
+
+export default SuccessResetPasswordPage;
