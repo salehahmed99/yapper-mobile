@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import ActivityLoader from '../../../components/ActivityLoader';
 import AuthInputScreen from '../components/shared/AuthInput';
 import BottomBar from '../components/shared/BottomBar';
 import SuccessScreen from '../components/forgetPassword/SuccessResetPasswordScreen';
@@ -8,22 +9,13 @@ import TopBar from '../components/shared/TopBar';
 import { useForgetPasswordFlow, type IFormData, type IStepConfig } from '../hooks/useForgetPasswordFlow';
 import { ButtonOptions } from '../utils/enums';
 
-/**
- * ForgetPasswordContainer - UI component for the forget password flow
- *
- * This container handles the presentation layer, delegating all business logic
- * to the useForgetPasswordFlow hook. It manages:
- * - Multi-step form rendering (find account → verify OTP → reset password)
- * - Input field updates via form handlers
- * - Step navigation and validation
- * - Component visibility based on current step
- */
 const ForgetPasswordContainer: React.FC = () => {
   const { t } = useTranslation();
   const {
     currentStep,
     formData,
     isNextEnabled,
+    isLoading,
     isNewPasswordVisible,
     isConfirmPasswordVisible,
     handleChange,
@@ -67,6 +59,7 @@ const ForgetPasswordContainer: React.FC = () => {
 
   return (
     <>
+      <ActivityLoader visible={isLoading} message="Processing..." />
       <TopBar />
 
       {/* Step 1-2: Input screens */}
