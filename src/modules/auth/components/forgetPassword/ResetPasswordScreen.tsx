@@ -3,8 +3,8 @@ import { Text, View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
-import DisabledInput from './shared/DisabledInput';
-import PasswordInput from './shared/PasswordInput';
+import DisabledInput from '../shared/DisabledInput';
+import PasswordInput from '../shared/PasswordInput';
 
 interface IResetPasswordPageProps {
   userIdentifier: string;
