@@ -1,15 +1,15 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { IUser } from '@/src/types/user';
 import { User } from 'lucide-react-native';
 import React, { useMemo } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { IUserListUser } from '../types';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface IUserListItemProps {
-  user: IUserListUser;
-  onPress?: (user: IUserListUser) => void;
-  onFollowPress?: (user: IUserListUser) => void;
+  user: IUser;
+  onPress?: (user: IUser) => void;
+  renderAction?: (user: IUser) => React.ReactNode;
 }
 
 const createStyles = (theme: Theme) =>
@@ -17,13 +17,15 @@ const createStyles = (theme: Theme) =>
     container: {
       backgroundColor: theme.colors.background.primary,
       paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.md,
+      paddingVertical: theme.spacing.lg,
+      borderBottomWidth: theme.borderWidth.thin / 2,
+      borderBottomColor: theme.colors.border,
     },
     followsYouContainer: {
       flexDirection: 'row',
       alignItems: 'center',
       marginBottom: theme.spacing.sm,
-      paddingLeft: theme.spacing.xs,
+      paddingLeft: theme.avatarSizes.md + theme.spacing.md,
     },
     followsYouIcon: {
       marginRight: theme.spacing.xs,
@@ -45,6 +47,7 @@ const createStyles = (theme: Theme) =>
       justifyContent: 'center',
       alignItems: 'center',
       marginRight: theme.spacing.md,
+      overflow: 'hidden',
     },
     avatarImage: {
       width: theme.avatarSizes.md,
@@ -62,7 +65,7 @@ const createStyles = (theme: Theme) =>
     },
     nameAndButtonRow: {
       flexDirection: 'row',
-      alignItems: 'flex-start',
+      alignItems: 'center',
       justifyContent: 'space-between',
     },
     nameContainer: {
@@ -73,49 +76,25 @@ const createStyles = (theme: Theme) =>
       color: theme.colors.text.primary,
       fontSize: theme.typography.sizes.sm,
       fontFamily: theme.typography.fonts.bold,
-      marginBottom: theme.spacing.xs / 2,
-      lineHeight: theme.typography.sizes.sm * theme.typography.lineHeights.normal,
+      marginBottom: theme.spacing.xs / 4,
+      lineHeight: theme.typography.sizes.sm * theme.typography.lineHeights.tight,
     },
     username: {
       color: theme.colors.text.secondary,
       fontSize: theme.typography.sizes.sm,
       fontFamily: theme.typography.fonts.regular,
-      marginBottom: theme.spacing.xs,
-      lineHeight: theme.typography.sizes.sm * theme.typography.lineHeights.normal,
+      lineHeight: theme.typography.sizes.sm * theme.typography.lineHeights.tight,
     },
     bio: {
       color: theme.colors.text.primary,
       fontSize: theme.typography.sizes.sm,
       fontFamily: theme.typography.fonts.regular,
       lineHeight: theme.typography.sizes.sm * theme.typography.lineHeights.relaxed,
+      marginTop: theme.spacing.xs / 2,
     },
     actionContainer: {
       justifyContent: 'center',
-    },
-    followButton: {
-      backgroundColor: theme.colors.text.primary,
-      paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.xs,
-      borderRadius: theme.borderRadius.full,
-      minWidth: theme.spacing.xxl * 4,
-      height: theme.buttonHeights.md,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    followingButton: {
-      backgroundColor: 'transparent',
-      borderWidth: theme.borderWidth.thin,
-      borderColor: theme.colors.border,
-    },
-    followButtonText: {
-      color: theme.colors.background.primary,
-      fontSize: theme.typography.sizes.sm,
-      fontFamily: theme.typography.fonts.bold,
-      lineHeight: theme.typography.sizes.sm * theme.typography.lineHeights.tight,
-    },
-    followingButtonText: {
-      color: theme.colors.text.primary,
-      fontFamily: theme.typography.fonts.bold,
+      marginLeft: theme.spacing.sm,
     },
   });
 
@@ -123,7 +102,7 @@ const getInitial = (name?: string) => {
   return name ? name.charAt(0).toUpperCase() : '?';
 };
 
-const UserListItem: React.FC<IUserListItemProps> = ({ user, onPress, onFollowPress }) => {
+const UserListItem: React.FC<IUserListItemProps> = ({ user, onPress, renderAction }) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -132,32 +111,9 @@ const UserListItem: React.FC<IUserListItemProps> = ({ user, onPress, onFollowPre
     onPress?.(user);
   };
 
-  const handleFollowPress = (e: any) => {
-    e.stopPropagation();
-    onFollowPress?.(user);
-  };
-
-  const renderAction = () => {
-    if (!onFollowPress) return null;
-
-    return (
-      <View style={styles.actionContainer}>
-        <TouchableOpacity
-          style={[styles.followButton, user.isFollowing && styles.followingButton]}
-          onPress={handleFollowPress}
-          activeOpacity={0.7}
-        >
-          <Text style={[styles.followButtonText, user.isFollowing && styles.followingButtonText]}>
-            {user.isFollowing ? t('userList.following') : t('userList.follow')}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
   return (
     <TouchableOpacity style={styles.container} onPress={handlePress} activeOpacity={0.7}>
-      {user.isFollowed && (
+      {user.isFollower && (
         <View style={styles.followsYouContainer}>
           <User size={theme.iconSizes.xs} color={theme.colors.text.secondary} style={styles.followsYouIcon} />
           <Text style={styles.followsYouText}>{t('userList.followsYou')}</Text>
@@ -185,7 +141,7 @@ const UserListItem: React.FC<IUserListItemProps> = ({ user, onPress, onFollowPre
                 </Text>
               )}
             </View>
-            {renderAction()}
+            {renderAction && <View style={styles.actionContainer}>{renderAction(user)}</View>}
           </View>
           {user.bio && (
             <Text style={styles.bio} numberOfLines={2}>

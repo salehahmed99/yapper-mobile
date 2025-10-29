@@ -1,16 +1,17 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { IUser } from '@/src/types/user';
 import React, { useMemo } from 'react';
-import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useUserList } from '../hooks/useUserList';
-import { IUserListUser, UserListQuery } from '../types';
+import { UserListQuery } from '../types';
 import UserListItem from './UserListItem';
 
 type UserListProps = UserListQuery & {
   autoLoad?: boolean;
-  onUserPress?: (user: IUserListUser) => void;
-  onFollowPress?: (user: IUserListUser) => void;
+  onUserPress?: (user: IUser) => void;
+  renderAction?: (user: IUser) => React.ReactNode;
 };
 
 const createStyles = (theme: Theme) =>
@@ -20,6 +21,7 @@ const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.background.primary,
     },
     listContent: {
+      paddingTop: theme.spacing.xs,
       paddingBottom: theme.spacing.xxl,
     },
     emptyState: {
@@ -58,7 +60,7 @@ const createStyles = (theme: Theme) =>
   });
 
 const UserList: React.FC<UserListProps> = (props) => {
-  const { onUserPress, onFollowPress, autoLoad = true } = props;
+  const { onUserPress, renderAction, autoLoad = true } = props;
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -95,7 +97,7 @@ const UserList: React.FC<UserListProps> = (props) => {
       <FlatList
         data={users}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <UserListItem user={item} onPress={onUserPress} onFollowPress={onFollowPress} />}
+        renderItem={({ item }) => <UserListItem user={item} onPress={onUserPress} renderAction={renderAction} />}
         contentContainerStyle={styles.listContent}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={theme.colors.text.link} />
