@@ -47,7 +47,7 @@ const VerifyCodeScreen = () => {
     try {
       const token = await verifyOTP({ identifier, token: code });
 
-      if (token) {
+      if (token && token.length > 0) {
         setResetToken(token); // Save to Zustand store
         Toast.show({
           type: 'success',
