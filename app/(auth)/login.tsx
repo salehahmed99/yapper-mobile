@@ -110,7 +110,7 @@ const LoginScreen = () => {
   };
 
   const handleForgotPassword = () => {
-    router.replace('/(auth)/forgetPassword');
+    router.replace('/(auth)/forgot-password/find-account');
   };
 
   // ============================================

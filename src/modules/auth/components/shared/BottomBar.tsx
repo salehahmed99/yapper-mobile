@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 
-interface ButtonConfig {
+interface IButtonConfig {
   label: string;
   onPress?: () => void;
   enabled?: boolean;
@@ -11,16 +11,16 @@ interface ButtonConfig {
   type?: 'primary' | 'secondary';
 }
 
-interface BottomBarProps {
-  leftButton?: ButtonConfig;
-  rightButton?: ButtonConfig;
+interface IBottomBarProps {
+  leftButton?: IButtonConfig;
+  rightButton?: IButtonConfig;
 }
 
-const BottomBar: React.FC<BottomBarProps> = ({ leftButton, rightButton }) => {
+const BottomBar: React.FC<IBottomBarProps> = ({ leftButton, rightButton }) => {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const renderButton = (button?: ButtonConfig) => {
+  const renderButton = (button?: IButtonConfig) => {
     if (!button?.visible) return null;
 
     const isPrimary = button.type === 'primary';
@@ -36,6 +36,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ leftButton, rightButton }) => {
           isPrimary ? styles.primaryButton : styles.secondaryButton,
           !isEnabled && styles.buttonDisabled,
         ]}
+        accessibilityLabel="BottomBar_Action_Button"
       >
         <Text
           style={[

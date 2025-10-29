@@ -22,7 +22,12 @@ const TopBar: React.FC<ITopBarProps> = ({ onBackPress }) => {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         {/* Exit/Close button on the left */}
-        <TouchableOpacity style={styles.exitButton} onPress={onBackPress} activeOpacity={0.7}>
+        <TouchableOpacity
+          style={styles.exitButton}
+          onPress={onBackPress}
+          activeOpacity={0.7}
+          accessibilityLabel="TopBar_Exit_Button"
+        >
           <X color={theme.colors.text.primary} size={24 * scaleFactor} />
         </TouchableOpacity>
 

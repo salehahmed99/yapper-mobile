@@ -77,7 +77,11 @@ const PasswordInput: React.FC<IPasswordInputProps> = ({
 
       {value.length > 0 && (
         <>
-          <TouchableOpacity style={styles.eyeIcon} onPress={onToggleVisibility}>
+          <TouchableOpacity
+            style={styles.eyeIcon}
+            onPress={onToggleVisibility}
+            accessibilityLabel="PasswordInput_Toggle_Visibility"
+          >
             {isVisible ? (
               <EyeOff color={theme.colors.text.secondary} size={20} />
             ) : (
