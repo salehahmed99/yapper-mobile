@@ -24,6 +24,28 @@ export const typography = {
   },
 };
 
+export const iconSizes = {
+  xs: 12,
+  sm: 16,
+  md: 20,
+  lg: 24,
+  xl: 32,
+};
+
+export const avatarSizes = {
+  sm: 32,
+  md: 40,
+  lg: 48,
+  xl: 64,
+};
+
+export const buttonHeights = {
+  sm: 28,
+  md: 32,
+  lg: 36,
+  xl: 44,
+};
+
 export const borderRadius = {
   sm: 4,
   md: 8,
@@ -36,27 +58,6 @@ export const borderWidth = {
   thin: 1,
   medium: 2,
   thick: 3,
-};
-
-export const iconSizes = {
-  xs: 12,
-  sm: 16,
-  md: 20,
-  lg: 24,
-  xl: 32,
-};
-
-export const avatarSizes = {
-  sm: 32,
-  md: 48,
-  lg: 64,
-  xl: 80,
-};
-
-export const buttonHeights = {
-  sm: 32,
-  md: 36,
-  lg: 44,
 };
 
 export const spacing = {
