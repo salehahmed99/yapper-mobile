@@ -2,47 +2,22 @@ import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import React, { useMemo } from 'react';
 import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useUserList } from '../hooks/useUserList';
-import { IUserListUser, UserListType } from '../types';
+import { IUserListUser, UserListQuery } from '../types';
 import UserListItem from './UserListItem';
 
-interface UserListProps {
-  tweetId: string;
-  type: UserListType;
-  title?: string;
-  onBackPress?: () => void;
+type UserListProps = UserListQuery & {
+  autoLoad?: boolean;
   onUserPress?: (user: IUserListUser) => void;
-  renderRightAction?: (user: IUserListUser) => React.ReactNode;
-}
+  onFollowPress?: (user: IUserListUser) => void;
+};
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.colors.background.primary,
-    },
-    header: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.lg,
-      borderBottomColor: theme.colors.border,
-      borderBottomWidth: StyleSheet.hairlineWidth,
-    },
-    backButton: {
-      marginRight: theme.spacing.md,
-      paddingVertical: theme.spacing.xs,
-      paddingHorizontal: theme.spacing.sm,
-    },
-    backText: {
-      color: theme.colors.text.link,
-      fontSize: theme.typography.sizes.md,
-      fontFamily: theme.typography.fonts.medium,
-    },
-    title: {
-      color: theme.colors.text.primary,
-      fontSize: theme.typography.sizes.lg,
-      fontFamily: theme.typography.fonts.semiBold,
     },
     listContent: {
       paddingBottom: theme.spacing.xxl,
@@ -76,85 +51,65 @@ const createStyles = (theme: Theme) =>
     },
     footer: {
       paddingVertical: theme.spacing.lg,
+      minHeight: 60,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
   });
 
-const getDefaultTitle = (type: UserListType) => {
-  if (type === 'likers') {
-    return 'Liked by';
-  }
-  return 'Retweeted by';
-};
-
-const UserList: React.FC<UserListProps> = ({ tweetId, type, title, onBackPress, onUserPress, renderRightAction }) => {
+const UserList: React.FC<UserListProps> = (props) => {
+  const { onUserPress, onFollowPress, autoLoad = true } = props;
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { users, loading, refreshing, error, hasNextPage, refresh, loadMore } = useUserList({ tweetId, type });
 
-  const handleRetry = () => {
-    refresh();
-  };
+  const { users, loading, refreshing, error, hasNextPage, refresh, loadMore } = useUserList({ ...props, autoLoad });
 
   const renderEmpty = () => {
-    if (loading) {
-      return null;
-    }
+    if (loading) return null;
 
     return (
       <View style={styles.emptyState}>
-        <Text style={error ? styles.errorText : styles.emptyText}>{error ? error : 'Nobody yet.'}</Text>
-        {error ? (
-          <TouchableOpacity style={styles.retryButton} onPress={handleRetry} activeOpacity={0.7}>
-            <Text style={styles.retryText}>Try again</Text>
+        <Text style={error ? styles.errorText : styles.emptyText}>{error || t('userList.emptyState')}</Text>
+        {error && (
+          <TouchableOpacity style={styles.retryButton} onPress={refresh} activeOpacity={0.7}>
+            <Text style={styles.retryText}>{t('userList.errorRetry')}</Text>
           </TouchableOpacity>
-        ) : null}
+        )}
       </View>
     );
   };
 
   const renderFooter = () => {
-    if (!loading || refreshing) {
-      return null;
-    }
+    if (!hasNextPage && users.length > 0) return null;
+
     return (
       <View style={styles.footer}>
-        <ActivityIndicator color={theme.colors.text.link} />
+        {loading && !refreshing && <ActivityIndicator color={theme.colors.text.link} />}
       </View>
     );
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        {onBackPress ? (
-          <TouchableOpacity onPress={onBackPress} style={styles.backButton} activeOpacity={0.7}>
-            <Text style={styles.backText}>Back</Text>
-          </TouchableOpacity>
-        ) : null}
-        <Text style={styles.title}>{title ?? getDefaultTitle(type)}</Text>
-      </View>
-
       <FlatList
         data={users}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <UserListItem user={item} onPress={onUserPress} rightAction={renderRightAction?.(item)} />
-        )}
+        renderItem={({ item }) => <UserListItem user={item} onPress={onUserPress} onFollowPress={onFollowPress} />}
         contentContainerStyle={styles.listContent}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={theme.colors.text.link} />
         }
         ListEmptyComponent={renderEmpty}
         ListFooterComponent={renderFooter}
-        onEndReachedThreshold={0.4}
-        onEndReached={() => {
-          if (hasNextPage && !loading) {
-            loadMore();
-          }
-        }}
+        onEndReachedThreshold={0.3}
+        onEndReached={() => hasNextPage && !loading && !refreshing && loadMore()}
+        removeClippedSubviews={false}
+        maxToRenderPerBatch={10}
+        updateCellsBatchingPeriod={50}
+        windowSize={21}
       />
     </View>
   );
 };
-
 export default UserList;
