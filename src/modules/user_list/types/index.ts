@@ -1,6 +1,6 @@
-import { IUser } from '@/src/types/user';
+import { IUser, IUserDTO } from '@/src/types/user';
 
-export type TweetUserListType = 'likers' | 'retweeters';
+export type TweetUserListType = 'likes' | 'reposts';
 export type ProfileUserListType = 'followers' | 'following';
 export type UserListType = TweetUserListType | ProfileUserListType;
 
@@ -14,15 +14,13 @@ export type UserListQuery =
       userId: string;
     };
 
-export interface IUserListUser extends IUser {
-  username?: string;
-  bio?: string;
-  isFollowing?: boolean;
-  isFollowed?: boolean;
+export interface IUserListResponse {
+  users: IUser[];
+  nextPage?: number | null;
 }
 
-export interface IUserListResponse {
-  users: IUserListUser[];
+export interface IUserListResponseBackend {
+  users: IUserDTO[];
   nextPage?: number | null;
 }
 
