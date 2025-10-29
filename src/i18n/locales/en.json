@@ -92,7 +92,8 @@
     "next": "Next",
     "back": "Back",
     "continue": "Continue",
-    "login": "Login"
+    "login": "Login",
+    "logout": "Logout"
   },
   "activityLoader": {
     "sendingCode": "Sending code...",

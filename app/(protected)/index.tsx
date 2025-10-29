@@ -19,7 +19,7 @@ const HomeScreen = () => {
     <View style={styles.container}>
       <Text style={styles.text}>{t('home.title')}</Text>
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Logout</Text>
+        <Text style={styles.logoutButtonText}>{t('buttons.logout')}</Text>
       </TouchableOpacity>
     </View>
   );
