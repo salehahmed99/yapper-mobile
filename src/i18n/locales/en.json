@@ -85,7 +85,7 @@
       }
     },
     "forgotPassword": {
-      "findAccountTitle": "Find your X account",
+      "findAccountTitle": "Find your yapper account",
       "findAccountDescription": "Enter the email, phone number, or username associated with your account to change your password.",
       "verifyCodeTitle": "We Sent you a code",
       "verifyCodeDescription": "checkyour email to get your confirmation code.\n if you need to request a new code, go back and reselect a confirmation.",
