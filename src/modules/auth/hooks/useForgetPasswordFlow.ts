@@ -32,6 +32,7 @@ interface IUseForgetPasswordFlowReturn {
   formData: IFormData;
   currentStep: Step;
   isNextEnabled: boolean;
+  isLoading: boolean;
   resetToken: string;
   isNewPasswordVisible: boolean;
   isConfirmPasswordVisible: boolean;
@@ -68,6 +69,7 @@ export const useForgetPasswordFlow = (): IUseForgetPasswordFlowReturn => {
 
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [isNextEnabled, setIsNextEnabled] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [textType, setTextType] = useState<TextType>(null);
   const [resetToken, setResetToken] = useState<string>('');
   const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false);
@@ -185,6 +187,7 @@ export const useForgetPasswordFlow = (): IUseForgetPasswordFlowReturn => {
   const handleStepOne = useCallback(async () => {
     if (!validateStepInput(1)) return;
 
+    setIsLoading(true);
     try {
       const isEmailSent = await requestForgetPassword({ identifier: formData.text });
 
@@ -194,6 +197,7 @@ export const useForgetPasswordFlow = (): IUseForgetPasswordFlowReturn => {
           text1: 'Success',
           text2: 'A verification code has been sent to your contact method.',
         });
+        setFormData((prev) => ({ ...prev, code: '', confirmPassword: '', password: '' }));
         setCurrentStep(2);
         setIsNextEnabled(false);
       } else {
@@ -217,6 +221,8 @@ export const useForgetPasswordFlow = (): IUseForgetPasswordFlowReturn => {
         text1: 'Error',
         text2: message,
       });
+    } finally {
+      setIsLoading(false);
     }
   }, [formData.text, validateStepInput]);
 
@@ -226,6 +232,7 @@ export const useForgetPasswordFlow = (): IUseForgetPasswordFlowReturn => {
   const handleStepTwo = useCallback(async () => {
     if (!validateStepInput(2)) return;
 
+    setIsLoading(true);
     try {
       const token = await verifyOTP({ identifier: formData.text, token: formData.code });
 
@@ -260,6 +267,8 @@ export const useForgetPasswordFlow = (): IUseForgetPasswordFlowReturn => {
         text1: 'Error',
         text2: message,
       });
+    } finally {
+      setIsLoading(false);
     }
   }, [formData.text, formData.code, validateStepInput]);
 
@@ -269,6 +278,7 @@ export const useForgetPasswordFlow = (): IUseForgetPasswordFlowReturn => {
   const handleStepThree = useCallback(async () => {
     if (!validateStepInput(3)) return;
 
+    setIsLoading(true);
     try {
       const succeeded = await resetPassword({
         resetToken,
@@ -304,6 +314,8 @@ export const useForgetPasswordFlow = (): IUseForgetPasswordFlowReturn => {
         text1: 'Error',
         text2: message,
       });
+    } finally {
+      setIsLoading(false);
     }
   }, [resetToken, formData.password, formData.text, validateStepInput]);
 
@@ -417,6 +429,7 @@ export const useForgetPasswordFlow = (): IUseForgetPasswordFlowReturn => {
     formData,
     currentStep,
     isNextEnabled,
+    isLoading,
     resetToken,
     isNewPasswordVisible,
     isConfirmPasswordVisible,
