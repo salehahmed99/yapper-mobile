@@ -58,7 +58,7 @@ const ResetPasswordScreen: React.FC<IResetPasswordPageProps> = ({
         isVisible={isConfirmPasswordVisible}
         showCheck={confirmPassword.length > 0}
         status={confirmPassword.length > 0 && confirmPassword !== newPassword ? 'error' : 'success'}
-        errorMessage={confirmPassword !== newPassword ? 'Passwords do not match' : ''}
+        errorMessage={confirmPassword !== newPassword ? t('auth.forgotPassword.passwordsDoNotMatchError') : ''}
       />
     </View>
   );
