@@ -28,11 +28,7 @@ const TopBar: React.FC<ITopBarProps> = ({ onBackPress }) => {
 
         {/* Centered X Logo */}
         <View style={styles.logoContainer}>
-          <Image
-            source={require('../../../../../assets/images/x-new-logo.png')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
+          <Image source={require('../../../../../assets/images/yapper.png')} style={styles.logo} resizeMode="contain" />
         </View>
       </View>
     </SafeAreaView>
@@ -65,8 +61,8 @@ const createStyles = (theme: Theme, scaleFactor: number) =>
       justifyContent: 'center',
     },
     logo: {
-      width: 40 * scaleFactor,
-      height: 40 * scaleFactor,
+      width: 90 * scaleFactor,
+      height: 90 * scaleFactor,
     },
   });
 
