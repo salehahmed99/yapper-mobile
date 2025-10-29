@@ -41,7 +41,7 @@
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
     "axios": "^1.12.2",
-    "expo": "54.0.20",
+    "expo": "^54.0.20",
     "expo-constants": "~18.0.9",
     "expo-dev-client": "~6.0.16",
     "expo-font": "~14.0.9",
@@ -74,6 +74,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.38.0",
+    "@expo/cli": "^54.0.14",
     "@testing-library/react-native": "^13.3.3",
     "@types/jest": "^29.5.14",
     "@types/react": "^19.1.0",

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Animated, TextInput, TouchableOpacity, View, StyleSheet, Text, useWindowDimensions } from 'react-native';
-import { Eye, EyeOff, Check, AlertTriangle } from 'lucide-react-native';
+import { Eye, EyeOff, Check, AlertCircle } from 'lucide-react-native';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
 
@@ -10,9 +10,9 @@ interface IPasswordInputProps {
   onChangeText: (val: string) => void;
   onToggleVisibility?: () => void;
   isVisible?: boolean;
-  showCheck?: boolean; // show status icon
-  status?: 'success' | 'warning'; // status of input
-  errorMessage?: string; // optional error message
+  showCheck?: boolean;
+  status?: 'success' | 'error';
+  errorMessage?: string;
 }
 
 const PasswordInput: React.FC<IPasswordInputProps> = ({
@@ -41,12 +41,15 @@ const PasswordInput: React.FC<IPasswordInputProps> = ({
     }).start();
   };
 
+  const labelColor =
+    status === 'error' ? theme.colors.error : focused ? theme.colors.text.link : theme.colors.text.secondary;
+
   const labelStyle = {
     top: anim.interpolate({ inputRange: [0, 1], outputRange: [20 * scaleFactor, -8 * scaleFactor] }),
     fontSize: anim.interpolate({ inputRange: [0, 1], outputRange: [17, 13] }),
     color: anim.interpolate({
       inputRange: [0, 1],
-      outputRange: [theme.colors.text.secondary, focused ? theme.colors.text.link : theme.colors.text.secondary],
+      outputRange: [theme.colors.text.secondary, labelColor],
     }),
   };
 
@@ -54,7 +57,7 @@ const PasswordInput: React.FC<IPasswordInputProps> = ({
     <View style={styles.inputContainer}>
       <Animated.Text style={[styles.floatingLabel, labelStyle]}>{label}</Animated.Text>
       <TextInput
-        style={[styles.input, focused && styles.inputFocused]}
+        style={[styles.input, focused && styles.inputFocused, status === 'error' && styles.inputError]}
         value={value}
         onChangeText={onChangeText}
         onFocus={() => {
@@ -82,26 +85,21 @@ const PasswordInput: React.FC<IPasswordInputProps> = ({
             )}
           </TouchableOpacity>
 
-          {showCheck && status && (
-            <View
-              style={[
-                styles.statusIcon,
-                { backgroundColor: status === 'success' ? theme.colors.success : theme.colors.warning },
-              ]}
-            >
-              {status === 'success' ? (
-                <Check color={theme.colors.text.inverse} size={14} />
-              ) : (
-                <AlertTriangle color={theme.colors.text.inverse} size={14} />
-              )}
+          {showCheck && status === 'success' && (
+            <View style={styles.successIcon}>
+              <Check color={theme.colors.text.inverse} size={14} />
+            </View>
+          )}
+
+          {showCheck && status === 'error' && (
+            <View style={styles.errorIconContainer}>
+              <AlertCircle color={theme.colors.error} size={20} />
             </View>
           )}
         </>
       )}
 
-      {status === 'warning' && errorMessage && (
-        <Text style={[styles.errorText, { color: theme.colors.warning }]}>{errorMessage}</Text>
-      )}
+      {status === 'error' && errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
     </View>
   );
 };
@@ -127,6 +125,10 @@ const createStyles = (theme: Theme, scaleFactor: number = 1) =>
       borderColor: theme.colors.text.link,
       borderWidth: 2,
     },
+    inputError: {
+      borderColor: theme.colors.error,
+      borderWidth: 2,
+    },
     floatingLabel: {
       position: 'absolute',
       left: theme.spacing.md * scaleFactor,
@@ -140,19 +142,27 @@ const createStyles = (theme: Theme, scaleFactor: number = 1) =>
       top: theme.spacing.lg * scaleFactor,
       padding: theme.spacing.xs * scaleFactor,
     },
-    statusIcon: {
+    successIcon: {
       position: 'absolute',
       right: theme.spacing.md * scaleFactor,
       top: theme.spacing.xl * scaleFactor,
       width: 20 * scaleFactor,
       height: 20 * scaleFactor,
       borderRadius: theme.borderRadius.lg,
+      backgroundColor: theme.colors.success,
       alignItems: 'center',
       justifyContent: 'center',
+    },
+    errorIconContainer: {
+      position: 'absolute',
+      right: theme.spacing.md * scaleFactor,
+      top: theme.spacing.lg * scaleFactor,
+      padding: theme.spacing.xs * scaleFactor,
     },
     errorText: {
       marginTop: theme.spacing.xs * scaleFactor,
       fontSize: theme.typography.sizes.xs * scaleFactor,
+      color: theme.colors.error,
     },
   });
 

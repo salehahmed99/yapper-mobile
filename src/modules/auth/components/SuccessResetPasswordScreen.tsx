@@ -31,7 +31,11 @@ export default function SuccessScreen() {
       </Text>
 
       {/* Button */}
-      <TouchableOpacity style={styles.button} activeOpacity={0.8}>
+      <TouchableOpacity
+        style={styles.button}
+        activeOpacity={0.8}
+        onPress={() => Linking.openURL('https://app.yapper.ai/login')}
+      >
         <Text style={styles.buttonText}>{t('auth.forgotPassword.continueButton')}</Text>
       </TouchableOpacity>
     </View>
@@ -66,7 +70,7 @@ const createStyles = (theme: Theme, scaleFactor: number) =>
       color: theme.colors.text.link,
     },
     button: {
-      backgroundColor: theme.colors.text.inverse,
+      backgroundColor: theme.colors.background.inverse,
       paddingVertical: theme.spacing.md * scaleFactor,
       paddingHorizontal: theme.spacing.xxl * scaleFactor,
       borderRadius: theme.borderRadius.full,

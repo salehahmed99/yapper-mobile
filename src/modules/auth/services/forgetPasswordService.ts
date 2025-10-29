@@ -1,4 +1,5 @@
 import api from '../../../services/apiClient';
+import { extractErrorMessage } from '../../../utils/errorExtraction';
 import {
   IForgetPasswordRequest,
   IVerifyOTPRequest,
@@ -16,13 +17,7 @@ export const requestForgetPassword = async (credentials: IForgetPasswordRequest)
     const res = await api.post<IForgetPasswordResponse>('/auth/forget-password', credentials);
     return res.data.data.isEmailSent;
   } catch (error: unknown) {
-    let message = 'Something went wrong';
-    if (error instanceof Error) {
-      message = error.message;
-    } else if (typeof error === 'string') {
-      message = error;
-    }
-
+    const message = extractErrorMessage(error);
     throw new Error(message);
   }
 };
@@ -35,14 +30,7 @@ export const verifyOTP = async (credentials: IVerifyOTPRequest): Promise<string>
     const res = await api.post<IVerifyOTPResponse>('/auth/password/verify-otp', credentials);
     return res.data.data.resetToken;
   } catch (error: unknown) {
-    let message = 'Something went wrong';
-
-    if (error instanceof Error) {
-      message = error.message;
-    } else if (typeof error === 'string') {
-      message = error;
-    }
-
+    const message = extractErrorMessage(error);
     throw new Error(message);
   }
 };
@@ -59,14 +47,7 @@ export const resetPassword = async (credentials: IResetPasswordRequest): Promise
     });
     return res.data.message === 'Password reset successfully';
   } catch (error: unknown) {
-    let message = 'Something went wrong';
-
-    if (error instanceof Error) {
-      message = error.message;
-    } else if (typeof error === 'string') {
-      message = error;
-    }
-
+    const message = extractErrorMessage(error);
     throw new Error(message);
   }
 };
