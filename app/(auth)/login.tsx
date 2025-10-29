@@ -1,4 +1,5 @@
 import * as Localization from 'expo-localization';
+import { useRouter } from 'expo-router';
 import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,10 +19,10 @@ import {
 import { checkExists, login } from '@/src/modules/auth/services/authService';
 
 // Components
-import BottomBar from '../../src/modules/auth/components/BottomBar';
+import BottomBar from '../../src/modules/auth/components/shared/BottomBar';
 import EmailForm from '../../src/modules/auth/components/EmailForm';
 import PasswordForm from '../../src/modules/auth/components/PasswordForm';
-import TopBar from '../../src/modules/auth/components/TopBar';
+import TopBar from '../../src/modules/auth/components/shared/TopBar';
 
 // Utils
 import { ILoginResponse } from '@/src/modules/auth/types';
@@ -49,6 +50,7 @@ const LoginScreen = () => {
   const defaultCountry = Localization.getLocales()[0]?.regionCode || 'US';
   const loginUser = useAuthStore((state) => state.loginUser);
   const { t } = useTranslation();
+  const router = useRouter();
 
   // ============================================
   // Input Detection & Validation
@@ -108,7 +110,7 @@ const LoginScreen = () => {
   };
 
   const handleForgotPassword = () => {
-    Alert.alert(t('auth.login.alerts.forgotPasswordPressed'));
+    router.replace('/(auth)/forgetPassword');
   };
 
   // ============================================
@@ -239,10 +241,20 @@ const LoginScreen = () => {
       )}
 
       <BottomBar
-        text={currentStep === 1 ? ButtonOptions.NEXT : ButtonOptions.LOGIN}
-        isNextEnabled={nextState}
-        onNext={handleNext}
-        onForgotPassword={handleForgotPassword}
+        rightButton={{
+          label: currentStep === 1 ? ButtonOptions.NEXT : ButtonOptions.LOGIN,
+          onPress: handleNext,
+          enabled: nextState,
+          visible: true,
+          type: 'primary',
+        }}
+        leftButton={{
+          label: ButtonOptions.forgetPassword,
+          onPress: handleForgotPassword,
+          enabled: true,
+          visible: true,
+          type: 'secondary',
+        }}
       />
     </>
   );
