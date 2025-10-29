@@ -1,13 +1,14 @@
+import { IUser } from '@/src/types/user';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getUserList } from '../services/userListService';
-import { IUserListUser, UserListQuery } from '../types';
+import { UserListQuery } from '../types';
 
 type UseUserListOptions = UserListQuery & {
   autoLoad?: boolean;
 };
 
 interface IUseUserListResult {
-  users: IUserListUser[];
+  users: IUser[];
   loading: boolean;
   refreshing: boolean;
   error: string | null;
@@ -19,7 +20,7 @@ interface IUseUserListResult {
 export const useUserList = (options: UseUserListOptions): IUseUserListResult => {
   const { autoLoad = true } = options;
 
-  const [users, setUsers] = useState<IUserListUser[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
