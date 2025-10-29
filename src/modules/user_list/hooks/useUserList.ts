@@ -1,40 +1,36 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getUserList } from '../services/userListService';
-import { FetchUserListParams, IUserListUser, UserListType } from '../types';
+import { IUserListUser, UserListQuery } from '../types';
 
-interface UseUserListOptions {
-  tweetId: string;
-  type: UserListType;
+type UseUserListOptions = UserListQuery & {
   autoLoad?: boolean;
-}
+};
 
-interface UseUserListResult {
+interface IUseUserListResult {
   users: IUserListUser[];
   loading: boolean;
   refreshing: boolean;
   error: string | null;
   hasNextPage: boolean;
-  refresh: () => Promise<void>;
-  loadMore: () => Promise<void>;
+  refresh: () => void;
+  loadMore: () => void;
 }
 
-export const useUserList = ({ tweetId, type, autoLoad = true }: UseUserListOptions): UseUserListResult => {
+export const useUserList = (options: UseUserListOptions): IUseUserListResult => {
+  const { autoLoad = true } = options;
+
   const [users, setUsers] = useState<IUserListUser[]>([]);
-  const [cursor, setCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasNextPage, setHasNextPage] = useState(true);
+
   const loadingRef = useRef(false);
+  const currentPageRef = useRef(1);
 
   const fetchPage = useCallback(
-    async (params: FetchUserListParams, opts?: { reset?: boolean; isRefresh?: boolean }) => {
-      if (loadingRef.current) {
-        return;
-      }
-
-      const isReset = opts?.reset ?? false;
-      const isRefresh = opts?.isRefresh ?? false;
+    async (pageNumber: number, isRefresh = false) => {
+      if (loadingRef.current) return;
 
       loadingRef.current = true;
       setError(null);
@@ -42,16 +38,18 @@ export const useUserList = ({ tweetId, type, autoLoad = true }: UseUserListOptio
       setRefreshing(isRefresh);
 
       try {
-        const data = await getUserList(params);
-        setUsers((prev) => (isReset ? data.users : [...prev, ...data.users]));
-        setCursor(data.nextCursor ?? null);
-        setHasNextPage(Boolean(data.nextCursor));
+        const data = await getUserList({ ...options, page: pageNumber });
+
+        setUsers((prev) => (isRefresh ? data.users : [...prev, ...data.users]));
+        currentPageRef.current = data.nextPage ?? pageNumber;
+        setHasNextPage(Boolean(data.nextPage));
       } catch (err: any) {
         const message = err?.response?.data?.message || err?.message || 'Failed to load users';
         setError(message);
-        if (isReset) {
+
+        if (isRefresh) {
           setUsers([]);
-          setCursor(null);
+          currentPageRef.current = 1;
         }
       } finally {
         setLoading(false);
@@ -59,28 +57,21 @@ export const useUserList = ({ tweetId, type, autoLoad = true }: UseUserListOptio
         loadingRef.current = false;
       }
     },
-    [],
+    [options],
   );
 
-  const refresh = useCallback(async () => {
-    await fetchPage({ tweetId, type, cursor: null }, { reset: true, isRefresh: true });
-  }, [fetchPage, tweetId, type]);
+  const refresh = useCallback(() => fetchPage(1, true), [fetchPage]);
 
-  const loadMore = useCallback(async () => {
-    if (!hasNextPage || loadingRef.current) {
-      return;
+  const loadMore = useCallback(() => {
+    if (hasNextPage && !loadingRef.current) {
+      fetchPage(currentPageRef.current, false);
     }
-    await fetchPage({ tweetId, type, cursor }, { reset: false, isRefresh: false });
-  }, [cursor, fetchPage, hasNextPage, tweetId, type]);
+  }, [hasNextPage, fetchPage]);
 
   useEffect(() => {
-    setUsers([]);
-    setCursor(null);
-    setHasNextPage(true);
-    if (autoLoad) {
-      fetchPage({ tweetId, type, cursor: null }, { reset: true, isRefresh: false });
-    }
-  }, [autoLoad, fetchPage, tweetId, type]);
+    if (autoLoad) fetchPage(1, false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoLoad]);
 
   return {
     users,
