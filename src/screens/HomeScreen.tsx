@@ -5,26 +5,27 @@ import XLogo from '@/src/components/icons/XLogo';
 import AppBar from '@/src/components/shell/AppBar';
 import type { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import { useUiShell } from '@/src/context/UiShellContext';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 export default function HomeScreen() {
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  const { activeTab: activeTabKey, setActiveTab } = useUiShell();
-  const tabKeys = ['foryou', 'following'];
-  const activeTab = Math.max(0, tabKeys.indexOf(activeTabKey));
+  // Use a local index for the Home top tabs (For You / Following).
+  // We intentionally do NOT write this into the global `activeTab` state
+  // so the bottom navigation remains correctly highlighted when switching
+  // between these inner tabs.
+  const [homeIndex, setHomeIndex] = React.useState(0);
 
   return (
     <View style={styles.container}>
       <View style={styles.appBarWrapper}>
         <AppBar
           children={<XLogo size={32} color={theme.colors.text.primary} />}
-          tabView={<HomeTabView index={activeTab} onIndexChange={(i) => setActiveTab(tabKeys[i])} />}
+          tabView={<HomeTabView index={homeIndex} onIndexChange={(i) => setHomeIndex(i)} />}
         />
       </View>
-      {activeTab === 0 ? <ForYouTab /> : <FollowersTab />}
+      {homeIndex === 0 ? <ForYouTab /> : <FollowersTab />}
     </View>
   );
 }

@@ -118,35 +118,35 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             showsVerticalScrollIndicator={false}
           >
             {/* Menu tiles */}
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(profile)')}>
+            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/(profile)')}>
               <User color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
               <Text style={styles.menuTileText}>{t('menu.profile')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/premium')}>
+            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/premium')}>
               <Sparkles color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
               <Text style={styles.menuTileText}>{t('menu.premium')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/videos')}>
+            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/videos')}>
               <Video color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
               <Text style={styles.menuTileText}>{t('menu.videos')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/chat')}>
+            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/chat')}>
               <MessageCircle color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
               <Text style={styles.menuTileText}>{t('menu.chat')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/communities')}>
+            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/communities')}>
               <Users color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
               <Text style={styles.menuTileText}>{t('menu.communities')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/bookmarks')}>
+            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/bookmarks')}>
               <Bookmark color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
               <Text style={styles.menuTileText}>{t('menu.bookmarks')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/lists')}>
+            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/lists')}>
               <LayoutList color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
               <Text style={styles.menuTileText}>{t('menu.lists')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/spaces')}>
+            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/spaces')}>
               <User color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
               <Text style={styles.menuTileText}>{t('menu.spaces')}</Text>
             </TouchableOpacity>
@@ -154,19 +154,19 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             <View style={styles.divider} />
 
             {/* Utility links */}
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/download')}>
+            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/download')}>
               <Download color={theme.colors.text.primary} size={theme.iconSizes.icon} />
               <Text style={styles.tileText}>{t('menu.download')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/settings')}>
+            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/settings')}>
               <Settings color={theme.colors.text.primary} size={theme.iconSizes.icon} />
               <Text style={styles.tileText}>{t('menu.settings')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/help')}>
+            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/help')}>
               <User color={theme.colors.text.primary} size={theme.iconSizes.icon} />
               <Text style={styles.tileText}>{t('menu.help')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/purchases')}>
+            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/purchases')}>
               <Download color={theme.colors.text.primary} size={theme.iconSizes.icon} />
               <Text style={styles.tileText}>{t('menu.purchases')}</Text>
             </TouchableOpacity>

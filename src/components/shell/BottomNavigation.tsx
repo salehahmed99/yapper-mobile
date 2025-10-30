@@ -14,10 +14,10 @@ const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
 const items = [
   { key: 'home', label: 'Home', path: '/(protected)', icon: Home },
-  { key: 'search', label: 'Search', path: '/search', icon: Search },
-  { key: 'grok', label: 'Grok', path: '/grok', icon: GrokLogo },
-  { key: 'notifications', label: 'Notifications', path: '/notifications', icon: Bell },
-  { key: 'messages', label: 'Messages', path: '/messages', icon: Mail },
+  { key: 'search', label: 'Search', path: '/(protected)/search', icon: Search },
+  { key: 'grok', label: 'Grok', path: '/(protected)/grok', icon: GrokLogo },
+  { key: 'notifications', label: 'Notifications', path: '/(protected)/notifications', icon: Bell },
+  { key: 'messages', label: 'Messages', path: '/(protected)/messages', icon: Mail },
 ];
 
 interface IBottomNavigationProps {
