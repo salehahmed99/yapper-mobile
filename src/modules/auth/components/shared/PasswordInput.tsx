@@ -28,10 +28,16 @@ const PasswordInput: React.FC<IPasswordInputProps> = ({
   const [focused, setFocused] = useState(false);
   const anim = useState(new Animated.Value(value ? 1 : 0))[0];
   const { theme } = useTheme();
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
 
-  const scaleFactor = Math.min(Math.max(width / 390, 0.85), 1.1);
-  const styles = useMemo(() => createStyles(theme, scaleFactor), [theme, scaleFactor]);
+  const scaleWidth = Math.min(Math.max(width / 390, 0.85), 1.1);
+  const scaleHeight = Math.min(Math.max(height / 844, 0.85), 1.1);
+  const scaleFonts = Math.min(scaleWidth, scaleHeight);
+
+  const styles = useMemo(
+    () => createStyles(theme, scaleWidth, scaleHeight, scaleFonts),
+    [theme, scaleWidth, scaleHeight, scaleFonts],
+  );
 
   const animateLabel = (toValue: number) => {
     Animated.timing(anim, {
@@ -45,8 +51,8 @@ const PasswordInput: React.FC<IPasswordInputProps> = ({
     status === 'error' ? theme.colors.error : focused ? theme.colors.text.link : theme.colors.text.secondary;
 
   const labelStyle = {
-    top: anim.interpolate({ inputRange: [0, 1], outputRange: [20 * scaleFactor, -8 * scaleFactor] }),
-    fontSize: anim.interpolate({ inputRange: [0, 1], outputRange: [17, 13] }),
+    top: anim.interpolate({ inputRange: [0, 1], outputRange: [20 * scaleHeight, -8 * scaleHeight] }),
+    fontSize: anim.interpolate({ inputRange: [0, 1], outputRange: [17 * scaleFonts, 13 * scaleFonts] }),
     color: anim.interpolate({
       inputRange: [0, 1],
       outputRange: [theme.colors.text.secondary, labelColor],
@@ -86,21 +92,21 @@ const PasswordInput: React.FC<IPasswordInputProps> = ({
             accessibilityHint={isVisible ? 'Hides password' : 'Shows password'}
           >
             {isVisible ? (
-              <EyeOff color={theme.colors.text.secondary} size={20} />
+              <EyeOff color={theme.colors.text.secondary} size={20 * scaleFonts} />
             ) : (
-              <Eye color={theme.colors.text.secondary} size={20} />
+              <Eye color={theme.colors.text.secondary} size={20 * scaleFonts} />
             )}
           </TouchableOpacity>
 
           {showCheck && status === 'success' && (
             <View style={styles.successIcon}>
-              <Check color={theme.colors.text.inverse} size={14} />
+              <Check color={theme.colors.text.inverse} size={14 * scaleFonts} />
             </View>
           )}
 
           {showCheck && status === 'error' && (
             <View style={styles.errorIconContainer} accessibilityLabel="Password_invalid">
-              <AlertCircle color={theme.colors.error} size={24} />
+              <AlertCircle color={theme.colors.error} size={24 * scaleFonts} />
             </View>
           )}
         </>
@@ -111,19 +117,19 @@ const PasswordInput: React.FC<IPasswordInputProps> = ({
   );
 };
 
-const createStyles = (theme: Theme, scaleFactor: number = 1) =>
+const createStyles = (theme: Theme, scaleWidth: number = 1, scaleHeight: number = 1, scaleFonts: number = 1) =>
   StyleSheet.create({
     inputContainer: {
       position: 'relative',
-      marginBottom: theme.spacing.xxll * scaleFactor,
+      marginBottom: theme.spacing.xxll * scaleHeight,
     },
     input: {
-      height: 56 * scaleFactor,
+      height: 56 * scaleHeight,
       borderWidth: 1,
       borderColor: theme.colors.border,
       borderRadius: theme.borderRadius.sm,
-      paddingHorizontal: theme.spacing.lg * scaleFactor,
-      fontSize: theme.typography.sizes.md * scaleFactor,
+      paddingHorizontal: theme.spacing.lg * scaleWidth,
+      fontSize: theme.typography.sizes.md * scaleFonts,
       color: theme.colors.text.primary,
       backgroundColor: theme.colors.background.primary,
       fontFamily: theme.typography.fonts.regular,
@@ -138,23 +144,24 @@ const createStyles = (theme: Theme, scaleFactor: number = 1) =>
     },
     floatingLabel: {
       position: 'absolute',
-      left: theme.spacing.md * scaleFactor,
+      left: theme.spacing.md * scaleWidth,
       backgroundColor: theme.colors.background.primary,
-      paddingHorizontal: theme.spacing.xs * scaleFactor,
+      paddingHorizontal: theme.spacing.xs * scaleWidth,
       zIndex: 1,
     },
     eyeIcon: {
       position: 'absolute',
-      right: theme.spacing.xxxl * scaleFactor,
-      top: theme.spacing.lg * scaleFactor,
-      padding: theme.spacing.xs * scaleFactor,
+      right: theme.spacing.xxxl * scaleWidth,
+      top: theme.spacing.lg * scaleHeight,
+      paddingHorizontal: theme.spacing.xs * scaleWidth,
+      paddingVertical: theme.spacing.xs * scaleHeight,
     },
     successIcon: {
       position: 'absolute',
-      right: theme.spacing.md * scaleFactor,
-      top: theme.spacing.xl * scaleFactor,
-      width: 20 * scaleFactor,
-      height: 20 * scaleFactor,
+      right: theme.spacing.md * scaleWidth,
+      top: theme.spacing.xl * scaleHeight,
+      width: 20 * scaleWidth,
+      height: 20 * scaleHeight,
       borderRadius: theme.borderRadius.lg,
       backgroundColor: theme.colors.success,
       alignItems: 'center',
@@ -162,13 +169,14 @@ const createStyles = (theme: Theme, scaleFactor: number = 1) =>
     },
     errorIconContainer: {
       position: 'absolute',
-      right: theme.spacing.md * scaleFactor,
-      top: theme.spacing.lg * scaleFactor,
-      padding: theme.spacing.xs * scaleFactor,
+      right: theme.spacing.md * scaleWidth,
+      top: theme.spacing.lg * scaleHeight,
+      paddingHorizontal: theme.spacing.xs * scaleWidth,
+      paddingVertical: theme.spacing.xs * scaleHeight,
     },
     errorText: {
-      marginTop: theme.spacing.xs * scaleFactor,
-      fontSize: theme.typography.sizes.xs * scaleFactor,
+      marginTop: theme.spacing.xs * scaleHeight,
+      fontSize: theme.typography.sizes.xs * scaleFonts,
       color: theme.colors.error,
     },
   });

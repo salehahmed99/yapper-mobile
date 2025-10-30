@@ -10,12 +10,13 @@ interface ITopBarProps {
 
 const TopBar: React.FC<ITopBarProps> = ({ onBackPress }) => {
   const { theme } = useTheme();
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
 
-  // Responsive scaling — adjusts smoothly based on screen width
-  const scaleFactor = Math.min(Math.max(width / 390, 0.85), 1.1);
+  const scaleWidth = Math.min(Math.max(width / 390, 0.85), 1.1);
+  const scaleHeight = Math.min(Math.max(height / 844, 0.85), 1.1);
+  const scaleFonts = Math.min(scaleWidth, scaleHeight);
 
-  const styles = useMemo(() => createStyles(theme, scaleFactor), [theme, scaleFactor]);
+  const styles = useMemo(() => createStyles(theme, scaleWidth, scaleHeight), [theme, scaleWidth, scaleHeight]);
 
   return (
     <View style={styles.container}>
@@ -26,7 +27,7 @@ const TopBar: React.FC<ITopBarProps> = ({ onBackPress }) => {
         activeOpacity={0.7}
         accessibilityLabel="TopBar_Exit_Button"
       >
-        <X color={theme.colors.text.primary} size={24 * scaleFactor} />
+        <X color={theme.colors.text.primary} size={24 * scaleFonts} />
       </TouchableOpacity>
 
       {/* Centered X Logo */}
@@ -37,12 +38,12 @@ const TopBar: React.FC<ITopBarProps> = ({ onBackPress }) => {
   );
 };
 
-const createStyles = (theme: Theme, scaleFactor: number) =>
+const createStyles = (theme: Theme, scaleWidth: number = 1, scaleHeight: number = 1) =>
   StyleSheet.create({
     container: {
       width: '100%',
-      height: 48 * scaleFactor,
-      paddingHorizontal: theme.spacing.md * scaleFactor,
+      height: 48 * scaleHeight,
+      paddingHorizontal: theme.spacing.md * scaleWidth,
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: theme.colors.background.primary,
@@ -50,7 +51,8 @@ const createStyles = (theme: Theme, scaleFactor: number) =>
     exitButton: {
       justifyContent: 'center',
       alignItems: 'center',
-      padding: theme.spacing.sm * scaleFactor,
+      paddingHorizontal: theme.spacing.sm * scaleWidth,
+      paddingVertical: theme.spacing.sm * scaleHeight,
     },
     logoContainer: {
       position: 'absolute',
@@ -60,8 +62,8 @@ const createStyles = (theme: Theme, scaleFactor: number) =>
       justifyContent: 'center',
     },
     logo: {
-      width: 90 * scaleFactor,
-      height: 90 * scaleFactor,
+      width: 90 * scaleWidth,
+      height: 90 * scaleHeight,
     },
   });
 
