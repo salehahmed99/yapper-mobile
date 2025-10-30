@@ -13,7 +13,7 @@ interface IFollowButtonProps {
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
     followButton: {
-      backgroundColor: '#FFFFFF',
+      backgroundColor: theme.colors.text.primary,
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.xs / 2,
       borderRadius: theme.borderRadius.full,
@@ -28,7 +28,7 @@ const createStyles = (theme: Theme) =>
       borderColor: theme.colors.border,
     },
     followButtonText: {
-      color: '#000000',
+      color: theme.colors.text.inverse,
       fontSize: theme.typography.sizes.sm - 1,
       fontFamily: theme.typography.fonts.bold,
       lineHeight: theme.typography.sizes.sm * theme.typography.lineHeights.tight,
@@ -45,7 +45,7 @@ const FollowButton: React.FC<IFollowButtonProps> = ({ user, onPress }) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const handlePress = (e: any) => {
-    e.stopPropagation();
+    e?.stopPropagation?.();
     onPress(user);
   };
 
