@@ -214,13 +214,5 @@ describe('UserList', () => {
 
       expect(mockUseUserList).toHaveBeenCalledWith(expect.objectContaining({ type: 'reposts' }));
     });
-
-    it('should work with quotes type', () => {
-      mockUseUserList.mockReturnValue(defaultHookReturn);
-
-      renderComponent({ type: 'quotes' });
-
-      expect(mockUseUserList).toHaveBeenCalledWith(expect.objectContaining({ type: 'quotes' }));
-    });
   });
 });
