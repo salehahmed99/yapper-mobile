@@ -76,6 +76,7 @@ const PasswordForm: React.FC<ISecondPageLoginProps> = ({
           value={userIdentifier}
           editable={false}
           placeholderTextColor={theme.colors.text.secondary}
+          accessibilityLabel="user-identifier-input"
         />
       </View>
 
@@ -104,6 +105,7 @@ const PasswordForm: React.FC<ISecondPageLoginProps> = ({
           autoCorrect={false}
           keyboardAppearance="dark"
           placeholderTextColor={theme.colors.text.secondary}
+          accessibilityLabel="password-input"
         />
         {password.length > 0 && (
           <>
@@ -111,7 +113,7 @@ const PasswordForm: React.FC<ISecondPageLoginProps> = ({
               style={styles.eyeIcon}
               onPress={onTogglePasswordVisibility}
               accessibilityRole="button"
-              accessibilityLabel={isPasswordVisible ? 'Hide password' : 'Show password'}
+              accessibilityLabel={isPasswordVisible ? 'Hide_password_button' : 'Show_password_button'}
             >
               {isPasswordVisible ? (
                 <EyeOff color={theme.colors.text.secondary} size={20} />

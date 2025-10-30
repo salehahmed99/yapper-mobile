@@ -62,6 +62,7 @@ const EmailForm: React.FC<IEmailFormProps> = ({ text, onTextChange }) => {
           autoCapitalize="none"
           autoCorrect={false}
           keyboardAppearance="dark"
+          accessibilityLabel="user-identifier-input"
         />
       </View>
     </View>

@@ -39,7 +39,12 @@ const BottomBar: React.FC<IBottomBarProps> = ({
 
       <View style={styles.content}>
         {/* Forgot Password button on the left */}
-        <TouchableOpacity onPress={forgotPasswordPress} style={styles.forgotPasswordButton} activeOpacity={0.7}>
+        <TouchableOpacity
+          onPress={forgotPasswordPress}
+          style={styles.forgotPasswordButton}
+          activeOpacity={0.7}
+          accessibilityLabel="forgot-password-button"
+        >
           <Text style={styles.forgotPasswordText}>{t('auth.login.forgotPassword')}</Text>
         </TouchableOpacity>
 
