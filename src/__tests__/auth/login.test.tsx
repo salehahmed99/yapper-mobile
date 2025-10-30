@@ -233,15 +233,4 @@ describe('LoginScreen', () => {
       });
     });
   });
-
-  describe('Forgot Password', () => {
-    it('should show alert when Forgot password is pressed', () => {
-      jest.spyOn(Alert, 'alert').mockImplementation(() => {});
-      renderWithTheme(<LoginScreen />);
-
-      fireEvent.press(screen.getByText('Forgot password?'));
-
-      expect(Alert.alert).toHaveBeenCalled();
-    });
-  });
 });

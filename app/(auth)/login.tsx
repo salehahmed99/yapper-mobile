@@ -1,9 +1,10 @@
 import * as Localization from 'expo-localization';
 import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js/max';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Keyboard } from 'react-native';
+import { Alert, Keyboard, StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
+import { useTheme } from '@/src/context/ThemeContext';
 
 // Schemas
 import {
@@ -18,15 +19,19 @@ import {
 import { checkExists, login } from '@/src/modules/auth/services/authService';
 
 // Components
-import BottomBar from '../../src/modules/auth/components/BottomBar';
+import BottomBar from '../../src/modules/auth/components/shared/BottomBar';
 import EmailForm from '../../src/modules/auth/components/EmailForm';
 import PasswordForm from '../../src/modules/auth/components/PasswordForm';
-import TopBar from '../../src/modules/auth/components/TopBar';
+import TopBar from '../../src/modules/auth/components/shared/TopBar';
 
 // Utils
 import { ILoginResponse } from '@/src/modules/auth/types';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { ButtonOptions } from '../../src/modules/auth/utils/enums';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Theme } from '@/src/constants/theme';
+import { router } from 'expo-router';
+import ActivityLoader from '@/src/components/ActivityLoader';
 
 // Types
 type InputType = 'email' | 'phone' | 'username' | null;
@@ -42,6 +47,7 @@ const LoginScreen = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [nextState, setNextState] = useState(false);
   const [inputType, setInputType] = useState<InputType>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // ============================================
   // Hooks & Constants
@@ -49,6 +55,9 @@ const LoginScreen = () => {
   const defaultCountry = Localization.getLocales()[0]?.regionCode || 'US';
   const loginUser = useAuthStore((state) => state.loginUser);
   const { t } = useTranslation();
+  const { theme } = useTheme();
+
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   // ============================================
   // Input Detection & Validation
@@ -104,7 +113,7 @@ const LoginScreen = () => {
   };
 
   const handleBack = () => {
-    Alert.alert(t('auth.login.alerts.backButtonPressed'));
+    router.replace('/(auth)');
   };
 
   const handleForgotPassword = () => {
@@ -207,6 +216,7 @@ const LoginScreen = () => {
   // ============================================
   const handleNext = async () => {
     Keyboard.dismiss();
+    setIsLoading(true);
 
     if (currentStep === 1) {
       const isValid = await handleStepOne();
@@ -217,13 +227,15 @@ const LoginScreen = () => {
     } else {
       await handleStepTwo();
     }
+    setIsLoading(false);
   };
 
   // ============================================
   // Render
   // ============================================
   return (
-    <>
+    <SafeAreaView style={styles.container}>
+      <ActivityLoader visible={isLoading} message="Loading..." />
       <TopBar onBackPress={handleBack} />
 
       {currentStep === 1 ? (
@@ -239,13 +251,31 @@ const LoginScreen = () => {
       )}
 
       <BottomBar
-        text={currentStep === 1 ? ButtonOptions.NEXT : ButtonOptions.LOGIN}
-        isNextEnabled={nextState}
-        onNext={handleNext}
-        onForgotPassword={handleForgotPassword}
+        rightButton={{
+          label: currentStep === 1 ? ButtonOptions.NEXT : ButtonOptions.LOGIN,
+          onPress: handleNext,
+          enabled: nextState,
+          visible: true,
+          type: 'primary',
+        }}
+        leftButton={{
+          label: ButtonOptions.FORGET_PASSWORD,
+          onPress: currentStep === 1 ? handleBack : handleForgotPassword,
+          enabled: true,
+          visible: true,
+          type: 'secondary',
+        }}
       />
-    </>
+    </SafeAreaView>
   );
 };
+
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background.primary,
+    },
+  });
 
 export default LoginScreen;

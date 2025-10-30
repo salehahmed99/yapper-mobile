@@ -1,21 +1,27 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, TextInput, View } from 'react-native';
-import type { Theme } from '../../../constants/theme';
-import { useTheme } from '../../../context/ThemeContext';
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
 
-interface IEmailFormProps {
-  text: string;
-  onTextChange: (text: string) => void;
+interface IAuthInputProps {
+  title: string;
+
+  description: string;
+
+  label: string;
+
+  value: string;
+
+  onChange: (text: string) => void;
 }
 
-const EmailForm: React.FC<IEmailFormProps> = ({ text, onTextChange }) => {
-  const { theme } = useTheme();
+const AuthInput: React.FC<IAuthInputProps> = ({ title, description, label, value, onChange }) => {
   const [isFocused, setIsFocused] = useState(false);
-  const { t } = useTranslation();
-  const labelPosition = useRef(new Animated.Value(text ? 1 : 0)).current;
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const labelPosition = useRef(new Animated.Value(value ? 1 : 0)).current;
 
-  const shouldFloat = isFocused || text.length > 0;
+  const shouldFloat = isFocused || value.length > 0;
 
   useEffect(() => {
     Animated.timing(labelPosition, {
@@ -27,7 +33,7 @@ const EmailForm: React.FC<IEmailFormProps> = ({ text, onTextChange }) => {
 
   const labelStyle = {
     position: 'absolute' as const,
-    left: 16,
+    left: theme.spacing.lg,
     top: labelPosition.interpolate({
       inputRange: [0, 1],
       outputRange: [18, -10],
@@ -41,33 +47,35 @@ const EmailForm: React.FC<IEmailFormProps> = ({ text, onTextChange }) => {
       outputRange: [theme.colors.text.secondary, isFocused ? theme.colors.text.link : theme.colors.text.secondary],
     }),
     backgroundColor: theme.colors.background.primary,
-    paddingHorizontal: 4,
+    paddingHorizontal: theme.spacing.xs,
     zIndex: 1,
   };
 
-  const styles = useMemo(() => createStyles(theme), [theme]);
-
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{t('auth.login.emailTitle')}</Text>
+      <Text style={styles.title}>{title}</Text>
+      {description && <Text style={styles.description}>{description}</Text>}
 
       <View style={styles.inputContainer}>
-        <Animated.Text style={labelStyle}>{t('auth.login.emailLabel')}</Animated.Text>
+        <Animated.Text style={labelStyle}>{label}</Animated.Text>
         <TextInput
           style={[styles.input, isFocused && styles.inputFocused]}
-          value={text}
-          onChangeText={onTextChange}
+          value={value}
+          onChangeText={onChange}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           autoCapitalize="none"
           autoCorrect={false}
           keyboardAppearance="dark"
-          accessibilityLabel="user-identifier-input"
+          accessibilityLabel="auth_input"
+          placeholderTextColor={theme.colors.text.secondary}
         />
       </View>
     </View>
   );
 };
+
+export default AuthInput;
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -75,15 +83,22 @@ const createStyles = (theme: Theme) =>
       flex: 1,
       backgroundColor: theme.colors.background.primary,
       paddingHorizontal: theme.spacing.mdg,
-      paddingTop: theme.spacing.xxl,
+      paddingTop: theme.spacing.lg,
     },
     title: {
       color: theme.colors.text.primary,
       fontSize: theme.typography.sizes.xml,
       fontFamily: theme.typography.fonts.bold,
       lineHeight: 36,
-      marginBottom: theme.spacing.xl,
+      marginBottom: theme.spacing.mdg,
       letterSpacing: -0.3,
+    },
+    description: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.typography.sizes.sm,
+      fontFamily: theme.typography.fonts.regular,
+      lineHeight: 20,
+      marginBottom: theme.spacing.lg,
     },
     inputContainer: {
       position: 'relative',
@@ -92,7 +107,7 @@ const createStyles = (theme: Theme) =>
     input: {
       height: 56,
       backgroundColor: theme.colors.background.primary,
-      borderColor: theme.colors.boderInverse,
+      borderColor: theme.colors.border,
       borderWidth: 1,
       borderRadius: theme.borderRadius.sm,
       paddingHorizontal: theme.spacing.lg,
@@ -100,11 +115,10 @@ const createStyles = (theme: Theme) =>
       color: theme.colors.text.primary,
       fontSize: theme.typography.sizes.md,
       width: '100%',
+      fontFamily: theme.typography.fonts.regular,
     },
     inputFocused: {
       borderColor: theme.colors.text.link,
       borderWidth: 2,
     },
   });
-
-export default EmailForm;

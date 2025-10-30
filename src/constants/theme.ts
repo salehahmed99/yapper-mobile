@@ -6,6 +6,7 @@ export const typography = {
     md: 17,
     lg: 20,
     xl: 23,
+    xml: 28,
     xxl: 31,
   },
   fonts: {
@@ -24,15 +25,19 @@ export const borderRadius = {
   md: 8,
   lg: 12,
   xl: 16,
+  xxl: 20,
   full: 9999,
 };
 export const spacing = {
   xs: 4,
   sm: 8,
   md: 12,
+  mdg: 15,
   lg: 16,
   xl: 20,
   xxl: 24,
+  xxll: 32,
+  xxxl: 40,
 };
 
 export const colors = {
@@ -48,8 +53,10 @@ export const colors = {
       primary: '#FFFFFF',
       secondary: '#F7F9F9',
       tertiary: '#EFF3F4',
+      inverse: '#000000',
     },
     border: '#EFF3F4',
+    boderInverse: '#2F3336',
     error: '#F4212E',
     success: '#00BA7C',
     warning: '#FFD400',
@@ -67,8 +74,10 @@ export const colors = {
       primary: '#000000',
       secondary: '#16181C',
       tertiary: '#2F3336',
+      inverse: '#FFFFFF',
     },
     border: '#2F3336',
+    boderInverse: '#8a8c8cff',
     error: '#F4212E',
     success: '#00BA7C',
     warning: '#FFD400',

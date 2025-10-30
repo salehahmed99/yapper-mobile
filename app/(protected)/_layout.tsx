@@ -8,7 +8,7 @@ const ProtectedLayout = () => {
 
   if (!isInitialized) return null;
   if (!isAuthenticated) {
-    return <Redirect href="/(auth)/login" />;
+    return <Redirect href="/(auth)" />;
   }
 
   return <Stack screenOptions={{ headerShown: false }} />;
