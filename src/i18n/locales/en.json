@@ -71,6 +71,26 @@
         "backButtonPressed": "Back button pressed",
         "forgotPasswordPressed": "Forgot Password pressed"
       }
+    },
+    "oauth": {
+      "headline": "See what’s happening in the world right now.",
+      "buttons": {
+        "continueWithGoogle": "Continue with Google",
+        "continueWithGithub": "Continue with GitHub",
+        "createAccount": "Create account"
+      },
+      "dividerText": "or",
+      "legalText": "By signing up, you agree to our",
+      "terms": "Terms",
+      "privacyPolicy": "Privacy Policy",
+      "cookieUse": "Cookie Use",
+      "loginPrompt": "Have an account already?",
+      "login": "Log in",
+      "accessibility": {
+        "logo": "Yapper logo",
+        "googleLogo": "Google logo",
+        "githubLogo": "GitHub logo"
+      }
     }
   },
   "userList": {

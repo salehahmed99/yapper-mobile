@@ -18,15 +18,16 @@ import {
 import { checkExists, login } from '@/src/modules/auth/services/authService';
 
 // Components
-import BottomBar from '../../src/modules/auth/components/BottomBar';
-import EmailForm from '../../src/modules/auth/components/EmailForm';
-import PasswordForm from '../../src/modules/auth/components/PasswordForm';
-import TopBar from '../../src/modules/auth/components/TopBar';
+import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
+import EmailForm from '@/src/modules/auth/components/EmailForm';
+import PasswordForm from '@/src/modules/auth/components/PasswordForm';
+import TopBar from '@/src/modules/auth/components/shared/TopBar';
 
 // Utils
 import { ILoginResponse } from '@/src/modules/auth/types';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { ButtonOptions } from '../../src/modules/auth/utils/enums';
+import { ButtonOptions } from '@/src/modules/auth/utils/enums';
+import React from 'react';
 
 // Types
 type InputType = 'email' | 'phone' | 'username' | null;
@@ -239,10 +240,20 @@ const LoginScreen = () => {
       )}
 
       <BottomBar
-        text={currentStep === 1 ? ButtonOptions.NEXT : ButtonOptions.LOGIN}
-        isNextEnabled={nextState}
-        onNext={handleNext}
-        onForgotPassword={handleForgotPassword}
+        rightButton={{
+          label: currentStep === 1 ? ButtonOptions.NEXT : ButtonOptions.LOGIN,
+          onPress: handleNext,
+          enabled: nextState,
+          visible: true,
+          type: 'primary',
+        }}
+        leftButton={{
+          label: ButtonOptions.FORGET_PASSWORD,
+          onPress: currentStep === 1 ? handleBack : handleForgotPassword,
+          enabled: true,
+          visible: true,
+          type: 'secondary',
+        }}
       />
     </>
   );

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Animated, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { Theme } from '../../../constants/theme';
 import { useTheme } from '../../../context/ThemeContext';
+import React from 'react';
 
 interface IEmailFormProps {
   text: string;
