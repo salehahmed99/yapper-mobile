@@ -1,14 +1,5 @@
 import { IUser } from '../../types/user';
-
-/**
- * Generic API Response
- */
-export interface IApiResponse<T> {
-  data: T;
-  count: number;
-  message: string;
-}
-
+import { IApiResponse } from '../../types/api';
 /**
  * Login
  */

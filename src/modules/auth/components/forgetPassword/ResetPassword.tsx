@@ -6,7 +6,7 @@ import { Theme } from '@/src/constants/theme';
 import DisabledInput from '../shared/DisabledInput';
 import PasswordInput from '../shared/PasswordInput';
 
-interface IResetPasswordPageProps {
+interface IResetPasswordProps {
   userIdentifier: string;
   newPassword: string;
   confirmPassword: string;
@@ -18,7 +18,7 @@ interface IResetPasswordPageProps {
   isConfirmPasswordVisible?: boolean;
 }
 
-const ResetPasswordScreen: React.FC<IResetPasswordPageProps> = ({
+const ResetPassword: React.FC<IResetPasswordProps> = ({
   userIdentifier,
   newPassword,
   confirmPassword,
@@ -89,4 +89,4 @@ const createStyles = (theme: Theme) =>
     },
   });
 
-export default ResetPasswordScreen;
+export default ResetPassword;

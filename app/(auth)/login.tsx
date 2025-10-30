@@ -1,5 +1,5 @@
 import * as Localization from 'expo-localization';
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
 import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,15 +19,15 @@ import {
 import { checkExists, login } from '@/src/modules/auth/services/authService';
 
 // Components
-import BottomBar from '../../src/modules/auth/components/shared/BottomBar';
-import EmailForm from '../../src/modules/auth/components/EmailForm';
-import PasswordForm from '../../src/modules/auth/components/PasswordForm';
-import TopBar from '../../src/modules/auth/components/shared/TopBar';
+import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
+import EmailForm from '@/src/modules/auth/components/EmailForm';
+import PasswordForm from '@/src/modules/auth/components/PasswordForm';
+import TopBar from '@/src/modules/auth/components/shared/TopBar';
 
 // Utils
 import { ILoginResponse } from '@/src/modules/auth/types';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { ButtonOptions } from '../../src/modules/auth/utils/enums';
+import { ButtonOptions } from '@/src/modules/auth/utils/enums';
 
 // Types
 type InputType = 'email' | 'phone' | 'username' | null;
@@ -50,7 +50,6 @@ const LoginScreen = () => {
   const defaultCountry = Localization.getLocales()[0]?.regionCode || 'US';
   const loginUser = useAuthStore((state) => state.loginUser);
   const { t } = useTranslation();
-  const router = useRouter();
 
   // ============================================
   // Input Detection & Validation

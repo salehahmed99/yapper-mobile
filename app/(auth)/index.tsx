@@ -1,7 +1,7 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,6 @@ import { useTranslation } from 'react-i18next';
 const WelcomeScreen = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const router = useRouter();
   const { width } = useWindowDimensions();
   const isAuthenticated = useAuthStore((state) => state.token !== null);
 
