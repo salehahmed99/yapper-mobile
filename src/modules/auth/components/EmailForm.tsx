@@ -92,7 +92,7 @@ const createStyles = (theme: Theme) =>
     input: {
       height: 56,
       backgroundColor: theme.colors.background.primary,
-      borderColor: theme.colors.boderInverse,
+      borderColor: theme.colors.borderInverse,
       borderWidth: 1,
       borderRadius: theme.borderRadius.sm,
       paddingHorizontal: theme.spacing.lg,
