@@ -1,6 +1,7 @@
 import FollowersTab from '@/src/components/home/FollowersTab';
 import ForYouTab from '@/src/components/home/ForYouTab';
 import HomeTabView from '@/src/components/home/HomeTabView';
+import XLogo from '@/src/components/icons/XLogo';
 import AppBar from '@/src/components/shell/AppBar';
 import type { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
@@ -18,7 +19,10 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.appBarWrapper}>
-        <AppBar tabView={<HomeTabView index={activeTab} onIndexChange={(i) => setActiveTab(tabKeys[i])} />} />
+        <AppBar
+          children={<XLogo size={32} color={theme.colors.text.primary} />}
+          tabView={<HomeTabView index={activeTab} onIndexChange={(i) => setActiveTab(tabKeys[i])} />}
+        />
       </View>
       {activeTab === 0 ? <ForYouTab /> : <FollowersTab />}
     </View>

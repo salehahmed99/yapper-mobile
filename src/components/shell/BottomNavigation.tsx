@@ -2,19 +2,20 @@ import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { BlurView } from 'expo-blur';
 import { usePathname, useRouter } from 'expo-router';
-import { Bell, Bot, Home, Mail, Search } from 'lucide-react-native';
+import { Bell, Home, Mail, Search } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUiShell } from '../../context/UiShellContext';
+import GrokLogo from '../icons/GrokLogo';
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
 const items = [
   { key: 'home', label: 'Home', path: '/(protected)', icon: Home },
   { key: 'search', label: 'Search', path: '/search', icon: Search },
-  { key: 'grok', label: 'Grok', path: '/grok', icon: Bot },
+  { key: 'grok', label: 'Grok', path: '/grok', icon: GrokLogo },
   { key: 'notifications', label: 'Notifications', path: '/notifications', icon: Bell },
   { key: 'messages', label: 'Messages', path: '/messages', icon: Mail },
 ];
