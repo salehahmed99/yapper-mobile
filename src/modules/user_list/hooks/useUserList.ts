@@ -27,7 +27,7 @@ export const useUserList = (options: UseUserListOptions): IUseUserListResult => 
   const [hasNextPage, setHasNextPage] = useState(true);
 
   const loadingRef = useRef(false);
-  const currentPageRef = useRef(1);
+  const currentPageRef = useRef(0);
 
   const fetchPage = useCallback(
     async (pageNumber: number, isRefresh = false) => {
@@ -42,7 +42,7 @@ export const useUserList = (options: UseUserListOptions): IUseUserListResult => 
         const data = await getUserList({ ...options, page: pageNumber });
 
         setUsers((prev) => (isRefresh ? data.users : [...prev, ...data.users]));
-        currentPageRef.current = data.nextPage ?? pageNumber;
+        currentPageRef.current = pageNumber;
         setHasNextPage(Boolean(data.nextPage));
       } catch (err: any) {
         const message = err?.response?.data?.message || err?.message || 'Failed to load users';
@@ -65,12 +65,12 @@ export const useUserList = (options: UseUserListOptions): IUseUserListResult => 
 
   const loadMore = useCallback(() => {
     if (hasNextPage && !loadingRef.current) {
-      fetchPage(currentPageRef.current, false);
+      fetchPage(currentPageRef.current + 1, false);
     }
   }, [hasNextPage, fetchPage]);
 
   useEffect(() => {
-    if (autoLoad) fetchPage(1, false);
+    if (autoLoad) fetchPage(currentPageRef.current + 1, false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoLoad]);
 
