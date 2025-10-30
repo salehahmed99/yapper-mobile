@@ -3,7 +3,7 @@ import { Animated, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 
-interface IAuthInputScreenProps {
+interface IAuthInputProps {
   title: string;
 
   description: string;
@@ -15,7 +15,7 @@ interface IAuthInputScreenProps {
   onChange: (text: string) => void;
 }
 
-const AuthInputScreen: React.FC<IAuthInputScreenProps> = ({ title, description, label, value, onChange }) => {
+const AuthInput: React.FC<IAuthInputProps> = ({ title, description, label, value, onChange }) => {
   const [isFocused, setIsFocused] = useState(false);
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -74,7 +74,7 @@ const AuthInputScreen: React.FC<IAuthInputScreenProps> = ({ title, description, 
   );
 };
 
-export default AuthInputScreen;
+export default AuthInput;
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({

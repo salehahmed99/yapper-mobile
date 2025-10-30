@@ -4,7 +4,7 @@ import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
 import { useTranslation } from 'react-i18next';
 
-const SuccessResetPasswordPage: React.FC = () => {
+const SuccessResetPassword: React.FC = () => {
   const { theme } = useTheme();
   const { width } = useWindowDimensions();
 
@@ -84,4 +84,4 @@ const createStyles = (theme: Theme, scaleFactor: number) =>
     },
   });
 
-export default SuccessResetPasswordPage;
+export default SuccessResetPassword;

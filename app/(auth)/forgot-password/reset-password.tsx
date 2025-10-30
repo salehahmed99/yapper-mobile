@@ -31,7 +31,7 @@ const ResetPasswordScreen = () => {
     if (!identifier || !resetToken) {
       router.replace('/(auth)/forgot-password/find-account');
     }
-  }, [identifier, resetToken, router]);
+  }, [identifier, resetToken]);
 
   useEffect(() => {
     const passwordsMatch = newPassword === confirmPassword;
