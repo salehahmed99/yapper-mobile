@@ -9,10 +9,10 @@ export interface IUserDTO {
   facebook_id?: string;
   google_id?: string;
   avatar_url?: string;
-  is_following?: false;
-  is_follower?: false;
-  is_muted?: false;
-  is_blocked?: false;
+  is_following?: boolean;
+  is_follower?: boolean;
+  is_muted?: boolean;
+  is_blocked?: boolean;
 }
 
 export interface IUser {
