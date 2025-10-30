@@ -48,6 +48,10 @@ const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.background.secondary,
       borderRadius: theme.borderRadius.lg,
     },
-    cardTitle: { color: theme.colors.text.primary, fontWeight: '700', marginBottom: theme.spacing.sm },
+    cardTitle: {
+      color: theme.colors.text.primary,
+      fontFamily: theme.typography.fonts.bold,
+      marginBottom: theme.spacing.sm,
+    },
     cardBody: { color: theme.colors.text.secondary },
   });

@@ -238,7 +238,7 @@ const createStyles = (theme: Theme) =>
     },
     tabText: {
       color: theme.colors.text.primary,
-      fontWeight: '800',
+      fontFamily: theme.typography.fonts.extraBold,
     },
     indicator: {
       position: 'absolute',

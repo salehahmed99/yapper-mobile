@@ -314,7 +314,7 @@ const createStyles = (theme: Theme) =>
       marginLeft: theme.spacing.xl,
       color: theme.colors.text.primary,
       fontSize: theme.typography.sizes.xl,
-      fontWeight: '500',
+      fontFamily: theme.typography.fonts.medium,
     },
     divider: {
       height: 1,
