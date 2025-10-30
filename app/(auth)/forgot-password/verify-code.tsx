@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
 import Toast from 'react-native-toast-message';
-import AuthInputScreen from '../../../src/modules/auth/components/shared/AuthInput';
-import BottomBar from '../../../src/modules/auth/components/shared/BottomBar';
-import TopBar from '../../../src/modules/auth/components/shared/TopBar';
-import ActivityLoader from '../../../src/components/ActivityLoader';
-import { verifyOTP } from '../../../src/modules/auth/services/forgetPasswordService';
-import { useForgotPasswordStore } from '../../../src/modules/auth/store/useForgetPasswordStore';
-import { ButtonOptions } from '../../../src/modules/auth/utils/enums';
+import AuthInputScreen from '@/src/modules/auth/components/shared/AuthInput';
+import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
+import TopBar from '@/src/modules/auth/components/shared/TopBar';
+import ActivityLoader from '@/src/components/ActivityLoader';
+import { verifyOTP } from '@/src/modules/auth/services/forgetPasswordService';
+import { useForgotPasswordStore } from '@/src/modules/auth/store/useForgetPasswordStore';
+import { ButtonOptions } from '@/src/modules/auth/utils/enums';
 
 const VerifyCodeScreen = () => {
   const { t } = useTranslation();
-  const router = useRouter();
 
   // Zustand store
   const identifier = useForgotPasswordStore((state) => state.identifier);
@@ -74,10 +73,13 @@ const VerifyCodeScreen = () => {
     router.replace('/(auth)/forgot-password/find-account');
   };
 
+  const handleTopBarBackPress = () => {
+    router.replace('/(auth)');
+  };
   return (
     <>
       <ActivityLoader visible={isLoading} message={t('activityLoader.verifyingCode')} />
-      <TopBar />
+      <TopBar onBackPress={handleTopBarBackPress} />
       <AuthInputScreen
         title={t('auth.forgotPassword.verifyCodeTitle')}
         description={t('auth.forgotPassword.verifyCodeDescription')}

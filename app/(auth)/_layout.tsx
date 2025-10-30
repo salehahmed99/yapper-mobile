@@ -1,5 +1,5 @@
 import { Stack, Redirect } from 'expo-router';
-import { useAuthStore } from '../../src/store/useAuthStore';
+import { useAuthStore } from '@/src/store/useAuthStore';
 
 export default function AuthLayout() {
   const isInitialized = useAuthStore((state) => state.isInitialized);
@@ -19,7 +19,7 @@ export default function AuthLayout() {
       }}
     >
       <Stack.Screen name="login" options={{ title: 'Login' }} />
-      <Stack.Screen name="forgot-password" options={{ title: 'Forgot Password' }} />
+      <Stack.Screen name="forgot-password/find-account" options={{ title: 'Forgot Password' }} />
     </Stack>
   );
 }

@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import SuccessScreen from '../../../src/modules/auth/components/forgetPassword/SuccessResetPassword';
-import TopBar from '../../../src/modules/auth/components/shared/TopBar';
-import { useForgotPasswordStore } from '../../../src/modules/auth/store/useForgetPasswordStore';
+import SuccessScreen from '@/src/modules/auth/components/forgetPassword/SuccessResetPassword';
+import TopBar from '@/src/modules/auth/components/shared/TopBar';
+import { useForgotPasswordStore } from '@/src/modules/auth/store/useForgetPasswordStore';
+import { router } from 'expo-router';
 
 const SuccessResetPasswordScreen = () => {
   const reset = useForgotPasswordStore((state) => state.reset);
@@ -16,9 +17,13 @@ const SuccessResetPasswordScreen = () => {
     return () => clearTimeout(timer);
   }, [reset]);
 
+  const handleTobBarBackPress = () => {
+    router.replace('/(auth)');
+  };
+
   return (
     <>
-      <TopBar />
+      <TopBar onBackPress={handleTobBarBackPress} />
       <SuccessScreen />
     </>
   );

@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
 import { Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
-import ResetPasswordPage from '../../../src/modules/auth/components/forgetPassword/ResetPassword';
-import BottomBar from '../../../src/modules/auth/components/shared/BottomBar';
-import TopBar from '../../../src/modules/auth/components/shared/TopBar';
-import ActivityLoader from '../../../src/components/ActivityLoader';
-import { resetPassword } from '../../../src/modules/auth/services/forgetPasswordService';
-import { passwordSchema } from '../../../src/modules/auth/schemas/schemas';
-import { useForgotPasswordStore } from '../../../src/modules/auth/store/useForgetPasswordStore';
-import { ButtonOptions } from '../../../src/modules/auth/utils/enums';
+import ResetPassword from '@/src/modules/auth/components/forgetPassword/ResetPassword';
+import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
+import TopBar from '@/src/modules/auth/components/shared/TopBar';
+import ActivityLoader from '@/src/components/ActivityLoader';
+import { resetPassword } from '@/src/modules/auth/services/forgetPasswordService';
+import { passwordSchema } from '@/src/modules/auth/schemas/schemas';
+import { useForgotPasswordStore } from '@/src/modules/auth/store/useForgetPasswordStore';
+import { ButtonOptions } from '@/src/modules/auth/utils/enums';
 
 const ResetPasswordScreen = () => {
   const { t } = useTranslation();
-  const router = useRouter();
 
   // Zustand store
   const identifier = useForgotPasswordStore((state) => state.identifier);
@@ -99,11 +98,15 @@ const ResetPasswordScreen = () => {
     router.replace('/(auth)/forgot-password/verify-code');
   };
 
+  const handleTopBarBackPress = () => {
+    router.replace('/(auth)');
+  };
+
   return (
     <>
       <ActivityLoader visible={isLoading} message={t('auth.forgotPassword.resettingPassword')} />
-      <TopBar />
-      <ResetPasswordPage
+      <TopBar onBackPress={handleTopBarBackPress} />
+      <ResetPassword
         userIdentifier={identifier}
         newPassword={newPassword}
         confirmPassword={confirmPassword}
