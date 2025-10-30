@@ -26,14 +26,7 @@ export default function QuotesScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
       <Stack.Screen
         options={{
-          headerShown: true,
           title: t('tweetActivity.quotedBy'),
-          headerStyle: {
-            backgroundColor: theme.colors.background.primary,
-          },
-          headerTintColor: theme.colors.text.primary,
-          headerShadowVisible: false,
-          headerBackVisible: true,
         }}
       />
       <UserList

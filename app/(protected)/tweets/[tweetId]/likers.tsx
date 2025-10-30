@@ -21,17 +21,10 @@ export default function LikersScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
       <Stack.Screen
         options={{
-          headerShown: true,
           title: t('tweetActivity.likedBy'),
-          headerStyle: {
-            backgroundColor: theme.colors.background.primary,
-          },
-          headerTintColor: theme.colors.text.primary,
-          headerShadowVisible: false,
-          headerBackVisible: true,
         }}
       />
-      <UserList type="likes" tweetId={tweetId} onUserPress={handleUserPress} />
+      <UserList tweetId={tweetId} type="likes" onUserPress={handleUserPress} />
     </SafeAreaView>
   );
 }
