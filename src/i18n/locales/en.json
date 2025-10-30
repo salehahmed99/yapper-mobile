@@ -2,7 +2,11 @@
   "home": {
     "title": "Home Screen",
     "item": "Item {{index}}",
-    "sampleContent": "This is sample content to demonstrate scrolling and bottom navigation opacity."
+    "sampleContent": "This is sample content to demonstrate scrolling and bottom navigation opacity.",
+    "tabs": {
+      "forYou": "For You",
+      "following": "Following"
+    }
   },
   "app": {
     "title": "Yapper"

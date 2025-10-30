@@ -1,4 +1,6 @@
+import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { BlurView } from 'expo-blur';
 import { usePathname, useRouter } from 'expo-router';
 import {
   Bookmark,
@@ -6,6 +8,7 @@ import {
   Download,
   LayoutList,
   MessageCircle,
+  MoonStar,
   Settings,
   Sparkles,
   User,
@@ -14,14 +17,22 @@ import {
 } from 'lucide-react-native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Animated,
+  GestureResponderHandlers,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useUiShell } from './UiShellContext';
-
-export const drawerWidth = 320;
+import { useUiShell } from '../../context/UiShellContext';
 
 interface ISideMenuProps {
   anim: Animated.Value;
+  panHandlers?: GestureResponderHandlers;
 }
 
 const SideMenu: React.FC<ISideMenuProps> = (props) => {
@@ -41,36 +52,37 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
       return;
     }
     closeSideMenu();
-    router.push(path as any);
+    router.push(path as unknown as Parameters<typeof router.push>[0]);
   }
 
   React.useEffect(() => {
     if (isSideMenuOpen) {
       Animated.timing(anim, {
-        toValue: drawerWidth,
+        toValue: theme.ui.drawerWidth,
         duration: 250,
         useNativeDriver: false,
       }).start();
     }
-  }, [isSideMenuOpen, anim]);
+  }, [isSideMenuOpen, anim, theme.ui.drawerWidth]);
+
+  // Drawer opacity follows anim so the drawer is visible while dragging
+  const drawerOpacity = anim.interpolate({
+    inputRange: [0, theme.ui.drawerWidth],
+    outputRange: [0.1, 1],
+    extrapolate: 'clamp',
+  });
+
+  const overlayBg = `${theme.colors.background.primary}6F`;
 
   return (
-    <Animated.View
-      style={[StyleSheet.absoluteFill, { flexDirection: 'row' }]}
-      pointerEvents={isSideMenuOpen ? 'auto' : 'none'}
-      accessibilityElementsHidden={!isSideMenuOpen}
-      importantForAccessibility={isSideMenuOpen ? 'yes' : 'no-hide-descendants'}
-    >
+    <Animated.View style={styles.root} pointerEvents="box-none">
       <Animated.View
-        style={[styles.drawer, { left: Animated.subtract(anim, drawerWidth), opacity: isSideMenuOpen ? 1 : 0 }]}
+        {...(props.panHandlers ?? {})}
+        style={[styles.drawer, { left: Animated.subtract(anim, theme.ui.drawerWidth), opacity: drawerOpacity }]}
+        accessibilityElementsHidden={!isSideMenuOpen}
+        importantForAccessibility={isSideMenuOpen ? 'yes' : 'no-hide-descendants'}
       >
-        <View
-          style={{
-            flex: 1,
-            paddingTop: insets.top + theme.spacing.sm,
-            paddingStart: theme.spacing.sm,
-          }}
-        >
+        <View style={[styles.innerFlex, { paddingTop: insets.top + theme.spacing.sm, paddingStart: theme.spacing.sm }]}>
           {/* Profile + other accounts in one row */}
           <View style={styles.profileAndAccountsRow}>
             <View style={styles.profileCol}>
@@ -101,8 +113,9 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
           </View>
 
           <ScrollView
-            style={{ flex: 1 }}
+            style={styles.scrollView}
             contentContainerStyle={{ paddingBottom: theme.spacing.xxl * 3 + insets.bottom }}
+            showsVerticalScrollIndicator={false}
           >
             {/* Menu tiles */}
             <TouchableOpacity style={styles.tile} onPress={() => navigate('/(profile)')}>
@@ -142,56 +155,68 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
 
             {/* Utility links */}
             <TouchableOpacity style={styles.tile} onPress={() => navigate('/download')}>
-              <Download color={theme.colors.text.primary} size={theme.iconSizes.iconSmall} />
+              <Download color={theme.colors.text.primary} size={theme.iconSizes.icon} />
               <Text style={styles.tileText}>{t('menu.download')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.tile} onPress={() => navigate('/settings')}>
-              <Settings color={theme.colors.text.primary} size={theme.iconSizes.iconSmall} />
+              <Settings color={theme.colors.text.primary} size={theme.iconSizes.icon} />
               <Text style={styles.tileText}>{t('menu.settings')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.tile} onPress={() => navigate('/help')}>
-              <User color={theme.colors.text.primary} size={theme.iconSizes.iconSmall} />
+              <User color={theme.colors.text.primary} size={theme.iconSizes.icon} />
               <Text style={styles.tileText}>{t('menu.help')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.tile} onPress={() => navigate('/purchases')}>
-              <Download color={theme.colors.text.primary} size={theme.iconSizes.iconSmall} />
+              <Download color={theme.colors.text.primary} size={theme.iconSizes.icon} />
               <Text style={styles.tileText}>{t('menu.purchases')}</Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
         {/* Bottom overlay */}
-        <View
-          pointerEvents="none"
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            bottom: 0,
-            height: theme.spacing.xxl * 2 + insets.bottom,
-            backgroundColor: `${theme.colors.background.primary}CF`,
-          }}
-        />
+        <BlurView
+          pointerEvents="auto"
+          intensity={16}
+          style={[styles.bottomOverlay, { height: theme.ui.navHeight + insets.bottom, backgroundColor: overlayBg }]}
+        >
+          <View style={styles.toggleWrapper}>
+            <TouchableOpacity
+              onPress={() => {
+                // toggle theme: add toggleTheme to the useTheme() destructure at top of this file
+                // e.g. const { theme, toggleTheme } = useTheme();
+                // then call toggleTheme() here.
+              }}
+              style={styles.toggleButton}
+              accessibilityLabel={t('toggle_theme')}
+            >
+              <MoonStar color={theme.colors.text.primary} size={theme.iconSizes.icon} />
+            </TouchableOpacity>
+          </View>
+        </BlurView>
       </Animated.View>
     </Animated.View>
   );
 };
 
-const createStyles = (theme: any) =>
+const createStyles = (theme: Theme) =>
   StyleSheet.create({
+    root: {
+      ...StyleSheet.absoluteFillObject,
+      flexDirection: 'row',
+    },
     backdrop: {
       ...StyleSheet.absoluteFillObject,
-      backgroundColor: 'rgba(0,0,0,0.4)',
+      backgroundColor: theme.colors.overlay,
     },
     drawer: {
       position: 'absolute',
       top: 0,
       bottom: 0,
-      width: drawerWidth,
+      width: theme.ui.drawerWidth,
       left: 0,
       backgroundColor: theme.colors.background.primary,
       paddingTop: theme.spacing.xl,
       paddingHorizontal: theme.spacing.lg,
-      shadowColor: '#000',
+      shadowColor: theme.colors.text.primary,
       shadowOffset: { width: 2, height: 0 },
       shadowOpacity: 0.1,
       shadowRadius: 4,
@@ -294,13 +319,33 @@ const createStyles = (theme: any) =>
     divider: {
       height: 1,
       backgroundColor: theme.colors.border,
-      marginVertical: theme.spacing.md,
+      marginVertical: theme.spacing.xl,
     },
     animatedBackdrop: {
       position: 'absolute',
       top: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0,0,0,1)',
+      backgroundColor: theme.colors.overlay,
+    },
+    innerFlex: {
+      flex: 1,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    bottomOverlay: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      bottom: 0,
+    },
+    toggleWrapper: {
+      position: 'absolute',
+      left: theme.spacing.md + theme.spacing.sm,
+      top: theme.spacing.sm,
+    },
+    toggleButton: {
+      padding: theme.spacing.xs,
     },
   });
 

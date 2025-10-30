@@ -38,12 +38,14 @@ export const spacing = {
 
 export const ui = {
   // App chrome
-  appBarHeight: 56,
+  appBarHeight: 48,
+  drawerWidth: 280,
+  tabViewHeight: 44,
   sideContainerWidth: 40,
   avatar: 32,
   avatarLarge: 56,
   // Navigation
-  navHeight: 48,
+  navHeight: 52,
 };
 
 export const iconSizes = {

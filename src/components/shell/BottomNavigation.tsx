@@ -1,11 +1,15 @@
+import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { BlurView } from 'expo-blur';
 import { usePathname, useRouter } from 'expo-router';
 import { Bell, Bot, Home, Mail, Search } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useUiShell } from './UiShellContext';
+import { useUiShell } from '../../context/UiShellContext';
+
+const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
 const items = [
   { key: 'home', label: 'Home', path: '/(protected)', icon: Home },
@@ -43,39 +47,27 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
     }
     setActiveTab(item.key);
     // If navigating to the same path, replace so we don't stack; otherwise replace to navigate
-    router.replace(item.path as any);
+    router.replace(item.path as unknown as Parameters<typeof router.replace>[0]);
   };
 
-  // Interpolate opacity based on scrollY: at y=0 -> 0.95, at y=150 -> 0.5
+  // Interpolate opacity based on scrollY: at y=0 -> 0.85, at y=300 -> 0.4
   const bgOpacity = scrollY.interpolate({
-    inputRange: [0, 150],
-    outputRange: [0.95, 0.5],
+    inputRange: [0, 300],
+    outputRange: [0.85, 0.4],
     extrapolate: 'clamp',
   });
 
-  const containerBg = theme.colors.background.primary;
   const insets = useSafeAreaInsets();
   const navHeight = theme.ui.navHeight + insets.bottom;
   const translateStyle = anim ? { transform: [{ translateX: anim }] } : undefined;
 
   return (
-    <Animated.View
+    <AnimatedBlurView
+      intensity={10}
       style={[styles.container, styles.wrapper, translateStyle, { height: navHeight, paddingBottom: insets.bottom }]}
       accessibilityRole="tablist"
     >
-      <Animated.View
-        pointerEvents="none"
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 0,
-          height: navHeight,
-          backgroundColor: containerBg,
-          opacity: bgOpacity,
-          zIndex: 0,
-        }}
-      />
+      <Animated.View pointerEvents="none" style={[styles.bgLayer, { height: navHeight, opacity: bgOpacity }]} />
       <Animated.View style={styles.row}>
         {items.map((item) => {
           const Icon = item.icon;
@@ -93,19 +85,19 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
               <Icon
                 color={isActive ? theme.colors.text.primary : theme.colors.text.secondary}
                 size={theme.iconSizes.icon}
-                style={{ marginBottom: theme.spacing.xs / 2 }}
+                style={styles.iconSpacing}
               />
             </TouchableOpacity>
           );
         })}
       </Animated.View>
-    </Animated.View>
+    </AnimatedBlurView>
   );
 };
 
 export default React.memo(BottomNavigation);
 
-const createStyles = (theme: any) =>
+const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
       position: 'absolute',
@@ -127,9 +119,7 @@ const createStyles = (theme: any) =>
       alignItems: 'center',
       justifyContent: 'center',
     },
-    itemActive: {
-      backgroundColor: 'transparent',
-    },
+    itemActive: {},
     row: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -142,5 +132,16 @@ const createStyles = (theme: any) =>
     labelActive: {
       color: theme.colors.text.primary,
       fontFamily: theme.typography.fonts.semiBold,
+    },
+    bgLayer: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: theme.colors.background.primary,
+      zIndex: 0,
+    },
+    iconSpacing: {
+      marginBottom: theme.spacing.xs / 2,
     },
   });
