@@ -26,7 +26,7 @@ const VerifyCodeScreen = () => {
     if (!identifier) {
       router.replace('/(auth)/forgot-password/find-account');
     }
-  }, [identifier, router]);
+  }, [identifier]);
 
   useEffect(() => {
     setIsNextEnabled(code.trim().length === 6);

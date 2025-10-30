@@ -58,7 +58,7 @@ const ResetPassword: React.FC<IResetPasswordProps> = ({
         isVisible={isConfirmPasswordVisible}
         showCheck={confirmPassword.length > 0}
         status={confirmPassword.length > 0 && confirmPassword !== newPassword ? 'error' : 'success'}
-        errorMessage={confirmPassword !== newPassword ? t('auth.forgotPassword.passwordsDoNotMatchError') : ''}
+        errorMessage={confirmPassword !== newPassword ? t('auth.forgotPassword.passwordMismatchDescription') : ''}
       />
     </View>
   );
