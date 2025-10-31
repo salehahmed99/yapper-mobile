@@ -2,9 +2,10 @@ import { useRouter } from 'expo-router';
 import { ChevronLeft, Ellipsis } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 import { useTheme } from '../../../context/ThemeContext';
 import { useAuthStore } from '../../../store/useAuthStore';
-import { getUserById } from '../services/profileService';
+import { getUserById, muteUser, unmuteUser } from '../services/profileService';
 import { createHeaderStyles } from '../styles/profile-header-styles';
 import { IUserProfile } from '../types';
 import { formatDateToDisplay } from '../utils/helper-functions.utils';
@@ -82,10 +83,38 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const bannerRef = useRef<any>(null);
 
-  const handleMute = () => {
-    setIsMuted(!isMuted);
-    // TODO: Implement mute functionality
-    // console.log(isMuted ? "User unmuted" : "User muted");
+  const handleMute = async () => {
+    if (!userId) return;
+
+    try {
+      if (isMuted) {
+        await unmuteUser(userId);
+        setIsMuted(false);
+        Toast.show({
+          type: 'success',
+          text1: 'User unmuted',
+          text2: 'You will now see their posts',
+          position: 'bottom',
+        });
+      } else {
+        await muteUser(userId);
+        setIsMuted(true);
+        Toast.show({
+          type: 'success',
+          text1: 'User muted',
+          text2: 'You will no longer see their posts',
+          position: 'bottom',
+        });
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update mute status';
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: errorMessage,
+        position: 'bottom',
+      });
+    }
   };
 
   const handleBlock = () => {
@@ -111,7 +140,14 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
         )}
 
         {/* Back Button */}
-        <TouchableOpacity style={headerStyles.backButton} onPress={() => router.back()}>
+        <TouchableOpacity
+          style={headerStyles.backButton}
+          onPress={() => {
+            if (router.canGoBack()) {
+              router.back();
+            }
+          }}
+        >
           <ChevronLeft color="#fff" size={25} />
         </TouchableOpacity>
 
@@ -176,7 +212,18 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
               <TouchableOpacity
                 onPress={() => {
                   const targetUserId = isOwnProfile ? currentUser?.id : userId;
-                  router.push(`/(profile)/Lists?tab=following&userId=${targetUserId}`);
+                  const targetUsername = isOwnProfile ? currentUser?.name : profileUser?.name;
+                  console.warn('NAVIGATING TO FOLLOWING:', {
+                    targetUserId,
+                    targetUsername,
+                    isOwnProfile,
+                    'currentUser?.name': currentUser?.name,
+                    'profileUser?.name': profileUser?.name,
+                  });
+                  router.push(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    `/(profile)/Lists?tab=following&userId=${targetUserId}&username=${targetUsername}` as any,
+                  );
                 }}
               >
                 <Text style={headerStyles.stat}>
@@ -186,7 +233,11 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
               <TouchableOpacity
                 onPress={() => {
                   const targetUserId = isOwnProfile ? currentUser?.id : userId;
-                  router.push(`/(profile)/Lists?tab=followers&userId=${targetUserId}`);
+                  const targetUsername = isOwnProfile ? currentUser?.name : profileUser?.name;
+                  router.push(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    `/(profile)/Lists?tab=followers&userId=${targetUserId}&username=${targetUsername}` as any,
+                  );
                 }}
               >
                 <Text style={headerStyles.statWithMargin}>

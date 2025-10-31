@@ -1,13 +1,25 @@
 import { useTheme } from '@/src/context/ThemeContext';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { Stack } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
 import React from 'react';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+
+const styles = StyleSheet.create({
+  backButton: {
+    marginLeft: 6,
+  },
+});
 
 export default function ProfileLayout() {
   const { theme } = useTheme();
   const user = useAuthStore((state) => state.user);
+  const router = useRouter();
+  const params = useLocalSearchParams<{ username?: string }>();
 
-  const username = user?.name || 'User';
+  // Get username from params or fallback to current user's name
+  const username = Array.isArray(params.username) ? params.username[0] : params.username;
+  const listsUsername = username || user?.name || 'User';
 
   const screenOptions = React.useMemo(
     () => ({
@@ -31,10 +43,22 @@ export default function ProfileLayout() {
     () => ({
       headerShown: true,
       headerBackTitle: '',
-      title: username,
+      title: listsUsername,
       headerShadowVisible: false,
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            if (router.canGoBack()) {
+              router.back();
+            }
+          }}
+          style={styles.backButton}
+        >
+          <ChevronLeft color={theme.colors.text.primary} size={24} />
+        </TouchableOpacity>
+      ),
     }),
-    [username],
+    [listsUsername, theme, router],
   );
 
   return (

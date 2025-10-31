@@ -31,7 +31,8 @@ const UserListRoute = ({ type, userId }: UserListRouteProps) => {
 
   const handleUserPress = (user: IUser) => {
     // Navigate to the user's profile
-    router.push(`/(profile)/${user.id}`);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    router.push(`/(profile)/${user.id}` as any);
   };
 
   const handleFollowPress = (_user: IUser) => {

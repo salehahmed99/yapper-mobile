@@ -18,6 +18,10 @@ const mapFollowerUserToUser = (follower: IFollowerUser): IUser => ({
   bio: follower.bio,
   avatarUrl: follower.avatarUrl,
   email: '', // Not provided in followers endpoint
+  isFollowing: follower.isFollowing,
+  isFollower: follower.isFollower,
+  isMuted: follower.isMuted,
+  isBlocked: follower.isBlocked,
 });
 
 export const getUserList = async (params: FetchUserListParams): Promise<IUserListResponse> => {
