@@ -1,5 +1,17 @@
 {
   "home": {
     "title": "الشاشة الرئيسية"
+  },
+  "userList": {
+    "emptyState": "لا يوجد أحد حتى الآن.",
+    "errorRetry": "حاول مرة أخرى",
+    "followsYou": "يتابعك",
+    "follow": "متابعة",
+    "following": "متابع"
+  },
+  "tweetActivity": {
+    "likedBy": "أعجب به",
+    "repostedBy": "أعيد نشره بواسطة",
+    "quotedBy": "اقتبس بواسطة"
   }
 }

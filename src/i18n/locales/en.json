@@ -38,5 +38,17 @@
         "forgotPasswordPressed": "Forgot Password pressed"
       }
     }
+  },
+  "userList": {
+    "emptyState": "Nobody yet.",
+    "errorRetry": "Try again",
+    "followsYou": "Follows you",
+    "follow": "Follow",
+    "following": "Following"
+  },
+  "tweetActivity": {
+    "likedBy": "Liked by",
+    "repostedBy": "Reposted by",
+    "quotedBy": "Quoted by"
   }
 }
