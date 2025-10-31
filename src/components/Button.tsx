@@ -1,5 +1,5 @@
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import React, { useMemo } from 'react';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Theme } from '../constants/theme';
 import { useTheme } from '../context/ThemeContext';
 
@@ -41,7 +41,7 @@ const createStyles = (theme: Theme) =>
     nextButtonText: {
       color: theme.colors.background.primary,
       fontSize: 15,
-      fontWeight: '600',
+      fontFamily: theme.typography.fonts.semiBold,
     },
     nextButtonTextDisabled: {
       color: theme.colors.text.secondary,

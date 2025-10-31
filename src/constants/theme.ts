@@ -6,7 +6,8 @@ export const typography = {
     md: 17,
     lg: 20,
     xl: 23,
-    xxl: 31,
+    xxl: 28,
+    xxxl: 31,
   },
   lineHeights: {
     tight: 1.2,
@@ -30,6 +31,9 @@ export const iconSizes = {
   md: 20,
   lg: 24,
   xl: 32,
+  icon: 24,
+  iconSmall: 18,
+  iconLarge: 28,
 };
 
 export const avatarSizes = {
@@ -67,6 +71,18 @@ export const spacing = {
   lg: 16,
   xl: 20,
   xxl: 24,
+};
+
+export const ui = {
+  // App chrome
+  appBarHeight: 48,
+  drawerWidth: 280,
+  tabViewHeight: 44,
+  sideContainerWidth: 40,
+  avatar: 32,
+  avatarLarge: 56,
+  // Navigation
+  navHeight: 52,
 };
 
 export const colors = {
@@ -115,8 +131,9 @@ export type Theme = {
   colors: typeof colors.light;
   spacing: typeof spacing;
   borderRadius: typeof borderRadius;
-  borderWidth: typeof borderWidth;
+  ui: typeof ui;
   iconSizes: typeof iconSizes;
+  borderWidth: typeof borderWidth;
   avatarSizes: typeof avatarSizes;
   buttonHeights: typeof buttonHeights;
 };
