@@ -82,7 +82,7 @@ const BirthDateScreen = () => {
 
       <BottomBar
         rightButton={{
-          label: t('auth.birthDate.signUp'),
+          label: t('auth.birthDate.buttons.signUp'),
           onPress: onNextPress,
           enabled: birthDate.length > 0,
           visible: true,
