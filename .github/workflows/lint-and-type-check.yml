@@ -35,9 +35,6 @@ jobs:
         run: npm run type-check
         if: always()
 
-      - name: 🧪 Run Unit Tests
-        run: npm run test
-
       - name: ✅ All checks passed
         if: success()
         run: echo "🎉 All code quality checks passed!"

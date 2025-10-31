@@ -9,6 +9,11 @@ export const typography = {
     xxl: 28,
     xxxl: 31,
   },
+  lineHeights: {
+    tight: 1.2,
+    normal: 1.3,
+    relaxed: 1.33,
+  },
   fonts: {
     extraLight: 'PublicSans-ExtraLight',
     light: 'PublicSans-Light',
@@ -20,6 +25,28 @@ export const typography = {
   },
 };
 
+export const iconSizes = {
+  xs: 12,
+  sm: 16,
+  md: 20,
+  lg: 24,
+  xl: 32,
+};
+
+export const avatarSizes = {
+  sm: 32,
+  md: 40,
+  lg: 48,
+  xl: 64,
+};
+
+export const buttonHeights = {
+  sm: 28,
+  md: 32,
+  lg: 36,
+  xl: 44,
+};
+
 export const borderRadius = {
   sm: 4,
   md: 8,
@@ -27,6 +54,13 @@ export const borderRadius = {
   xl: 16,
   full: 9999,
 };
+
+export const borderWidth = {
+  thin: 1,
+  medium: 2,
+  thick: 3,
+};
+
 export const spacing = {
   xs: 4,
   sm: 8,
@@ -102,4 +136,7 @@ export type Theme = {
   borderRadius: typeof borderRadius;
   ui: typeof ui;
   iconSizes: typeof iconSizes;
+  borderWidth: typeof borderWidth;
+  avatarSizes: typeof avatarSizes;
+  buttonHeights: typeof buttonHeights;
 };

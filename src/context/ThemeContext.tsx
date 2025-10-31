@@ -1,7 +1,20 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useColorScheme } from 'react-native';
-import { borderRadius, colors, iconSizes, spacing, Theme, typography, ui } from '../constants/theme';
+
+import {
+  avatarSizes,
+  borderRadius,
+  borderWidth,
+  buttonHeights,
+  colors,
+  iconSizes,
+  spacing,
+  Theme,
+  typography,
+  ui
+} from '../constants/theme';
+
 interface ThemeContextType {
   theme: Theme;
   isDark: boolean;
@@ -28,6 +41,9 @@ export const ThemeProvider: React.FC<IThemeProviderProps> = (props) => {
     borderRadius,
     ui,
     iconSizes,
+    borderWidth,
+    avatarSizes,
+    buttonHeights,
   };
 
   return (
