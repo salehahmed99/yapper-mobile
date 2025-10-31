@@ -45,6 +45,7 @@ export default function RootLayout() {
     return null;
   }
 
+  
   return (
     <QueryProvider>
       <I18nextProvider i18n={i18n}>
