@@ -12,7 +12,7 @@ import {
   spacing,
   Theme,
   typography,
-  ui
+  ui,
 } from '../constants/theme';
 
 interface ThemeContextType {

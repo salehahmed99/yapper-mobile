@@ -31,6 +31,9 @@ export const iconSizes = {
   md: 20,
   lg: 24,
   xl: 32,
+  icon: 24,
+  iconSmall: 18,
+  iconLarge: 28,
 };
 
 export const avatarSizes = {
@@ -80,12 +83,6 @@ export const ui = {
   avatarLarge: 56,
   // Navigation
   navHeight: 52,
-};
-
-export const iconSizes = {
-  icon: 24,
-  iconSmall: 18,
-  iconLarge: 28,
 };
 
 export const colors = {
