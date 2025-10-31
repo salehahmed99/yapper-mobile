@@ -12,8 +12,8 @@ interface IThemedTextProps extends TextProps {
 
 const getVariantStyles = (theme: Theme): Record<Variant, TextStyle> => ({
   display: {
-    fontSize: theme.typography.sizes.xxl,
-    lineHeight: theme.typography.sizes.xxl * 1.2,
+    fontSize: theme.typography.sizes.xxxl,
+    lineHeight: theme.typography.sizes.xxxl * 1.2,
     fontFamily: theme.typography.fonts.extraBold,
     color: theme.colors.text.primary,
   },
