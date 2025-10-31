@@ -17,13 +17,13 @@ const SuccessResetPasswordScreen = () => {
     return () => clearTimeout(timer);
   }, [reset]);
 
-  const handleTobBarBackPress = () => {
+  const handleTopBarBackPress = () => {
     router.replace('/(auth)');
   };
 
   return (
     <>
-      <TopBar onBackPress={handleTobBarBackPress} />
+      <TopBar onBackPress={handleTopBarBackPress} />
       <SuccessScreen />
     </>
   );
