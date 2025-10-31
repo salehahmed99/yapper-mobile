@@ -9,6 +9,7 @@ export const typography = {
 
     xml: 28,
     xxl: 31,
+    xxxl: 36,
   },
 
   lineHeights: {
