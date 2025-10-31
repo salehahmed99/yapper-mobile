@@ -2,8 +2,8 @@ import { X } from 'lucide-react-native';
 import React, { useMemo } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import type { Theme } from '../../../../constants/theme';
-import { useTheme } from '../../../../context/ThemeContext';
+import type { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
 
 interface ITopBarProps {
   onBackPress?: () => void;
@@ -33,7 +33,7 @@ const TopBar: React.FC<ITopBarProps> = ({ onBackPress }) => {
 
         {/* Centered X Logo */}
         <View style={styles.logoContainer}>
-          <Image source={require('../../../../../assets/images/yapper.png')} style={styles.logo} resizeMode="contain" />
+          <Image source={require('@/assets/images/yapper.png')} style={styles.logo} resizeMode="contain" />
         </View>
       </View>
     </SafeAreaView>
