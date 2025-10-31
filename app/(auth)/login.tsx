@@ -1,10 +1,10 @@
+import { useTheme } from '@/src/context/ThemeContext';
 import * as Localization from 'expo-localization';
 import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Keyboard, StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { useTheme } from '@/src/context/ThemeContext';
 
 // Schemas
 import {
@@ -19,19 +19,19 @@ import {
 import { checkExists, login } from '@/src/modules/auth/services/authService';
 
 // Components
-import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import EmailForm from '@/src/modules/auth/components/EmailForm';
 import PasswordForm from '@/src/modules/auth/components/PasswordForm';
+import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 
 // Utils
-import { ILoginResponse } from '@/src/modules/auth/types';
-import { useAuthStore } from '@/src/store/useAuthStore';
-import { ButtonOptions } from '@/src/modules/auth/utils/enums';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Theme } from '@/src/constants/theme';
-import { router } from 'expo-router';
 import ActivityLoader from '@/src/components/ActivityLoader';
+import { Theme } from '@/src/constants/theme';
+import { ILoginResponse } from '@/src/modules/auth/types';
+import { ButtonOptions } from '@/src/modules/auth/utils/enums';
+import { useAuthStore } from '@/src/store/useAuthStore';
+import { router } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Types
 type InputType = 'email' | 'phone' | 'username' | null;
@@ -259,7 +259,7 @@ const LoginScreen = () => {
           type: 'primary',
         }}
         leftButton={{
-          label: ButtonOptions.FORGET_PASSWORD,
+          label: ButtonOptions.FORGOT_PASSWORD,
           onPress: handleForgotPassword,
           enabled: true,
           visible: true,

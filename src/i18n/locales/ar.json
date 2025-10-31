@@ -68,7 +68,8 @@
         "backButtonPressed": "تم الضغط على زر الرجوع",
         "forgotPasswordPressed": "تم الضغط على نسيت كلمة المرور"
       }
-    },
+    }
+  },
   "userList": {
     "emptyState": "لا يوجد أحد حتى الآن.",
     "errorRetry": "حاول مرة أخرى",

@@ -5,8 +5,6 @@ const ProtectedLayout = () => {
   // const isInitialized = useAuthStore((state) => state.isInitialized);
   // const isAuthenticated = useAuthStore((state) => state.token !== null);
 
-
-
   return <AppShell />;
 };
 

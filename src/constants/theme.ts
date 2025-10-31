@@ -9,12 +9,12 @@ export const typography = {
 
     xml: 28,
     xxl: 31,
+  },
 
   lineHeights: {
     tight: 1.2,
     normal: 1.3,
     relaxed: 1.33,
-
   },
   fonts: {
     extraLight: 'PublicSans-ExtraLight',
