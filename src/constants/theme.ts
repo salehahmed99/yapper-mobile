@@ -110,6 +110,7 @@ export const colors = {
     success: '#00BA7C',
     warning: '#FFD400',
     overlay: 'rgba(91, 112, 131, 0.4)',
+    overlayDark: 'rgba(0, 0, 0, 0.5)',
   },
   dark: {
     text: {
@@ -130,6 +131,7 @@ export const colors = {
     success: '#00BA7C',
     warning: '#FFD400',
     overlay: 'rgba(91, 112, 131, 0.4)',
+    overlayDark: 'rgba(0, 0, 0, 0.5)',
   },
 };
 

@@ -6,8 +6,10 @@ interface IAuthState {
   user: IUser | null;
   token: string | null;
   isInitialized: boolean;
+  skipRedirectAfterLogin?: boolean;
   initializeAuth: () => Promise<void>;
   loginUser: (user: IUser, token: string) => Promise<void>;
+  setSkipRedirect: (val: boolean) => void;
   logout: () => Promise<void>;
 }
 
@@ -27,7 +29,7 @@ export const useAuthStore = create<IAuthState>()((set) => ({
       set({ user: null, token: null });
       console.error('Error during auth initialization:', error);
     } finally {
-      set({ isInitialized: true });
+      set({ isInitialized: true, skipRedirectAfterLogin: false });
     }
   },
 
@@ -36,11 +38,14 @@ export const useAuthStore = create<IAuthState>()((set) => ({
     if (!user || !token) return;
     try {
       await saveToken(token);
-      set({ user, token });
+      set({ user, token, skipRedirectAfterLogin: true });
     } catch (error) {
       set({ user: null, token: null });
       console.error('Error logging in:', error);
     }
+  },
+  setSkipRedirect: (val: boolean) => {
+    set({ skipRedirectAfterLogin: val });
   },
 
   logout: async () => {

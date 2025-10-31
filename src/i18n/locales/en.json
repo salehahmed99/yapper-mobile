@@ -95,7 +95,26 @@
     "birthDate": {
       "title": "What's your birth date?",
       "description": "This won't be public",
-      "label": "Birth Date"
+      "label": "Birth Date",
+      "successToast": "Birth date saved successfully!",
+      "errorToast": "Failed to save your birth date. Please try again.",
+      "buttons": {
+        "signUp": "Sign up"
+      }
+    },
+    "username": {
+      "title": "What should we call you?",
+      "subtitle": "Your @username is unique. You can always change it later.",
+      "label": "Username",
+      "showMore": "Show more",
+      "showLess": "Show less",
+      "skipForNow": "Skip for now",
+      "next": "Next",
+      "error": "Something went wrong",
+      "errorToast": "Failed to update username. Please try again.",
+      "successToast": "Username updated successfully!",
+      "missingData": "Missing authentication data",
+      "selectPrompt": "Please select a username"
     }
   },
   "userList": {

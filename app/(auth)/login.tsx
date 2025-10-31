@@ -248,7 +248,7 @@ const LoginScreen = () => {
           type: 'primary',
         }}
         leftButton={{
-          label: ButtonOptions.FORGET_PASSWORD,
+          label: ButtonOptions.FORGOT_PASSWORD,
           onPress: currentStep === 1 ? handleBack : handleForgotPassword,
           enabled: true,
           visible: true,

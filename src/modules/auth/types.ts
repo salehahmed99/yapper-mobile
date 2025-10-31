@@ -18,6 +18,57 @@ interface ILoginResponse {
   message: string;
 }
 
+interface IOAuthResponseDTO {
+  data: {
+    needs_completion: boolean;
+    session_token: string;
+    provider: 'google' | 'github';
+  };
+  count: number;
+  message: string;
+}
+
+interface IOAuthResponse {
+  data: {
+    needsCompletion: boolean;
+    sessionToken: string;
+    provider: 'google' | 'github';
+  };
+  count: number;
+  message: string;
+}
+
+interface IOAuthBirthDateRequest {
+  oauth_session_token: string;
+  birth_date?: string;
+}
+
+interface IOAuthBirthDateResponse {
+  data: {
+    usernames: string[];
+    token: string;
+    nextStep: string;
+  };
+  count: number;
+  message: string;
+}
+
+interface IOAuthUserNameRequest {
+  oauth_session_token: string;
+  username: string;
+}
+function mapOAuthResponseDTOToOAuthResponse(dto: IOAuthResponseDTO): IOAuthResponse {
+  return {
+    data: {
+      needsCompletion: dto.data.needs_completion,
+      sessionToken: dto.data.session_token,
+      provider: dto.data.provider,
+    },
+    count: dto.count,
+    message: dto.message,
+  };
+}
+
 function mapLoginResponseDTOToLoginResponse(dto: ILoginResponseDTO): ILoginResponse {
   return {
     data: {
@@ -41,4 +92,14 @@ interface IRegisterData {
   password: string;
 }
 
-export { mapLoginResponseDTOToLoginResponse, ILoginResponse, ILoginCredentials, IRegisterData };
+export {
+  mapLoginResponseDTOToLoginResponse,
+  ILoginResponse,
+  ILoginCredentials,
+  IRegisterData,
+  mapOAuthResponseDTOToOAuthResponse,
+  IOAuthResponse,
+  IOAuthBirthDateRequest,
+  IOAuthBirthDateResponse,
+  IOAuthUserNameRequest,
+};

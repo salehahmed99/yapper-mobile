@@ -3,7 +3,16 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import api from '../../../services/apiClient';
-import { ILoginCredentials, ILoginResponse } from '../types';
+import {
+  ILoginCredentials,
+  ILoginResponse,
+  IOAuthBirthDateRequest,
+  IOAuthBirthDateResponse,
+  IOAuthResponse,
+  IOAuthUserNameRequest,
+  mapLoginResponseDTOToLoginResponse,
+  mapOAuthResponseDTOToOAuthResponse,
+} from '../types';
 import { extractErrorMessage } from '@/src/utils/errorExtraction';
 
 // Complete auth session when app resumes
@@ -66,7 +75,7 @@ GoogleSignin.configure({
   forceCodeForRefreshToken: true,
 });
 
-export const googleSignIn = async (): Promise<ILoginResponse> => {
+export const googleSignIn = async (): Promise<ILoginResponse | IOAuthResponse> => {
   try {
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
     await googleSignOut();
@@ -80,7 +89,10 @@ export const googleSignIn = async (): Promise<ILoginResponse> => {
     });
     await setAuthProvider('google');
 
-    return res.data;
+    if (res.data.data.needs_completion) {
+      return mapOAuthResponseDTOToOAuthResponse(res.data);
+    }
+    return mapLoginResponseDTOToLoginResponse(res.data);
   } catch (error) {
     throw new Error(extractErrorMessage(error));
   }
@@ -105,7 +117,7 @@ const discovery = {
   tokenEndpoint: 'https://github.com/login/oauth/access_token',
 };
 
-export const githubSignIn = async (): Promise<ILoginResponse> => {
+export const githubSignIn = async (): Promise<ILoginResponse | IOAuthResponse> => {
   try {
     const redirectUri = AuthSession.makeRedirectUri({
       scheme: 'yappermobile',
@@ -133,7 +145,34 @@ export const githubSignIn = async (): Promise<ILoginResponse> => {
     });
 
     await setAuthProvider('github');
+    if (res.data.data.needs_completion) {
+      return mapOAuthResponseDTOToOAuthResponse(res.data);
+    }
+    return mapLoginResponseDTOToLoginResponse(res.data);
+  } catch (error) {
+    throw new Error(extractErrorMessage(error));
+  }
+};
+
+export const OAuthStep1 = async (credentials: IOAuthBirthDateRequest): Promise<IOAuthBirthDateResponse> => {
+  try {
+    const res = await api.post('/auth/oauth/complete/step1', {
+      oauth_session_token: credentials.oauth_session_token,
+      birth_date: credentials.birth_date,
+    });
     return res.data;
+  } catch (error) {
+    throw new Error(extractErrorMessage(error));
+  }
+};
+
+export const OAuthStep2 = async (credentials: IOAuthUserNameRequest): Promise<ILoginResponse> => {
+  try {
+    const res = await api.post('/auth/oauth/complete/step2', {
+      oauth_session_token: credentials.oauth_session_token,
+      username: credentials.username,
+    });
+    return mapLoginResponseDTOToLoginResponse(res.data);
   } catch (error) {
     throw new Error(extractErrorMessage(error));
   }

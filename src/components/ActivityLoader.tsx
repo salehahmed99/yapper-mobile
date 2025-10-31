@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
-import { Modal, View, ActivityIndicator, Text, StyleSheet } from 'react-native';
-import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
+import React, { useMemo } from 'react';
+import { ActivityIndicator, Modal, StyleSheet, Text, View } from 'react-native';
 
 interface IActivityLoaderProps {
   visible: boolean;
@@ -15,7 +15,7 @@ const ActivityLoader: React.FC<IActivityLoaderProps> = ({ visible, message = 'Lo
   return (
     <Modal transparent animationType="fade" visible={visible}>
       <View style={styles.overlay}>
-        <View>
+        <View style={styles.container}>
           <ActivityIndicator size="large" color={theme.colors.text.link} />
           <Text style={styles.message}>{message}</Text>
         </View>
@@ -30,6 +30,14 @@ const createStyles = (theme: Theme) =>
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
+      backgroundColor: theme.colors.overlayDark,
+    },
+    container: {
+      backgroundColor: theme.colors.background.primary,
+      padding: theme.spacing.xl,
+      borderRadius: theme.spacing.md,
+      alignItems: 'center',
+      minWidth: 150,
     },
     message: {
       marginTop: theme.spacing.md,

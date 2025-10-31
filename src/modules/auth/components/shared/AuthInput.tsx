@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 
@@ -50,13 +50,14 @@ const AuthInput: React.FC<IAuthInputProps> = ({ title, description, label, value
     zIndex: 1,
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onDateChange = (_: any, selectedDate?: Date) => {
+  const onDateConfirm = (selectedDate: Date) => {
     setShowPicker(false);
-    if (selectedDate) {
-      const formatted = selectedDate.toISOString().split('T')[0];
-      onChange(formatted);
-    }
+    const formatted = selectedDate.toISOString().split('T')[0];
+    onChange(formatted);
+  };
+
+  const onDateCancel = () => {
+    setShowPicker(false);
   };
 
   return (
@@ -76,15 +77,14 @@ const AuthInput: React.FC<IAuthInputProps> = ({ title, description, label, value
             >
               <Text style={value ? styles.dateTextFilled : styles.dateTextPlaceholder}>{value || label}</Text>
             </Pressable>
-            {showPicker && (
-              <DateTimePicker
-                value={value ? new Date(value) : new Date()}
-                mode="date"
-                display="spinner"
-                onChange={onDateChange}
-                maximumDate={new Date()} // optional: no future dates
-              />
-            )}
+            <DateTimePickerModal
+              isVisible={showPicker}
+              mode="date"
+              date={value ? new Date(value) : new Date()}
+              onConfirm={onDateConfirm}
+              onCancel={onDateCancel}
+              maximumDate={new Date()}
+            />
           </>
         ) : (
           <TextInput
