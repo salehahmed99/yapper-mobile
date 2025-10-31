@@ -56,5 +56,6 @@ export default function RootLayout() {
         <Toast />
       </I18nextProvider>
     </QueryProvider>
+
   );
 }
