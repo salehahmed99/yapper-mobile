@@ -81,7 +81,6 @@ const UserNameScreen: React.FC = () => {
   };
 
   const handleNext = async () => {
-    setLoading(true);
     if (!username) {
       Toast.show({
         type: 'error',
@@ -91,6 +90,7 @@ const UserNameScreen: React.FC = () => {
       return;
     }
 
+    setLoading(true);
     try {
       await updateUserName(username);
       setSkipRedirect(false);
@@ -110,8 +110,6 @@ const UserNameScreen: React.FC = () => {
     setSkipRedirect(false);
     setLoading(false);
   };
-
-  const isValidUsername = username.length > 0;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -140,7 +138,7 @@ const UserNameScreen: React.FC = () => {
               autoCorrect={false}
               keyboardAppearance="dark"
             />
-            {isValidUsername && username.length >= 3 && (
+            {username.length >= 3 && (
               <View style={styles.checkmark}>
                 <Check size={16} color="#FFFFFF" strokeWidth={3} />
               </View>

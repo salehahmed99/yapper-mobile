@@ -10,7 +10,6 @@ const ProtectedLayout = () => {
   //   return <Redirect href="/(auth)/login" />;
   // }
 
-
   return <AppShell />;
 };
 

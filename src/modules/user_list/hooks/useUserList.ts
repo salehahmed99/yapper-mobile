@@ -44,6 +44,7 @@ export const useUserList = (options: UseUserListOptions): IUseUserListResult => 
         setUsers((prev) => (isRefresh ? data.users : [...prev, ...data.users]));
         currentPageRef.current = pageNumber;
         setHasNextPage(Boolean(data.nextPage));
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         const message = err?.response?.data?.message || err?.message || 'Failed to load users';
         setError(message);

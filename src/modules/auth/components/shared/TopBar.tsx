@@ -34,7 +34,7 @@ const TopBar: React.FC<ITopBarProps> = ({ onBackPress, showExitButton = true }) 
 
       {/* Centered Logo */}
       <View style={styles.logoContainer}>
-        <Image source={require('../../../../..//assets/images/yapper.png')} style={styles.logo} resizeMode="contain" />
+        <Image source={require('../../../../../assets/images/yapper.png')} style={styles.logo} resizeMode="contain" />
       </View>
     </View>
   );

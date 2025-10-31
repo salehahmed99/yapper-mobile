@@ -22,6 +22,7 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       justifyContent: 'center',
     },
+    // eslint-disable-next-line react-native/no-color-literals
     followingButton: {
       backgroundColor: 'transparent',
       borderWidth: theme.borderWidth.thin,
@@ -44,6 +45,7 @@ const FollowButton: React.FC<IFollowButtonProps> = ({ user, onPress }) => {
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handlePress = (e: any) => {
     e?.stopPropagation?.();
     onPress(user);
