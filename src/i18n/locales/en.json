@@ -1,6 +1,40 @@
 {
   "home": {
-    "title": "Home Screen"
+    "title": "Home Screen",
+    "item": "Item {{index}}",
+    "sampleContent": "This is sample content to demonstrate scrolling and bottom navigation opacity.",
+    "tabs": {
+      "forYou": "For You",
+      "following": "Following"
+    }
+  },
+  "app": {
+    "title": "Yapper"
+  },
+  "accessibility": {
+    "openMenu": "Open menu"
+  },
+  "menu": {
+    "profile": "Profile",
+    "premium": "Premium",
+    "videos": "Videos",
+    "chat": "Chat",
+    "communities": "Communities",
+    "bookmarks": "Bookmarks",
+    "lists": "Lists",
+    "spaces": "Spaces",
+    "download": "Download Grok",
+    "settings": "Settings & Privacy",
+    "help": "Help Center",
+    "purchases": "Purchases"
+  },
+  "nav": {
+    "home": "Home",
+    "explore": "Explore",
+    "grok": "Grok",
+    "notifications": "Notifications",
+    "messages": "Messages",
+    "profile": "Profile"
   },
   "welcome": {
     "title": "Welcome to Yapper",
@@ -88,6 +122,7 @@
       "resettingPassword": "Resetting your password..."
     }
   },
+
   "buttons": {
     "next": "Next",
     "back": "Back",
@@ -99,5 +134,19 @@
     "sendingCode": "Sending code...",
     "verifyingCode": "Verifying code...",
     "resettingPassword": "Resetting your password..."
+  },
+
+  "userList": {
+    "emptyState": "Nobody yet.",
+    "errorRetry": "Try again",
+    "followsYou": "Follows you",
+    "follow": "Follow",
+    "following": "Following"
+  },
+  "tweetActivity": {
+    "likedBy": "Liked by",
+    "repostedBy": "Reposted by",
+    "quotedBy": "Quoted by"
+
   }
 }

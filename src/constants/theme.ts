@@ -6,8 +6,16 @@ export const typography = {
     md: 17,
     lg: 20,
     xl: 23,
+
     xml: 28,
     xxl: 31,
+
+
+  lineHeights: {
+    tight: 1.2,
+    normal: 1.3,
+    relaxed: 1.33,
+
   },
   fonts: {
     extraLight: 'PublicSans-ExtraLight',
@@ -20,6 +28,31 @@ export const typography = {
   },
 };
 
+export const iconSizes = {
+  xs: 12,
+  sm: 16,
+  md: 20,
+  lg: 24,
+  xl: 32,
+  icon: 24,
+  iconSmall: 18,
+  iconLarge: 28,
+};
+
+export const avatarSizes = {
+  sm: 32,
+  md: 40,
+  lg: 48,
+  xl: 64,
+};
+
+export const buttonHeights = {
+  sm: 28,
+  md: 32,
+  lg: 36,
+  xl: 44,
+};
+
 export const borderRadius = {
   sm: 4,
   md: 8,
@@ -28,6 +61,13 @@ export const borderRadius = {
   xxl: 20,
   full: 9999,
 };
+
+export const borderWidth = {
+  thin: 1,
+  medium: 2,
+  thick: 3,
+};
+
 export const spacing = {
   xs: 4,
   sm: 8,
@@ -38,6 +78,18 @@ export const spacing = {
   xxl: 24,
   xxll: 32,
   xxxl: 40,
+};
+
+export const ui = {
+  // App chrome
+  appBarHeight: 48,
+  drawerWidth: 280,
+  tabViewHeight: 44,
+  sideContainerWidth: 40,
+  avatar: 32,
+  avatarLarge: 56,
+  // Navigation
+  navHeight: 52,
 };
 
 export const colors = {
@@ -88,4 +140,9 @@ export type Theme = {
   colors: typeof colors.light;
   spacing: typeof spacing;
   borderRadius: typeof borderRadius;
+  ui: typeof ui;
+  iconSizes: typeof iconSizes;
+  borderWidth: typeof borderWidth;
+  avatarSizes: typeof avatarSizes;
+  buttonHeights: typeof buttonHeights;
 };

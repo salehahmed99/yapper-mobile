@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import '@testing-library/react-native';
-import { Animated } from 'react-native';
 import dotenv from 'dotenv';
 import path from 'path';
+import { Animated } from 'react-native';
 
 // Load environment variables from .env file
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+dotenv.config({
+  path: path.resolve(__dirname, '.env'),
+  override: false, // keep existing process.env values
+});
 
 // ----------------------------
 // Mock expo-secure-store
