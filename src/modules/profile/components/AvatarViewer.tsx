@@ -1,5 +1,7 @@
+import { colors } from '@/src/constants/theme';
 import { XIcon } from 'lucide-react-native';
 import React, { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, Image, Modal, PanResponder, StatusBar, Text, TouchableOpacity, View } from 'react-native';
 import ImageViewerStyle from '../styles/image-viewer-style';
 import {
@@ -30,6 +32,7 @@ export default function AvatarViewer({
   onClose,
   onEditRequested,
 }: IAvatarViewerProps) {
+  const { t } = useTranslation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const translateX = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(0)).current;
@@ -75,7 +78,7 @@ export default function AvatarViewer({
 
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={handleClose} statusBarTranslucent>
-      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      <StatusBar barStyle="light-content" backgroundColor={colors.dark.background.primary} />
       <Animated.View style={[ImageViewerStyle.container, { opacity: fadeAnim }]}>
         {/* Backdrop */}
         <View style={ImageViewerStyle.backdrop} />
@@ -109,7 +112,7 @@ export default function AvatarViewer({
         {onEditRequested && (
           <View style={ImageViewerStyle.bottomBar}>
             <TouchableOpacity onPress={handleEdit} style={ImageViewerStyle.editButton} activeOpacity={0.8}>
-              <Text style={ImageViewerStyle.editButtonText}>Edit</Text>
+              <Text style={ImageViewerStyle.editButtonText}>{t('profile.actions.edit')}</Text>
             </TouchableOpacity>
           </View>
         )}

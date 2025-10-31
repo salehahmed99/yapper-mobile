@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { ChevronLeft, Ellipsis } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useTheme } from '../../../context/ThemeContext';
@@ -22,6 +23,7 @@ type ProfileHeaderProps = {
 };
 
 export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHeaderProps) {
+  const { t } = useTranslation();
   const currentUser = useAuthStore((state) => state.user);
 
   const [profileUser, setProfileUser] = useState<IUserProfile | null>(null);
@@ -98,8 +100,8 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
         setIsMuted(false);
         Toast.show({
           type: 'success',
-          text1: 'User unmuted',
-          text2: 'You will now see their posts',
+          text1: t('profile.toasts.userUnmuted'),
+          text2: t('profile.toasts.userUnmutedDesc'),
           position: 'bottom',
         });
       } else {
@@ -107,8 +109,8 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
         setIsMuted(true);
         Toast.show({
           type: 'success',
-          text1: 'User muted',
-          text2: 'You will no longer see their posts',
+          text1: t('profile.toasts.userMuted'),
+          text2: t('profile.toasts.userMutedDesc'),
           position: 'bottom',
         });
       }
@@ -116,7 +118,7 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
       const errorMessage = error instanceof Error ? error.message : 'Failed to update mute status';
       Toast.show({
         type: 'error',
-        text1: 'Error',
+        text1: t('profile.toasts.error'),
         text2: errorMessage,
         position: 'bottom',
       });
@@ -188,7 +190,7 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
         {/* Edit or Follow button */}
         {isOwnProfile ? (
           <TouchableOpacity style={headerStyles.editButton} onPress={() => setEditModalOpen(true)}>
-            <Text style={headerStyles.editText}>Edit profile</Text>
+            <Text style={headerStyles.editText}>{t('profile.editProfile')}</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
@@ -200,7 +202,7 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
               <ActivityIndicator size="small" color={theme.colors.text.primary} />
             ) : (
               <Text style={[headerStyles.editText, isFollowing && headerStyles.followingText]}>
-                {isFollowing ? 'Following' : 'Follow'}
+                {isFollowing ? t('profile.following') : t('profile.follow')}
               </Text>
             )}
           </TouchableOpacity>
@@ -217,9 +219,9 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
           <>
             <Text style={headerStyles.name}>{displayUser?.name || 'User'}</Text>
             <Text style={headerStyles.handle}>@{displayUser?.username || 'username'}</Text>
-            <Text style={headerStyles.bio}>{displayUser?.bio || 'No bio available'}</Text>
+            <Text style={headerStyles.bio}>{displayUser?.bio || t('profile.noBio')}</Text>
             <Text style={headerStyles.link}>
-              {displayUser?.username} • Joined {formatDateToDisplay(displayUser?.createdAt || '')}
+              {displayUser?.username} • {t('profile.joined')} {formatDateToDisplay(displayUser?.createdAt || '')}
             </Text>
 
             {/* Stats */}
@@ -228,13 +230,6 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
                 onPress={() => {
                   const targetUserId = isOwnProfile ? currentUser?.id : userId;
                   const targetUsername = isOwnProfile ? currentUser?.name : profileUser?.name;
-                  console.warn('NAVIGATING TO FOLLOWING:', {
-                    targetUserId,
-                    targetUsername,
-                    isOwnProfile,
-                    'currentUser?.name': currentUser?.name,
-                    'profileUser?.name': profileUser?.name,
-                  });
                   router.push(
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     `/(profile)/Lists?tab=following&userId=${targetUserId}&username=${targetUsername}` as any,
@@ -242,7 +237,7 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
                 }}
               >
                 <Text style={headerStyles.stat}>
-                  <Text style={headerStyles.bold}>{displayUser?.following || 0}</Text> Following
+                  <Text style={headerStyles.bold}>{displayUser?.following || 0}</Text> {t('profile.following')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -256,7 +251,7 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
                 }}
               >
                 <Text style={headerStyles.statWithMargin}>
-                  <Text style={headerStyles.bold}>{displayUser?.followers || 0}</Text> Followers
+                  <Text style={headerStyles.bold}>{displayUser?.followers || 0}</Text> {t('profile.followers')}
                 </Text>
               </TouchableOpacity>
             </View>

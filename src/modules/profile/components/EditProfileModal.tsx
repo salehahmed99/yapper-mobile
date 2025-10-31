@@ -2,6 +2,7 @@ import { useAuthStore } from '@/src/store/useAuthStore';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import React, { memo, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Image, Modal, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../../context/ThemeContext';
 import { createEditModalStyles } from '../styles/edit-modal-styles';
@@ -26,6 +27,7 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
   onImageChange,
   onBannerChange,
 }) => {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
 
   const [updatedUser, setUpdatedUser] = useState({
@@ -60,13 +62,13 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
       {/* Header buttons */}
       <View style={editModalStyles.buttonContainer}>
         <TouchableOpacity onPress={onClose}>
-          <Text style={editModalStyles.buttonsText}>Cancel</Text>
+          <Text style={editModalStyles.buttonsText}>{t('profile.editModal.cancel')}</Text>
         </TouchableOpacity>
 
-        <Text style={editModalStyles.titleText}>Edit Profile</Text>
+        <Text style={editModalStyles.titleText}>{t('profile.editModal.title')}</Text>
 
         <TouchableOpacity onPress={onClose}>
-          <Text style={editModalStyles.buttonsText}>Save</Text>
+          <Text style={editModalStyles.buttonsText}>{t('profile.editModal.save')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -99,54 +101,54 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
           <View style={editModalStyles.userDetailsContainer}>
             {/* Name Input */}
             <Input
-              label="Name"
+              label={t('profile.editModal.name')}
               value={updatedUser.name}
               setValue={(value) => setUpdatedUser({ ...updatedUser, name: value })}
               style={editModalStyles.inputContainer}
               inputStyle={editModalStyles.input}
-              placeholder="Add your name"
+              placeholder={t('profile.editModal.namePlaceholder')}
             />
 
             {/* Bio Input */}
             <Input
-              label="Bio"
+              label={t('profile.editModal.bio')}
               value={updatedUser.bio}
               setValue={(value) => setUpdatedUser({ ...updatedUser, bio: value })}
               style={editModalStyles.inputContainer}
               inputStyle={editModalStyles.inputMultiline}
-              placeholder="Add a bio to your profile"
+              placeholder={t('profile.editModal.bioPlaceholder')}
               multiline
               numberOfLines={4}
             />
 
             {/* Location Input */}
             <Input
-              label="Location"
+              label={t('profile.editModal.location')}
               value={updatedUser.location}
               setValue={(value) => setUpdatedUser({ ...updatedUser, location: value })}
               style={editModalStyles.inputContainer}
               inputStyle={editModalStyles.input}
-              placeholder="Add your location"
+              placeholder={t('profile.editModal.locationPlaceholder')}
             />
 
             {/* Website Input */}
             <Input
-              label="Website"
+              label={t('profile.editModal.website')}
               value={updatedUser.website}
               setValue={(value) => setUpdatedUser({ ...updatedUser, website: value })}
               style={editModalStyles.inputContainer}
               inputStyle={editModalStyles.input}
-              placeholder="Add your website"
+              placeholder={t('profile.editModal.websitePlaceholder')}
             />
 
             {/* Birthday Input */}
             <Input
-              label="Birthday"
+              label={t('profile.editModal.birthday')}
               value={updatedUser.birthday ? formatLongDateToDisplay(updatedUser.birthday) : ''}
               setValue={(value) => setUpdatedUser({ ...updatedUser, birthday: value })}
               style={editModalStyles.inputContainer}
               inputStyle={editModalStyles.input}
-              placeholder="Add your date of birth"
+              placeholder={t('profile.editModal.birthdayPlaceholder')}
             />
           </View>
         </View>

@@ -44,5 +44,62 @@
     "likedBy": "أعجب به",
     "repostedBy": "أعيد نشره بواسطة",
     "quotedBy": "اقتبس بواسطة"
+  },
+  "profile": {
+    "editProfile": "تعديل الملف الشخصي",
+    "follow": "متابعة",
+    "following": "متابع",
+    "followers": "متابعون",
+    "joined": "انضم",
+    "noBio": "لا توجد سيرة ذاتية",
+    "tabs": {
+      "tweets": "التغريدات",
+      "tweetsReplies": "التغريدات والردود",
+      "media": "الوسائط",
+      "likes": "الإعجابات"
+    },
+    "placeholders": {
+      "tweets": "سيتم عرض التغريدات هنا.",
+      "tweetsReplies": "سيتم عرض التغريدات والردود هنا.",
+      "media": "سيتم عرض الوسائط هنا.",
+      "likes": "سيتم عرض الإعجابات هنا."
+    },
+    "editModal": {
+      "title": "تعديل الملف الشخصي",
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "name": "الاسم",
+      "bio": "السيرة الذاتية",
+      "location": "الموقع",
+      "website": "الموقع الإلكتروني",
+      "birthday": "تاريخ الميلاد",
+      "namePlaceholder": "أضف اسمك",
+      "bioPlaceholder": "أضف سيرة ذاتية لملفك الشخصي",
+      "locationPlaceholder": "أضف موقعك",
+      "websitePlaceholder": "أضف موقعك الإلكتروني",
+      "birthdayPlaceholder": "أضف تاريخ ميلادك"
+    },
+    "actions": {
+      "edit": "تعديل",
+      "mute": "كتم",
+      "unmute": "إلغاء الكتم",
+      "block": "حظر",
+      "unblock": "إلغاء الحظر"
+    },
+    "toasts": {
+      "userMuted": "تم كتم المستخدم",
+      "userMutedDesc": "لن ترى منشوراته بعد الآن",
+      "userUnmuted": "تم إلغاء كتم المستخدم",
+      "userUnmutedDesc": "سترى منشوراته الآن",
+      "error": "خطأ"
+    },
+    "whoToFollow": {
+      "title": "من تتابع",
+      "showMore": "عرض المزيد",
+      "followedBy": "متابع بواسطة",
+      "and": "و",
+      "other": "آخر",
+      "others": "آخرون"
+    }
   }
 }

@@ -21,7 +21,7 @@ export const createDropdownMenuStyles = (theme: Theme, isDark: boolean) =>
       minWidth: 220,
       overflow: 'hidden',
       borderWidth: Platform.OS === 'ios' ? 0.5 : 0,
-      borderColor: isDark ? `rgba(255, 255, 255, ${theme.opacity.border})` : `rgba(0, 0, 0, ${theme.opacity.border})`,
+      borderColor: `rgba(0, 0, 0, ${theme.opacity.border})`,
     },
     menuItem: {
       flexDirection: 'row',

@@ -25,11 +25,6 @@ export default function ListsContainer() {
   // Set the header title dynamically based on the username parameter
   useEffect(() => {
     const displayName = usernameValue || user?.name || 'User';
-    console.warn('ListsContainer setting title:', {
-      usernameValue,
-      'user?.name': user?.name,
-      displayName,
-    });
     navigation.setOptions({
       title: displayName,
     });

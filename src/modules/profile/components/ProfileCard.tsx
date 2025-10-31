@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { borderRadius, spacing, typography } from '../../../constants/theme';
 import { useTheme } from '../../../context/ThemeContext';
@@ -20,6 +21,7 @@ type ProfileCardProps = {
 };
 
 export default function ProfileCard({ profile, onFollow, isFollowing = false }: ProfileCardProps) {
+  const { t } = useTranslation();
   const { theme } = useTheme();
 
   const styles = StyleSheet.create({
@@ -130,13 +132,13 @@ export default function ProfileCard({ profile, onFollow, isFollowing = false }: 
 
   const getFollowedByText = () => {
     if (profile.followedBy.length === 0) return '';
-    if (profile.followedBy.length === 1) return `Followed by ${profile.followedBy[0]}`;
+    if (profile.followedBy.length === 1) return `${t('profile.whoToFollow.followedBy')} ${profile.followedBy[0]}`;
     if (profile.followedBy.length === 2) {
-      return `Followed by ${profile.followedBy[0]} and ${profile.followedBy[1]}`;
+      return `${t('profile.whoToFollow.followedBy')} ${profile.followedBy[0]} ${t('profile.whoToFollow.and')} ${profile.followedBy[1]}`;
     }
-    return `Followed by ${profile.followedBy[0]} and ${profile.followedBy.length - 1} ${
-      profile.followedBy.length - 1 === 1 ? 'other' : 'others'
-    }`;
+    const othersText =
+      profile.followedBy.length - 1 === 1 ? t('profile.whoToFollow.other') : t('profile.whoToFollow.others');
+    return `${t('profile.whoToFollow.followedBy')} ${profile.followedBy[0]} ${t('profile.whoToFollow.and')} ${profile.followedBy.length - 1} ${othersText}`;
   };
 
   return (
@@ -163,7 +165,7 @@ export default function ProfileCard({ profile, onFollow, isFollowing = false }: 
             activeOpacity={0.7}
           >
             <Text style={[styles.followButtonText, isFollowing && styles.followingButtonText]}>
-              {isFollowing ? 'Following' : 'Follow'}
+              {isFollowing ? t('profile.following') : t('profile.follow')}
             </Text>
           </TouchableOpacity>
         </View>

@@ -1,5 +1,6 @@
 import { Ban, Volume2, VolumeOff } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import DropdownMenu, { DropdownMenuItem } from '../../../components/DropdownMenu';
 import { useTheme } from '../../../context/ThemeContext';
 
@@ -22,6 +23,7 @@ const ProfileActionsMenu: React.FC<IProfileActionsMenuProps> = ({
   initialBlocked = false,
   blockLoading = false,
 }) => {
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const [isMuted, setIsMuted] = useState(initialMuted);
   const [isBlocked, setIsBlocked] = useState(initialBlocked);
@@ -65,7 +67,7 @@ const ProfileActionsMenu: React.FC<IProfileActionsMenuProps> = ({
 
   const menuItems: DropdownMenuItem[] = [
     {
-      label: isMuted ? 'Unmute' : 'Mute',
+      label: isMuted ? t('profile.actions.unmute') : t('profile.actions.mute'),
       onPress: handleMuteToggle,
       icon: isMuted ? (
         <Volume2 color={theme.colors.text.primary} size={20} strokeWidth={1.5} />
@@ -75,7 +77,7 @@ const ProfileActionsMenu: React.FC<IProfileActionsMenuProps> = ({
       disabled: isMuteLoading,
     },
     {
-      label: isBlocked ? 'Unblock' : 'Block',
+      label: isBlocked ? t('profile.actions.unblock') : t('profile.actions.block'),
       onPress: handleBlockToggle,
       icon: <Ban color={theme.colors.text.primary} size={20} strokeWidth={1.5} />,
       disabled: blockLoading,

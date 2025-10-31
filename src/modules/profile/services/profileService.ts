@@ -15,7 +15,6 @@ import {
 export const getMyUser = async (): Promise<IGetMyUserResponse> => {
   try {
     const response = await api.get('/users/me');
-    // console.log('getMyUser response:', response);
     return mapGetMyUserResponseDTOToResponse(response.data);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -52,7 +51,6 @@ export const getFollowersList = async ({
   following = false,
 }: IGetFollowersListParams): Promise<IGetFollowersListResponse> => {
   try {
-    // console.log('Fetching followers list for userId:', userId, 'pageOffset:', pageOffset, 'pageSize:', pageSize, 'following:', following);
     const response = await api.get(`/users/${userId}/followers`, {
       params: {
         page_offset: pageOffset,
@@ -79,7 +77,6 @@ export const getFollowingList = async ({
   pageSize = 20,
 }: IGetFollowingListParams): Promise<IGetFollowingListResponse> => {
   try {
-    // console.log('Fetching following list for userId:', userId, 'pageOffset:', pageOffset, 'pageSize:', pageSize);
     const response = await api.get(`/users/${userId}/following`, {
       params: {
         page_offset: pageOffset,

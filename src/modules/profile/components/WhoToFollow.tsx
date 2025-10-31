@@ -1,5 +1,6 @@
 import { ChevronRight } from 'lucide-react-native';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { spacing, typography } from '../../../constants/theme';
 import { useTheme } from '../../../context/ThemeContext';
@@ -51,6 +52,7 @@ const defaultProfiles: ProfileCardData[] = [
 ];
 
 export default function WhoToFollow({ profiles = defaultProfiles, onShowMore }: WhoToFollowProps) {
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const [followingStatus, setFollowingStatus] = useState<Record<string, boolean>>({});
 
@@ -106,11 +108,11 @@ export default function WhoToFollow({ profiles = defaultProfiles, onShowMore }: 
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>Who to follow</Text>
+        <Text style={styles.headerText}>{t('profile.whoToFollow.title')}</Text>
 
         {/* Show More Button */}
         <TouchableOpacity style={styles.showMoreButton} onPress={handleShowMore} activeOpacity={0.7}>
-          <Text style={styles.showMoreText}>Show more</Text>
+          <Text style={styles.showMoreText}>{t('profile.whoToFollow.showMore')}</Text>
           <ChevronRight size={20} color={theme.colors.text.link} />
         </TouchableOpacity>
       </View>

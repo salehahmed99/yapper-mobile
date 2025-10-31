@@ -2,6 +2,7 @@ import FollowButton from '@/src/modules/user_list/components/FollowButton';
 import { IUser } from '@/src/types/user';
 import { useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { Theme } from '../../../constants/theme';
 import { useTheme } from '../../../context/ThemeContext';
@@ -64,9 +65,10 @@ interface ListsComponentProps {
 }
 
 export default function ListsComponent({ initialTab, userId }: ListsComponentProps) {
+  const { t } = useTranslation();
   const tabs: TabConfig[] = [
-    { key: 'Following', title: 'Following', component: () => <FollowingRoute userId={userId} /> },
-    { key: 'Followers', title: 'Followers', component: () => <FollowersRoute userId={userId} /> },
+    { key: 'Following', title: t('profile.following'), component: () => <FollowingRoute userId={userId} /> },
+    { key: 'Followers', title: t('profile.followers'), component: () => <FollowersRoute userId={userId} /> },
   ];
 
   return <CustomTabView tabs={tabs} initialTab={initialTab} />;

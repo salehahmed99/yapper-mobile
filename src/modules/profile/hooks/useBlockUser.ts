@@ -16,6 +16,8 @@ export const useBlockUser = (initialBlockState: boolean = false) => {
    * @param userId - The ID of the user to block/unblock
    */
   const toggleBlock = async (userId: string) => {
+    if (isLoading || !userId) return;
+
     setIsLoading(true);
     const previousState = isBlocked;
 
