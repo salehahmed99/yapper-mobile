@@ -5,6 +5,8 @@ import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-na
 import Toast from 'react-native-toast-message';
 import { useTheme } from '../../../context/ThemeContext';
 import { useAuthStore } from '../../../store/useAuthStore';
+import { useBlockUser } from '../hooks/useBlockUser';
+import { useFollowUser } from '../hooks/useFollowUser';
 import { getUserById, muteUser, unmuteUser } from '../services/profileService';
 import { createHeaderStyles } from '../styles/profile-header-styles';
 import { IUserProfile } from '../types';
@@ -25,16 +27,20 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
   const [profileUser, setProfileUser] = useState<IUserProfile | null>(null);
   const [loading, setLoading] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
   const [imageUri, setImageUri] = useState('https://randomuser.me/api/portraits/men/1.jpg');
   const [bannerUri, setBannerUri] = useState('https://picsum.photos/1200/400');
   const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [isBlocked, setIsBlocked] = useState(false);
   const { theme } = useTheme();
   const headerStyles = useMemo(() => createHeaderStyles(theme), [theme]);
 
   const router = useRouter();
+
+  // Use follow hook for managing follow state
+  const { isFollowing, isLoading: followLoading, toggleFollow, setIsFollowing } = useFollowUser(false);
+
+  // Use block hook for managing block state
+  const { isBlocked, isLoading: blockLoading, toggleBlock, setIsBlocked } = useBlockUser(false);
 
   // Fetch user data if it's another user's profile
   useEffect(() => {
@@ -43,9 +49,9 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
       getUserById(userId)
         .then((response) => {
           setProfileUser(response.data);
-          setIsFollowing(response.data.isFollowing);
-          setIsMuted(response.data.isMuted);
-          setIsBlocked(response.data.isBlocked);
+          setIsFollowing(response.data.isFollowing || false);
+          setIsMuted(response.data.isMuted || false);
+          setIsBlocked(response.data.isBlocked || false);
           if (response.data.avatarUrl) setImageUri(response.data.avatarUrl);
           if (response.data.coverUrl) setBannerUri(response.data.coverUrl);
         })
@@ -56,7 +62,7 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
           setLoading(false);
         });
     }
-  }, [userId, isOwnProfile]);
+  }, [userId, isOwnProfile, setIsFollowing, setIsBlocked]);
 
   // Use currentUser for own profile, profileUser for others
   const displayUser = isOwnProfile ? currentUser : profileUser;
@@ -117,10 +123,14 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
     }
   };
 
-  const handleBlock = () => {
-    setIsBlocked(!isBlocked);
-    // TODO: Implement block functionality
-    // console.log(isBlocked ? "User unblocked" : "User blocked");
+  const handleBlock = async () => {
+    if (!userId || blockLoading) return;
+    await toggleBlock(userId);
+  };
+
+  const handleFollowToggle = async () => {
+    if (!userId || followLoading) return;
+    await toggleFollow(userId);
   };
 
   return (
@@ -183,11 +193,16 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
         ) : (
           <TouchableOpacity
             style={[headerStyles.editButton, isFollowing && headerStyles.followingButton]}
-            onPress={() => setIsFollowing(!isFollowing)}
+            onPress={handleFollowToggle}
+            disabled={followLoading}
           >
-            <Text style={[headerStyles.editText, isFollowing && headerStyles.followingText]}>
-              {isFollowing ? 'Following' : 'Follow'}
-            </Text>
+            {followLoading ? (
+              <ActivityIndicator size="small" color={theme.colors.text.primary} />
+            ) : (
+              <Text style={[headerStyles.editText, isFollowing && headerStyles.followingText]}>
+                {isFollowing ? 'Following' : 'Follow'}
+              </Text>
+            )}
           </TouchableOpacity>
         )}
       </View>
@@ -280,6 +295,7 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
           onBlock={handleBlock}
           initialMuted={isMuted}
           initialBlocked={isBlocked}
+          blockLoading={blockLoading}
         />
       )}
     </View>

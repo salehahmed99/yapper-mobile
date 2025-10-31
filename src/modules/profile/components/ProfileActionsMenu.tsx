@@ -7,9 +7,10 @@ interface IProfileActionsMenuProps {
   visible: boolean;
   onClose: () => void;
   onMute: () => void | Promise<void>;
-  onBlock: () => void;
+  onBlock: () => void | Promise<void>;
   initialMuted?: boolean;
   initialBlocked?: boolean;
+  blockLoading?: boolean;
 }
 
 const ProfileActionsMenu: React.FC<IProfileActionsMenuProps> = ({
@@ -19,11 +20,12 @@ const ProfileActionsMenu: React.FC<IProfileActionsMenuProps> = ({
   onBlock,
   initialMuted = false,
   initialBlocked = false,
+  blockLoading = false,
 }) => {
   const { theme } = useTheme();
   const [isMuted, setIsMuted] = useState(initialMuted);
   const [isBlocked, setIsBlocked] = useState(initialBlocked);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isMuteLoading, setIsMuteLoading] = useState(false);
 
   // Sync state when initialMuted or initialBlocked changes
   useEffect(() => {
@@ -35,9 +37,9 @@ const ProfileActionsMenu: React.FC<IProfileActionsMenuProps> = ({
   }, [initialBlocked]);
 
   const handleMuteToggle = async () => {
-    if (isLoading) return;
+    if (isMuteLoading) return;
 
-    setIsLoading(true);
+    setIsMuteLoading(true);
     try {
       await onMute();
       setIsMuted(!isMuted);
@@ -45,13 +47,20 @@ const ProfileActionsMenu: React.FC<IProfileActionsMenuProps> = ({
       // Error is handled in parent component
       console.error('Error toggling mute:', error);
     } finally {
-      setIsLoading(false);
+      setIsMuteLoading(false);
     }
   };
 
-  const handleBlockToggle = () => {
-    setIsBlocked(!isBlocked);
-    onBlock();
+  const handleBlockToggle = async () => {
+    if (blockLoading) return;
+
+    try {
+      await onBlock();
+      setIsBlocked(!isBlocked);
+    } catch (error) {
+      // Error is handled in parent component
+      console.error('Error toggling block:', error);
+    }
   };
 
   const menuItems: DropdownMenuItem[] = [
@@ -63,12 +72,13 @@ const ProfileActionsMenu: React.FC<IProfileActionsMenuProps> = ({
       ) : (
         <VolumeOff color={theme.colors.text.primary} size={20} strokeWidth={1.5} />
       ),
-      disabled: isLoading,
+      disabled: isMuteLoading,
     },
     {
       label: isBlocked ? 'Unblock' : 'Block',
       onPress: handleBlockToggle,
       icon: <Ban color={theme.colors.text.primary} size={20} strokeWidth={1.5} />,
+      disabled: blockLoading,
     },
   ];
 
