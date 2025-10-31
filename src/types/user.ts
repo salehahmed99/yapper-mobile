@@ -9,6 +9,16 @@ export interface IUserDTO {
   facebook_id?: string;
   google_id?: string;
   avatar_url?: string;
+  cover_url?: string;
+  birth_date?: string;
+  language?: string;
+  verified?: boolean;
+  country?: string;
+  online?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  followers?: number;
+  following?: number;
   is_following?: boolean;
   is_follower?: boolean;
   is_muted?: boolean;
@@ -26,6 +36,16 @@ export interface IUser {
   facebookId?: string;
   googleId?: string;
   avatarUrl?: string;
+  coverUrl?: string;
+  birthDate?: string;
+  language?: string;
+  verified?: boolean;
+  country?: string;
+  online?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  followers?: number;
+  following?: number;
   isFollowing?: boolean;
   isFollower?: boolean;
   isMuted?: boolean;
@@ -44,6 +64,16 @@ function mapUserDTOToUser(userDTO: IUserDTO): IUser {
     facebookId: userDTO.facebook_id,
     googleId: userDTO.google_id,
     avatarUrl: userDTO.avatar_url,
+    coverUrl: userDTO.cover_url,
+    birthDate: userDTO.birth_date,
+    language: userDTO.language,
+    verified: userDTO.verified,
+    country: userDTO.country,
+    online: userDTO.online,
+    createdAt: userDTO.created_at,
+    updatedAt: userDTO.updated_at,
+    followers: userDTO.followers,
+    following: userDTO.following,
     isFollowing: userDTO.is_following,
     isFollower: userDTO.is_follower,
     isMuted: userDTO.is_muted,

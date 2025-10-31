@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUiShell } from '../../context/UiShellContext';
+import { useAuthStore } from '@/src/store/useAuthStore';
 
 interface IAppBarProps {
   title?: string;
@@ -17,6 +18,7 @@ interface IAppBarProps {
 const AppBar: React.FC<IAppBarProps> = (props) => {
   const { title, children, rightElement, tabView } = props;
   const { theme } = useTheme();
+  const user = useAuthStore((state) => state.user);
   const styles = createStyles(theme);
   const { t } = useTranslation();
   const { toggleSideMenu, isSideMenuOpen, appBarVisible } = useUiShell();
@@ -43,7 +45,7 @@ const AppBar: React.FC<IAppBarProps> = (props) => {
                 >
                   <View style={styles.avatarBackground}>
                     <Image
-                      source={{ uri: 'https://randomuser.me/api/portraits/men/1.jpg' }}
+                      source={{ uri: user?.avatarUrl || 'https://randomuser.me/api/portraits/men/1.jpg' }}
                       style={styles.avatar}
                       resizeMode="cover"
                     />

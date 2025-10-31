@@ -1,3 +1,4 @@
+import { QueryProvider } from '@/src/context/QueryProvider';
 import { ThemeProvider } from '@/src/context/ThemeContext';
 import i18n from '@/src/i18n';
 import { useAuthStore } from '@/src/store/useAuthStore';
@@ -45,13 +46,15 @@ export default function RootLayout() {
   }
 
   return (
-    <I18nextProvider i18n={i18n}>
-      <ThemeProvider>
-        <AuthInitializer>
-          <Stack screenOptions={{ headerShown: false }} />
-        </AuthInitializer>
-      </ThemeProvider>
-      <Toast />
-    </I18nextProvider>
+    <QueryProvider>
+      <I18nextProvider i18n={i18n}>
+        <ThemeProvider>
+          <AuthInitializer>
+            <Stack screenOptions={{ headerShown: false }}></Stack>
+          </AuthInitializer>
+        </ThemeProvider>
+        <Toast />
+      </I18nextProvider>
+    </QueryProvider>
   );
 }

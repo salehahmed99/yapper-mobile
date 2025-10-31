@@ -1,6 +1,7 @@
 import { IUser } from '@/src/types/user';
 import { deleteToken, getToken, saveToken } from '@/src/utils/secureStorage';
 import { create } from 'zustand';
+import { getMyUser } from '../modules/profile/services/profileService';
 
 interface IAuthState {
   user: IUser | null;
@@ -8,6 +9,7 @@ interface IAuthState {
   isInitialized: boolean;
   initializeAuth: () => Promise<void>;
   loginUser: (user: IUser, token: string) => Promise<void>;
+  fetchAndUpdateUser: () => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -40,6 +42,16 @@ export const useAuthStore = create<IAuthState>()((set) => ({
     } catch (error) {
       set({ user: null, token: null });
       console.error('Error logging in:', error);
+    }
+  },
+
+  // Fetch current user data and update store
+  fetchAndUpdateUser: async () => {
+    try {
+      const response = await getMyUser();
+      set({ user: response.data });
+    } catch (error) {
+      console.error('Error fetching user data:', error);
     }
   },
 

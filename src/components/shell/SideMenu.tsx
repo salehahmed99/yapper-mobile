@@ -1,10 +1,10 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useAuthStore } from '@/src/store/useAuthStore';
 import { BlurView } from 'expo-blur';
 import { usePathname, useRouter } from 'expo-router';
 import {
   Bookmark,
-  CircleEllipsis,
   Download,
   LayoutList,
   MessageCircle,
@@ -37,6 +37,7 @@ interface ISideMenuProps {
 
 const SideMenu: React.FC<ISideMenuProps> = (props) => {
   const { anim } = props;
+  const user = useAuthStore((state) => state.user);
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const { t } = useTranslation();
@@ -85,13 +86,23 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
         <View style={[styles.innerFlex, { paddingTop: insets.top + theme.spacing.sm, paddingStart: theme.spacing.sm }]}>
           {/* Profile + other accounts in one row */}
           <View style={styles.profileAndAccountsRow}>
-            <View style={styles.profileCol}>
-              <Image source={{ uri: 'https://randomuser.me/api/portraits/men/1.jpg' }} style={styles.avatar} />
-              <Text style={styles.name}>Pixsellz</Text>
-              <Text style={styles.username}>@pixsellz</Text>
-            </View>
+            <TouchableOpacity
+              onPress={() => {
+                closeSideMenu();
+                router.push('/(profile)/Profile/');
+              }}
+            >
+              <View style={styles.profileCol}>
+                <Image
+                  source={{ uri: user?.avatarUrl || 'https://randomuser.me/api/portraits/men/1.jpg' }}
+                  style={styles.avatar}
+                />
+                <Text style={styles.name}>{user?.name || 'User'}</Text>
+                <Text style={styles.username}>@{user?.username || 'username'}</Text>
+              </View>
+            </TouchableOpacity>
 
-            <View style={styles.accountsRow}>
+            {/* <View style={styles.accountsRow}>
               <View style={styles.smallAvatars}>
                 <Image source={{ uri: 'https://randomuser.me/api/portraits/women/2.jpg' }} style={styles.smallAvatar} />
                 <Image source={{ uri: 'https://randomuser.me/api/portraits/men/3.jpg' }} style={styles.smallAvatar} />
@@ -99,17 +110,31 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
               <TouchableOpacity style={styles.optionsButton} onPress={() => {}}>
                 <CircleEllipsis color={theme.colors.text.primary} size={32} />
               </TouchableOpacity>
-            </View>
+            </View> */}
           </View>
 
           {/* followers/following */}
           <View style={styles.followRow}>
-            <Text style={styles.followCount}>
-              <Text style={styles.bold}>217</Text> Following
-            </Text>
-            <Text style={styles.followCount}>
-              <Text style={styles.bold}>118</Text> Followers
-            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                closeSideMenu();
+                // router.push("/(profile)/Lists?tab=following");
+              }}
+            >
+              <Text style={styles.followCount}>
+                <Text style={styles.bold}>{user?.following || 0}</Text> Following
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                closeSideMenu();
+                // router.push("/(profile)/Lists?tab=followers");
+              }}
+            >
+              <Text style={styles.followCount}>
+                <Text style={styles.bold}>{user?.followers || 0}</Text> Followers
+              </Text>
+            </TouchableOpacity>
           </View>
 
           <ScrollView
@@ -118,7 +143,13 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             showsVerticalScrollIndicator={false}
           >
             {/* Menu tiles */}
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/(profile)')}>
+            <TouchableOpacity
+              style={styles.tile}
+              onPress={() => {
+                closeSideMenu();
+                router.push('/(profile)/Profile/');
+              }}
+            >
               <User color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
               <Text style={styles.menuTileText}>{t('menu.profile')}</Text>
             </TouchableOpacity>
