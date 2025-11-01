@@ -113,7 +113,7 @@ const LoginScreen = () => {
   };
 
   const handleBack = () => {
-    router.replace('/(auth)');
+    router.replace('/(auth)/welcome');
   };
 
   const handleForgotPassword = () => {
