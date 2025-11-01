@@ -191,6 +191,11 @@ export const colors = {
     success: '#00BA7C',
     warning: '#FFD400',
     overlay: 'rgba(91, 112, 131, 0.4)',
+    accent: {
+      like: '#F91880',
+      repost: '#00BA7C',
+      bookmark: '#1D9BF0',
+    },
   },
   dark: {
     text: {
@@ -212,6 +217,11 @@ export const colors = {
     success: '#00BA7C',
     warning: '#FFD400',
     overlay: 'rgba(91, 112, 131, 0.4)',
+    accent: {
+      like: '#F91880',
+      repost: '#00BA7C',
+      bookmark: '#1D9BF0',
+    },
   },
 };
 
