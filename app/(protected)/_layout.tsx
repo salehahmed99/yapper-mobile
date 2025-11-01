@@ -5,11 +5,6 @@ const ProtectedLayout = () => {
   // const isInitialized = useAuthStore((state) => state.isInitialized);
   // const isAuthenticated = useAuthStore((state) => state.token !== null);
 
-  // if (!isInitialized) return null;
-  // if (!isAuthenticated) {
-  //   return <Redirect href="/(auth)/login" />;
-  // }
-
   return <AppShell />;
 };
 
