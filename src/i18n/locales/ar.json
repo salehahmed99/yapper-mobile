@@ -78,9 +78,16 @@
     "following": "متابع"
   },
   "tweetActivity": {
+    "title": "نشاط المنشور",
     "likedBy": "أعجب به",
     "repostedBy": "أعيد نشره بواسطة",
-    "quotedBy": "اقتبس بواسطة"
+    "quotedBy": "اقتبس بواسطة",
+    "viewPostInteractions": "عرض تفاعلات المنشور",
+    "tabs": {
+      "reposts": "إعادة النشر",
+      "quotes": "الاقتباسات",
+      "likers": "الإعجابات"
+    }
   },
   "profile": {
     "editProfile": "تعديل الملف الشخصي",

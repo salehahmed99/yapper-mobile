@@ -8,7 +8,7 @@ export default function TweetActivityLayout() {
   return (
     <Stack
       screenOptions={{
-        headerShown: true,
+        headerShown: false,
         headerStyle: {
           backgroundColor: theme.colors.background.primary,
         },

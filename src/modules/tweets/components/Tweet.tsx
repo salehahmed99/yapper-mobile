@@ -1,10 +1,13 @@
+import DropdownMenu, { DropdownMenuItem } from '@/src/components/DropdownMenu';
 import GrokLogo from '@/src/components/icons/GrokLogo';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
 import { MoreHorizontal } from 'lucide-react-native';
-import React, { useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
 import ParentTweet from './ParentTweet';
@@ -26,8 +29,34 @@ const Tweet: React.FC<ITweetProps> = (props) => {
   const { tweet, parentTweet, onReplyPress, onRepostPress, onLikePress, onViewsPress, onSharePress } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const { t } = useTranslation();
+  const router = useRouter();
 
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ top: 100, right: 16 });
+  const moreButtonRef = useRef<View>(null);
+
+  const handleMorePress = () => {
+    moreButtonRef.current?.measure(
+      (_x: number, _y: number, _width: number, height: number, _pageX: number, pageY: number) => {
+        setMenuPosition({
+          top: pageY + height,
+          right: 16,
+        });
+        setMenuVisible(true);
+      },
+    );
+  };
+
+  const menuItems: DropdownMenuItem[] = [
+    {
+      label: t('tweetActivity.viewPostInteractions'),
+      onPress: () => {
+        router.push(`/(protected)/tweets/${tweet.tweet_id}/activity`);
+      },
+    },
+  ];
   return (
     <View style={styles.container} accessibilityLabel="tweet_container_main">
       {tweet.type === 'repost' && (
@@ -48,7 +77,11 @@ const Tweet: React.FC<ITweetProps> = (props) => {
             <UserInfoRow tweet={tweet} />
             <View style={styles.optionsRow}>
               <GrokLogo size={16} color={theme.colors.text.secondary} />
-              <MoreHorizontal size={16} color={theme.colors.text.secondary} />
+              <View ref={moreButtonRef} collapsable={false}>
+                <TouchableOpacity onPress={handleMorePress} hitSlop={8}>
+                  <MoreHorizontal size={16} color={theme.colors.text.secondary} />
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
           <View style={styles.tweetContent}>
@@ -67,6 +100,12 @@ const Tweet: React.FC<ITweetProps> = (props) => {
           />
         </View>
       </View>
+      <DropdownMenu
+        visible={menuVisible}
+        onClose={() => setMenuVisible(false)}
+        items={menuItems}
+        position={menuPosition}
+      />
     </View>
   );
 };

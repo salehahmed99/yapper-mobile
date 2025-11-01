@@ -144,9 +144,16 @@
     "following": "Following"
   },
   "tweetActivity": {
+    "title": "Post activity",
     "likedBy": "Liked by",
     "repostedBy": "Reposted by",
-    "quotedBy": "Quoted by"
+    "quotedBy": "Quoted by",
+    "viewPostInteractions": "View Post Interactions",
+    "tabs": {
+      "reposts": "Reposts",
+      "quotes": "Quotes",
+      "likers": "Likers"
+    }
   },
   "profile": {
     "editProfile": "Edit profile",
