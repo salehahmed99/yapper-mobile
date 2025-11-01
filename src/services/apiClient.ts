@@ -1,5 +1,4 @@
 import axios from 'axios';
-import humps from 'humps';
 import { getToken } from '../utils/secureStorage';
 const api = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL,
@@ -8,15 +7,15 @@ const api = axios.create({
   },
 });
 
-api.interceptors.response.use((response) => {
-  response.data = humps.camelizeKeys(response.data);
-  return response;
-});
+// api.interceptors.response.use((response) => {
+//   response.data = humps.camelizeKeys(response.data);
+//   return response;
+// });
 
 api.interceptors.request.use(
   async (config) => {
-    config.data = humps.decamelizeKeys(config.data);
-    config.params = humps.decamelizeKeys(config.params);
+    // config.data = humps.decamelizeKeys(config.data);
+    // config.params = humps.decamelizeKeys(config.params);
     const token = await getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

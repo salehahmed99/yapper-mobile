@@ -19,7 +19,7 @@ const UserInfoRow: React.FC<IUserInfoRowProps> = (props) => {
       <Text style={styles.name}>{tweet.user.name}</Text>
       <Text style={styles.username}>@{tweet.user.username}</Text>
       <View style={styles.dot} />
-      <Text style={styles.username}>{tweet.createdAt && formatTweetDate(tweet.createdAt)}</Text>
+      <Text style={styles.username}>{tweet.created_at && formatTweetDate(tweet.created_at)}</Text>
     </View>
   );
 };

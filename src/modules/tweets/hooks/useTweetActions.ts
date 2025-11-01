@@ -4,13 +4,13 @@ import { useTweetsFiltersStore } from '../store/useTweetsFiltersStore';
 import { ITweet } from '../types';
 
 interface ILikeMutationVariables {
-  tweetId: string;
-  isLiked: boolean;
+  tweet_id: string;
+  is_liked: boolean;
 }
 
 interface IRepostMutationVariables {
-  tweetId: string;
-  isReposted: boolean;
+  tweet_id: string;
+  is_reposted: boolean;
 }
 export const useTweetActions = () => {
   const queryClient = useQueryClient();
@@ -19,10 +19,10 @@ export const useTweetActions = () => {
   const queryKey = ['tweets', tweetsFilters];
   const likeMutation = useMutation({
     mutationFn: async (variables: ILikeMutationVariables) => {
-      if (variables.isLiked) {
-        return await unlikeTweet(variables.tweetId);
+      if (variables.is_liked) {
+        return await unlikeTweet(variables.tweet_id);
       }
-      return await likeTweet(variables.tweetId);
+      return await likeTweet(variables.tweet_id);
     },
     onMutate: async (variables: ILikeMutationVariables) => {
       await queryClient.cancelQueries({ queryKey });
@@ -31,11 +31,11 @@ export const useTweetActions = () => {
       queryClient.setQueryData(queryKey, (oldData: ITweet[]) => {
         if (!oldData) return oldData;
         return oldData.map((tweet) => {
-          if (tweet.tweetId === variables.tweetId) {
+          if (tweet.tweet_id === variables.tweet_id) {
             return {
               ...tweet,
-              isLiked: !variables.isLiked,
-              likesCount: variables.isLiked ? tweet.likesCount - 1 : tweet.likesCount + 1,
+              is_liked: !variables.is_liked,
+              likes_count: variables.is_liked ? tweet.likes_count - 1 : tweet.likes_count + 1,
             };
           } else {
             return tweet;
@@ -55,10 +55,10 @@ export const useTweetActions = () => {
 
   const repostMutation = useMutation({
     mutationFn: async (variables: IRepostMutationVariables) => {
-      if (variables.isReposted) {
-        return await undoRepostTweet(variables.tweetId);
+      if (variables.is_reposted) {
+        return await undoRepostTweet(variables.tweet_id);
       }
-      return await repostTweet(variables.tweetId);
+      return await repostTweet(variables.tweet_id);
     },
     onMutate: async (variables: IRepostMutationVariables) => {
       await queryClient.cancelQueries({ queryKey });
@@ -67,11 +67,11 @@ export const useTweetActions = () => {
       queryClient.setQueryData(queryKey, (oldData: ITweet[]) => {
         if (!oldData) return oldData;
         return oldData.map((tweet) => {
-          if (tweet.tweetId === variables.tweetId) {
+          if (tweet.tweet_id === variables.tweet_id) {
             return {
               ...tweet,
-              isReposted: !variables.isReposted,
-              repostsCount: variables.isReposted ? tweet.repostsCount - 1 : tweet.repostsCount + 1,
+              is_reposted: !variables.is_reposted,
+              reposts_count: variables.is_reposted ? tweet.reposts_count - 1 : tweet.reposts_count + 1,
             };
           } else {
             return tweet;

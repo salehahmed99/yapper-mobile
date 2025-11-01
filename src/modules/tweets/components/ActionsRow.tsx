@@ -30,29 +30,29 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
     <View style={styles.actionsRow}>
       <TweetActionButton
         icon={ReplyIcon}
-        count={tweet.repliesCount}
+        count={tweet.replies_count}
         onPress={onReplyPress}
         accessibilityLabel="tweet_button_reply"
       />
       <TweetActionButton
         icon={RepostIcon}
-        count={tweet.repostsCount}
-        onPress={() => onRepostPress(tweet.isReposted)}
-        strokeColor={tweet.isReposted ? theme.colors.accent.repost : theme.colors.text.secondary}
+        count={tweet.reposts_count}
+        onPress={() => onRepostPress(tweet.is_reposted)}
+        strokeColor={tweet.is_reposted ? theme.colors.accent.repost : theme.colors.text.secondary}
         accessibilityLabel="tweet_button_repost"
       />
 
       <TweetActionButton
         icon={LikeIcon}
-        count={tweet.likesCount}
-        onPress={() => onLikePress(tweet.isLiked)}
-        strokeColor={tweet.isLiked ? theme.colors.accent.like : theme.colors.text.secondary}
-        fillColor={tweet.isLiked ? theme.colors.accent.like : 'transparent'}
+        count={tweet.likes_count}
+        onPress={() => onLikePress(tweet.is_liked)}
+        strokeColor={tweet.is_liked ? theme.colors.accent.like : theme.colors.text.secondary}
+        fillColor={tweet.is_liked ? theme.colors.accent.like : 'transparent'}
         accessibilityLabel="tweet_button_like"
       />
       <TweetActionButton
         icon={ViewsIcon}
-        count={tweet.viewsCount}
+        count={tweet.views_count}
         onPress={onViewsPress}
         accessibilityLabel="tweet_button_views"
       />

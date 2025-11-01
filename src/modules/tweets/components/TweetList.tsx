@@ -18,12 +18,13 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
       renderItem={({ item }) => <TweetContainer tweet={item} />}
       keyExtractor={(item) => {
         if (item.type === 'repost') {
-          return item.tweetId + item.repostedBy?.repostId;
+          return item.tweet_id + item.reposted_by?.repost_id;
         } else {
-          return item.tweetId;
+          return item.tweet_id;
         }
       }}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
+      accessibilityLabel="tweet_list_feed"
     />
   );
 };

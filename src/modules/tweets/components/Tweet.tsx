@@ -31,13 +31,13 @@ const Tweet: React.FC<ITweetProps> = (props) => {
   return (
     <View style={styles.container} accessibilityLabel="tweet_container_main">
       {tweet.type === 'repost' && (
-        <RepostIndicator repostById={tweet.repostedBy?.id} repostedByName={tweet.repostedBy?.name} />
+        <RepostIndicator repostById={tweet.reposted_by?.id} repostedByName={tweet.reposted_by?.name} />
       )}
       <View style={styles.tweetContainer}>
         <View style={styles.imageColumn}>
           <Image
             source={
-              tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : require('@/assets/images/avatar-placeholder.png')
+              tweet.user.avatar_url ? { uri: tweet.user.avatar_url } : require('@/assets/images/avatar-placeholder.png')
             }
             style={styles.avatar}
             accessibilityLabel="tweet_image_avatar"

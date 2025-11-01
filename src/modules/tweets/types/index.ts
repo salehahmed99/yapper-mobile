@@ -1,36 +1,36 @@
 import { IApiResponse } from '@/src/types/api';
-import { IUser } from '@/src/types/user';
+import { IUserDTO } from '@/src/types/user';
 
 type TweetType = 'tweet' | 'reply' | 'repost' | 'quote';
 
 interface ITweet {
-  tweetId: string;
+  tweet_id: string;
   type: TweetType;
-  parentTweetId?: string;
-  conversationId?: string;
+  parent_tweet_id?: string;
+  conversation_id?: string;
   content: string;
   images: string[];
   videos: string[];
-  likesCount: number;
-  repostsCount: number;
-  viewsCount: number;
-  quotesCount: number;
-  repliesCount: number;
-  isLiked: boolean;
-  isReposted: boolean;
-  createdAt: string;
-  updatedAt: string;
-  user: IUser;
-  repostedBy?: {
-    repostId: string;
+  likes_count: number;
+  reposts_count: number;
+  views_count: number;
+  quotes_count: number;
+  replies_count: number;
+  is_liked: boolean;
+  is_reposted: boolean;
+  created_at: string;
+  updated_at: string;
+  user: IUserDTO;
+  reposted_by?: {
+    repost_id: string;
     id: string;
     name: string;
-    repostedAt: string;
+    reposted_at: string;
   };
 }
 
 interface ITweetFilters {
-  userId?: string;
+  user_id?: string;
   cursor?: string;
   limit?: number;
 }
@@ -40,9 +40,9 @@ type ITweetsResponse = IApiResponse<ITweets>;
 
 interface ITweets {
   data: ITweet[];
-  nextCursor?: string;
+  next_cursor?: string;
   count: number;
-  hasMore: boolean;
+  has_more: boolean;
 }
 
 export { ISingleTweetResponse, ITweet, ITweetFilters, ITweets, ITweetsResponse };

@@ -18,7 +18,7 @@ const ParentTweet: React.FC<IParentTweetProps> = (props) => {
       <View style={styles.userInfo}>
         <Image
           source={
-            tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : require('@/assets/images/avatar-placeholder.png')
+            tweet.user.avatar_url ? { uri: tweet.user.avatar_url } : require('@/assets/images/avatar-placeholder.png')
           }
           style={styles.avatar}
           accessibilityLabel="tweet_image_parent_avatar"
