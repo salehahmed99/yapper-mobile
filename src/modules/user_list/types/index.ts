@@ -20,8 +20,19 @@ export interface IUserListResponse {
 }
 
 export interface IUserListResponseBackend {
-  users: IUserDTO[];
-  nextPage?: number | null;
+  data: {
+    data: IUserDTO[];
+    pagination: {
+      total_items: number;
+      total_pages: number;
+      current_page: number;
+      items_per_page: number;
+      has_next_page: boolean;
+      has_previous_page: boolean;
+    };
+  };
+  count: number;
+  message: string;
 }
 
 export type FetchUserListParams = UserListQuery & { page?: number | null };

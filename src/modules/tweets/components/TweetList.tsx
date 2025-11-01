@@ -16,11 +16,11 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
     <FlatList
       data={data}
       renderItem={({ item }) => <TweetContainer tweet={item} />}
-      keyExtractor={(item) => {
+      keyExtractor={(item, index) => {
         if (item.type === 'repost') {
-          return item.tweet_id + item.reposted_by?.repost_id;
+          return item.tweet_id + item.reposted_by?.repost_id + index;
         } else {
-          return item.tweet_id;
+          return item.tweet_id + index;
         }
       }}
       ItemSeparatorComponent={() => <View style={styles.separator} />}

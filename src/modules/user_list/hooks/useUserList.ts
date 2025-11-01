@@ -58,7 +58,7 @@ export const useUserList = (options: UseUserListOptions): IUseUserListResult => 
         const error = err as { response?: { data?: { message?: string } }; message?: string };
         const message = error?.response?.data?.message || error?.message || 'Failed to load users';
         setError(message);
-
+        setHasNextPage(false);
         if (isRefresh) {
           setUsers([]);
           currentPageRef.current = 1;

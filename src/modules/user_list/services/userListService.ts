@@ -1,5 +1,6 @@
 import api from '@/src/services/apiClient';
 import { IUser, mapUserDTOToUser } from '@/src/types/user';
+import { t } from 'i18next';
 import { getFollowersList, getFollowingList } from '../../profile/services/profileService';
 import { IFollowerUser } from '../../profile/types';
 import { FetchUserListParams, IUserListResponse, IUserListResponseBackend } from '../types';
@@ -70,14 +71,18 @@ export const getUserList = async (params: FetchUserListParams): Promise<IUserLis
   } else {
     throw new Error('Invalid parameters: missing tweetId or userId');
   }
-
-  const response = await api.get<IUserListResponseBackend>(endpoint, {
-    params: page ? { page } : { page: 1 },
-  });
-
-  // Map backend response to frontend format
-  return {
-    users: response.data.users.map(mapUserDTOToUser),
-    nextPage: response.data.nextPage,
-  };
+  try {
+    const response = await api.get<IUserListResponseBackend>(endpoint, {
+      params: page ? { page } : { page: 1 },
+    });
+    // Map backend response to frontend format
+    return {
+      users: response.data.data.data.map(mapUserDTOToUser),
+      nextPage: response.data.data.pagination.has_next_page ? response.data.data.pagination.current_page + 1 : null,
+    };
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || t('userList.errors.fetchFailed') || 'An error occurred while fetching users.',
+    );
+  }
 };
