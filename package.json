@@ -100,7 +100,7 @@
     "lint-staged": "^16.2.6",
     "prettier": "^3.6.2",
     "react-native-svg-transformer": "^1.5.1",
-    "react-test-renderer": "^19.1.0",
+    "react-test-renderer": "19.1.0",
     "typescript": "~5.9.2",
     "typescript-eslint": "^8.46.2"
   },
