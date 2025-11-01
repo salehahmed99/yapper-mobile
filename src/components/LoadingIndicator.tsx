@@ -8,7 +8,7 @@ interface ILoadingIndicatorProps {
 }
 const LoadingIndicator: React.FC<ILoadingIndicatorProps> = (props) => {
   const { theme } = useTheme();
-  const { color = theme.colors.text.secondary, size = 'large' } = props;
+  const { color = theme.colors.text.secondary, size = 'small' } = props;
   return (
     <View
       style={{
