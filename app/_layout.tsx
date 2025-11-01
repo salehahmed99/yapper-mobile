@@ -45,7 +45,6 @@ export default function RootLayout() {
     return null;
   }
 
-  
   return (
     <QueryProvider>
       <I18nextProvider i18n={i18n}>
@@ -57,6 +56,5 @@ export default function RootLayout() {
         <Toast />
       </I18nextProvider>
     </QueryProvider>
-
   );
 }

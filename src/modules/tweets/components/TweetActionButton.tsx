@@ -11,13 +11,14 @@ interface ITweetActionButtonProps {
   onPress: () => void;
   strokeColor?: string;
   fillColor?: string;
+  accessibilityLabel: string;
 }
 const TweetActionButton: React.FC<ITweetActionButtonProps> = (props) => {
-  const { icon: Icon, count, onPress, strokeColor, fillColor } = props;
+  const { icon: Icon, count, onPress, strokeColor, fillColor, accessibilityLabel } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   return (
-    <Pressable style={styles.actionItem} onPress={onPress} hitSlop={15}>
+    <Pressable style={styles.actionItem} onPress={onPress} hitSlop={15} accessibilityLabel={accessibilityLabel}>
       <Icon
         width={theme.iconSizes.xs}
         height={theme.iconSizes.xs}

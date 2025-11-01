@@ -14,13 +14,14 @@ const ParentTweet: React.FC<IParentTweetProps> = (props) => {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   return (
-    <View style={styles.container}>
+    <View style={styles.container} accessibilityLabel="tweet_container_parent">
       <View style={styles.userInfo}>
         <Image
           source={
             tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : require('@/assets/images/avatar-placeholder.png')
           }
           style={styles.avatar}
+          accessibilityLabel="tweet_image_parent_avatar"
         />
         <UserInfoRow tweet={tweet} />
       </View>

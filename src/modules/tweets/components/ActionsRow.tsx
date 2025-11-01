@@ -28,12 +28,18 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
 
   return (
     <View style={styles.actionsRow}>
-      <TweetActionButton icon={ReplyIcon} count={tweet.repliesCount} onPress={onReplyPress} />
+      <TweetActionButton
+        icon={ReplyIcon}
+        count={tweet.repliesCount}
+        onPress={onReplyPress}
+        accessibilityLabel="tweet_button_reply"
+      />
       <TweetActionButton
         icon={RepostIcon}
         count={tweet.repostsCount}
         onPress={() => onRepostPress(tweet.isReposted)}
         strokeColor={tweet.isReposted ? theme.colors.accent.repost : theme.colors.text.secondary}
+        accessibilityLabel="tweet_button_repost"
       />
 
       <TweetActionButton
@@ -42,16 +48,23 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
         onPress={() => onLikePress(tweet.isLiked)}
         strokeColor={tweet.isLiked ? theme.colors.accent.like : theme.colors.text.secondary}
         fillColor={tweet.isLiked ? theme.colors.accent.like : 'transparent'}
+        accessibilityLabel="tweet_button_like"
       />
-      <TweetActionButton icon={ViewsIcon} count={tweet.viewsCount} onPress={onViewsPress} />
+      <TweetActionButton
+        icon={ViewsIcon}
+        count={tweet.viewsCount}
+        onPress={onViewsPress}
+        accessibilityLabel="tweet_button_views"
+      />
 
       <TweetActionButton
         icon={BookmarkIcon}
         onPress={onBookmarkPress}
         strokeColor={isBookmarked ? theme.colors.accent.bookmark : theme.colors.text.secondary}
         fillColor={isBookmarked ? theme.colors.accent.bookmark : 'transparent'}
+        accessibilityLabel="tweet_button_bookmark"
       />
-      <TweetActionButton icon={ShareIcon} onPress={onSharePress} />
+      <TweetActionButton icon={ShareIcon} onPress={onSharePress} accessibilityLabel="tweet_button_share" />
     </View>
   );
 };

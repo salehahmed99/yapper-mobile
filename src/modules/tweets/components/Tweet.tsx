@@ -29,7 +29,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
 
   const [isBookmarked, setIsBookmarked] = useState(false);
   return (
-    <View style={styles.container}>
+    <View style={styles.container} accessibilityLabel="tweet_container_main">
       {tweet.type === 'repost' && (
         <RepostIndicator repostById={tweet.repostedBy?.id} repostedByName={tweet.repostedBy?.name} />
       )}
@@ -40,6 +40,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
               tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : require('@/assets/images/avatar-placeholder.png')
             }
             style={styles.avatar}
+            accessibilityLabel="tweet_image_avatar"
           />
         </View>
         <View style={styles.detailsColumn}>
