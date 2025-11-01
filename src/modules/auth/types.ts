@@ -1,14 +1,10 @@
-import { IUser, IUserDTO, mapUserDTOToUser } from '../../types/user';
+import { IUser, mapUserDTOToUser } from '../../types/user';
+import { IApiResponse } from '../../types/api';
 
-/**
- * Generic API Response
- */
-export interface IApiResponse<T> {
-  data: T;
-  count: number;
-  message: string;
+export interface ILoginCredentials {
+  identifier: string;
+  type: 'email' | 'username' | 'phone_number';
 }
-
 /**
  * Login
  */

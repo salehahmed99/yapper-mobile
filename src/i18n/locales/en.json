@@ -122,19 +122,26 @@
       "resettingPassword": "Resetting your password..."
     }
   },
-  "userList": {
-    "emptyState": "Nobody yet.",
-    "errorRetry": "Try again",
-    "followsYou": "Follows you",
-    "follow": "Follow",
-    "following": "Following"
-  },
+
   "buttons": {
     "next": "Next",
     "back": "Back",
     "continue": "Continue",
     "login": "Login",
     "logout": "Logout"
+  },
+  "activityLoader": {
+    "sendingCode": "Sending code...",
+    "verifyingCode": "Verifying code...",
+    "resettingPassword": "Resetting your password..."
+  },
+
+  "userList": {
+    "emptyState": "Nobody yet.",
+    "errorRetry": "Try again",
+    "followsYou": "Follows you",
+    "follow": "Follow",
+    "following": "Following"
   },
   "tweetActivity": {
     "likedBy": "Liked by",

@@ -1,5 +1,6 @@
 import { useTheme } from '@/src/context/ThemeContext';
 import * as Localization from 'expo-localization';
+import { router } from 'expo-router';
 import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -30,7 +31,6 @@ import { Theme } from '@/src/constants/theme';
 import { ILoginResponse } from '@/src/modules/auth/types';
 import { ButtonOptions } from '@/src/modules/auth/utils/enums';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Types
