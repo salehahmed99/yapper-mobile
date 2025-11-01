@@ -53,7 +53,13 @@ const Tweet: React.FC<ITweetProps> = (props) => {
     {
       label: t('tweetActivity.viewPostInteractions'),
       onPress: () => {
-        router.push(`/(protected)/tweets/${tweet.tweet_id}/activity`);
+        router.push({
+          pathname: '/(protected)/tweets/[tweetId]/activity',
+          params: {
+            tweetId: tweet.tweet_id,
+            ownerId: tweet.user.id,
+          },
+        });
       },
     },
   ];

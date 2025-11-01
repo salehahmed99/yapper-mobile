@@ -4,10 +4,11 @@ import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import FollowButton from '@/src/modules/user_list/components/FollowButton';
 import UserList from '@/src/modules/user_list/components/UserList';
+import { useAuthStore } from '@/src/store/useAuthStore';
 import { IUser } from '@/src/types/user';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,22 +18,46 @@ export default function TweetActivityScreen() {
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { t } = useTranslation();
   const router = useRouter();
-  const { tweetId } = useLocalSearchParams<{ tweetId: string }>();
+  const { tweetId, ownerId } = useLocalSearchParams<{ tweetId: string; ownerId?: string }>();
   const insets = useSafeAreaInsets();
+  const user = useAuthStore((state) => state.user);
+  const fetchAndUpdateUser = useAuthStore((state) => state.fetchAndUpdateUser);
+
+  useEffect(() => {
+    if (!user) {
+      fetchAndUpdateUser();
+    }
+  }, [user, fetchAndUpdateUser]);
+
+  const currentUserId = user?.id ?? null;
+  const isTweetOwner = ownerId ? ownerId === currentUserId : false;
 
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
-  const routes = [
-    { key: 'reposts', title: t('tweetActivity.tabs.reposts') },
-    { key: 'quotes', title: t('tweetActivity.tabs.quotes') },
-    { key: 'likers', title: t('tweetActivity.tabs.likers') },
-  ];
+  const routes = useMemo(() => {
+    const baseRoutes = [
+      { key: 'reposts', title: t('tweetActivity.tabs.reposts') },
+      { key: 'quotes', title: t('tweetActivity.tabs.quotes') },
+    ];
+
+    if (isTweetOwner) {
+      baseRoutes.push({ key: 'likers', title: t('tweetActivity.tabs.likers') });
+    }
+
+    return baseRoutes;
+  }, [t, isTweetOwner]);
 
   const renderTabContent = () => {
-    const listType = activeTabIndex === 2 ? 'likes' : 'reposts';
+    const currentRoute = routes[activeTabIndex];
+
+    if (!currentRoute) {
+      return null;
+    }
+
+    const listType = currentRoute.key === 'likers' ? 'likes' : 'reposts';
     return (
       <UserList
-        key={`${listType}-${tweetId}`}
+        key={`${currentRoute.key}-${tweetId}`}
         type={listType}
         tweetId={tweetId || ''}
         renderAction={(user: IUser) => <FollowButton user={user} />}
