@@ -1,13 +1,14 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useFollowUser } from '@/src/modules/profile/hooks/useFollowUser';
 import { IUser } from '@/src/types/user';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 interface IFollowButtonProps {
   user: IUser;
-  onPress: (user: IUser) => void;
+  onPress?: (user: IUser) => void;
 }
 
 const createStyles = (theme: Theme) =>
@@ -45,20 +46,41 @@ const FollowButton: React.FC<IFollowButtonProps> = ({ user, onPress }) => {
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const handlePress = (e: any) => {
+  // Use the follow hook
+  const { isFollowing, isLoading, toggleFollow, setIsFollowing } = useFollowUser(user.isFollowing || false);
+
+  // Sync with user prop changes
+  useEffect(() => {
+    setIsFollowing(user.isFollowing || false);
+  }, [user.isFollowing, setIsFollowing]);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handlePress = async (e: any) => {
     e?.stopPropagation?.();
-    onPress(user);
+
+    // Toggle follow status
+    await toggleFollow(user.id);
+
+    // Call optional onPress callback
+    if (onPress) {
+      onPress({ ...user, isFollowing: !isFollowing });
+    }
   };
 
   return (
     <TouchableOpacity
-      style={[styles.followButton, user.isFollowing && styles.followingButton]}
+      style={[styles.followButton, isFollowing && styles.followingButton]}
       onPress={handlePress}
       activeOpacity={0.7}
+      disabled={isLoading}
     >
-      <Text style={[styles.followButtonText, user.isFollowing && styles.followingButtonText]}>
-        {user.isFollowing ? t('userList.following') : t('userList.follow')}
-      </Text>
+      {isLoading ? (
+        <ActivityIndicator size="small" color={isFollowing ? theme.colors.text.primary : theme.colors.text.inverse} />
+      ) : (
+        <Text style={[styles.followButtonText, isFollowing && styles.followingButtonText]}>
+          {isFollowing ? t('userList.following') : t('userList.follow')}
+        </Text>
+      )}
     </TouchableOpacity>
   );
 };

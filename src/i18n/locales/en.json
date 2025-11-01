@@ -89,5 +89,62 @@
     "likedBy": "Liked by",
     "repostedBy": "Reposted by",
     "quotedBy": "Quoted by"
+  },
+  "profile": {
+    "editProfile": "Edit profile",
+    "follow": "Follow",
+    "following": "Following",
+    "followers": "Followers",
+    "joined": "Joined",
+    "noBio": "No bio available",
+    "tabs": {
+      "tweets": "Tweets",
+      "tweetsReplies": "Tweets & Replies",
+      "media": "Media",
+      "likes": "Likes"
+    },
+    "placeholders": {
+      "tweets": "Tweets will be shown here.",
+      "tweetsReplies": "Tweets and Replies will be shown here.",
+      "media": "Media will be shown here.",
+      "likes": "Likes will be shown here."
+    },
+    "editModal": {
+      "title": "Edit Profile",
+      "cancel": "Cancel",
+      "save": "Save",
+      "name": "Name",
+      "bio": "Bio",
+      "location": "Location",
+      "website": "Website",
+      "birthday": "Birthday",
+      "namePlaceholder": "Add your name",
+      "bioPlaceholder": "Add a bio to your profile",
+      "locationPlaceholder": "Add your location",
+      "websitePlaceholder": "Add your website",
+      "birthdayPlaceholder": "Add your date of birth"
+    },
+    "actions": {
+      "edit": "Edit",
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "block": "Block",
+      "unblock": "Unblock"
+    },
+    "toasts": {
+      "userMuted": "User muted",
+      "userMutedDesc": "You will no longer see their posts",
+      "userUnmuted": "User unmuted",
+      "userUnmutedDesc": "You will now see their posts",
+      "error": "Error"
+    },
+    "whoToFollow": {
+      "title": "Who to follow",
+      "showMore": "Show more",
+      "followedBy": "Followed by",
+      "and": "and",
+      "other": "other",
+      "others": "others"
+    }
   }
 }

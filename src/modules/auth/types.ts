@@ -1,9 +1,9 @@
-import { IUser } from '../../types/user';
+import { IUser, IUserDTO, mapUserDTOToUser } from '../../types/user';
 
 interface ILoginResponseDTO {
   data: {
     access_token: string;
-    user: IUser;
+    user: IUserDTO;
   };
   count: number;
   message: string;
@@ -22,7 +22,7 @@ function mapLoginResponseDTOToLoginResponse(dto: ILoginResponseDTO): ILoginRespo
   return {
     data: {
       accessToken: dto.data.access_token,
-      user: dto.data.user,
+      user: mapUserDTOToUser(dto.data.user),
     },
     count: dto.count,
     message: dto.message,
@@ -41,4 +41,4 @@ interface IRegisterData {
   password: string;
 }
 
-export { mapLoginResponseDTOToLoginResponse, ILoginResponse, ILoginCredentials, IRegisterData };
+export { ILoginCredentials, ILoginResponse, IRegisterData, mapLoginResponseDTOToLoginResponse };

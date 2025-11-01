@@ -1,10 +1,28 @@
 import api from '@/src/services/apiClient';
-import { mapUserDTOToUser } from '@/src/types/user';
+import { IUser, mapUserDTOToUser } from '@/src/types/user';
+import { getFollowersList, getFollowingList } from '../../profile/services/profileService';
+import { IFollowerUser } from '../../profile/types';
 import { FetchUserListParams, IUserListResponse, IUserListResponseBackend } from '../types';
 import { getMockUserList } from './mockUserListService';
 
 // Set to true to use mock data for testing
-const USE_MOCK_DATA = true;
+const USE_MOCK_DATA = false;
+
+/**
+ * Helper function to convert IFollowerUser to IUser
+ */
+const mapFollowerUserToUser = (follower: IFollowerUser): IUser => ({
+  id: follower.id,
+  name: follower.name,
+  username: follower.username,
+  bio: follower.bio,
+  avatarUrl: follower.avatarUrl,
+  email: '', // Not provided in followers endpoint
+  isFollowing: follower.isFollowing,
+  isFollower: follower.isFollower,
+  isMuted: follower.isMuted,
+  isBlocked: follower.isBlocked,
+});
 
 export const getUserList = async (params: FetchUserListParams): Promise<IUserListResponse> => {
   // Use mock data if enabled
@@ -13,6 +31,35 @@ export const getUserList = async (params: FetchUserListParams): Promise<IUserLis
   }
 
   const { page, type } = params;
+
+  // Use the followers endpoint
+  if (type === 'followers' && 'userId' in params) {
+    const response = await getFollowersList({
+      userId: params.userId,
+      pageOffset: page || 1,
+      pageSize: 20,
+      following: false,
+    });
+
+    return {
+      users: response.data.map(mapFollowerUserToUser),
+      nextPage: response.data.length === 20 ? (page || 1) + 1 : null,
+    };
+  }
+
+  // Use the following endpoint
+  if (type === 'following' && 'userId' in params) {
+    const response = await getFollowingList({
+      userId: params.userId,
+      pageOffset: page || 1,
+      pageSize: 20,
+    });
+
+    return {
+      users: response.data.map(mapFollowerUserToUser),
+      nextPage: response.data.length === 20 ? (page || 1) + 1 : null,
+    };
+  }
 
   let endpoint: string;
 

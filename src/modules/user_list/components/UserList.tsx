@@ -1,9 +1,10 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { IUser } from '@/src/types/user';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 import { useUserList } from '../hooks/useUserList';
 import { UserListQuery } from '../types';
 import UserListItem from './UserListItem';
@@ -66,6 +67,18 @@ const UserList: React.FC<UserListProps> = (props) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const { users, loading, refreshing, error, hasNextPage, refresh, loadMore } = useUserList({ ...props, autoLoad });
+
+  // Show toast when there's an error
+  useEffect(() => {
+    if (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: error,
+        position: 'top',
+      });
+    }
+  }, [error]);
 
   const renderEmpty = () => {
     if (loading) return null;
