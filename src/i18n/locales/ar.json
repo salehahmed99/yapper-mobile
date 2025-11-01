@@ -33,6 +33,43 @@
     "profile": "الملف الشخصي",
     "title": "الشاشة الرئيسية"
   },
+  "auth": {
+    "login": {
+      "emailTitle": "للبدء، أدخل رقم هاتفك أو بريدك الإلكتروني أو @username",
+      "emailLabel": "رقم الهاتف أو البريد الإلكتروني أو @username",
+      "passwordTitle": "أدخل كلمة المرور الخاصة بك",
+      "passwordLabel": "كلمة المرور",
+      "next": "التالي",
+      "login": "تسجيل الدخول",
+      "forgotPassword": "هل نسيت كلمة المرور؟",
+      "buttons": {
+        "next": "التالي",
+        "login": "تسجيل الدخول"
+      },
+      "errors": {
+        "invalidInput": "إدخال غير صحيح",
+        "invalidInputDescription": "يرجى إدخال بريد إلكتروني أو رقم هاتف أو اسم مستخدم صحيح.",
+        "userNotFound": "لم يتم العثور على المستخدم",
+        "userNotFoundDescription": "هذا المستخدم غير موجود. يرجى التحقق من إدخالك أو إنشاء حساب جديد.",
+        "error": "خطأ",
+        "unableToVerify": "غير قادر على التحقق من وجود المستخدم. يرجى المحاولة مرة أخرى.",
+        "invalidPassword": "كلمة مرور غير صحيحة",
+        "invalidPasswordDescription": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+        "invalidLoginData": "بيانات تسجيل دخول غير صحيحة",
+        "invalidLoginDataDescription": "يرجى التحقق من بيانات اعتمادك والمحاولة مرة أخرى.",
+        "loginFailed": "فشل تسجيل الدخول",
+        "unableToLogin": "غير قادر على تسجيل الدخول. يرجى المحاولة مرة أخرى."
+      },
+      "success": {
+        "loginSuccessful": "تم تسجيل الدخول بنجاح",
+        "welcomeBack": "أهلا وسهلا!"
+      },
+      "alerts": {
+        "backButtonPressed": "تم الضغط على زر الرجوع",
+        "forgotPasswordPressed": "تم الضغط على نسيت كلمة المرور"
+      }
+    }
+  },
   "userList": {
     "emptyState": "لا يوجد أحد حتى الآن.",
     "errorRetry": "حاول مرة أخرى",

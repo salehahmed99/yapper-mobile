@@ -6,9 +6,12 @@ export const typography = {
     md: 17,
     lg: 20,
     xl: 23,
-    xxl: 28,
-    xxxl: 31,
+
+    xml: 28,
+    xxl: 31,
+    xxxl: 36,
   },
+
   lineHeights: {
     tight: 1.2,
     normal: 1.3,
@@ -84,6 +87,7 @@ export const spacing = {
   xs: 4,
   sm: 8,
   md: 12,
+  mdg: 15,
   lg: 16,
   xl: 20,
   xxl: 24,
@@ -149,6 +153,8 @@ export const opacity = {
   separator: 0.2,
   buttonBackground: 0.35,
   actionButtonBackground: 0.5,
+  xxll: 32,
+  xxxl: 40,
 };
 
 export const ui = {
@@ -176,8 +182,10 @@ export const colors = {
       primary: '#FFFFFF',
       secondary: '#F7F9F9',
       tertiary: '#EFF3F4',
+      inverse: '#000000',
     },
     border: '#EFF3F4',
+    borderInverse: '#2F3336',
     error: '#F4212E',
     success: '#00BA7C',
     warning: '#FFD400',
@@ -195,8 +203,10 @@ export const colors = {
       primary: '#000000',
       secondary: '#16181C',
       tertiary: '#2F3336',
+      inverse: '#FFFFFF',
     },
     border: '#2F3336',
+    borderInverse: '#8a8c8cff',
     error: '#F4212E',
     success: '#00BA7C',
     warning: '#FFD400',

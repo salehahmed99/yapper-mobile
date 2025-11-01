@@ -36,6 +36,11 @@
     "messages": "Messages",
     "profile": "Profile"
   },
+  "welcome": {
+    "title": "Welcome to Yapper",
+    "subtitle": "Connect, Share, and Communicate",
+    "goToLogin": "Go to Login"
+  },
   "auth": {
     "login": {
       "emailTitle": "To get started, first enter your phone, email, or @username",
