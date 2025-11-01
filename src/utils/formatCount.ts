@@ -1,6 +1,6 @@
 /**
  * Formats a count number to display like Twitter
- * - Less than 100: display as is (e.g., "5", "99")
+ * - Less than 1000: display as is (e.g., "5", "99")
  * - Thousands: display with K (e.g., "1.2K", "67.8K")
  * - Millions: display with M (e.g., "1.1M", "45.3M")
  * - Billions: display with B (e.g., "2.5B")

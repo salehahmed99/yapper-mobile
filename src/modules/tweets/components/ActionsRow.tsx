@@ -73,75 +73,10 @@ export default ActionsRow;
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
-    container: {
-      padding: theme.spacing.md,
-    },
-    repostContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: theme.spacing.xs,
-      marginBottom: theme.spacing.xs,
-      marginStart: theme.spacing.xl,
-    },
-    repsostText: {
-      color: theme.colors.text.secondary,
-      fontFamily: theme.typography.fonts.bold,
-      fontSize: theme.typography.sizes.xs,
-    },
-    tweetContainer: {
-      flexDirection: 'row',
-      gap: theme.spacing.md,
-    },
-    imageColumn: {
-      flexDirection: 'column',
-      alignItems: 'center',
-    },
-    detailsColumn: {
-      flex: 1,
-      gap: theme.spacing.xs,
-    },
-    topRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-    optionsRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: theme.spacing.sm,
-    },
-    tweetContent: {},
-    avatar: {
-      width: theme.avatarSizes.md,
-      height: theme.avatarSizes.md,
-      borderRadius: theme.borderRadius.full,
-      backgroundColor: theme.colors.background.secondary,
-    },
     actionsRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
       marginTop: theme.spacing.xs,
-    },
-    actionItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      // borderWidth:1,
-      // borderColor: theme.colors.border,
-      gap: theme.spacing.xs,
-    },
-    actionCount: {
-      color: theme.colors.text.secondary,
-      fontFamily: theme.typography.fonts.regular,
-      fontSize: theme.typography.sizes.xs,
-    },
-    tweetText: {
-      color: theme.colors.text.primary,
-      fontFamily: theme.typography.fonts.regular,
-    },
-    parentTweetContainer: {
-      borderWidth: theme.borderWidth.thin,
-      borderColor: theme.colors.border,
-      borderRadius: theme.borderRadius.md,
     },
   });

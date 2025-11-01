@@ -23,7 +23,7 @@ const RepostIndicator: React.FC<IRepostIndicatorProps> = (props) => {
         color={theme.colors.text.secondary}
         strokeWidth={13}
       />
-      <Text style={styles.repsostText}>{user?.id === repostById ? 'You' : repostedByName} reposted</Text>
+      <Text style={styles.repostText}>{user?.id === repostById ? 'You' : repostedByName} reposted</Text>
     </View>
   );
 };
@@ -39,7 +39,7 @@ const createStyles = (theme: Theme) =>
       marginBottom: theme.spacing.xs,
       marginStart: theme.spacing.xl,
     },
-    repsostText: {
+    repostText: {
       color: theme.colors.text.secondary,
       fontFamily: theme.typography.fonts.bold,
       fontSize: theme.typography.sizes.xs,

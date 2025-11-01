@@ -28,10 +28,6 @@ export default UserInfoRow;
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
-    container: {
-      padding: theme.spacing.md,
-    },
-
     userInfoRow: {
       flexDirection: 'row',
       alignItems: 'center',
