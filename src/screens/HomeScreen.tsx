@@ -1,10 +1,13 @@
-import FollowersTab from '@/src/components/home/FollowersTab';
-import ForYouTab from '@/src/components/home/ForYouTab';
 import HomeTabView from '@/src/components/home/HomeTabView';
 import XLogo from '@/src/components/icons/XLogo';
+import QueryWrapper from '@/src/components/QueryWrapper';
 import AppBar from '@/src/components/shell/AppBar';
 import type { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import useMargins from '@/src/hooks/useMargins';
+import TweetList from '@/src/modules/tweets/components/TweetList';
+import { useTweets } from '@/src/modules/tweets/hooks/useTweets';
+import { useTweetsFiltersStore } from '@/src/modules/tweets/store/useTweetsFiltersStore';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -17,6 +20,12 @@ export default function HomeScreen() {
   // between these inner tabs.
   const [homeIndex, setHomeIndex] = React.useState(0);
 
+  const tweetsFilters = useTweetsFiltersStore((state) => state.filters);
+
+  const tweetsQuery = useTweets(tweetsFilters);
+
+  const { marginTop, marginBottom } = useMargins();
+
   return (
     <View style={styles.container}>
       <View style={styles.appBarWrapper}>
@@ -25,7 +34,9 @@ export default function HomeScreen() {
           tabView={<HomeTabView index={homeIndex} onIndexChange={(i) => setHomeIndex(i)} />}
         />
       </View>
-      {homeIndex === 0 ? <ForYouTab /> : <FollowersTab />}
+      <View style={[styles.tweetContainer, { marginTop, marginBottom }]}>
+        <QueryWrapper query={tweetsQuery}>{(tweets) => <TweetList data={tweets} />}</QueryWrapper>
+      </View>
     </View>
   );
 }
@@ -42,5 +53,9 @@ const createStyles = (theme: Theme) =>
       left: 0,
       right: 0,
       zIndex: 1,
+    },
+    tweetContainer: {
+      flex: 1,
+      justifyContent: 'center',
     },
   });
