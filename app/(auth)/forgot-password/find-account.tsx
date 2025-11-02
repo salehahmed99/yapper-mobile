@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { router } from 'expo-router';
-import Toast from 'react-native-toast-message';
+import ActivityLoader from '@/src/components/ActivityLoader';
 import AuthInputScreen from '@/src/modules/auth/components/shared/AuthInput';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
-import ActivityLoader from '@/src/components/ActivityLoader';
 import { requestForgetPassword } from '@/src/modules/auth/services/forgetPasswordService';
 import { useForgotPasswordStore } from '@/src/modules/auth/store/useForgetPasswordStore';
 import { ButtonOptions } from '@/src/modules/auth/utils/enums';
+import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import Toast from 'react-native-toast-message';
 
 const FindAccountScreen = () => {
   const { t } = useTranslation();
@@ -45,6 +45,7 @@ const FindAccountScreen = () => {
     }
 
     setIsLoading(true);
+    setIsNextEnabled(false);
     try {
       const isEmailSent = await requestForgetPassword({ identifier: inputValue });
 
@@ -67,12 +68,13 @@ const FindAccountScreen = () => {
       const message = error instanceof Error ? error.message : t('auth.forgotPassword.genericError');
       Toast.show({ type: 'error', text1: t('auth.forgotPassword.errorTitle'), text2: message });
     } finally {
+      setIsNextEnabled(true);
       setIsLoading(false);
     }
   };
 
   const handleTopBarBackPress = () => {
-    router.replace('/(auth)');
+    router.replace('/(auth)/welcome');
   };
 
   return (

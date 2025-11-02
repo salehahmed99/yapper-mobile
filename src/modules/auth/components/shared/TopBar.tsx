@@ -1,15 +1,15 @@
+import type { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
 import { X } from 'lucide-react-native';
 import React, { useMemo } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View, useWindowDimensions } from 'react-native';
-import type { Theme } from '@/src/constants/theme';
-import { useTheme } from '@/src/context/ThemeContext';
 
 interface ITopBarProps {
   onBackPress?: () => void;
 }
 
 const TopBar: React.FC<ITopBarProps> = ({ onBackPress }) => {
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
   const { width, height } = useWindowDimensions();
 
   const scaleWidth = Math.min(Math.max(width / 390, 0.85), 1.1);
@@ -32,7 +32,11 @@ const TopBar: React.FC<ITopBarProps> = ({ onBackPress }) => {
 
       {/* Centered X Logo */}
       <View style={styles.logoContainer}>
-        <Image source={require('@/assets/images/yapper.png')} style={styles.logo} resizeMode="contain" />
+        <Image
+          source={isDark ? require('@/assets/images/Yapper-Black.png') : require('@/assets/images/Yapper-White.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
       </View>
     </View>
   );
@@ -62,8 +66,8 @@ const createStyles = (theme: Theme, scaleWidth: number = 1, scaleHeight: number 
       justifyContent: 'center',
     },
     logo: {
-      width: 90 * scaleWidth,
-      height: 90 * scaleHeight,
+      width: 25 * scaleWidth,
+      height: 25 * scaleHeight,
     },
   });
 
