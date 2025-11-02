@@ -18,7 +18,7 @@ const SuccessResetPasswordScreen = () => {
   }, [reset]);
 
   const handleTopBarBackPress = () => {
-    router.replace('/(auth)');
+    router.replace('/(auth)/welcome');
   };
 
   return (
