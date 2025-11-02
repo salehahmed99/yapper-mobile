@@ -64,6 +64,8 @@ const ResetPasswordScreen = () => {
       return;
     }
 
+    setIsNextEnabled(false);
+
     setIsLoading(true);
     try {
       const succeeded = await resetPassword({
@@ -91,6 +93,7 @@ const ResetPasswordScreen = () => {
       Toast.show({ type: 'error', text1: t('auth.forgotPassword.errorTitle'), text2: message });
     } finally {
       setIsLoading(false);
+      setIsNextEnabled(true);
     }
   };
 
@@ -99,7 +102,7 @@ const ResetPasswordScreen = () => {
   };
 
   const handleTopBarBackPress = () => {
-    router.replace('/(auth)');
+    router.replace('/(auth)/welcome');
   };
 
   return (

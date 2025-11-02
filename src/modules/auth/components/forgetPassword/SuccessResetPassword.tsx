@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
-import { Linking, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
 import { useTranslation } from 'react-i18next';
+import { router } from 'expo-router';
 
 const SuccessResetPassword: React.FC = () => {
   const { theme } = useTheme();
@@ -28,7 +29,7 @@ const SuccessResetPassword: React.FC = () => {
       <Text style={styles.subtitle}>
         {t('auth.forgotPassword.successDescription')} {'\n\n'}
         {t('auth.forgotPassword.twoFactorPrefix')}{' '}
-        <Text style={styles.link} onPress={() => Linking.openURL('https://twitter.com/settings/security')}>
+        <Text style={styles.link} onPress={() => router.replace('/(auth)/login')}>
           {t('auth.forgotPassword.twoFactorLink')}
         </Text>
         . {t('auth.forgotPassword.twoFactorSuffix')}
@@ -38,7 +39,7 @@ const SuccessResetPassword: React.FC = () => {
       <TouchableOpacity
         style={styles.button}
         activeOpacity={0.8}
-        onPress={() => Linking.openURL('https://app.yapper.ai/login')}
+        onPress={() => router.replace('/(auth)/login')}
         accessibilityLabel="success-reset-password_continue_button"
       >
         <Text style={styles.buttonText}>{t('auth.forgotPassword.continueButton')}</Text>

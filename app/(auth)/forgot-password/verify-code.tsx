@@ -43,6 +43,7 @@ const VerifyCodeScreen = () => {
     }
 
     setIsLoading(true);
+    setIsNextEnabled(false);
     try {
       const token = await verifyOTP({ identifier, token: code });
 
@@ -65,6 +66,7 @@ const VerifyCodeScreen = () => {
       const message = error instanceof Error ? error.message : t('auth.forgotPassword.genericError');
       Toast.show({ type: 'error', text1: t('auth.forgotPassword.errorTitle'), text2: message });
     } finally {
+      setIsNextEnabled(true);
       setIsLoading(false);
     }
   };
@@ -74,7 +76,7 @@ const VerifyCodeScreen = () => {
   };
 
   const handleTopBarBackPress = () => {
-    router.replace('/(auth)');
+    router.replace('/(auth)/welcome');
   };
   return (
     <>
