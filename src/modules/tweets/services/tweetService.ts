@@ -1,11 +1,11 @@
 import api from '@/src/services/apiClient';
 import { ISingleTweetResponse, ITweet, ITweetFilters, ITweetsResponse } from '../types';
 
-export const getTweets = async (tweetFilters: ITweetFilters): Promise<ITweet[]> => {
-  const response = await api.get<ITweetsResponse>('/tweets', {
+export const getForYou = async (tweetFilters: ITweetFilters): Promise<ITweet[]> => {
+  const response = await api.get<ITweetsResponse>('/timeline/for-you', {
     params: tweetFilters,
   });
-  return response.data.data.data;
+  return response.data.data.tweets;
 };
 export const getTweetById = async (tweetId: string): Promise<ITweet> => {
   const response = await api.get<ISingleTweetResponse>(`/tweets/${tweetId}`);

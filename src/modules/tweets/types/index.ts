@@ -39,7 +39,7 @@ type ISingleTweetResponse = IApiResponse<ITweet>;
 type ITweetsResponse = IApiResponse<ITweets>;
 
 interface ITweets {
-  data: ITweet[];
+  tweets: ITweet[];
   next_cursor?: string;
   count: number;
   has_more: boolean;
