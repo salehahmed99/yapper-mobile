@@ -24,12 +24,14 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const status = error?.response?.status;
+    const requestUrl = error?.config?.url;
 
-    if (status === 401 || status === 403) {
+    // check for unauthorized or forbidden
+    if ((status === 401 || status === 403) && requestUrl && !requestUrl.includes('/login')) {
       await deleteToken();
-
       router.replace('/(auth)/landing-screen');
     }
+
     return Promise.reject(error);
   },
 );
