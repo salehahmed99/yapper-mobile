@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRef } from 'react';
 import { likeTweet, repostTweet, undoRepostTweet, unlikeTweet } from '../services/tweetService';
 import { useTweetsFiltersStore } from '../store/useTweetsFiltersStore';
 import { ITweet } from '../types';
@@ -16,13 +17,28 @@ export const useTweetActions = () => {
   const queryClient = useQueryClient();
   const tweetsFilters = useTweetsFiltersStore((state) => state.filters);
 
+  // Track pending mutations per tweet
+  const pendingLikes = useRef<Set<string>>(new Set());
+  const pendingReposts = useRef<Set<string>>(new Set());
+
   const queryKey = ['tweets', tweetsFilters];
   const likeMutation = useMutation({
     mutationFn: async (variables: ILikeMutationVariables) => {
-      if (variables.is_liked) {
-        return await unlikeTweet(variables.tweet_id);
+      // Prevent duplicate requests for the same tweet
+      if (pendingLikes.current.has(variables.tweet_id)) {
+        return;
       }
-      return await likeTweet(variables.tweet_id);
+
+      pendingLikes.current.add(variables.tweet_id);
+
+      try {
+        if (variables.is_liked) {
+          return await unlikeTweet(variables.tweet_id);
+        }
+        return await likeTweet(variables.tweet_id);
+      } finally {
+        pendingLikes.current.delete(variables.tweet_id);
+      }
     },
     onMutate: async (variables: ILikeMutationVariables) => {
       await queryClient.cancelQueries({ queryKey });
@@ -48,17 +64,25 @@ export const useTweetActions = () => {
       if (context?.previousTweets) queryClient.setQueryData(queryKey, context.previousTweets);
       console.error('Error updating like status:', error);
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey });
-    },
   });
 
   const repostMutation = useMutation({
     mutationFn: async (variables: IRepostMutationVariables) => {
-      if (variables.is_reposted) {
-        return await undoRepostTweet(variables.tweet_id);
+      // Prevent duplicate requests for the same tweet
+      if (pendingReposts.current.has(variables.tweet_id)) {
+        return;
       }
-      return await repostTweet(variables.tweet_id);
+
+      pendingReposts.current.add(variables.tweet_id);
+
+      try {
+        if (variables.is_reposted) {
+          return await undoRepostTweet(variables.tweet_id);
+        }
+        return await repostTweet(variables.tweet_id);
+      } finally {
+        pendingReposts.current.delete(variables.tweet_id);
+      }
     },
     onMutate: async (variables: IRepostMutationVariables) => {
       await queryClient.cancelQueries({ queryKey });
@@ -83,9 +107,6 @@ export const useTweetActions = () => {
     onError: (error, _, context) => {
       if (context?.previousTweets) queryClient.setQueryData(queryKey, context.previousTweets);
       console.error('Error updating repost status:', error);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey });
     },
   });
 
