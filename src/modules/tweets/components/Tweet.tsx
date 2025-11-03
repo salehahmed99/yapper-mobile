@@ -7,7 +7,7 @@ import { useRouter } from 'expo-router';
 import { MoreHorizontal } from 'lucide-react-native';
 import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
 import ParentTweet from './ParentTweet';
@@ -70,13 +70,19 @@ const Tweet: React.FC<ITweetProps> = (props) => {
       )}
       <View style={styles.tweetContainer}>
         <View style={styles.imageColumn}>
-          <Image
-            source={
-              tweet.user.avatar_url ? { uri: tweet.user.avatar_url } : require('@/assets/images/avatar-placeholder.png')
-            }
-            style={styles.avatar}
-            accessibilityLabel="tweet_image_avatar"
-          />
+          <Pressable
+            onPress={() => router.push({ pathname: '/(protected)/(profile)/[id]', params: { id: tweet.user.id } })}
+          >
+            <Image
+              source={
+                tweet.user.avatar_url
+                  ? { uri: tweet.user.avatar_url }
+                  : require('@/assets/images/avatar-placeholder.png')
+              }
+              style={styles.avatar}
+              accessibilityLabel="tweet_image_avatar"
+            />
+          </Pressable>
         </View>
         <View style={styles.detailsColumn}>
           <View style={styles.topRow}>
