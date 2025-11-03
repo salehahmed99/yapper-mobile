@@ -6,10 +6,11 @@ import React from 'react';
 const ProtectedLayout = () => {
   const isInitialized = useAuthStore((state) => state.isInitialized);
   const isAuthenticated = useAuthStore((state) => state.token !== null);
+  console.log('ProtectedLayout - isInitialized:', isInitialized, 'isAuthenticated:', isAuthenticated);
 
   if (!isInitialized) return null;
   if (!isAuthenticated) {
-    return <Redirect href="/(auth)/login" />;
+    return <Redirect href="/(auth)/landing-screen" />;
   }
 
   return <AppShell />;

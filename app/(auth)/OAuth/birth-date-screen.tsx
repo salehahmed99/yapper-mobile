@@ -4,7 +4,6 @@ import { router, useLocalSearchParams } from 'expo-router';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import AuthInput from '@/src/modules/auth/components/shared/AuthInput';
 import { useTheme } from '@/src/context/ThemeContext';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Theme } from '@/src/constants/theme';
 import { useTranslation } from 'react-i18next';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
@@ -12,9 +11,11 @@ import { OAuthStep1, OAuthStep2 } from '@/src/modules/auth/services/authService'
 import Toast from 'react-native-toast-message';
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { useAuthStore } from '@/src/store/useAuthStore';
+import { userBirthDateSchema } from '@/src/modules/auth/schemas/schemas';
 
 const BirthDateScreen = () => {
   const [birthDate, setBirthDate] = useState('');
+  const [isNextEnabled, setIsNextEnabled] = useState(true);
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { t } = useTranslation();
@@ -26,6 +27,17 @@ const BirthDateScreen = () => {
 
   const onNextPress = async () => {
     setLoading(true);
+    setIsNextEnabled(false);
+    if (!userBirthDateSchema.safeParse(birthDate).success) {
+      Toast.show({
+        type: 'error',
+        text1: t('auth.birthDate.errorToast'),
+        text2: t('auth.birthDate.errorDescriptionToast'),
+      });
+      setLoading(false);
+      setIsNextEnabled(true);
+      return;
+    }
     try {
       setSkipRedirect(true);
       const res = await OAuthStep1({
@@ -60,11 +72,12 @@ const BirthDateScreen = () => {
       });
     } finally {
       setLoading(false);
+      setIsNextEnabled(true);
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       {/* Top bar without exit button */}
       <ActivityLoader visible={loading} />
       <TopBar showExitButton={false} />
@@ -84,12 +97,12 @@ const BirthDateScreen = () => {
         rightButton={{
           label: t('auth.birthDate.buttons.signUp'),
           onPress: onNextPress,
-          enabled: birthDate.length > 0,
+          enabled: isNextEnabled,
           visible: true,
           type: 'primary',
         }}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

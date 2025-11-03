@@ -1,5 +1,7 @@
 import axios from 'axios';
-import { getToken } from '../utils/secureStorage';
+import { getToken, deleteToken } from '../utils/secureStorage';
+import { router } from 'expo-router';
+
 const api = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL,
   headers: {
@@ -7,15 +9,8 @@ const api = axios.create({
   },
 });
 
-// api.interceptors.response.use((response) => {
-//   response.data = humps.camelizeKeys(response.data);
-//   return response;
-// });
-
 api.interceptors.request.use(
   async (config) => {
-    // config.data = humps.decamelizeKeys(config.data);
-    // config.params = humps.decamelizeKeys(config.params);
     const token = await getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -23,6 +18,20 @@ api.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error),
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const status = error?.response?.status;
+
+    if (status === 401 || status === 403) {
+      await deleteToken();
+
+      router.replace('/(auth)/landing-screen');
+    }
+    return Promise.reject(error);
+  },
 );
 
 export default api;

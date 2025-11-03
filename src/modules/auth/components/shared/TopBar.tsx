@@ -9,7 +9,7 @@ interface ITopBarProps {
   showExitButton?: boolean;
 }
 
-const TopBar: React.FC<ITopBarProps> = ({ onBackPress, showExitButton }) => {
+const TopBar: React.FC<ITopBarProps> = ({ onBackPress, showExitButton = true }) => {
   const { theme, isDark } = useTheme();
   const { width, height } = useWindowDimensions();
 

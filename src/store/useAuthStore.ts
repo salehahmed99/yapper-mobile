@@ -2,6 +2,7 @@ import { IUser } from '@/src/types/user';
 import { deleteToken, getToken, saveToken } from '@/src/utils/secureStorage';
 import { create } from 'zustand';
 import { getMyUser } from '../modules/profile/services/profileService';
+import { tokenRefreshService } from '../services/tokenRefreshService';
 
 interface IAuthState {
   user: IUser | null;
@@ -15,56 +16,61 @@ interface IAuthState {
   logout: () => Promise<void>;
 }
 
-export const useAuthStore = create<IAuthState>()((set) => ({
+export const useAuthStore = create<IAuthState>((set) => ({
   user: null,
   token: null,
   isInitialized: false,
+  skipRedirectAfterLogin: false,
 
+  /** Initialize auth on app start */
   initializeAuth: async () => {
     try {
       const token = await getToken();
       if (token) {
         set({ token });
+        tokenRefreshService.start();
       }
-    } catch (error) {
+    } catch (err) {
+      console.error('Auth initialization failed:', err);
       await deleteToken();
       set({ user: null, token: null });
-      console.error('Error during auth initialization:', error);
     } finally {
-      set({ isInitialized: true, skipRedirectAfterLogin: false });
+      set({ isInitialized: true });
     }
   },
 
-  // Called AFTER login API succeeds
+  /** After successful login */
   loginUser: async (user: IUser, token: string) => {
-    if (!user || !token) return;
     try {
       await saveToken(token);
-      set({ user, token, skipRedirectAfterLogin: true });
-    } catch (error) {
+      set({ user, token });
+      tokenRefreshService.start();
+    } catch (err) {
+      console.error('Login error:', err);
       set({ user: null, token: null });
-      console.error('Error logging in:', error);
     }
   },
-  setSkipRedirect: (val: boolean) => {
-    set({ skipRedirectAfterLogin: val });
-  },
 
-  // Fetch current user data and update store
+  /** Optional: skip redirect flag */
+  setSkipRedirect: (val: boolean) => set({ skipRedirectAfterLogin: val }),
+
+  /** Refresh user data from server */
   fetchAndUpdateUser: async () => {
     try {
-      const response = await getMyUser();
-      set({ user: response.data });
-    } catch (error) {
-      console.error('Error fetching user data:', error);
+      const { data } = await getMyUser();
+      set({ user: data });
+    } catch (err) {
+      console.error('Failed to fetch user:', err);
     }
   },
 
+  /** Logout & cleanup */
   logout: async () => {
     try {
+      tokenRefreshService.stop();
       await deleteToken();
-    } catch (error) {
-      console.error('Error deleting token during logout:', error);
+    } catch (err) {
+      console.error('Logout error:', err);
     } finally {
       set({ user: null, token: null });
     }

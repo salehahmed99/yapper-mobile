@@ -9,7 +9,6 @@ import { useAuthStore } from '@/src/store/useAuthStore';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const LandingScreen: React.FC = () => {
   const { theme } = useTheme();
@@ -33,7 +32,7 @@ const LandingScreen: React.FC = () => {
       loginUser(userData.data.user, userData.data.accessToken);
       setSkipRedirect(false);
       // Use replace to avoid showing 404
-      router.replace('/(protected)/');
+      router.replace('/(protected)');
     }
   };
 
@@ -62,21 +61,21 @@ const LandingScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+    <View style={styles.container}>
       <ActivityLoader visible={loading} />
-      <OAuthHeadLine theme={theme} />
+      <OAuthHeadLine />
 
       <View style={styles.bottom}>
-        <OAuthButtons theme={theme} onGooglePress={onGooglePress} onGithubPress={onGithubPress} />
+        <OAuthButtons onGooglePress={onGooglePress} onGithubPress={onGithubPress} />
         <OAuthLegalText theme={theme} onLoginPress={() => router.push('/(auth)/login')} />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
-    container: { flex: 1 },
+    container: { flex: 1, backgroundColor: theme.colors.background.primary },
     bottom: { paddingHorizontal: theme.spacing.xxl, paddingBottom: theme.spacing.xxl },
   });
 

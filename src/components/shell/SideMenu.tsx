@@ -7,6 +7,7 @@ import {
   Bookmark,
   Download,
   LayoutList,
+  LogOut,
   MessageCircle,
   MoonStar,
   Settings,
@@ -45,6 +46,14 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
   const { isSideMenuOpen, closeSideMenu } = useUiShell();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
+
+  const logout = useAuthStore((state) => state.logout);
+
+  const handleLogout = () => {
+    closeSideMenu();
+    logout();
+    router.replace('/(auth)/landing-screen');
+  };
 
   function navigate(path: string) {
     // If already on target path, just close menu
@@ -185,7 +194,11 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             <View style={styles.divider} />
 
             {/* Utility links */}
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/download')}>
+            <TouchableOpacity style={styles.tile} onPress={handleLogout}>
+              <LogOut color={theme.colors.text.primary} size={theme.iconSizes.icon} />
+              <Text style={[styles.tileText]}>{'Logout'}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/downloads')}>
               <Download color={theme.colors.text.primary} size={theme.iconSizes.icon} />
               <Text style={styles.tileText}>{t('menu.download')}</Text>
             </TouchableOpacity>

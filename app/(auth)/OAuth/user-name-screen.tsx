@@ -4,7 +4,6 @@ import { useTheme } from '../../../src/context/ThemeContext';
 import { Theme } from '../../../src/constants/theme';
 import { useTranslation } from 'react-i18next';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import { Check } from 'lucide-react-native';
 import { useLocalSearchParams } from 'expo-router';
@@ -12,6 +11,7 @@ import { updateUserName } from '@/src/services/userService';
 import Toast from 'react-native-toast-message';
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { useAuthStore } from '@/src/store/useAuthStore';
+import { usernameSchema } from '@/src/modules/auth/schemas/schemas';
 
 const UserNameScreen: React.FC = () => {
   const { theme } = useTheme();
@@ -36,6 +36,7 @@ const UserNameScreen: React.FC = () => {
   const [showMore, setShowMore] = useState(false);
   const [, setSelectedUsername] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isNextEnabled, setNextEnabled] = useState(false);
   const labelPosition = useState(new Animated.Value(1))[0];
 
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -89,8 +90,17 @@ const UserNameScreen: React.FC = () => {
       });
       return;
     }
+    if (!usernameSchema.safeParse(username).success) {
+      Toast.show({
+        type: 'error',
+        text1: t('auth.username.errorToast'),
+        text2: t('auth.username.invalidFormatToast'),
+      });
+      return;
+    }
 
     setLoading(true);
+    setNextEnabled(false);
     try {
       await updateUserName(username);
       setSkipRedirect(false);
@@ -102,6 +112,7 @@ const UserNameScreen: React.FC = () => {
       });
     } finally {
       setLoading(false);
+      setNextEnabled(true);
     }
   };
 
@@ -112,7 +123,7 @@ const UserNameScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ActivityLoader visible={loading} />
       <TopBar showExitButton={false} />
       <View style={styles.scrollableContent}>
@@ -137,6 +148,7 @@ const UserNameScreen: React.FC = () => {
               autoCapitalize="none"
               autoCorrect={false}
               keyboardAppearance="dark"
+              accessibilityLabel="username-input"
             />
             {username.length >= 3 && (
               <View style={styles.checkmark}>
@@ -154,7 +166,7 @@ const UserNameScreen: React.FC = () => {
             .slice(0, showMore ? availableUsernames.length : 2)
             .map((item: string, index: number, array: string[]) => (
               <View key={`${item}-${index}`} style={styles.suggestionItem}>
-                <TouchableOpacity onPress={() => handleSelectUsername(item)}>
+                <TouchableOpacity onPress={() => handleSelectUsername(item)} accessibilityLabel={`suggestion-${item}`}>
                   <Text style={[styles.suggestionText]}>{item}</Text>
                 </TouchableOpacity>
 
@@ -163,7 +175,7 @@ const UserNameScreen: React.FC = () => {
             ))}
         </View>
 
-        <TouchableOpacity style={styles.showMoreButton} onPress={handleShowMore}>
+        <TouchableOpacity style={styles.showMoreButton} onPress={handleShowMore} accessibilityLabel="show-more-button">
           <Text style={styles.showMoreText}>
             {showMore ? t('auth.username.showLess') : t('auth.username.showMore')}
           </Text>
@@ -174,7 +186,7 @@ const UserNameScreen: React.FC = () => {
         rightButton={{
           label: t('auth.username.next'),
           onPress: handleNext,
-          enabled: true,
+          enabled: isNextEnabled,
           visible: true,
           type: 'primary',
         }}
@@ -186,7 +198,7 @@ const UserNameScreen: React.FC = () => {
           type: 'secondary',
         }}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

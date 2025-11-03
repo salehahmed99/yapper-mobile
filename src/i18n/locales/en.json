@@ -104,6 +104,7 @@
       "label": "Birth Date",
       "successToast": "Birth date saved successfully!",
       "errorToast": "Failed to save your birth date. Please try again.",
+      "errorDescriptionToast": "Please ensure you are at least 13 years old.",
       "buttons": {
         "signUp": "Sign up"
       }
@@ -120,7 +121,8 @@
       "errorToast": "Failed to update username. Please try again.",
       "successToast": "Username updated successfully!",
       "missingData": "Missing authentication data",
-      "selectPrompt": "Please select a username"
+      "selectPrompt": "Please select a username",
+      "invalidFormatToast": "Username can only contain letters, numbers, and underscores, and must be 3-30 characters long."
     },
     "forgotPassword": {
       "findAccountTitle": "Find your Yapper account",

@@ -2,6 +2,7 @@ import { z } from 'zod';
 export const emailSchema = z
   .string({ required_error: 'Email is required' })
   .trim()
+  .length(255, 'Email must be at most 255 characters long')
   .email('Please enter a valid email address');
 
 // Username
@@ -9,8 +10,15 @@ export const usernameSchema = z
   .string({ required_error: 'Username is required' })
   .trim()
   .min(3, 'Username must be at least 3 characters long')
-  .max(20, 'Username must be at most 20 characters long')
+  .max(30, 'Username must be at most 20 characters long')
   .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores');
+
+export const userBirthDateSchema = z.string({ required_error: 'Birth date is required' }).refine((date) => {
+  const parsedDate = new Date(date);
+  const today = new Date();
+  const age = today.getFullYear() - parsedDate.getFullYear();
+  return age >= 13;
+}, 'You must be at least 13 years old to register');
 
 // Password
 export const passwordLogInSchema = z
