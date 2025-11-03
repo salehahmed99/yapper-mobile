@@ -7,13 +7,7 @@ import { Alert, Keyboard } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 // Schemas
-import {
-  emailSchema,
-  loginSchema,
-  passwordLogInSchema,
-  phoneSchema,
-  usernameSchema,
-} from '@/src/modules/auth/schemas/schemas';
+import { emailSchema, loginSchema, passwordLogInSchema, phoneSchema } from '@/src/modules/auth/schemas/schemas';
 
 // Services
 import { checkExists, login } from '@/src/modules/auth/services/authService';
@@ -77,11 +71,7 @@ const LoginScreen = () => {
       }
 
       // Check for username
-      if (usernameSchema.safeParse(trimmed).success) {
-        return 'username';
-      }
-
-      return null;
+      return 'username';
     },
     [defaultCountry],
   );

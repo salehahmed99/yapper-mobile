@@ -2,7 +2,6 @@ import { z } from 'zod';
 export const emailSchema = z
   .string({ required_error: 'Email is required' })
   .trim()
-  .length(255, 'Email must be at most 255 characters long')
   .email('Please enter a valid email address');
 
 // Username
