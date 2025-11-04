@@ -1,0 +1,78 @@
+import { IUser } from '@/src/types/user';
+import { deleteToken, getToken, saveToken } from '@/src/utils/secureStorage';
+import { create } from 'zustand';
+import { getMyUser } from '../modules/profile/services/profileService';
+import { tokenRefreshService } from '../services/tokenRefreshService';
+
+interface IAuthState {
+  user: IUser | null;
+  token: string | null;
+  isInitialized: boolean;
+  skipRedirectAfterLogin?: boolean;
+  initializeAuth: () => Promise<void>;
+  loginUser: (user: IUser, token: string) => Promise<void>;
+  setSkipRedirect: (val: boolean) => void;
+  fetchAndUpdateUser: () => Promise<void>;
+  logout: () => Promise<void>;
+}
+
+export const useAuthStore = create<IAuthState>((set) => ({
+  user: null,
+  token: null,
+  isInitialized: false,
+  skipRedirectAfterLogin: false,
+
+  /** Initialize auth on app start */
+  initializeAuth: async () => {
+    try {
+      const token = await getToken();
+      if (token) {
+        set({ token });
+        tokenRefreshService.start();
+      }
+    } catch (err) {
+      console.error('Auth initialization failed:', err);
+      await deleteToken();
+      set({ user: null, token: null });
+    } finally {
+      set({ isInitialized: true });
+    }
+  },
+
+  /** After successful login */
+  loginUser: async (user: IUser, token: string) => {
+    try {
+      await saveToken(token);
+      set({ user, token });
+      tokenRefreshService.start();
+    } catch (err) {
+      console.error('Login error:', err);
+      set({ user: null, token: null });
+    }
+  },
+
+  /** Optional: skip redirect flag */
+  setSkipRedirect: (val: boolean) => set({ skipRedirectAfterLogin: val }),
+
+  /** Refresh user data from server */
+  fetchAndUpdateUser: async () => {
+    try {
+      const { data } = await getMyUser();
+      set({ user: data });
+    } catch (err) {
+      console.error('Failed to fetch user:', err);
+    }
+  },
+
+  /** Logout & cleanup */
+  logout: async () => {
+    try {
+      tokenRefreshService.stop();
+      await deleteToken();
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      set({ user: null, token: null });
+    }
+  },
+}));

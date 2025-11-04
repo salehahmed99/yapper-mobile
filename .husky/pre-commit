@@ -1,0 +1,60 @@
+#!/usr/bin/env sh
+
+# Helper functions for colors
+print_red() { printf '\033[0;31m%s\033[0m\n' "$1"; }
+print_green() { printf '\033[0;32m%s\033[0m\n' "$1"; }
+print_yellow() { printf '\033[1;33m%s\033[0m\n' "$1"; }
+print_blue() { printf '\033[0;34m%s\033[0m\n' "$1"; }
+
+print_blue "🔍 Running pre-commit checks..."
+echo ""
+
+# Run lint-staged (ESLint + Prettier on staged files)
+print_yellow "📝 Running lint-staged..."
+npx lint-staged
+
+if [ $? -ne 0 ]; then
+  echo ""
+  print_red "❌ Lint-staged failed!"
+  echo ""
+  print_yellow "Common fixes:"
+  echo "  • Run: npm run lint:fix"
+  echo "  • Run: npm run format"
+  echo "  • Fix remaining issues manually"
+  echo ""
+  print_blue "💡 To bypass (use sparingly):"
+  echo "  git commit --no-verify"
+  echo ""
+  exit 1
+fi
+
+echo ""
+print_green "✅ Lint-staged passed!"
+echo ""
+
+# Run TypeScript type check
+print_yellow "🔎 Running TypeScript check..."
+
+npm run type-check
+
+if [ $? -ne 0 ]; then
+  echo ""
+  print_red "❌ TypeScript type check failed!"
+  echo ""
+  print_yellow "Fix type errors before committing"
+  echo ""
+  print_blue "💡 To bypass (use sparingly):"
+  echo "  git commit --no-verify"
+  echo ""
+  exit 1
+fi
+
+echo ""
+print_green "✅ TypeScript check passed!"
+echo ""
+
+# Success!
+echo ""
+print_green "✨ All pre-commit checks passed!"
+print_green "✅ Ready to commit"
+echo ""

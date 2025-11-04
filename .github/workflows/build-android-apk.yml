@@ -1,0 +1,61 @@
+name: Build Android APK for Testers
+
+on:
+  workflow_dispatch: # Manual trigger - testers can click "Run workflow" button
+  push:
+    branches:
+      - release/*
+      - main
+
+jobs:
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'ci:')"
+
+    steps:
+      - name: 🏗 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: 🏗 Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🚀 Build APK on EAS
+        run: |
+          eas build --platform android --profile preview --non-interactive --no-wait --json > build-result.json
+          cat build-result.json
+
+      - name: 📱 Extract Build Info
+        run: |
+          BUILD_ID=$(jq -r '.[0].id' build-result.json)
+          echo "✅ Build submitted successfully!"
+          echo "🔗 Build ID: $BUILD_ID"
+          echo "📱 Track your build at: https://expo.dev/accounts/$(jq -r '.[0].accountName' build-result.json)/projects/$(jq -r '.[0].projectName' build-result.json)/builds/$BUILD_ID"
+
+      - name: 💬 Build Summary
+        run: |
+          BUILD_ID=$(jq -r '.[0].id' build-result.json)
+          ACCOUNT=$(jq -r '.[0].accountName' build-result.json)
+          PROJECT=$(jq -r '.[0].projectName' build-result.json)
+
+          echo "## 🎉 Build Started!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Your Android APK build has been submitted to EAS." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Build ID:** \`$BUILD_ID\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Track build:** [Open in Expo Dashboard](https://expo.dev/accounts/$ACCOUNT/projects/$PROJECT/builds/$BUILD_ID)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⏱️ Build typically takes 15-30 minutes. You'll receive a notification when it's ready." >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,159 @@
+{
+  "home": {
+    "title": "الشاشة الرئيسية",
+    "item": "عنصر {{index}}",
+    "sampleContent": "هذا نص تجريبي لعرض التمرير وعتامة شريط التنقل السفلي."
+  },
+  "app": {
+    "title": "يابر"
+  },
+  "accessibility": {
+    "openMenu": "افتح القائمة"
+  },
+  "menu": {
+    "profile": "الملف الشخصي",
+    "premium": "المميز",
+    "videos": "مقاطع الفيديو",
+    "chat": "الدردشة",
+    "communities": "المجتمعات",
+    "bookmarks": "العلامات",
+    "lists": "القوائم",
+    "spaces": "المساحات",
+    "download": "تحميل جروك",
+    "settings": "الإعدادات والخصوصية",
+    "help": "مركز المساعدة",
+    "purchases": "المشتريات"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "explore": "استكشف",
+    "grok": "جروك",
+    "notifications": "الإشعارات",
+    "messages": "الرسائل",
+    "profile": "الملف الشخصي",
+    "title": "الشاشة الرئيسية"
+  },
+  "auth": {
+    "oauth": {
+      "username": {
+        "title": "ماذا يجب أن ننادي عليك؟",
+        "subtitle": "اسم المستخدم الخاص بك فريد. يمكنك تغييره لاحقًا.",
+        "showMore": "عرض المزيد",
+        "showLess": "عرض أقل",
+        "skipForNow": "تخطي الآن",
+        "next": "التالي"
+      }
+    },
+    "login": {
+      "emailTitle": "للبدء، أدخل رقم هاتفك أو بريدك الإلكتروني أو @username",
+      "emailLabel": "رقم الهاتف أو البريد الإلكتروني أو @username",
+      "passwordTitle": "أدخل كلمة المرور الخاصة بك",
+      "passwordLabel": "كلمة المرور",
+      "next": "التالي",
+      "login": "تسجيل الدخول",
+      "forgotPassword": "هل نسيت كلمة المرور؟",
+      "buttons": {
+        "next": "التالي",
+        "login": "تسجيل الدخول"
+      },
+      "errors": {
+        "invalidInput": "إدخال غير صحيح",
+        "invalidInputDescription": "يرجى إدخال بريد إلكتروني أو رقم هاتف أو اسم مستخدم صحيح.",
+        "userNotFound": "لم يتم العثور على المستخدم",
+        "userNotFoundDescription": "هذا المستخدم غير موجود. يرجى التحقق من إدخالك أو إنشاء حساب جديد.",
+        "error": "خطأ",
+        "unableToVerify": "غير قادر على التحقق من وجود المستخدم. يرجى المحاولة مرة أخرى.",
+        "invalidPassword": "كلمة مرور غير صحيحة",
+        "invalidPasswordDescription": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+        "invalidLoginData": "بيانات تسجيل دخول غير صحيحة",
+        "invalidLoginDataDescription": "يرجى التحقق من بيانات اعتمادك والمحاولة مرة أخرى.",
+        "loginFailed": "فشل تسجيل الدخول",
+        "unableToLogin": "غير قادر على تسجيل الدخول. يرجى المحاولة مرة أخرى."
+      },
+      "success": {
+        "loginSuccessful": "تم تسجيل الدخول بنجاح",
+        "welcomeBack": "أهلا وسهلا!"
+      },
+      "alerts": {
+        "backButtonPressed": "تم الضغط على زر الرجوع",
+        "forgotPasswordPressed": "تم الضغط على نسيت كلمة المرور"
+      }
+    }
+  },
+  "userList": {
+    "emptyState": "لا يوجد أحد حتى الآن.",
+    "errorRetry": "حاول مرة أخرى",
+    "followsYou": "يتابعك",
+    "follow": "متابعة",
+    "following": "متابع"
+  },
+  "tweetActivity": {
+    "title": "نشاط المنشور",
+    "likedBy": "أعجب به",
+    "repostedBy": "أعيد نشره بواسطة",
+    "quotedBy": "اقتبس بواسطة",
+    "viewPostInteractions": "عرض تفاعلات المنشور",
+    "tabs": {
+      "reposts": "إعادة النشر",
+      "quotes": "الاقتباسات",
+      "likers": "الإعجابات"
+    }
+  },
+  "profile": {
+    "editProfile": "تعديل الملف الشخصي",
+    "follow": "متابعة",
+    "following": "متابع",
+    "followers": "متابعون",
+    "joined": "انضم",
+    "noBio": "لا توجد سيرة ذاتية",
+    "tabs": {
+      "tweets": "التغريدات",
+      "tweetsReplies": "التغريدات والردود",
+      "media": "الوسائط",
+      "likes": "الإعجابات"
+    },
+    "placeholders": {
+      "tweets": "سيتم عرض التغريدات هنا.",
+      "tweetsReplies": "سيتم عرض التغريدات والردود هنا.",
+      "media": "سيتم عرض الوسائط هنا.",
+      "likes": "سيتم عرض الإعجابات هنا."
+    },
+    "editModal": {
+      "title": "تعديل الملف الشخصي",
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "name": "الاسم",
+      "bio": "السيرة الذاتية",
+      "location": "الموقع",
+      "website": "الموقع الإلكتروني",
+      "birthday": "تاريخ الميلاد",
+      "namePlaceholder": "أضف اسمك",
+      "bioPlaceholder": "أضف سيرة ذاتية لملفك الشخصي",
+      "locationPlaceholder": "أضف موقعك",
+      "websitePlaceholder": "أضف موقعك الإلكتروني",
+      "birthdayPlaceholder": "أضف تاريخ ميلادك"
+    },
+    "actions": {
+      "edit": "تعديل",
+      "mute": "كتم",
+      "unmute": "إلغاء الكتم",
+      "block": "حظر",
+      "unblock": "إلغاء الحظر"
+    },
+    "toasts": {
+      "userMuted": "تم كتم المستخدم",
+      "userMutedDesc": "لن ترى منشوراته بعد الآن",
+      "userUnmuted": "تم إلغاء كتم المستخدم",
+      "userUnmutedDesc": "سترى منشوراته الآن",
+      "error": "خطأ"
+    },
+    "whoToFollow": {
+      "title": "من تتابع",
+      "showMore": "عرض المزيد",
+      "followedBy": "متابع بواسطة",
+      "and": "و",
+      "other": "آخر",
+      "others": "آخرون"
+    }
+  }
+}
