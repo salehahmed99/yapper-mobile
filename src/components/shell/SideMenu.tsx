@@ -3,7 +3,7 @@ import { useTheme } from '@/src/context/ThemeContext';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { BlurView } from 'expo-blur';
 import { usePathname, useRouter } from 'expo-router';
-import { Bell, Home, LogOut, MessageCircle, MoonStar, Search, Settings, User } from 'lucide-react-native';
+import { Bell, HelpCircle, Home, LogOut, MessageCircle, MoonStar, Search, Settings, User } from 'lucide-react-native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -164,7 +164,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
 
             {/* Utility links */}
             <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/help')}>
-              <User color={theme.colors.text.primary} size={theme.iconSizes.icon} />
+              <HelpCircle color={theme.colors.text.primary} size={theme.iconSizes.icon} />
               <Text style={styles.tileText}>{t('menu.help')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.tile} onPress={handleLogout}>
