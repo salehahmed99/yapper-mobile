@@ -1,12 +1,12 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useAuthStore } from '@/src/store/useAuthStore';
 import { BlurView } from 'expo-blur';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUiShell } from '../../context/UiShellContext';
-import { useAuthStore } from '@/src/store/useAuthStore';
 
 interface IAppBarProps {
   title?: string;
@@ -31,7 +31,11 @@ const AppBar: React.FC<IAppBarProps> = (props) => {
   const visibleHeight = appBarVisible ? appBarHeight : insets.top;
 
   return (
-    <BlurView intensity={30} style={[styles.container, { paddingTop: insets.top, height: visibleHeight }]}>
+    <BlurView
+      intensity={30}
+      style={[styles.container, { paddingTop: insets.top, height: visibleHeight }]}
+      experimentalBlurMethod={'dimezisBlurView'}
+    >
       {appBarVisible ? (
         <>
           <View style={styles.headerContainer}>
