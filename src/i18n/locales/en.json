@@ -15,18 +15,13 @@
     "openMenu": "Open menu"
   },
   "menu": {
+    "home": "Home",
     "profile": "Profile",
-    "premium": "Premium",
-    "videos": "Videos",
-    "chat": "Chat",
-    "communities": "Communities",
-    "bookmarks": "Bookmarks",
-    "lists": "Lists",
-    "spaces": "Spaces",
-    "download": "Download Grok",
-    "settings": "Settings & Privacy",
-    "help": "Help Center",
-    "purchases": "Purchases"
+    "search": "Search",
+    "notifications": "Notifications",
+    "messages": "Messages",
+    "settings": "Settings",
+    "help": "Help Center"
   },
   "nav": {
     "home": "Home",
@@ -168,7 +163,6 @@
       "resettingPassword": "Resetting your password..."
     }
   },
-
   "buttons": {
     "next": "Next",
     "back": "Back",
@@ -181,7 +175,6 @@
     "verifyingCode": "Verifying code...",
     "resettingPassword": "Resetting your password..."
   },
-
   "userList": {
     "emptyState": "Nobody yet.",
     "errorRetry": "Try again",

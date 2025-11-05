@@ -3,19 +3,7 @@ import { useTheme } from '@/src/context/ThemeContext';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { BlurView } from 'expo-blur';
 import { usePathname, useRouter } from 'expo-router';
-import {
-  Bookmark,
-  Download,
-  LayoutList,
-  LogOut,
-  MessageCircle,
-  MoonStar,
-  Settings,
-  Sparkles,
-  User,
-  Users,
-  Video,
-} from 'lucide-react-native';
+import { Bell, Home, LogOut, MessageCircle, MoonStar, Search, Settings, User } from 'lucide-react-native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -95,12 +83,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
         <View style={[styles.innerFlex, { paddingTop: insets.top + theme.spacing.sm, paddingStart: theme.spacing.sm }]}>
           {/* Profile + other accounts in one row */}
           <View style={styles.profileAndAccountsRow}>
-            <TouchableOpacity
-              onPress={() => {
-                closeSideMenu();
-                router.push('/(profile)/Profile/');
-              }}
-            >
+            <TouchableOpacity onPress={() => navigate('/(profile)/Profile/')}>
               <View style={styles.profileCol}>
                 <Image
                   source={{ uri: user?.avatarUrl || 'https://randomuser.me/api/portraits/men/1.jpg' }}
@@ -152,67 +135,41 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             showsVerticalScrollIndicator={false}
           >
             {/* Menu tiles */}
-            <TouchableOpacity
-              style={styles.tile}
-              onPress={() => {
-                closeSideMenu();
-                router.push('/(profile)/Profile/');
-              }}
-            >
+            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)')}>
+              <Home color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
+              <Text style={styles.menuTileText}>{t('menu.home')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/search')}>
+              <Search color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
+              <Text style={styles.menuTileText}>{t('menu.search')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/notifications')}>
+              <Bell color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
+              <Text style={styles.menuTileText}>{t('menu.notifications')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/messages')}>
+              <MessageCircle color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
+              <Text style={styles.menuTileText}>{t('menu.messages')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(profile)/Profile/')}>
               <User color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
               <Text style={styles.menuTileText}>{t('menu.profile')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/premium')}>
-              <Sparkles color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
-              <Text style={styles.menuTileText}>{t('menu.premium')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/videos')}>
-              <Video color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
-              <Text style={styles.menuTileText}>{t('menu.videos')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/chat')}>
-              <MessageCircle color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
-              <Text style={styles.menuTileText}>{t('menu.chat')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/communities')}>
-              <Users color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
-              <Text style={styles.menuTileText}>{t('menu.communities')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/bookmarks')}>
-              <Bookmark color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
-              <Text style={styles.menuTileText}>{t('menu.bookmarks')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/lists')}>
-              <LayoutList color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
-              <Text style={styles.menuTileText}>{t('menu.lists')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/spaces')}>
-              <User color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
-              <Text style={styles.menuTileText}>{t('menu.spaces')}</Text>
+            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/settings')}>
+              <Settings color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
+              <Text style={styles.menuTileText}>{t('menu.settings')}</Text>
             </TouchableOpacity>
 
             <View style={styles.divider} />
 
             {/* Utility links */}
-            <TouchableOpacity style={styles.tile} onPress={handleLogout}>
-              <LogOut color={theme.colors.text.primary} size={theme.iconSizes.icon} />
-              <Text style={[styles.tileText]}>{'Logout'}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/downloads')}>
-              <Download color={theme.colors.text.primary} size={theme.iconSizes.icon} />
-              <Text style={styles.tileText}>{t('menu.download')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/settings')}>
-              <Settings color={theme.colors.text.primary} size={theme.iconSizes.icon} />
-              <Text style={styles.tileText}>{t('menu.settings')}</Text>
-            </TouchableOpacity>
             <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/help')}>
               <User color={theme.colors.text.primary} size={theme.iconSizes.icon} />
               <Text style={styles.tileText}>{t('menu.help')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.tile} onPress={() => navigate('/(protected)/purchases')}>
-              <Download color={theme.colors.text.primary} size={theme.iconSizes.icon} />
-              <Text style={styles.tileText}>{t('menu.purchases')}</Text>
+            <TouchableOpacity style={styles.tile} onPress={handleLogout}>
+              <LogOut color={theme.colors.text.primary} size={theme.iconSizes.icon} />
+              <Text style={[styles.tileText]}>{'Logout'}</Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
