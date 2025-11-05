@@ -15,8 +15,9 @@ interface YapperLogoProps {
 }
 
 const YapperLogo: React.FC<YapperLogoProps> = ({ size, width = 305, height = 306, color = '#FEFEFE', style }) => {
+  const aspectRatio = 306 / 305;
   const w = size ?? width;
-  const h = size ?? height;
+  const h = size ? size * aspectRatio : height;
 
   return (
     <Svg width={w} height={h} viewBox="0 0 305 306" style={style}>
