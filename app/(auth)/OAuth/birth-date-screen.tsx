@@ -12,6 +12,7 @@ import Toast from 'react-native-toast-message';
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { userBirthDateSchema } from '@/src/modules/auth/schemas/schemas';
+import AuthTitle from '@/src/modules/auth/components/shared/Title';
 
 const BirthDateScreen = () => {
   const [birthDate, setBirthDate] = useState('');
@@ -78,13 +79,13 @@ const BirthDateScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Top bar without exit button */}
       <ActivityLoader visible={loading} />
       <TopBar showExitButton={false} />
 
       <View style={styles.content}>
+        <AuthTitle title={t('auth.birthDate.title')} />
+
         <AuthInput
-          title={t('auth.birthDate.title')}
           description={t('auth.birthDate.description')}
           label={t('auth.birthDate.label')}
           value={birthDate}
@@ -114,8 +115,17 @@ const createStyles = (theme: Theme) =>
     },
     content: {
       flex: 1,
-      padding: theme.spacing.lg,
-      justifyContent: 'center',
+      justifyContent: 'flex-start',
+      paddingHorizontal: theme.spacing.xl,
+    },
+    title: {
+      color: theme.colors.text.primary,
+      fontSize: theme.typography.sizes.xml,
+      fontFamily: theme.typography.fonts.bold,
+      lineHeight: 36,
+      marginBottom: theme.spacing.mdg,
+      letterSpacing: -0.3,
+      paddingHorizontal: theme.spacing.xl,
     },
   });
 
