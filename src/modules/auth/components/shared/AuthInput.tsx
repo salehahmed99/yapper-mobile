@@ -11,6 +11,7 @@ interface IAuthInputProps {
   value: string;
   status?: 'success' | 'error' | 'none';
   showCheck?: boolean;
+  showDiscription?: boolean;
   errorMessage?: string;
   onChange: (text: string) => void;
   type?: 'text' | 'date';
@@ -22,6 +23,7 @@ const AuthInput: React.FC<IAuthInputProps> = ({
   value,
   status = 'none',
   showCheck = false,
+  showDiscription = false,
   errorMessage,
   onChange,
   type = 'text',
@@ -76,8 +78,6 @@ const AuthInput: React.FC<IAuthInputProps> = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.description}>{description}</Text>
-
       <View style={styles.inputContainer}>
         <Animated.Text style={labelStyle}>{label}</Animated.Text>
 
@@ -113,6 +113,7 @@ const AuthInput: React.FC<IAuthInputProps> = ({
             accessibilityLabel="Auth_text_input"
           />
         )}
+        {showDiscription && <Text style={styles.description}>{description}</Text>}
 
         {showCheck && status === 'success' && value.length > 0 && (
           <View style={styles.successIcon}>
@@ -146,7 +147,7 @@ const createStyles = (theme: Theme, scaleWidth = 1, scaleHeight = 1, scaleFonts 
       fontSize: theme.typography.sizes.sm * scaleFonts,
       fontFamily: theme.typography.fonts.regular,
       lineHeight: 20 * scaleHeight,
-      marginBottom: theme.spacing.lg * scaleHeight,
+      marginTop: theme.spacing.sm * scaleHeight,
     },
     inputContainer: {
       position: 'relative',
@@ -184,7 +185,7 @@ const createStyles = (theme: Theme, scaleWidth = 1, scaleHeight = 1, scaleFonts 
     successIcon: {
       position: 'absolute',
       right: theme.spacing.md * scaleWidth,
-      top: theme.spacing.xl * scaleHeight,
+      top: theme.spacing.lg * scaleHeight,
       width: 20 * scaleWidth,
       height: 20 * scaleHeight,
       borderRadius: theme.borderRadius.lg,
@@ -195,13 +196,13 @@ const createStyles = (theme: Theme, scaleWidth = 1, scaleHeight = 1, scaleFonts 
     errorIconContainer: {
       position: 'absolute',
       right: theme.spacing.md * scaleWidth,
-      top: theme.spacing.lg * scaleHeight,
+      top: theme.spacing.md * scaleHeight,
       paddingHorizontal: theme.spacing.xs * scaleWidth,
       paddingVertical: theme.spacing.xs * scaleHeight,
     },
     errorText: {
-      marginTop: theme.spacing.xs * scaleHeight,
       fontSize: theme.typography.sizes.xs * scaleFonts,
       color: theme.colors.error,
+      marginTop: theme.spacing.xs * scaleHeight,
     },
   });

@@ -15,7 +15,15 @@ export const usernameSchema = z
 export const userBirthDateSchema = z.string({ required_error: 'Birth date is required' }).refine((date) => {
   const parsedDate = new Date(date);
   const today = new Date();
-  const age = today.getFullYear() - parsedDate.getFullYear();
+  let age = today.getFullYear() - parsedDate.getFullYear();
+  const monthDiff = today.getMonth() - parsedDate.getMonth();
+  const dayDiff = today.getDate() - parsedDate.getDate();
+
+  // Adjust age if birthday hasn't occurred yet this year
+  if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+    age--;
+  }
+
   return age >= 13;
 }, 'You must be at least 13 years old to register');
 
