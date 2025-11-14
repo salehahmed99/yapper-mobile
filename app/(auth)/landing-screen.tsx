@@ -60,13 +60,21 @@ const LandingScreen: React.FC = () => {
     }
   };
 
+  const onCreateAccountPress = () => {
+    router.push('/(auth)/sign-up/create-account-screen');
+  };
+
   return (
     <View style={styles.container}>
       <ActivityLoader visible={loading} />
       <OAuthHeadLine />
 
       <View style={styles.bottom}>
-        <OAuthButtons onGooglePress={onGooglePress} onGithubPress={onGithubPress} />
+        <OAuthButtons
+          onGooglePress={onGooglePress}
+          onGithubPress={onGithubPress}
+          onCreateAccountPress={onCreateAccountPress}
+        />
         <OAuthLegalText theme={theme} onLoginPress={() => router.push('/(auth)/login')} />
       </View>
     </View>
