@@ -20,6 +20,7 @@ const VerifyCodeScreen = () => {
   // Zustand store
   const email = useSignUpStore((state) => state.email);
   const setverficationToken = useSignUpStore((state) => state.setVerificationToken);
+  const setUserNames = useSignUpStore((state) => state.setUserNames);
 
   const [code, setCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -59,6 +60,7 @@ const VerifyCodeScreen = () => {
           text2: 'Your email has been verified successfully.',
         });
         setverficationToken(code);
+        setUserNames(res.data.recommendations || []);
         router.push('/(auth)/sign-up/enter-password');
       } else {
         Toast.show({

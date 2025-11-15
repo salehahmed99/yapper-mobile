@@ -6,7 +6,9 @@ import PasswordInput from '@/src/modules/auth/components/shared/PasswordInput';
 import AuthTitle from '@/src/modules/auth/components/shared/Title';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { passwordSchema } from '@/src/modules/auth/schemas/schemas';
+import { signUpStep3 } from '@/src/modules/auth/services/signUpService';
 import { useSignUpStore } from '@/src/modules/auth/store/useSignUpStore';
+import { useAuthStore } from '@/src/store/useAuthStore';
 import { router } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -19,6 +21,10 @@ const EnterPasswordScreen = () => {
   // Zustand store
   const email = useSignUpStore((state) => state.email);
   const verificationToken = useSignUpStore((state) => state.verificationToken);
+  const userNames = useSignUpStore((state) => state.userNames);
+
+  const loginUser = useAuthStore((state) => state.loginUser);
+  const setSkipRedirect = useAuthStore((state) => state.setSkipRedirect);
 
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -51,8 +57,14 @@ const EnterPasswordScreen = () => {
 
     setIsLoading(true);
     try {
-      // TODO: API CALL HERE to complete sign up with password
-      // const response = await signUpAPI({ email, password, verificationToken, ... });
+      const response = await signUpStep3({
+        email,
+        password,
+        username: userNames[0] || '',
+        language: 'en',
+      });
+      setSkipRedirect(true);
+      await loginUser(response.data.user, response.data.accessToken);
 
       Toast.show({
         type: 'success',
@@ -61,7 +73,7 @@ const EnterPasswordScreen = () => {
       });
 
       // Navigate to next step or home
-      router.push('/(auth)/sign-up/next-step');
+      router.push('/(auth)/sign-up/upload-photo');
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'An error occurred';
       Toast.show({ type: 'error', text1: 'Error', text2: message });
