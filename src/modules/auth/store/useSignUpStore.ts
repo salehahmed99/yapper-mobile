@@ -5,11 +5,15 @@ interface ISignUpState {
   name: string;
   email: string;
   dateOfBirth: string;
+  verificationToken: string;
+  password: string;
 
   // Actions
   setName: (value: string) => void;
   setEmail: (value: string) => void;
   setDateOfBirth: (value: string) => void;
+  setVerificationToken: (token: string) => void;
+  setPassword: (value: string) => void;
   reset: () => void;
 }
 
@@ -19,10 +23,13 @@ export const useSignUpStore = create<ISignUpState>((set) => ({
   email: '',
   dateOfBirth: '',
   verificationToken: '',
+  password: '',
 
   // Actions
   setName: (value: string) => set({ name: value }),
   setEmail: (value: string) => set({ email: value }),
   setDateOfBirth: (value: string) => set({ dateOfBirth: value }),
-  reset: () => set({ name: '', email: '', dateOfBirth: '' }),
+  setVerificationToken: (token: string) => set({ verificationToken: token }),
+  setPassword: (value: string) => set({ password: value }),
+  reset: () => set({ name: '', email: '', dateOfBirth: '', verificationToken: '', password: '' }),
 }));

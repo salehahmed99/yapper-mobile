@@ -19,6 +19,7 @@ const VerifyCodeScreen = () => {
 
   // Zustand store
   const email = useSignUpStore((state) => state.email);
+  const setverficationToken = useSignUpStore((state) => state.setVerificationToken);
 
   const [code, setCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -57,13 +58,15 @@ const VerifyCodeScreen = () => {
           text1: 'Code verified',
           text2: 'Your email has been verified successfully.',
         });
-        router.push('/(auth)/sign-up/next-step');
+        setverficationToken(code);
+        router.push('/(auth)/sign-up/enter-password');
       } else {
         Toast.show({
           type: 'error',
           text1: 'Invalid code',
           text2: res.message || 'The verification code you entered is incorrect.',
         });
+        setverficationToken('');
       }
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'An error occurred';

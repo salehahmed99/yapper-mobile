@@ -23,7 +23,7 @@ const createStyles = (theme: Theme) =>
       lineHeight: 36,
       marginBottom: theme.spacing.mdg,
       letterSpacing: -0.3,
-      paddingHorizontal: theme.spacing.xl,
+      // paddingHorizontal: theme.spacing.md,
     },
   });
 

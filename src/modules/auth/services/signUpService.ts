@@ -73,7 +73,7 @@ export const verifySignUpOTP = async (credentials: IVerifySignUpOTPRequest): Pro
  */
 export const resendVerificationCode = async (credentials: IReSendVerificationCodeRequest): Promise<boolean> => {
   try {
-    const res = await api.post<IReSendVerificationCodeResponse>('/auth/resend-verification-code', credentials);
+    const res = await api.post<IReSendVerificationCodeResponse>('/auth/resend-otp', credentials);
     return res.data.data.isEmailSent;
   } catch (error: unknown) {
     const message = extractErrorMessage(error);
