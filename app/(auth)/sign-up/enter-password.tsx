@@ -73,7 +73,7 @@ const EnterPasswordScreen = () => {
       });
 
       // Navigate to next step or home
-      router.push('/(auth)/sign-up/upload-photo');
+      router.replace('/(auth)/sign-up/upload-photo');
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'An error occurred';
       Toast.show({ type: 'error', text1: 'Error', text2: message });

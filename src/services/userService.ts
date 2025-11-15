@@ -29,7 +29,10 @@ export const uploadProfilePicture = async (file: { uri: string; name: string; ty
       },
     });
 
-    return res.status === 200 || res.status === 201;
+    const resultUser = await api.patch('/users/me', {
+      avatar_url: res.data.data.image_url,
+    });
+    return resultUser.status === 200;
   } catch (error: unknown) {
     const message = extractErrorMessage(error);
     throw new Error(message);

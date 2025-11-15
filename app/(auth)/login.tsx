@@ -45,6 +45,7 @@ const LoginScreen = () => {
   // ============================================
   const defaultCountry = Localization.getLocales()[0]?.regionCode || 'US';
   const loginUser = useAuthStore((state) => state.loginUser);
+  const setSkipRedirect = useAuthStore((state) => state.setSkipRedirect);
   const { t } = useTranslation();
 
   // ============================================
@@ -189,6 +190,7 @@ const LoginScreen = () => {
         text1: t('auth.login.success.loginSuccessful'),
         text2: t('auth.login.success.welcomeBack'),
       });
+      setSkipRedirect(false);
       await loginUser(data.data.user, data.data.accessToken);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

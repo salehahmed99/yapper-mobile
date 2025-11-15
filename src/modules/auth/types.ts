@@ -187,6 +187,15 @@ export interface ISignUpStep3Request {
   language: string;
 }
 
+export interface ISignUpStep3ResponseDTO {
+  data: {
+    access_token: string;
+    user: IUser;
+  };
+  count: number;
+  message: string;
+}
+
 export interface ISignUpStep3Response {
   data: {
     accessToken: string;
@@ -194,4 +203,15 @@ export interface ISignUpStep3Response {
   };
   count: number;
   message: string;
+}
+
+export function mapSignUpStep3ResponseDTOToSignUpStep3Response(dto: ISignUpStep3ResponseDTO): ISignUpStep3Response {
+  return {
+    data: {
+      accessToken: dto.data.access_token,
+      user: mapUserDTOToUser(dto.data.user),
+    },
+    count: dto.count,
+    message: dto.message,
+  };
 }

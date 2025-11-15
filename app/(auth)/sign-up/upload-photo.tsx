@@ -19,7 +19,6 @@ const UploadPhotoScreen = () => {
 
   // Zustand store
   const email = useSignUpStore((state) => state.email);
-  const password = useSignUpStore((state) => state.password);
 
   const setSkipRedirect = useAuthStore((state) => state.setSkipRedirect);
 
@@ -28,10 +27,10 @@ const UploadPhotoScreen = () => {
 
   // Redirect if no email or password (user shouldn't be here)
   useEffect(() => {
-    if (!email || !password) {
+    if (!email) {
       router.replace('/(auth)/sign-up/create-account-screen');
     }
-  }, [email, password]);
+  }, [email]);
 
   const handleImageSelected = (file: { uri: string; name: string; type: string }) => {
     setImageFile(file);
@@ -67,7 +66,7 @@ const UploadPhotoScreen = () => {
           text1: 'Success',
           text2: 'Profile picture uploaded successfully.',
         });
-        router.push('/(protected)');
+        router.replace('/(auth)/sign-up/user-name-screen');
       } else {
         Toast.show({
           type: 'error',
