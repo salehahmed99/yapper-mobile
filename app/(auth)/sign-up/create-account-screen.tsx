@@ -6,6 +6,8 @@ import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import AuthTitle from '@/src/modules/auth/components/shared/Title';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { emailSchema, userBirthDateSchema } from '@/src/modules/auth/schemas/schemas';
+import { signUpStep1 } from '@/src/modules/auth/services/signUpService';
+import { useSignUpStore } from '@/src/modules/auth/store/useSignUpStore';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -14,6 +16,11 @@ import Toast from 'react-native-toast-message';
 const CreateAccountScreen = () => {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+
+  // Zustand store
+  const setStoreName = useSignUpStore((state) => state.setName);
+  const setStoreEmail = useSignUpStore((state) => state.setEmail);
+  const setStoreDateOfBirth = useSignUpStore((state) => state.setDateOfBirth);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -43,17 +50,48 @@ const CreateAccountScreen = () => {
     isBirthDateValid &&
     !isLoading;
 
-  const onNextPress = () => {
-    if (isFormValid) {
-      setIsLoading(true);
-      //API CALL HERE
-      router.push('/(auth)/sign-up/next-step');
-    } else {
+  const onNextPress = async () => {
+    if (!isFormValid) {
       Toast.show({
         type: 'error',
         text1: 'Please fill all fields correctly before proceeding.',
       });
       return;
+    }
+
+    setIsLoading(true);
+    try {
+      const isEmailSent = await signUpStep1({
+        email,
+        name,
+        birth_date: dateOfBirth,
+        captcha_token: '12',
+      });
+
+      if (isEmailSent) {
+        // Save to store
+        setStoreName(name);
+        setStoreEmail(email);
+        setStoreDateOfBirth(dateOfBirth);
+
+        Toast.show({
+          type: 'success',
+          text1: 'Verification code sent',
+          text2: 'Please check your email for the verification code.',
+        });
+        router.push('/(auth)/sign-up/verify-code');
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Failed to send verification code',
+          text2: 'Please try again.',
+        });
+      }
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An error occurred';
+      Toast.show({ type: 'error', text1: 'Error', text2: message });
+    } finally {
+      setIsLoading(false);
     }
   };
 
