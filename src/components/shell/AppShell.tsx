@@ -1,9 +1,9 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import { Slot } from 'expo-router';
+import { Slot, usePathname } from 'expo-router';
 import React from 'react';
 import type { PanResponderGestureState } from 'react-native';
-import { Animated, PanResponder, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
+import { Animated, PanResponder, Pressable, StyleSheet, useWindowDimensions, View, ViewStyle } from 'react-native';
 import { UiShellProvider, useUiShell } from '../../context/UiShellContext';
 import BottomNavigation from './BottomNavigation';
 import SideMenu from './SideMenu';
@@ -62,6 +62,15 @@ interface ISlidingShellProps {
 const SlidingShell: React.FC<ISlidingShellProps> = React.memo(function SlidingShell(props) {
   const { styles, theme, anim } = props;
   const { isSideMenuOpen, closeSideMenu, openSideMenu } = useUiShell();
+  const { width: screenWidth } = useWindowDimensions();
+  const pathname = usePathname();
+  const leftThreshold = screenWidth * 0.1; // Left 10% of screen
+  const touchStartXRef = React.useRef<number | null>(null);
+
+  // Only allow sidebar gesture on bottom nav tabs
+  const bottomNavRoutes = ['/', '/search', '/grok', '/notifications', '/messages'];
+  const isOnBottomNavTab = bottomNavRoutes.some((route) => pathname === route);
+
   React.useEffect(() => {
     Animated.timing(anim, {
       toValue: isSideMenuOpen ? theme.ui.drawerWidth : 0,
@@ -69,19 +78,28 @@ const SlidingShell: React.FC<ISlidingShellProps> = React.memo(function SlidingSh
       useNativeDriver: false,
     }).start();
   }, [isSideMenuOpen, anim, theme.ui.drawerWidth]);
+
   // PanResponder to allow edge swipe to open and drag-to-close when open
   const panResponder = React.useMemo(
     () =>
       PanResponder.create({
         onStartShouldSetPanResponder: (evt, _gestureState) => {
+          // Only handle gestures on bottom nav tabs
+          if (!isOnBottomNavTab) return false;
           // Start when touching the left edge when closed; allow any start when open
           const startX = evt.nativeEvent.pageX ?? 0;
+          touchStartXRef.current = startX;
           if (isSideMenuOpen) return true;
-          return startX <= 20;
+          return startX <= leftThreshold;
         },
         onMoveShouldSetPanResponder: (_evt, gestureState: PanResponderGestureState) => {
+          // Only handle gestures on bottom nav tabs
+          if (!isOnBottomNavTab) return false;
           // Capture horizontal drags larger than vertical
+          // Only accept move if started in left region or menu is already open
           const { dx, dy } = gestureState;
+          const startX = touchStartXRef.current ?? 0;
+          if (!isSideMenuOpen && startX > leftThreshold) return false;
           return Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 5;
         },
         onPanResponderMove: (_evt, gestureState: PanResponderGestureState) => {
@@ -113,7 +131,7 @@ const SlidingShell: React.FC<ISlidingShellProps> = React.memo(function SlidingSh
           });
         },
       }),
-    [isSideMenuOpen, anim, openSideMenu, closeSideMenu, theme.ui.drawerWidth],
+    [isSideMenuOpen, anim, openSideMenu, closeSideMenu, theme.ui.drawerWidth, leftThreshold, isOnBottomNavTab],
   );
   // Animate overlay opacity and width with drawer
   const overlayOpacity = anim.interpolate({

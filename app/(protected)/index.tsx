@@ -1,5 +1,5 @@
 import HomeTabView from '@/src/components/home/HomeTabView';
-import XLogo from '@/src/components/icons/XLogo';
+import YapperLogo from '@/src/components/icons/YapperLogo';
 import QueryWrapper from '@/src/components/QueryWrapper';
 import AppBar from '@/src/components/shell/AppBar';
 import type { Theme } from '@/src/constants/theme';
@@ -30,7 +30,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <View style={styles.appBarWrapper}>
         <AppBar
-          children={<XLogo size={32} color={theme.colors.text.primary} />}
+          children={<YapperLogo size={32} color={theme.colors.text.primary} />}
           tabView={<HomeTabView index={homeIndex} onIndexChange={(i) => setHomeIndex(i)} />}
         />
       </View>
