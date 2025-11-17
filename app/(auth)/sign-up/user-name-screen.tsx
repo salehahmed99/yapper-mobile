@@ -11,10 +11,12 @@ import { router } from 'expo-router';
 import { Check } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Animated, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
 
 const UserNameScreen: React.FC = () => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
 
   // Zustand store
   const email = useSignUpStore((state) => state.email);
@@ -80,16 +82,16 @@ const UserNameScreen: React.FC = () => {
     if (!username) {
       Toast.show({
         type: 'error',
-        text1: 'Username required',
-        text2: 'Please select or enter a username',
+        text1: t('auth.signUp.userName.errors.usernameRequired'),
+        text2: t('auth.signUp.userName.errors.selectOrEnter'),
       });
       return;
     }
     if (!usernameSchema.safeParse(username).success) {
       Toast.show({
         type: 'error',
-        text1: 'Invalid username',
-        text2: 'Username must be 3-30 characters and contain only letters, numbers, and underscores',
+        text1: t('auth.signUp.userName.errors.invalidUsername'),
+        text2: t('auth.signUp.userName.errors.usernameFormat'),
       });
       return;
     }
@@ -101,15 +103,15 @@ const UserNameScreen: React.FC = () => {
 
       Toast.show({
         type: 'success',
-        text1: 'Username set',
-        text2: `Your username is @${username}`,
+        text1: t('auth.signUp.userName.success.usernameSet'),
+        text2: t('auth.signUp.userName.success.yourUsername', { username }),
       });
       setSkipRedirect(false);
       router.replace('/(protected)');
     } catch (error) {
       Toast.show({
         type: 'error',
-        text1: 'Error',
+        text1: t('auth.signUp.userName.errors.error'),
         text2: (error as Error).message,
       });
     } finally {
@@ -132,12 +134,12 @@ const UserNameScreen: React.FC = () => {
       <TopBar showExitButton={true} onBackPress={handleTopBarBackPress} />
       <View style={styles.scrollableContent}>
         <View style={styles.header}>
-          <Text style={styles.title}>What should we call you?</Text>
-          <Text style={styles.subtitle}>Your @username is unique. You can always change it later.</Text>
+          <Text style={styles.title}>{t('auth.signUp.userName.title')}</Text>
+          <Text style={styles.subtitle}>{t('auth.signUp.userName.subtitle')}</Text>
         </View>
 
         <View style={styles.inputWrapper}>
-          <Animated.Text style={labelStyle}>Username</Animated.Text>
+          <Animated.Text style={labelStyle}>{t('auth.signUp.userName.usernameLabel')}</Animated.Text>
           <View style={styles.inputContainer}>
             <TextInput
               style={[
@@ -161,7 +163,7 @@ const UserNameScreen: React.FC = () => {
             )}
           </View>
           {username.length > 0 && username.length < 3 && (
-            <Text style={styles.errorText}>Username must be at least 3 characters</Text>
+            <Text style={styles.errorText}>{t('auth.signUp.userName.errors.minLength')}</Text>
           )}
         </View>
 
@@ -183,21 +185,23 @@ const UserNameScreen: React.FC = () => {
             onPress={handleShowMore}
             accessibilityLabel="show-more-button"
           >
-            <Text style={styles.showMoreText}>{showMore ? 'Show less' : 'Show more'}</Text>
+            <Text style={styles.showMoreText}>
+              {showMore ? t('auth.signUp.userName.showLess') : t('auth.signUp.userName.showMore')}
+            </Text>
           </TouchableOpacity>
         )}
       </View>
 
       <BottomBar
         rightButton={{
-          label: 'Next',
+          label: t('buttons.next'),
           onPress: handleNext,
           enabled: isNextEnabled && username.length >= 3 && usernameSchema.safeParse(username).success,
           visible: true,
           type: 'primary',
         }}
         leftButton={{
-          label: 'Skip for now',
+          label: t('auth.signUp.userName.skipButton'),
           onPress: handleSkip,
           enabled: true,
           visible: true,

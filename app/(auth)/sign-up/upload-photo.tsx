@@ -10,11 +10,13 @@ import { useSignUpStore } from '@/src/modules/auth/store/useSignUpStore';
 import { router } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
 import { useAuthStore } from '@/src/store/useAuthStore';
 
 const UploadPhotoScreen = () => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   // Zustand store
@@ -50,8 +52,8 @@ const UploadPhotoScreen = () => {
     if (!imageFile) {
       Toast.show({
         type: 'error',
-        text1: 'No image selected',
-        text2: 'Please upload a profile picture or skip for now.',
+        text1: t('auth.signUp.uploadPhoto.errors.noImage'),
+        text2: t('auth.signUp.uploadPhoto.errors.uploadOrSkip'),
       });
       return;
     }
@@ -63,20 +65,20 @@ const UploadPhotoScreen = () => {
       if (uploaded) {
         Toast.show({
           type: 'success',
-          text1: 'Success',
-          text2: 'Profile picture uploaded successfully.',
+          text1: t('auth.signUp.uploadPhoto.success.title'),
+          text2: t('auth.signUp.uploadPhoto.success.uploaded'),
         });
         router.replace('/(auth)/sign-up/user-name-screen');
       } else {
         Toast.show({
           type: 'error',
-          text1: 'Upload failed',
-          text2: 'Failed to upload profile picture. Please try again.',
+          text1: t('auth.signUp.uploadPhoto.errors.uploadFailed'),
+          text2: t('auth.signUp.uploadPhoto.errors.tryAgain'),
         });
       }
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An error occurred';
-      Toast.show({ type: 'error', text1: 'Error', text2: message });
+      const message = error instanceof Error ? error.message : t('auth.signUp.uploadPhoto.errors.generic');
+      Toast.show({ type: 'error', text1: t('auth.signUp.uploadPhoto.errors.error'), text2: message });
     } finally {
       setIsLoading(false);
     }
@@ -89,11 +91,11 @@ const UploadPhotoScreen = () => {
 
       <View style={styles.content}>
         <View>
-          <AuthTitle title="Pick a profile picture" />
+          <AuthTitle title={t('auth.signUp.uploadPhoto.title')} />
         </View>
 
         <View style={styles.descriptionContainer}>
-          <Text style={styles.description}>Have a favorite selfie? Upload it now.</Text>
+          <Text style={styles.description}>{t('auth.signUp.uploadPhoto.description')}</Text>
         </View>
 
         <View style={styles.uploadContainer}>
@@ -103,14 +105,14 @@ const UploadPhotoScreen = () => {
 
       <BottomBar
         rightButton={{
-          label: 'Next',
+          label: t('buttons.next'),
           onPress: handleNext,
           enabled: !!imageFile && !isLoading,
           visible: true,
           type: 'primary',
         }}
         leftButton={{
-          label: 'Skip for now',
+          label: t('auth.signUp.uploadPhoto.skipButton'),
           onPress: handleSkip,
           enabled: true,
           visible: true,

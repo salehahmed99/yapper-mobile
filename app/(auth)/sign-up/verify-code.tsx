@@ -7,14 +7,15 @@ import AuthTitle from '@/src/modules/auth/components/shared/Title';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { resendVerificationCode, verifySignUpOTP } from '@/src/modules/auth/services/signUpService';
 import { useSignUpStore } from '@/src/modules/auth/store/useSignUpStore';
-import { ButtonOptions } from '@/src/modules/auth/utils/enums';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
 
 const VerifyCodeScreen = () => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = React.useMemo(() => createStyles(theme), [theme]);
 
   // Zustand store
@@ -42,8 +43,8 @@ const VerifyCodeScreen = () => {
     if (code.trim().length !== 6) {
       Toast.show({
         type: 'error',
-        text1: 'Invalid code',
-        text2: 'Please enter a 6-digit verification code.',
+        text1: t('auth.signUp.verifyCode.errors.invalidCode'),
+        text2: t('auth.signUp.verifyCode.errors.sixDigit'),
       });
       return;
     }
@@ -56,8 +57,8 @@ const VerifyCodeScreen = () => {
       if (res.data.isVerified) {
         Toast.show({
           type: 'success',
-          text1: 'Code verified',
-          text2: 'Your email has been verified successfully.',
+          text1: t('auth.signUp.verifyCode.success.codeVerified'),
+          text2: t('auth.signUp.verifyCode.success.emailVerified'),
         });
         setverficationToken(code);
         setUserNames(res.data.recommendations || []);
@@ -65,14 +66,14 @@ const VerifyCodeScreen = () => {
       } else {
         Toast.show({
           type: 'error',
-          text1: 'Invalid code',
-          text2: res.message || 'The verification code you entered is incorrect.',
+          text1: t('auth.signUp.verifyCode.errors.invalidCode'),
+          text2: res.message || t('auth.signUp.verifyCode.errors.incorrectCode'),
         });
         setverficationToken('');
       }
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An error occurred';
-      Toast.show({ type: 'error', text1: 'Verification failed', text2: message });
+      const message = error instanceof Error ? error.message : t('auth.signUp.verifyCode.errors.generic');
+      Toast.show({ type: 'error', text1: t('auth.signUp.verifyCode.errors.verificationFailed'), text2: message });
     } finally {
       setIsNextEnabled(true);
       setIsLoading(false);
@@ -87,19 +88,19 @@ const VerifyCodeScreen = () => {
       if (isEmailSent) {
         Toast.show({
           type: 'success',
-          text1: 'Code resent',
-          text2: 'A new verification code has been sent to your email.',
+          text1: t('auth.signUp.verifyCode.success.codeResent'),
+          text2: t('auth.signUp.verifyCode.success.newCodeSent'),
         });
       } else {
         Toast.show({
           type: 'error',
-          text1: 'Failed to resend',
-          text2: 'Please try again.',
+          text1: t('auth.signUp.verifyCode.errors.resendFailed'),
+          text2: t('auth.signUp.verifyCode.errors.tryAgain'),
         });
       }
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An error occurred';
-      Toast.show({ type: 'error', text1: 'Error', text2: message });
+      const message = error instanceof Error ? error.message : t('auth.signUp.verifyCode.errors.generic');
+      Toast.show({ type: 'error', text1: t('auth.signUp.verifyCode.errors.error'), text2: message });
     } finally {
       setIsResending(false);
     }
@@ -117,31 +118,31 @@ const VerifyCodeScreen = () => {
     <View style={styles.container}>
       <ActivityLoader
         visible={isLoading || isResending}
-        message={isLoading ? 'Verifying code...' : 'Resending code...'}
+        message={isLoading ? t('auth.signUp.verifyCode.verifying') : t('auth.signUp.verifyCode.resending')}
       />
       <TopBar onBackPress={handleTopBarBackPress} />
       <View style={styles.content}>
-        <AuthTitle title="We sent you a code" />
+        <AuthTitle title={t('auth.signUp.verifyCode.title')} />
         <AuthInputScreen
-          description={`Enter it below to verify ${email}.`}
-          label="Verification code"
+          description={t('auth.signUp.verifyCode.description', { email })}
+          label={t('auth.signUp.verifyCode.label')}
           value={code}
           onChange={setCode}
         />
         <Pressable onPress={handleResendCode} disabled={isResending} style={styles.resendContainer}>
-          <Text style={styles.resendText}>Didn't receive email?</Text>
+          <Text style={styles.resendText}>{t('auth.signUp.verifyCode.resendText')}</Text>
         </Pressable>
       </View>
       <BottomBar
         rightButton={{
-          label: ButtonOptions.NEXT,
+          label: t('buttons.next'),
           onPress: handleNext,
           enabled: isNextEnabled,
           visible: true,
           type: 'primary',
         }}
         leftButton={{
-          label: ButtonOptions.BACK,
+          label: t('buttons.back'),
           onPress: handleBack,
           enabled: true,
           visible: true,

@@ -11,10 +11,12 @@ import { useSignUpStore } from '@/src/modules/auth/store/useSignUpStore';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
 
 const CreateAccountScreen = () => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   // Zustand store
@@ -54,7 +56,7 @@ const CreateAccountScreen = () => {
     if (!isFormValid) {
       Toast.show({
         type: 'error',
-        text1: 'Please fill all fields correctly before proceeding.',
+        text1: t('auth.signUp.createAccount.errors.fillAllFields'),
       });
       return;
     }
@@ -65,7 +67,7 @@ const CreateAccountScreen = () => {
         email,
         name,
         birth_date: dateOfBirth,
-        captcha_token: '12',
+        captcha_token: process.env.EXPO_PUBLIC_CAPTCHA_TEST_TOKEN || '',
       });
 
       if (isEmailSent) {
@@ -76,20 +78,20 @@ const CreateAccountScreen = () => {
 
         Toast.show({
           type: 'success',
-          text1: 'Verification code sent',
-          text2: 'Please check your email for the verification code.',
+          text1: t('auth.signUp.createAccount.success.codeSent'),
+          text2: t('auth.signUp.createAccount.success.checkEmail'),
         });
         router.push('/(auth)/sign-up/verify-code');
       } else {
         Toast.show({
           type: 'error',
-          text1: 'Failed to send verification code',
-          text2: 'Please try again.',
+          text1: t('auth.signUp.createAccount.errors.failedToSend'),
+          text2: t('auth.signUp.createAccount.errors.tryAgain'),
         });
       }
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An error occurred';
-      Toast.show({ type: 'error', text1: 'Error', text2: message });
+      const message = error instanceof Error ? error.message : t('auth.signUp.createAccount.errors.generic');
+      Toast.show({ type: 'error', text1: t('auth.signUp.createAccount.errors.error'), text2: message });
     } finally {
       setIsLoading(false);
     }
@@ -102,41 +104,41 @@ const CreateAccountScreen = () => {
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
           <View style={styles.title}>
-            <AuthTitle title="Create your account" />
+            <AuthTitle title={t('auth.signUp.createAccount.title')} />
           </View>
 
           <AuthInput
             description=""
-            label="Name"
+            label={t('auth.signUp.createAccount.nameLabel')}
             value={name}
             onChange={onchangeName}
             type="text"
             status="success"
             showCheck={isValidName && name.length > 0}
-            errorMessage={`Maximum 50 characters (${name.length}/50)`}
+            errorMessage={t('auth.signUp.createAccount.nameError', { count: name.length })}
           />
 
           <AuthInput
             description=""
-            label="Email"
+            label={t('auth.signUp.createAccount.emailLabel')}
             value={email}
             onChange={setEmail}
             type="text"
             status={email.length >= 2 && !isEmailValid ? 'error' : 'success'}
             showCheck={email.length >= 2 && isEmailValid}
-            errorMessage={email.length >= 2 && !isEmailValid ? 'Please enter a valid email address' : ''}
+            errorMessage={email.length >= 2 && !isEmailValid ? t('auth.signUp.createAccount.emailError') : ''}
           />
 
           <AuthInput
-            description="This will not be shown publicly. Confirm your own age, even if this account is for a business, a pet, or something else."
-            label="Date of birth"
+            description={t('auth.signUp.createAccount.dateOfBirthDescription')}
+            label={t('auth.signUp.createAccount.dateOfBirthLabel')}
             value={dateOfBirth}
             onChange={setDateOfBirth}
             type="date"
             status={dateOfBirth.length > 0 && !isBirthDateValid ? 'error' : 'success'}
             showCheck={dateOfBirth.length > 0}
             errorMessage={
-              dateOfBirth.length > 0 && !isBirthDateValid ? 'You must be at least 13 years old to use this service' : ''
+              dateOfBirth.length > 0 && !isBirthDateValid ? t('auth.signUp.createAccount.dateOfBirthError') : ''
             }
             showDiscription={true}
           />
@@ -145,7 +147,7 @@ const CreateAccountScreen = () => {
 
       <BottomBar
         rightButton={{
-          label: 'Next',
+          label: t('buttons.next'),
           onPress: onNextPress,
           enabled: isFormValid,
           visible: true,

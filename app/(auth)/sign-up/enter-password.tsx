@@ -12,10 +12,12 @@ import { useAuthStore } from '@/src/store/useAuthStore';
 import { router } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
 
 const EnterPasswordScreen = () => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   // Zustand store
@@ -49,8 +51,8 @@ const EnterPasswordScreen = () => {
     if (!isFormValid) {
       Toast.show({
         type: 'error',
-        text1: 'Invalid password',
-        text2: 'Please ensure your password meets all requirements.',
+        text1: t('auth.signUp.enterPassword.errors.invalidPassword'),
+        text2: t('auth.signUp.enterPassword.errors.passwordRequirements'),
       });
       return;
     }
@@ -68,15 +70,15 @@ const EnterPasswordScreen = () => {
 
       Toast.show({
         type: 'success',
-        text1: 'Account created',
-        text2: 'Your account has been created successfully.',
+        text1: t('auth.signUp.enterPassword.success.accountCreated'),
+        text2: t('auth.signUp.enterPassword.success.accountCreatedDesc'),
       });
 
       // Navigate to next step or home
       router.replace('/(auth)/sign-up/upload-photo');
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An error occurred';
-      Toast.show({ type: 'error', text1: 'Error', text2: message });
+      const message = error instanceof Error ? error.message : t('auth.signUp.enterPassword.errors.generic');
+      Toast.show({ type: 'error', text1: t('auth.signUp.enterPassword.errors.error'), text2: message });
     } finally {
       setIsLoading(false);
     }
@@ -89,16 +91,16 @@ const EnterPasswordScreen = () => {
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
           <View style={styles.titleContainer}>
-            <AuthTitle title="You'll need a password" />
+            <AuthTitle title={t('auth.signUp.enterPassword.title')} />
           </View>
 
           <View style={styles.descriptionContainer}>
-            <Text style={styles.description}>Make sure it's 8 characters or more.</Text>
+            <Text style={styles.description}>{t('auth.signUp.enterPassword.description')}</Text>
           </View>
 
           <View style={styles.inputContainer}>
             <PasswordInput
-              label="Password"
+              label={t('auth.signUp.enterPassword.passwordLabel')}
               value={password}
               onChangeText={setPassword}
               onToggleVisibility={() => setIsPasswordVisible(!isPasswordVisible)}
@@ -106,22 +108,23 @@ const EnterPasswordScreen = () => {
               showCheck={password.length >= 8}
               status={password.length >= 8 && !isPasswordValid ? 'error' : password.length >= 8 ? 'success' : undefined}
               errorMessage={
-                password.length >= 8 && !isPasswordValid
-                  ? 'Password must contain uppercase, lowercase, number, and special character'
-                  : ''
+                password.length >= 8 && !isPasswordValid ? t('auth.signUp.enterPassword.passwordError') : ''
               }
             />
           </View>
 
           <View style={styles.termsContainer}>
             <Text style={styles.termsText}>
-              By signing up, you agree to the <Text style={styles.linkText}>Terms of Service</Text> and{' '}
-              <Text style={styles.linkText}>Privacy Policy</Text>, including{' '}
-              <Text style={styles.linkText}>Cookie Use</Text>. X may use your contact information, including your email
-              address and phone number for purposes outlined in our Privacy Policy, like keeping your account secure and
-              personalizing our services, including ads. <Text style={styles.linkText}>Learn more</Text>. Others will be
-              able to find you by email or phone number, when provided, unless you choose otherwise{' '}
-              <Text style={styles.linkText}>here</Text>.
+              {t('auth.signUp.enterPassword.termsPrefix')}{' '}
+              <Text style={styles.linkText}>{t('auth.signUp.enterPassword.termsOfService')}</Text>{' '}
+              {t('auth.signUp.enterPassword.and')}{' '}
+              <Text style={styles.linkText}>{t('auth.signUp.enterPassword.privacyPolicy')}</Text>,{' '}
+              {t('auth.signUp.enterPassword.including')}{' '}
+              <Text style={styles.linkText}>{t('auth.signUp.enterPassword.cookieUse')}</Text>.{' '}
+              {t('auth.signUp.enterPassword.termsDescription')}{' '}
+              <Text style={styles.linkText}>{t('auth.signUp.enterPassword.learnMore')}</Text>.{' '}
+              {t('auth.signUp.enterPassword.findableText')}{' '}
+              <Text style={styles.linkText}>{t('auth.signUp.enterPassword.here')}</Text>.
             </Text>
           </View>
         </View>
@@ -129,7 +132,7 @@ const EnterPasswordScreen = () => {
 
       <BottomBar
         rightButton={{
-          label: 'Sign up',
+          label: t('auth.signUp.enterPassword.signUpButton'),
           onPress: onNextPress,
           enabled: isFormValid,
           visible: true,
