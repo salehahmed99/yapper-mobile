@@ -1,4 +1,5 @@
 import ActivityLoader from '@/src/components/ActivityLoader';
+import ReCaptcha, { ReCaptchaRef } from '@/src/components/ReCaptcha';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import AuthInput from '@/src/modules/auth/components/shared/AuthInput';
@@ -9,7 +10,7 @@ import { emailSchema, userBirthDateSchema } from '@/src/modules/auth/schemas/sch
 import { signUpStep1 } from '@/src/modules/auth/services/signUpService';
 import { useSignUpStore } from '@/src/modules/auth/store/useSignUpStore';
 import { router } from 'expo-router';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
@@ -18,6 +19,7 @@ const CreateAccountScreen = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const recaptchaRef = useRef<ReCaptchaRef>(null);
 
   // Zustand store
   const setStoreName = useSignUpStore((state) => state.setName);
@@ -28,6 +30,7 @@ const CreateAccountScreen = () => {
   const [email, setEmail] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [, setCaptchaToken] = useState('');
 
   const [isValidName, setIsValidName] = useState(true);
 
@@ -61,13 +64,20 @@ const CreateAccountScreen = () => {
       return;
     }
 
+    // Open reCAPTCHA for verification
+    recaptchaRef.current?.open();
+  };
+
+  const handleCaptchaVerify = async (token: string) => {
+    setCaptchaToken(token);
     setIsLoading(true);
+
     try {
       const isEmailSent = await signUpStep1({
         email,
         name,
         birth_date: dateOfBirth,
-        captcha_token: process.env.EXPO_PUBLIC_CAPTCHA_TEST_TOKEN || '',
+        captcha_token: token,
       });
 
       if (isEmailSent) {
@@ -95,6 +105,23 @@ const CreateAccountScreen = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleCaptchaError = (error: string) => {
+    Toast.show({
+      type: 'error',
+      text1: t('auth.signUp.createAccount.errors.error'),
+      text2: error,
+    });
+  };
+
+  const handleCaptchaExpire = () => {
+    setCaptchaToken('');
+    Toast.show({
+      type: 'info',
+      text1: t('auth.signUp.createAccount.captcha.expired'),
+      text2: t('auth.signUp.createAccount.captcha.tryAgain'),
+    });
   };
 
   return (
@@ -153,6 +180,18 @@ const CreateAccountScreen = () => {
           visible: true,
           type: 'primary',
         }}
+      />
+
+      <ReCaptcha
+        ref={recaptchaRef}
+        siteKey="6LfOssorAAAAAEU9QXy9tnI69SWwGKOziQ5lKZNh"
+        onVerify={handleCaptchaVerify}
+        onError={handleCaptchaError}
+        onExpire={handleCaptchaExpire}
+        size="normal"
+        theme={theme.colors.background.primary === '#000000' ? 'dark' : 'light'}
+        lang="en"
+        themeColors={theme}
       />
     </View>
   );

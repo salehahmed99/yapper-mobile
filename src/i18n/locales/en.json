@@ -98,6 +98,10 @@
         "success": {
           "codeSent": "Verification code sent",
           "checkEmail": "Please check your email for the verification code."
+        },
+        "captcha": {
+          "expired": "Verification expired",
+          "tryAgain": "Please verify again to continue"
         }
       },
       "verifyCode": {
