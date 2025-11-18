@@ -99,6 +99,11 @@ const UserNameScreen: React.FC = () => {
       return;
     }
 
+    if (username === userNamesParam[0]) {
+      setSkipRedirect(false);
+      return;
+    }
+
     setLoading(true);
     setNextEnabled(false);
     try {

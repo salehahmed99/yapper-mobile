@@ -167,7 +167,7 @@ const createStyles = (theme: Theme) =>
       fontSize: theme.typography.sizes.sm,
       fontFamily: theme.typography.fonts.regular,
       lineHeight: 20,
-      marginBottom: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.mdg,
     },
     resendContainer: {
       paddingHorizontal: theme.spacing.mdg,

@@ -106,11 +106,12 @@
       },
       "verifyCode": {
         "title": "We sent you a code",
-        "description": "Enter it below to verify {{email}}.",
+        "description": "Enter it below to verify you .",
         "label": "Verification code",
         "resendText": "Didn't receive email?",
         "verifying": "Verifying code...",
         "resending": "Resending code...",
+        "emailSent": "A verification code has been sent to you .",
         "errors": {
           "invalidCode": "Invalid code",
           "sixDigit": "Please enter a 6-digit verification code.",

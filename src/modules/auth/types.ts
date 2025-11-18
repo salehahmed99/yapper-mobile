@@ -64,7 +64,7 @@ export type IForgetPasswordResponse = IApiResponse<{
 
 export type IVerifyOTPResponse = IApiResponse<{
   isValid: boolean;
-  resetToken: string;
+  reset_token: string;
 }>;
 
 export type IResetPasswordRequestDTO = {

@@ -95,6 +95,12 @@ const UserNameScreen: React.FC = () => {
       });
       return;
     }
+    const userNamesParam = useSignUpStore.getState().userNames;
+    if (username === userNamesParam[0]) {
+      setSkipRedirect(false);
+      router.replace('/(protected)');
+      return;
+    }
 
     setLoading(true);
     setNextEnabled(false);
