@@ -4,12 +4,6 @@ import { WebView } from 'react-native-webview';
 import { X } from 'lucide-react-native';
 import { Theme } from '@/src/constants/theme';
 
-// CONFIGURE THIS:
-const RECAPTCHA_URL =
-  process.env.EXPO_PUBLIC_NODE_ENV === 'development'
-    ? 'http://localhost'
-    : 'https://your-backend-domain.com/recaptcha.html'; //todo: change it to actual url deployed
-
 export interface ReCaptchaRef {
   open: () => void;
   close: () => void;
@@ -97,7 +91,7 @@ const ReCaptcha = forwardRef<ReCaptchaRef, ReCaptchaProps>(
       }
     };
 
-    const recaptchaUrl = `${RECAPTCHA_URL}?siteKey=${encodeURIComponent(siteKey)}&theme=${theme}&size=${size}&lang=${lang}`;
+    const recaptchaUrl = process.env.EXPO_PUBLIC_RECAPTCHA_SITE_URL;
 
     const htmlContent = `
 <!DOCTYPE html>
@@ -260,7 +254,7 @@ const ReCaptcha = forwardRef<ReCaptchaRef, ReCaptchaProps>(
 
             <WebView
               ref={webViewRef}
-              source={__DEV__ ? { html: htmlContent, baseUrl: 'http://localhost' } : { uri: recaptchaUrl }}
+              source={{ html: htmlContent, baseUrl: recaptchaUrl }}
               onMessage={handleMessage}
               style={[styles.webview, loading && styles.hidden]}
               javaScriptEnabled
