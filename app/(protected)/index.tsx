@@ -20,28 +20,25 @@ export default function HomeScreen() {
 
   const tweetsFilters = useTweetsFiltersStore((state) => state.filters);
   const tweetsQuery = useTweets(tweetsFilters);
-  const [refreshing, setRefreshing] = React.useState(false);
 
   // Flatten all pages of tweets into a single array
   const tweets = React.useMemo(() => {
     return tweetsQuery.data?.pages.flatMap((page) => page.tweets) ?? [];
   }, [tweetsQuery.data]);
 
-  const onRefresh = React.useCallback(async () => {
-    setRefreshing(true);
-    await tweetsQuery.refetch();
-    setRefreshing(false);
-  }, [tweetsQuery]);
+  const onRefresh = React.useCallback(() => {
+    tweetsQuery.refetch();
+  }, [tweetsQuery.refetch]);
 
   const onEndReached = React.useCallback(() => {
     if (tweetsQuery.hasNextPage && !tweetsQuery.isFetchingNextPage) {
       tweetsQuery.fetchNextPage();
     }
-  }, [tweetsQuery]);
+  }, [tweetsQuery.hasNextPage, tweetsQuery.isFetchingNextPage, tweetsQuery.fetchNextPage]);
 
   const refreshControl = (
     <RefreshControl
-      refreshing={refreshing}
+      refreshing={tweetsQuery.isRefetching}
       onRefresh={onRefresh}
       tintColor={theme.colors.text.primary}
       colors={[theme.colors.text.primary]}
