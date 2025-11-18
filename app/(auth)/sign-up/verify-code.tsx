@@ -20,7 +20,7 @@ const VerifyCodeScreen = () => {
 
   // Zustand store
   const email = useSignUpStore((state) => state.email);
-  const setverficationToken = useSignUpStore((state) => state.setVerificationToken);
+  const setVerificationToken = useSignUpStore((state) => state.setVerificationToken);
   const setUserNames = useSignUpStore((state) => state.setUserNames);
 
   const [code, setCode] = useState('');
@@ -60,7 +60,7 @@ const VerifyCodeScreen = () => {
           text1: t('auth.signUp.verifyCode.success.codeVerified'),
           text2: t('auth.signUp.verifyCode.success.emailVerified'),
         });
-        setverficationToken(code);
+        setVerificationToken(code);
         setUserNames(res.data.recommendations || []);
         router.push('/(auth)/sign-up/enter-password');
       } else {
@@ -69,7 +69,7 @@ const VerifyCodeScreen = () => {
           text1: t('auth.signUp.verifyCode.errors.invalidCode'),
           text2: res.message || t('auth.signUp.verifyCode.errors.incorrectCode'),
         });
-        setverficationToken('');
+        setVerificationToken('');
       }
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : t('auth.signUp.verifyCode.errors.generic');

@@ -12,7 +12,7 @@ interface IAuthInputProps {
   value: string; // ISO format for backend
   status?: 'success' | 'error' | 'none';
   showCheck?: boolean;
-  showDiscription?: boolean;
+  showDescription?: boolean;
   errorMessage?: string;
   onChange: (text: string) => void;
   type?: 'text' | 'date';
@@ -24,7 +24,7 @@ const AuthInput: React.FC<IAuthInputProps> = ({
   value,
   status = 'none',
   showCheck = false,
-  showDiscription = false,
+  showDescription = false,
   errorMessage,
   onChange,
   type = 'text',
@@ -132,7 +132,7 @@ const AuthInput: React.FC<IAuthInputProps> = ({
           />
         )}
 
-        {showDiscription && <Text style={styles.description}>{description}</Text>}
+        {showDescription && <Text style={styles.description}>{description}</Text>}
 
         {showCheck && status === 'success' && value.length > 0 && (
           <View style={styles.successIcon}>

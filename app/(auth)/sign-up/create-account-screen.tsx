@@ -167,7 +167,7 @@ const CreateAccountScreen = () => {
             errorMessage={
               dateOfBirth.length > 0 && !isBirthDateValid ? t('auth.signUp.createAccount.dateOfBirthError') : ''
             }
-            showDiscription={true}
+            showDescription={true}
           />
         </View>
       </ScrollView>
@@ -184,7 +184,7 @@ const CreateAccountScreen = () => {
 
       <ReCaptcha
         ref={recaptchaRef}
-        siteKey="6LfOssorAAAAAEU9QXy9tnI69SWwGKOziQ5lKZNh"
+        siteKey={process.env.EXPO_PUBLIC_RECAPTCHA_SITE_KEY || ''}
         onVerify={handleCaptchaVerify}
         onError={handleCaptchaError}
         onExpire={handleCaptchaExpire}

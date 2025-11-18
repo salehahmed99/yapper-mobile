@@ -35,5 +35,5 @@ export const useSignUpStore = create<ISignUpState>((set) => ({
   setVerificationToken: (token: string) => set({ verificationToken: token }),
   setPassword: (value: string) => set({ password: value }),
   setUserNames: (names: string[]) => set({ userNames: names }),
-  reset: () => set({ name: '', email: '', dateOfBirth: '', verificationToken: '', password: '' }),
+  reset: () => set({ name: '', email: '', dateOfBirth: '', verificationToken: '', password: '', userNames: [] }),
 }));
