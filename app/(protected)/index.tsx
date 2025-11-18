@@ -1,15 +1,13 @@
 import HomeTabView from '@/src/components/home/HomeTabView';
 import YapperLogo from '@/src/components/icons/YapperLogo';
-import QueryWrapper from '@/src/components/QueryWrapper';
 import AppBar from '@/src/components/shell/AppBar';
 import type { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import useMargins from '@/src/hooks/useMargins';
 import TweetList from '@/src/modules/tweets/components/TweetList';
 import { useTweets } from '@/src/modules/tweets/hooks/useTweets';
 import { useTweetsFiltersStore } from '@/src/modules/tweets/store/useTweetsFiltersStore';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { RefreshControl, StyleSheet, View } from 'react-native';
 
 export default function HomeScreen() {
   const { theme } = useTheme();
@@ -21,10 +19,60 @@ export default function HomeScreen() {
   const [homeIndex, setHomeIndex] = React.useState(0);
 
   const tweetsFilters = useTweetsFiltersStore((state) => state.filters);
-
   const tweetsQuery = useTweets(tweetsFilters);
+  const [refreshing, setRefreshing] = React.useState(false);
 
-  const { marginTop, marginBottom } = useMargins();
+  // Flatten all pages of tweets into a single array
+  const tweets = React.useMemo(() => {
+    return tweetsQuery.data?.pages.flatMap((page) => page.tweets) ?? [];
+  }, [tweetsQuery.data]);
+
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    await tweetsQuery.refetch();
+    setRefreshing(false);
+  }, [tweetsQuery]);
+
+  const onEndReached = React.useCallback(() => {
+    if (tweetsQuery.hasNextPage && !tweetsQuery.isFetchingNextPage) {
+      tweetsQuery.fetchNextPage();
+    }
+  }, [tweetsQuery]);
+
+  const refreshControl = (
+    <RefreshControl
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+      tintColor={theme.colors.text.primary}
+      colors={[theme.colors.text.primary]}
+    />
+  );
+
+  // Render different content based on the selected tab
+  const renderScene = () => {
+    if (homeIndex === 0) {
+      // For You tab
+      return (
+        <View style={styles.tweetContainer}>
+          <TweetList
+            data={tweets}
+            refreshControl={refreshControl}
+            onEndReached={onEndReached}
+            onEndReachedThreshold={0.5}
+            isLoading={tweetsQuery.isLoading}
+            isFetchingNextPage={tweetsQuery.isFetchingNextPage}
+          />
+        </View>
+      );
+    } else {
+      // Following tab
+      return (
+        <View style={styles.tweetContainer}>
+          <View />
+        </View>
+      );
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -34,9 +82,7 @@ export default function HomeScreen() {
           tabView={<HomeTabView index={homeIndex} onIndexChange={(i) => setHomeIndex(i)} />}
         />
       </View>
-      <View style={[styles.tweetContainer, { marginTop, marginBottom }]}>
-        <QueryWrapper query={tweetsQuery}>{(tweets) => <TweetList data={tweets} />}</QueryWrapper>
-      </View>
+      {renderScene()}
     </View>
   );
 }
@@ -56,6 +102,5 @@ const createStyles = (theme: Theme) =>
     },
     tweetContainer: {
       flex: 1,
-      justifyContent: 'center',
     },
   });

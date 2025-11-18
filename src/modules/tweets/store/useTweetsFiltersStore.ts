@@ -8,10 +8,10 @@ interface ITweetsFiltersStore {
 }
 
 export const useTweetsFiltersStore = create<ITweetsFiltersStore>()((set) => ({
-  filters: { limit: 70 },
+  filters: { limit: 20 },
   addFilters: (newFilters: ITweetFilters) =>
     set((state) => ({
       filters: { ...state.filters, ...newFilters },
     })),
-  resetFilters: () => set({ filters: { limit: 70 } }),
+  resetFilters: () => set({ filters: { limit: 20 } }),
 }));
