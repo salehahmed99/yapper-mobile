@@ -62,7 +62,7 @@ export const useTweetActions = () => {
     },
     onError: (error, _, context) => {
       if (context?.previousTweets) queryClient.setQueryData(queryKey, context.previousTweets);
-      console.error('Error updating like status:', error);
+      console.log('Error updating like status:', error);
     },
   });
 
@@ -106,7 +106,7 @@ export const useTweetActions = () => {
     },
     onError: (error, _, context) => {
       if (context?.previousTweets) queryClient.setQueryData(queryKey, context.previousTweets);
-      console.error('Error updating repost status:', error);
+      console.log('Error updating repost status:', error);
     },
   });
 
