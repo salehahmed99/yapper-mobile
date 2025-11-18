@@ -12,7 +12,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
-import { useAuthStore } from '@/src/store/useAuthStore';
 
 const UploadPhotoScreen = () => {
   const { theme } = useTheme();
@@ -21,8 +20,6 @@ const UploadPhotoScreen = () => {
 
   // Zustand store
   const email = useSignUpStore((state) => state.email);
-
-  const setSkipRedirect = useAuthStore((state) => state.setSkipRedirect);
 
   const [imageFile, setImageFile] = useState<{ uri: string; name: string; type: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,11 +33,6 @@ const UploadPhotoScreen = () => {
 
   const handleImageSelected = (file: { uri: string; name: string; type: string }) => {
     setImageFile(file);
-  };
-
-  const handleTopBarBackPress = () => {
-    setSkipRedirect(false);
-    router.replace('/(auth)/landing-screen');
   };
 
   const handleSkip = () => {
@@ -87,7 +79,7 @@ const UploadPhotoScreen = () => {
   return (
     <View style={styles.container}>
       <ActivityLoader visible={isLoading} />
-      <TopBar showExitButton={true} onBackPress={handleTopBarBackPress} />
+      <TopBar showExitButton={false} />
 
       <View style={styles.content}>
         <View>

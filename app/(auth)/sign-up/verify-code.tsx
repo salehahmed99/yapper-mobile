@@ -123,6 +123,7 @@ const VerifyCodeScreen = () => {
       <TopBar onBackPress={handleTopBarBackPress} />
       <View style={styles.content}>
         <AuthTitle title={t('auth.signUp.verifyCode.title')} />
+        <Text style={styles.description}>{t('auth.signUp.verifyCode.emailSent')}</Text>
         <AuthInputScreen
           description={t('auth.signUp.verifyCode.description', { email })}
           label={t('auth.signUp.verifyCode.label')}
@@ -159,6 +160,14 @@ const createStyles = (theme: Theme) =>
     content: {
       flex: 1,
       justifyContent: 'flex-start',
+      paddingHorizontal: theme.spacing.sm,
+    },
+    description: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.typography.sizes.sm,
+      fontFamily: theme.typography.fonts.regular,
+      lineHeight: 20,
+      marginBottom: theme.spacing.lg,
     },
     resendContainer: {
       paddingHorizontal: theme.spacing.mdg,

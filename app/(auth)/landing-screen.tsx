@@ -51,6 +51,7 @@ const LandingScreen: React.FC = () => {
   const onGithubPress = async () => {
     setLoading(true);
     try {
+      console.log('Starting GitHub OAuth flow');
       const userData = await githubSignIn();
       completeOauthLogin(userData);
     } catch (error) {

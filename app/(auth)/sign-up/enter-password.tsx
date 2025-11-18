@@ -43,10 +43,6 @@ const EnterPasswordScreen = () => {
   const isPasswordValid = password.length >= 8 ? passwordSchema.safeParse(password).success : true;
   const isFormValid = password.length >= 8 && isPasswordValid && !isLoading;
 
-  const handleTopBarBackPress = () => {
-    router.replace('/(auth)/landing-screen');
-  };
-
   const onNextPress = async () => {
     if (!isFormValid) {
       Toast.show({
@@ -87,7 +83,7 @@ const EnterPasswordScreen = () => {
   return (
     <View style={styles.safeArea}>
       <ActivityLoader visible={isLoading} />
-      <TopBar showExitButton={true} onBackPress={handleTopBarBackPress} />
+      <TopBar showExitButton={false} />
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
           <View style={styles.titleContainer}>

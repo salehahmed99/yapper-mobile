@@ -124,14 +124,10 @@ const UserNameScreen: React.FC = () => {
     router.push('/(protected)');
   };
 
-  const handleTopBarBackPress = () => {
-    router.replace('/(auth)/landing-screen');
-  };
-
   return (
     <View style={styles.container}>
       <ActivityLoader visible={loading} />
-      <TopBar showExitButton={true} onBackPress={handleTopBarBackPress} />
+      <TopBar showExitButton={false} />
       <View style={styles.scrollableContent}>
         <View style={styles.header}>
           <Text style={styles.title}>{t('auth.signUp.userName.title')}</Text>

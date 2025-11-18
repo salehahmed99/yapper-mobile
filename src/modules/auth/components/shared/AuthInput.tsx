@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { format } from 'date-fns';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { AlertCircle, Check } from 'lucide-react-native';
@@ -8,7 +9,7 @@ import { AlertCircle, Check } from 'lucide-react-native';
 interface IAuthInputProps {
   description: string;
   label: string;
-  value: string;
+  value: string; // ISO format for backend
   status?: 'success' | 'error' | 'none';
   showCheck?: boolean;
   showDiscription?: boolean;
@@ -30,6 +31,7 @@ const AuthInput: React.FC<IAuthInputProps> = ({
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
+  const [displayDate, setDisplayDate] = useState<string>('');
 
   const { theme } = useTheme();
   const { width, height } = useWindowDimensions();
@@ -54,6 +56,18 @@ const AuthInput: React.FC<IAuthInputProps> = ({
     }).start();
   }, [shouldFloat, labelPosition]);
 
+  // Update displayDate if value changes externally
+  useEffect(() => {
+    if (value) {
+      const dateObj = new Date(value);
+      if (!isNaN(dateObj.getTime())) {
+        setDisplayDate(format(dateObj, 'MMMM dd, yyyy')); // Human-readable
+      }
+    } else {
+      setDisplayDate('');
+    }
+  }, [value]);
+
   const labelStyle = {
     position: 'absolute' as const,
     left: theme.spacing.lg,
@@ -73,7 +87,10 @@ const AuthInput: React.FC<IAuthInputProps> = ({
 
   const onDateConfirm = (selectedDate: Date) => {
     setShowPicker(false);
+    // Backend ISO format
     onChange(selectedDate.toISOString().split('T')[0]);
+    // Display human-readable
+    setDisplayDate(format(selectedDate, 'MMMM dd, yyyy'));
   };
 
   return (
@@ -86,9 +103,10 @@ const AuthInput: React.FC<IAuthInputProps> = ({
             <Pressable
               onPress={() => setShowPicker(true)}
               style={[styles.input, isFocused && styles.inputFocused, status === 'error' && styles.inputError]}
-              accessibilityLabel="Auth_date_input"
             >
-              <Text style={value ? styles.dateTextFilled : styles.dateTextPlaceholder}>{value || label}</Text>
+              <Text style={displayDate ? styles.dateTextFilled : styles.dateTextPlaceholder}>
+                {displayDate || label}
+              </Text>
             </Pressable>
 
             <DateTimePickerModal
@@ -98,6 +116,7 @@ const AuthInput: React.FC<IAuthInputProps> = ({
               onConfirm={onDateConfirm}
               onCancel={() => setShowPicker(false)}
               maximumDate={new Date()}
+              minimumDate={new Date(1900, 0, 1)} // Prevent weird 1970 fallback
             />
           </>
         ) : (
@@ -110,9 +129,9 @@ const AuthInput: React.FC<IAuthInputProps> = ({
             autoCapitalize="none"
             autoCorrect={false}
             keyboardAppearance="dark"
-            accessibilityLabel="Auth_text_input"
           />
         )}
+
         {showDiscription && <Text style={styles.description}>{description}</Text>}
 
         {showCheck && status === 'success' && value.length > 0 && (
