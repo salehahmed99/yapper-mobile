@@ -11,8 +11,8 @@ interface ITweetContainerProps {
 const TweetContainer: React.FC<ITweetContainerProps> = (props) => {
   const { tweet } = props;
 
-  const shouldFetchParent = tweet.type === 'quote' && !!tweet.parent_tweet_id;
-  const parentTweetQuery = useTweet(shouldFetchParent ? tweet.parent_tweet_id : undefined);
+  const shouldFetchParent = tweet.type === 'quote' && !!tweet.parentTweetId;
+  const parentTweetQuery = useTweet(shouldFetchParent ? tweet.parentTweetId : undefined);
 
   const { likeMutation, repostMutation } = useTweetActions();
 
@@ -21,11 +21,11 @@ const TweetContainer: React.FC<ITweetContainerProps> = (props) => {
   };
 
   const handleRepostPress = (isReposted: boolean) => {
-    repostMutation.mutate({ tweet_id: tweet.tweet_id, is_reposted: isReposted });
+    repostMutation.mutate({ tweetId: tweet.tweetId, isReposted: isReposted });
   };
 
   const handleLikePress = (isLiked: boolean) => {
-    likeMutation.mutate({ tweet_id: tweet.tweet_id, is_liked: isLiked });
+    likeMutation.mutate({ tweetId: tweet.tweetId, isLiked: isLiked });
   };
 
   const handleViewsPress = () => {
