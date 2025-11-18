@@ -1,29 +1,32 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { ISvgIconProps } from '@/src/types/svg';
 import { formatCount } from '@/src/utils/formatCount';
 import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
-import { SvgProps } from 'react-native-svg';
 
 interface ITweetActionButtonProps {
-  icon: React.FC<SvgProps>;
+  icon: React.FC<ISvgIconProps>;
   count?: number;
   onPress: () => void;
-  strokeColor?: string;
+  strokeColor: string;
   fillColor?: string;
   accessibilityLabel: string;
+  size: 'small' | 'large';
+  isRepost?: boolean;
 }
 const TweetActionButton: React.FC<ITweetActionButtonProps> = (props) => {
-  const { icon: Icon, count, onPress, strokeColor, fillColor, accessibilityLabel } = props;
+  const { icon: Icon, count, onPress, strokeColor, fillColor, accessibilityLabel, size, isRepost = false } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+
+  const additonalSize = isRepost ? 2 : 0;
   return (
     <Pressable style={styles.actionItem} onPress={onPress} hitSlop={15} accessibilityLabel={accessibilityLabel}>
       <Icon
-        width={theme.iconSizes.xs}
-        height={theme.iconSizes.xs}
-        color={strokeColor || theme.colors.text.secondary}
-        strokeWidth={10}
+        size={size === 'small' ? theme.iconSizes.xs + additonalSize : theme.iconSizes.iconSmall + additonalSize}
+        stroke={strokeColor}
+        strokeWidth={9}
         fill={fillColor || 'transparent'}
       />
       {count ? (
