@@ -5,15 +5,13 @@ import { useTweetsFiltersStore } from '../store/useTweetsFiltersStore';
 import { ITweet } from '../types';
 
 interface ILikeMutationVariables {
-  tweetId: string;
   isLiked: boolean;
 }
 
 interface IRepostMutationVariables {
-  tweetId: string;
   isReposted: boolean;
 }
-export const useTweetActions = () => {
+export const useTweetActions = (tweetId: string) => {
   const queryClient = useQueryClient();
   const tweetsFilters = useTweetsFiltersStore((state) => state.filters);
 
@@ -21,32 +19,35 @@ export const useTweetActions = () => {
   const pendingLikes = useRef<Set<string>>(new Set());
   const pendingReposts = useRef<Set<string>>(new Set());
 
-  const queryKey = ['tweets', tweetsFilters];
+  const tweetsQueryKey = ['tweets', tweetsFilters];
+  const tweetDetailsQueryKey = ['tweet', { tweetId }];
   const likeMutation = useMutation({
     mutationFn: async (variables: ILikeMutationVariables) => {
       // Prevent duplicate requests for the same tweet
-      if (pendingLikes.current.has(variables.tweetId)) {
+      if (pendingLikes.current.has(tweetId)) {
         return;
       }
 
-      pendingLikes.current.add(variables.tweetId);
+      pendingLikes.current.add(tweetId);
       try {
         if (variables.isLiked) {
-          return await unlikeTweet(variables.tweetId);
+          return await unlikeTweet(tweetId);
         }
-        return await likeTweet(variables.tweetId);
+        return await likeTweet(tweetId);
       } finally {
-        pendingLikes.current.delete(variables.tweetId);
+        pendingLikes.current.delete(tweetId);
       }
     },
     onMutate: async (variables: ILikeMutationVariables) => {
-      await queryClient.cancelQueries({ queryKey });
-      const previousTweets = queryClient.getQueryData(queryKey);
+      await queryClient.cancelQueries({ queryKey: tweetsQueryKey });
+      await queryClient.cancelQueries({ queryKey: tweetDetailsQueryKey });
+      const previousTweets = queryClient.getQueryData(tweetsQueryKey);
+      const previousTweetDetails = queryClient.getQueryData(tweetDetailsQueryKey);
 
-      queryClient.setQueryData(queryKey, (oldData: ITweet[]) => {
+      queryClient.setQueryData(tweetsQueryKey, (oldData: ITweet[]) => {
         if (!oldData) return oldData;
         return oldData.map((tweet) => {
-          if (tweet.tweetId === variables.tweetId) {
+          if (tweet.tweetId === tweetId) {
             return {
               ...tweet,
               isLiked: !variables.isLiked,
@@ -57,10 +58,20 @@ export const useTweetActions = () => {
           }
         });
       });
-      return { previousTweets };
+
+      queryClient.setQueryData(tweetDetailsQueryKey, (oldData: ITweet) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          isLiked: !variables.isLiked,
+          likesCount: variables.isLiked ? oldData.likesCount - 1 : oldData.likesCount + 1,
+        };
+      });
+      return { previousTweets, previousTweetDetails };
     },
     onError: (error, _, context) => {
-      if (context?.previousTweets) queryClient.setQueryData(queryKey, context.previousTweets);
+      if (context?.previousTweets) queryClient.setQueryData(tweetsQueryKey, context.previousTweets);
+      if (context?.previousTweetDetails) queryClient.setQueryData(tweetDetailsQueryKey, context.previousTweetDetails);
       console.log('Error updating like status:', error);
     },
   });
@@ -68,28 +79,29 @@ export const useTweetActions = () => {
   const repostMutation = useMutation({
     mutationFn: async (variables: IRepostMutationVariables) => {
       // Prevent duplicate requests for the same tweet
-      if (pendingReposts.current.has(variables.tweetId)) {
+      if (pendingReposts.current.has(tweetId)) {
         return;
       }
 
-      pendingReposts.current.add(variables.tweetId);
+      pendingReposts.current.add(tweetId);
       try {
         if (variables.isReposted) {
-          return await undoRepostTweet(variables.tweetId);
+          return await undoRepostTweet(tweetId);
         }
-        return await repostTweet(variables.tweetId);
+        return await repostTweet(tweetId);
       } finally {
-        pendingReposts.current.delete(variables.tweetId);
+        pendingReposts.current.delete(tweetId);
       }
     },
     onMutate: async (variables: IRepostMutationVariables) => {
-      await queryClient.cancelQueries({ queryKey });
-      const previousTweets = queryClient.getQueryData(queryKey);
-
-      queryClient.setQueryData(queryKey, (oldData: ITweet[]) => {
+      await queryClient.cancelQueries({ queryKey: tweetsQueryKey });
+      await queryClient.cancelQueries({ queryKey: tweetDetailsQueryKey });
+      const previousTweets = queryClient.getQueryData(tweetsQueryKey);
+      const previousTweetDetails = queryClient.getQueryData(tweetDetailsQueryKey);
+      queryClient.setQueryData(tweetsQueryKey, (oldData: ITweet[]) => {
         if (!oldData) return oldData;
         return oldData.map((tweet) => {
-          if (tweet.tweetId === variables.tweetId) {
+          if (tweet.tweetId === tweetId) {
             return {
               ...tweet,
               isReposted: !variables.isReposted,
@@ -100,10 +112,21 @@ export const useTweetActions = () => {
           }
         });
       });
-      return { previousTweets };
+
+      queryClient.setQueryData(tweetDetailsQueryKey, (oldData: ITweet) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          isReposted: !variables.isReposted,
+          repostsCount: variables.isReposted ? oldData.repostsCount - 1 : oldData.repostsCount + 1,
+        };
+      });
+      return { previousTweets, previousTweetDetails };
     },
+
     onError: (error, _, context) => {
-      if (context?.previousTweets) queryClient.setQueryData(queryKey, context.previousTweets);
+      if (context?.previousTweets) queryClient.setQueryData(tweetsQueryKey, context.previousTweets);
+      if (context?.previousTweetDetails) queryClient.setQueryData(tweetDetailsQueryKey, context.previousTweetDetails);
       console.log('Error updating repost status:', error);
     },
   });

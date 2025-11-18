@@ -14,18 +14,18 @@ const TweetContainer: React.FC<ITweetContainerProps> = (props) => {
   const shouldFetchParent = tweet.type === 'quote' && !!tweet.parentTweetId;
   const parentTweetQuery = useTweet(shouldFetchParent ? tweet.parentTweetId : undefined);
 
-  const { likeMutation, repostMutation } = useTweetActions();
+  const { likeMutation, repostMutation } = useTweetActions(tweet.tweetId);
 
   const handleReplyPress = () => {
     // TODO: Implement reply functionality
   };
 
   const handleRepostPress = (isReposted: boolean) => {
-    repostMutation.mutate({ tweetId: tweet.tweetId, isReposted: isReposted });
+    repostMutation.mutate({ isReposted: isReposted });
   };
 
   const handleLikePress = (isLiked: boolean) => {
-    likeMutation.mutate({ tweetId: tweet.tweetId, isLiked: isLiked });
+    likeMutation.mutate({ isLiked: isLiked });
   };
 
   const handleViewsPress = () => {
