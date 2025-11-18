@@ -6,7 +6,9 @@ import { Theme } from '@/src/constants/theme';
 
 // CONFIGURE THIS:
 const RECAPTCHA_URL =
-  process.env.NODE_ENV === 'development' ? 'http://localhost' : 'https://your-backend-domain.com/recaptcha.html'; //todo: change it to actual url deployed
+  process.env.EXPO_PUBLIC_NODE_ENV === 'development'
+    ? 'http://localhost'
+    : 'https://your-backend-domain.com/recaptcha.html'; //todo: change it to actual url deployed
 
 export interface ReCaptchaRef {
   open: () => void;
