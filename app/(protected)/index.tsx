@@ -28,12 +28,14 @@ export default function HomeScreen() {
 
   const onRefresh = React.useCallback(() => {
     tweetsQuery.refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tweetsQuery.refetch]);
 
   const onEndReached = React.useCallback(() => {
     if (tweetsQuery.hasNextPage && !tweetsQuery.isFetchingNextPage) {
       tweetsQuery.fetchNextPage();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tweetsQuery.hasNextPage, tweetsQuery.isFetchingNextPage, tweetsQuery.fetchNextPage]);
 
   const refreshControl = (

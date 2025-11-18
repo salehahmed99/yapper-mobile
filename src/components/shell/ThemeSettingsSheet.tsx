@@ -19,6 +19,14 @@ const ThemeSettingsSheet: React.FC<IThemeSettingsSheetProps> = ({ visible, onClo
   const [useDeviceSettings, setUseDeviceSettings] = React.useState(false);
   const [selectedTheme, setSelectedTheme] = React.useState<'dim' | 'lights-out'>('lights-out');
 
+  // Sync state with theme context when modal opens
+  React.useEffect(() => {
+    if (visible) {
+      setDarkMode(isDark);
+      // TODO: Sync useDeviceSettings and selectedTheme with actual theme context values when available
+    }
+  }, [visible, isDark]);
+
   const handleDarkModeToggle = (value: boolean) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setDarkMode(value);
