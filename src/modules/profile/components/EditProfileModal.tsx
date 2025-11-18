@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Alert, Image, Modal, Text, TouchableOpacity, View } from 'react-native';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useTheme } from '../../../context/ThemeContext';
 import { deleteAvatar, deleteCover, updateUserProfile, uploadAvatar, uploadCover } from '../services/profileService';
 import { createEditModalStyles } from '../styles/edit-modal-styles';
@@ -43,6 +44,7 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [newAvatarUri, setNewAvatarUri] = useState<string | null>(null);
   const [newCoverUri, setNewCoverUri] = useState<string | null>(null);
+  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
 
   // Local state for modal preview - separate from parent state
   const [localAvatarUri, setLocalAvatarUri] = useState(imageUri);
@@ -89,6 +91,16 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
         setNewCoverUri(DEFAULT_BANNER_URL);
       },
     );
+  };
+
+  const handleDateConfirm = (date: Date) => {
+    const formattedDate = date.toISOString().split('T')[0];
+    setUpdatedUser({ ...updatedUser, birthday: formattedDate });
+    setDatePickerVisible(false);
+  };
+
+  const handleDateCancel = () => {
+    setDatePickerVisible(false);
   };
 
   const handleSave = async () => {
@@ -270,18 +282,34 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
             />
 
             {/* Birthday Input */}
-            <Input
-              testID="profile_edit_modal_birthday_input"
-              label={t('profile.editModal.birthday')}
-              value={updatedUser.birthday ? formatLongDateToDisplay(updatedUser.birthday) : ''}
-              setValue={(value) => setUpdatedUser({ ...updatedUser, birthday: value })}
-              style={editModalStyles.inputContainer}
-              inputStyle={editModalStyles.input}
-              placeholder={t('profile.editModal.birthdayPlaceholder')}
-            />
+            <View style={editModalStyles.inputContainer}>
+              <Text style={editModalStyles.label}>{t('profile.editModal.birthday')}</Text>
+              <TouchableOpacity testID="profile_edit_modal_birthday_input" onPress={() => setDatePickerVisible(true)}>
+                <Text
+                  style={{
+                    color: updatedUser.birthday ? theme.colors.text.link : theme.colors.text.secondary,
+                    fontWeight: theme.typography.weights.semiBold,
+                    fontSize: theme.typography.sizes.sm,
+                  }}
+                >
+                  {updatedUser.birthday
+                    ? formatLongDateToDisplay(updatedUser.birthday)
+                    : t('profile.editModal.birthdayPlaceholder')}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </View>
+
+      <DateTimePickerModal
+        isVisible={isDatePickerVisible}
+        mode="date"
+        onConfirm={handleDateConfirm}
+        onCancel={handleDateCancel}
+        date={updatedUser.birthday ? new Date(updatedUser.birthday) : new Date()}
+        maximumDate={new Date()}
+      />
 
       <StatusBar style="light" />
     </Modal>

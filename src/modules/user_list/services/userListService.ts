@@ -16,7 +16,7 @@ const mapFollowerUserToUser = (follower: IFollowerUser): IUser => ({
   id: follower.userId,
   name: follower.name,
   username: follower.username,
-  bio: follower.bio,
+  bio: follower.bio ?? undefined,
   avatarUrl: follower.avatarUrl,
   email: '', // Not provided in followers endpoint
   isFollowing: follower.isFollowing,
