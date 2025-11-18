@@ -13,7 +13,7 @@ const USE_MOCK_DATA = false;
  * Helper function to convert IFollowerUser to IUser
  */
 const mapFollowerUserToUser = (follower: IFollowerUser): IUser => ({
-  id: follower.id,
+  id: follower.userId,
   name: follower.name,
   username: follower.username,
   bio: follower.bio,

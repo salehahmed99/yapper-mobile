@@ -1,3 +1,4 @@
+import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { useAuthStore } from '@/src/store/useAuthStore';
@@ -102,10 +103,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
               }}
             >
               <View style={styles.profileCol}>
-                <Image
-                  source={{ uri: user?.avatarUrl || 'https://randomuser.me/api/portraits/men/1.jpg' }}
-                  style={styles.avatar}
-                />
+                <Image source={{ uri: user?.avatarUrl || DEFAULT_AVATAR_URL }} style={styles.avatar} />
                 <Text style={styles.name}>{user?.name || 'User'}</Text>
                 <Text style={styles.username}>@{user?.username || 'username'}</Text>
               </View>

@@ -1,13 +1,15 @@
+import { DEFAULT_AVATAR_URL, DEFAULT_BANNER_URL } from '@/src/constants/defaults';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import React, { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Modal, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Modal, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../../context/ThemeContext';
+import { deleteAvatar, deleteCover, updateUserProfile, uploadAvatar, uploadCover } from '../services/profileService';
 import { createEditModalStyles } from '../styles/edit-modal-styles';
 import Input from '../ui/Input';
-import { DEFAULT_AVATAR_URI, DEFAULT_BANNER_URI, showImagePickerOptions } from '../utils/edit-profile.utils';
+import { showImagePickerOptions } from '../utils/edit-profile.utils';
 import { formatLongDateToDisplay } from '../utils/helper-functions.utils';
 
 type IEditProfileModalProps = {
@@ -29,65 +31,187 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
+  const fetchAndUpdateUser = useAuthStore((state) => state.fetchAndUpdateUser);
 
   const [updatedUser, setUpdatedUser] = useState({
     name: user?.name || '',
     bio: user?.bio || '',
-    location: user?.country || '',
+    country: user?.country || '',
     website: '',
     birthday: user?.birthDate || '',
   });
+  const [isSaving, setIsSaving] = useState(false);
+  const [newAvatarUri, setNewAvatarUri] = useState<string | null>(null);
+  const [newCoverUri, setNewCoverUri] = useState<string | null>(null);
+
+  // Local state for modal preview - separate from parent state
+  const [localAvatarUri, setLocalAvatarUri] = useState(imageUri);
+  const [localBannerUri, setLocalBannerUri] = useState(bannerUri);
 
   const { theme } = useTheme();
   const editModalStyles = useMemo(() => createEditModalStyles(theme), [theme]);
 
+  // Update local state when modal opens with current values
+  React.useEffect(() => {
+    if (visible) {
+      setLocalAvatarUri(imageUri);
+      setLocalBannerUri(bannerUri);
+    }
+  }, [visible, imageUri, bannerUri]);
+
   const handleAvatarChange = () => {
     showImagePickerOptions(
       true, // isAvatar
-      onImageChange,
-      () => onImageChange(DEFAULT_AVATAR_URI),
+      (uri) => {
+        // Only update local modal state, not parent
+        setLocalAvatarUri(uri);
+        setNewAvatarUri(uri);
+      },
+      async () => {
+        // Mark for deletion by setting to default
+        setLocalAvatarUri(DEFAULT_AVATAR_URL);
+        setNewAvatarUri(DEFAULT_AVATAR_URL);
+      },
     );
   };
 
   const handleBannerChange = () => {
     showImagePickerOptions(
       false, // isBanner
-      onBannerChange,
-      () => onBannerChange(DEFAULT_BANNER_URI),
+      (uri) => {
+        // Only update local modal state, not parent
+        setLocalBannerUri(uri);
+        setNewCoverUri(uri);
+      },
+      async () => {
+        // Mark for deletion by setting to default
+        setLocalBannerUri(DEFAULT_BANNER_URL);
+        setNewCoverUri(DEFAULT_BANNER_URL);
+      },
     );
   };
 
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      let avatarUrl: string | undefined | null;
+      let coverUrl: string | undefined | null;
+
+      // Handle avatar changes
+      if (newAvatarUri) {
+        if (newAvatarUri === DEFAULT_AVATAR_URL) {
+          // User deleted the avatar, delete from server and send null
+          if (user?.avatarUrl && user.avatarUrl !== DEFAULT_AVATAR_URL) {
+            await deleteAvatar(user.avatarUrl);
+          }
+          avatarUrl = null;
+        } else if (!newAvatarUri.startsWith('http')) {
+          // User selected a new avatar, upload it
+          const uploadResponse = await uploadAvatar(newAvatarUri);
+          avatarUrl = uploadResponse.imageUrl;
+        }
+      }
+
+      // Handle cover changes
+      if (newCoverUri) {
+        if (newCoverUri === DEFAULT_BANNER_URL) {
+          // User deleted the cover, delete from server and send null
+          if (user?.coverUrl && user.coverUrl !== DEFAULT_BANNER_URL) {
+            await deleteCover(user.coverUrl);
+          }
+          coverUrl = null;
+        } else if (!newCoverUri.startsWith('http')) {
+          // User selected a new cover, upload it
+          const uploadResponse = await uploadCover(newCoverUri);
+          coverUrl = uploadResponse.imageUrl;
+        }
+      }
+
+      // Update profile with all data
+      const profileData: {
+        name: string;
+        bio: string;
+        country: string;
+        birthDate?: string;
+        avatar_url?: string | null;
+        cover_url?: string | null;
+      } = {
+        name: updatedUser.name,
+        bio: updatedUser.bio,
+        country: updatedUser.country,
+        ...(updatedUser.birthday && { birthDate: updatedUser.birthday }),
+        ...(avatarUrl !== undefined && { avatar_url: avatarUrl }),
+        ...(coverUrl !== undefined && { cover_url: coverUrl }),
+      };
+
+      await updateUserProfile(profileData);
+      await fetchAndUpdateUser();
+
+      // Update parent state with final values
+      onImageChange(localAvatarUri);
+      onBannerChange(localBannerUri);
+
+      // Reset local state
+      setNewAvatarUri(null);
+      setNewCoverUri(null);
+
+      onClose();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update profile';
+      Alert.alert('Error', errorMessage);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={onClose}
+      testID="profile_edit_modal"
+    >
       {/* Header buttons */}
-      <View style={editModalStyles.buttonContainer}>
-        <TouchableOpacity onPress={onClose}>
+      <View style={editModalStyles.buttonContainer} testID="profile_edit_modal_header">
+        <TouchableOpacity onPress={onClose} disabled={isSaving} testID="profile_edit_modal_cancel_button">
           <Text style={editModalStyles.buttonsText}>{t('profile.editModal.cancel')}</Text>
         </TouchableOpacity>
 
-        <Text style={editModalStyles.titleText}>{t('profile.editModal.title')}</Text>
+        <Text style={editModalStyles.titleText} testID="profile_edit_modal_title">
+          {t('profile.editModal.title')}
+        </Text>
 
-        <TouchableOpacity onPress={onClose}>
-          <Text style={editModalStyles.buttonsText}>{t('profile.editModal.save')}</Text>
+        <TouchableOpacity onPress={handleSave} disabled={isSaving} testID="profile_edit_modal_save_button">
+          {isSaving ? (
+            <ActivityIndicator size="small" color={theme.colors.text.link} />
+          ) : (
+            <Text style={editModalStyles.buttonsText}>{t('profile.editModal.save')}</Text>
+          )}
         </TouchableOpacity>
       </View>
 
       {/* Modal content */}
-      <View style={editModalStyles.contentContainer}>
+      <View style={editModalStyles.contentContainer} testID="profile_edit_modal_content">
         {/* Banner */}
-        <TouchableOpacity onPress={handleBannerChange}>
-          <Image source={{ uri: bannerUri }} style={editModalStyles.banner} />
+        <TouchableOpacity onPress={handleBannerChange} testID="profile_edit_modal_banner_button">
+          <Image
+            source={{ uri: localBannerUri }}
+            style={editModalStyles.banner}
+            testID="profile_edit_modal_banner_image"
+          />
         </TouchableOpacity>
 
         <View style={editModalStyles.insideContainer}>
           {/* Profile Image Edit */}
           <View style={editModalStyles.avatarContainer}>
-            <TouchableOpacity onPress={handleAvatarChange}>
+            <TouchableOpacity onPress={handleAvatarChange} testID="profile_edit_modal_avatar_button">
               <Image
                 source={{
-                  uri: imageUri,
+                  uri: localAvatarUri,
                 }}
                 style={editModalStyles.avatar}
+                testID="profile_edit_modal_avatar_image"
               />
 
               {/* Dark overlay + camera icon */}
@@ -98,9 +222,10 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
           </View>
 
           {/* User Details */}
-          <View style={editModalStyles.userDetailsContainer}>
+          <View style={editModalStyles.userDetailsContainer} testID="profile_edit_modal_form_container">
             {/* Name Input */}
             <Input
+              testID="profile_edit_modal_name_input"
               label={t('profile.editModal.name')}
               value={updatedUser.name}
               setValue={(value) => setUpdatedUser({ ...updatedUser, name: value })}
@@ -111,6 +236,7 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
 
             {/* Bio Input */}
             <Input
+              testID="profile_edit_modal_bio_input"
               label={t('profile.editModal.bio')}
               value={updatedUser.bio}
               setValue={(value) => setUpdatedUser({ ...updatedUser, bio: value })}
@@ -123,16 +249,18 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
 
             {/* Location Input */}
             <Input
-              label={t('profile.editModal.location')}
-              value={updatedUser.location}
-              setValue={(value) => setUpdatedUser({ ...updatedUser, location: value })}
+              testID="profile_edit_modal_country_input"
+              label={t('profile.editModal.country')}
+              value={updatedUser.country}
+              setValue={(value) => setUpdatedUser({ ...updatedUser, country: value })}
               style={editModalStyles.inputContainer}
               inputStyle={editModalStyles.input}
-              placeholder={t('profile.editModal.locationPlaceholder')}
+              placeholder={t('profile.editModal.countryPlaceholder')}
             />
 
             {/* Website Input */}
             <Input
+              testID="profile_edit_modal_website_input"
               label={t('profile.editModal.website')}
               value={updatedUser.website}
               setValue={(value) => setUpdatedUser({ ...updatedUser, website: value })}
@@ -143,6 +271,7 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
 
             {/* Birthday Input */}
             <Input
+              testID="profile_edit_modal_birthday_input"
               label={t('profile.editModal.birthday')}
               value={updatedUser.birthday ? formatLongDateToDisplay(updatedUser.birthday) : ''}
               setValue={(value) => setUpdatedUser({ ...updatedUser, birthday: value })}

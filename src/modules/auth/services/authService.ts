@@ -1,6 +1,5 @@
 import { extractErrorMessage } from '@/src/utils/errorExtraction';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import api from '../../../services/apiClient';
@@ -18,6 +17,37 @@ import {
 // Complete auth session when app resumes
 WebBrowser.maybeCompleteAuthSession();
 
+// Lazy import Google Sign-In to avoid native module errors when not configured
+let GoogleSignin: any = null;
+let isGoogleSignInConfigured = false;
+
+const initGoogleSignIn = async () => {
+  if (!GoogleSignin) {
+    try {
+      const module = await import('@react-native-google-signin/google-signin');
+      GoogleSignin = module.GoogleSignin;
+    } catch (error) {
+      console.warn('Google Sign-In module not available:', error);
+      throw new Error('Google Sign-In is not configured. Please run: npx expo prebuild');
+    }
+  }
+
+  if (!isGoogleSignInConfigured && GoogleSignin) {
+    try {
+      GoogleSignin.configure({
+        webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!,
+        iosClientId: process.env.EXPO_PUBLIC_IOS_ID,
+        offlineAccess: true,
+        forceCodeForRefreshToken: true,
+      });
+      isGoogleSignInConfigured = true;
+    } catch (error) {
+      console.warn('Failed to configure Google Sign-In:', error);
+      throw new Error('Google Sign-In configuration failed');
+    }
+  }
+};
+
 const setAuthProvider = async (provider: 'google' | 'github' | 'local' | null) => {
   if (provider) await AsyncStorage.setItem('auth_provider', provider);
   else await AsyncStorage.removeItem('auth_provider');
@@ -34,7 +64,7 @@ export const login = async (credentials: ILoginCredentials): Promise<ILoginRespo
   try {
     const res = await api.post('/auth/login', credentials);
     await setAuthProvider('local');
-    return mapLoginResponseDTOToLoginResponse(res.data);
+    return res.data;
   } catch (error) {
     throw new Error(extractErrorMessage(error));
   }
@@ -68,15 +98,9 @@ export const logout = async (): Promise<void> => {
 /*                               Google Sign-In                               */
 /* -------------------------------------------------------------------------- */
 
-GoogleSignin.configure({
-  webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!,
-  iosClientId: process.env.EXPO_PUBLIC_IOS_ID,
-  offlineAccess: true,
-  forceCodeForRefreshToken: true,
-});
-
 export const googleSignIn = async (): Promise<ILoginResponse | IOAuthResponse> => {
   try {
+    await initGoogleSignIn();
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
     await googleSignOut();
     const userInfo = await GoogleSignin.signIn();
@@ -100,7 +124,9 @@ export const googleSignIn = async (): Promise<ILoginResponse | IOAuthResponse> =
 
 export const googleSignOut = async (): Promise<void> => {
   try {
-    await GoogleSignin.signOut();
+    if (GoogleSignin) {
+      await GoogleSignin.signOut();
+    }
   } catch (error) {
     throw new Error(extractErrorMessage(error));
   }

@@ -1,5 +1,5 @@
-import { IUser, mapUserDTOToUser } from '../../types/user';
 import { IApiResponse } from '../../types/api';
+import { IUser, IUserDTO, mapUserDTOToUser } from '../../types/user';
 
 export interface ILoginCredentials {
   identifier: string;
@@ -9,7 +9,7 @@ export interface ILoginCredentials {
  * Login
  */
 export type ILoginResponse = IApiResponse<{ accessToken: string; user: IUser }>;
-export type ILoginResponseDTO = IApiResponse<{ access_token: string; user: IUser }>;
+export type ILoginResponseDTO = IApiResponse<{ access_token: string; user: IUserDTO }>;
 
 export interface ILoginCredentials {
   identifier: string;

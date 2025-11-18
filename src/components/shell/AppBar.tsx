@@ -1,12 +1,13 @@
+import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useAuthStore } from '@/src/store/useAuthStore';
 import { BlurView } from 'expo-blur';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUiShell } from '../../context/UiShellContext';
-import { useAuthStore } from '@/src/store/useAuthStore';
 
 interface IAppBarProps {
   title?: string;
@@ -45,7 +46,7 @@ const AppBar: React.FC<IAppBarProps> = (props) => {
                 >
                   <View style={styles.avatarBackground}>
                     <Image
-                      source={{ uri: user?.avatarUrl || 'https://randomuser.me/api/portraits/men/1.jpg' }}
+                      source={{ uri: user?.avatarUrl || DEFAULT_AVATAR_URL }}
                       style={styles.avatar}
                       resizeMode="cover"
                     />

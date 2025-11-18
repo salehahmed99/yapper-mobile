@@ -13,6 +13,7 @@ interface InputProps {
   multiline?: boolean;
   numberOfLines?: number;
   placeholderTextColor?: string;
+  testID?: string;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -25,13 +26,14 @@ const Input: React.FC<InputProps> = ({
   multiline = false,
   numberOfLines,
   placeholderTextColor,
+  testID,
 }) => {
   const { theme } = useTheme();
   const editModalStyles = createEditModalStyles(theme);
   const defaultPlaceholderColor = placeholderTextColor || theme.colors.text.secondary;
 
   return (
-    <View style={style}>
+    <View style={style} testID={testID}>
       <Text style={editModalStyles.label}>{label}</Text>
       <TextInput
         style={inputStyle}
@@ -41,6 +43,7 @@ const Input: React.FC<InputProps> = ({
         multiline={multiline}
         numberOfLines={numberOfLines}
         placeholderTextColor={defaultPlaceholderColor}
+        testID={testID ? `${testID}_field` : undefined}
       />
     </View>
   );

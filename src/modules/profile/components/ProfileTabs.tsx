@@ -4,7 +4,6 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Theme } from '../../../constants/theme';
 import { useTheme } from '../../../context/ThemeContext';
 import CustomTabView, { TabConfig } from './CustomTabView';
-import WhoToFollow from './WhoToFollow';
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -23,7 +22,7 @@ const PostsRoute = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
   return (
     <ScrollView style={styles.page}>
-      <WhoToFollow />
+      {/* <WhoToFollow /> */}
       <Text style={styles.placeholderText}>{t('profile.placeholders.tweets')}</Text>
     </ScrollView>
   );
@@ -35,7 +34,7 @@ const RepliesRoute = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
   return (
     <ScrollView style={styles.page}>
-      <WhoToFollow />
+      {/* <WhoToFollow /> */}
       <Text style={styles.placeholderText}>{t('profile.placeholders.tweetsReplies')}</Text>
     </ScrollView>
   );
