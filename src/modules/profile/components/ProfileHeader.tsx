@@ -274,8 +274,7 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
                 }}
               >
                 <Text style={headerStyles.statWithMargin} testID="profile_header_followers_count">
-                  <Text style={headerStyles.bold}>{displayUser?.followersCount || displayUser?.followers || 0}</Text>{' '}
-                  {t('profile.followers')}
+                  <Text style={headerStyles.bold}>{displayUser?.followersCount || 0}</Text> {t('profile.followers')}
                 </Text>
               </TouchableOpacity>
             </View>
