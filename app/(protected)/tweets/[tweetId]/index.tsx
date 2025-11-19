@@ -1,6 +1,6 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import FullTweetContainer from '@/src/modules/tweets/containers/FullTweetContainer';
+import TweetContainer from '@/src/modules/tweets/containers/TweetContainer';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { StyleSheet } from 'react-native';
@@ -12,7 +12,7 @@ const TweetDetailsScreen = () => {
   const styles = createStyles(theme);
   return (
     <SafeAreaView style={styles.container}>
-      <FullTweetContainer tweetId={tweetId} />
+      <TweetContainer tweetId={tweetId} />
     </SafeAreaView>
   );
 };

@@ -3,9 +3,11 @@ import YapperLogo from '@/src/components/icons/YapperLogo';
 import AppBar from '@/src/components/shell/AppBar';
 import type { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import Fab from '@/src/modules/tweets/components/Fab';
 import TweetList from '@/src/modules/tweets/components/TweetList';
 import { useTweets } from '@/src/modules/tweets/hooks/useTweets';
 import { useTweetsFiltersStore } from '@/src/modules/tweets/store/useTweetsFiltersStore';
+import { router } from 'expo-router';
 import React from 'react';
 import { RefreshControl, StyleSheet, View } from 'react-native';
 
@@ -76,6 +78,7 @@ export default function HomeScreen() {
         />
       </View>
       {renderScene()}
+      <Fab onPress={() => router.push('/(protected)/tweets/create-post')} />
     </View>
   );
 }

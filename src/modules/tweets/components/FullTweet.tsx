@@ -1,4 +1,3 @@
-import CustomBottomSheet from '@/src/components/CustomBottomSheet';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { formatDateDDMMYYYY, formatShortTime } from '@/src/utils/dateUtils';
@@ -12,7 +11,7 @@ import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
 import ParentTweet from './ParentTweet';
 import RepostIndicator from './RepostIndicator';
-import RepostOptionsSheet from './RepostOptionsSheet';
+import RepostOptionsModal from './RepostOptionsModal';
 
 interface IFullTweetProps {
   tweet: ITweet;
@@ -111,14 +110,13 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
           onSharePress={onSharePress}
         />
 
-        <CustomBottomSheet bottomSheetModalRef={bottomSheetModalRef}>
-          <RepostOptionsSheet
-            isReposted={tweet.isReposted}
-            onRepostPress={() => onRepostPress(tweet.isReposted)}
-            onQuotePress={onQuotePress}
-            onViewInteractionsPress={() => onViewPostInteractionsPress(tweet.tweetId, tweet.user.id)}
-          />
-        </CustomBottomSheet>
+        <RepostOptionsModal
+          isReposted={tweet.isReposted}
+          onRepostPress={() => onRepostPress(tweet.isReposted)}
+          onQuotePress={onQuotePress}
+          onViewInteractionsPress={() => onViewPostInteractionsPress(tweet.tweetId, tweet.user.id)}
+          bottomSheetModalRef={bottomSheetModalRef}
+        />
       </View>
     </View>
   );

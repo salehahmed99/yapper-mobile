@@ -45,4 +45,6 @@ interface ITweets {
   hasMore: boolean;
 }
 
-export { ISingleTweetResponse, ITweet, ITweetFilters, ITweets, ITweetsResponse };
+type ReplyRestrictionOptions = 'Everyone' | 'Verified accounts' | 'Accounts you follow' | 'Only accounts you mention';
+
+export { ISingleTweetResponse, ITweet, ITweetFilters, ITweets, ITweetsResponse, ReplyRestrictionOptions };

@@ -33,3 +33,10 @@ export const repostTweet = async (tweetId: string): Promise<void> => {
 export const undoRepostTweet = async (tweetId: string): Promise<void> => {
   await api.delete(`/tweets/${tweetId}/repost`);
 };
+
+export const createTweet = async (content: string): Promise<ITweet> => {
+  const response = await api.post<ISingleTweetResponse>('/tweets', {
+    content,
+  });
+  return response.data.data;
+};

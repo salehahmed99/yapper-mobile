@@ -1,10 +1,11 @@
+import CustomBottomSheet from '@/src/components/CustomBottomSheet';
 import QuoteIcon from '@/src/components/icons/QuoteIcon';
 import RepostIcon from '@/src/components/icons/RepostIcon';
 import ViewsIcon from '@/src/components/icons/ViewsIcon';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { ISvgIconProps } from '@/src/types/svg';
-import { useBottomSheet } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, useBottomSheet } from '@gorhom/bottom-sheet';
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -47,31 +48,34 @@ const createRepostOptionsItemStyles = (theme: Theme) =>
     },
   });
 
-interface IRepostOptionsSheetProps {
+interface IRepostOptionsModalProps {
   isReposted: boolean;
   onRepostPress: () => void;
   onQuotePress: () => void;
   onViewInteractionsPress: () => void;
+  bottomSheetModalRef: React.RefObject<BottomSheetModal | null>;
 }
-const RepostOptionsSheet: React.FC<IRepostOptionsSheetProps> = (props) => {
-  const { onRepostPress, onQuotePress, onViewInteractionsPress, isReposted } = props;
+const RepostOptionsModal: React.FC<IRepostOptionsModalProps> = (props) => {
+  const { onRepostPress, onQuotePress, onViewInteractionsPress, isReposted, bottomSheetModalRef } = props;
   const { theme } = useTheme();
-  const styles = createRepostOptionsSheetStyles(theme);
+  const styles = createRepostOptionsModalStyles(theme);
   return (
-    <View style={styles.bottomSheetContainer}>
-      <RepostOptionsItem
-        icon={RepostIcon}
-        text={isReposted ? 'Undo repost' : 'Repost'}
-        onPress={onRepostPress}
-        color={isReposted ? theme.colors.error : undefined}
-      />
-      <RepostOptionsItem icon={QuoteIcon} text="Quote" onPress={onQuotePress} />
-      <RepostOptionsItem icon={ViewsIcon} text="View Post Interactions" onPress={onViewInteractionsPress} />
-    </View>
+    <CustomBottomSheet bottomSheetModalRef={bottomSheetModalRef}>
+      <View style={styles.bottomSheetContainer}>
+        <RepostOptionsItem
+          icon={RepostIcon}
+          text={isReposted ? 'Undo repost' : 'Repost'}
+          onPress={onRepostPress}
+          color={isReposted ? theme.colors.error : undefined}
+        />
+        <RepostOptionsItem icon={QuoteIcon} text="Quote" onPress={onQuotePress} />
+        <RepostOptionsItem icon={ViewsIcon} text="View Post Interactions" onPress={onViewInteractionsPress} />
+      </View>
+    </CustomBottomSheet>
   );
 };
 
-const createRepostOptionsSheetStyles = (theme: Theme) =>
+const createRepostOptionsModalStyles = (theme: Theme) =>
   StyleSheet.create({
     bottomSheetContainer: {
       gap: theme.spacing.lg,
@@ -80,4 +84,4 @@ const createRepostOptionsSheetStyles = (theme: Theme) =>
     },
   });
 
-export default RepostOptionsSheet;
+export default RepostOptionsModal;

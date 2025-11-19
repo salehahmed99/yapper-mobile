@@ -1,4 +1,3 @@
-import CustomBottomSheet from '@/src/components/CustomBottomSheet';
 import DropdownMenu, { DropdownMenuItem } from '@/src/components/DropdownMenu';
 import GrokLogo from '@/src/components/icons/GrokLogo';
 import { Theme } from '@/src/constants/theme';
@@ -14,7 +13,7 @@ import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
 import ParentTweet from './ParentTweet';
 import RepostIndicator from './RepostIndicator';
-import RepostOptionsSheet from './RepostOptionsSheet';
+import RepostOptionsModal from './RepostOptionsModal';
 import UserInfoRow from './UserInfoRow';
 
 interface ITweetProps {
@@ -138,14 +137,13 @@ const Tweet: React.FC<ITweetProps> = (props) => {
         </View>
       </View>
 
-      <CustomBottomSheet bottomSheetModalRef={bottomSheetModalRef}>
-        <RepostOptionsSheet
-          isReposted={tweet.isReposted}
-          onRepostPress={() => onRepostPress(tweet.isReposted)}
-          onQuotePress={onQuotePress}
-          onViewInteractionsPress={() => onViewPostInteractionsPress(tweet.tweetId, tweet.user.id)}
-        />
-      </CustomBottomSheet>
+      <RepostOptionsModal
+        isReposted={tweet.isReposted}
+        onRepostPress={() => onRepostPress(tweet.isReposted)}
+        onQuotePress={onQuotePress}
+        onViewInteractionsPress={() => onViewPostInteractionsPress(tweet.tweetId, tweet.user.id)}
+        bottomSheetModalRef={bottomSheetModalRef}
+      />
       <DropdownMenu
         visible={menuVisible}
         onClose={() => setMenuVisible(false)}
