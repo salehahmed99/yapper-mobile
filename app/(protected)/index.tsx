@@ -19,28 +19,32 @@ export default function HomeScreen() {
   const [homeIndex, setHomeIndex] = React.useState(0);
 
   const tweetsFilters = useTweetsFiltersStore((state) => state.filters);
-  const tweetsQuery = useTweets(tweetsFilters);
+  const forYouQuery = useTweets(tweetsFilters, 'for-you');
+  const followingQuery = useTweets(tweetsFilters, 'following');
+
+  // Select the active query based on tab index
+  const activeQuery = homeIndex === 0 ? forYouQuery : followingQuery;
 
   // Flatten all pages of tweets into a single array
   const tweets = React.useMemo(() => {
-    return tweetsQuery.data?.pages.flatMap((page) => page.tweets) ?? [];
-  }, [tweetsQuery.data]);
+    return activeQuery.data?.pages.flatMap((page) => page.tweets) ?? [];
+  }, [activeQuery.data]);
 
   const onRefresh = React.useCallback(() => {
-    tweetsQuery.refetch();
+    activeQuery.refetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tweetsQuery.refetch]);
+  }, [activeQuery.refetch]);
 
   const onEndReached = React.useCallback(() => {
-    if (tweetsQuery.hasNextPage && !tweetsQuery.isFetchingNextPage) {
-      tweetsQuery.fetchNextPage();
+    if (activeQuery.hasNextPage && !activeQuery.isFetchingNextPage) {
+      activeQuery.fetchNextPage();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tweetsQuery.hasNextPage, tweetsQuery.isFetchingNextPage, tweetsQuery.fetchNextPage]);
+  }, [activeQuery.hasNextPage, activeQuery.isFetchingNextPage, activeQuery.fetchNextPage]);
 
   const refreshControl = (
     <RefreshControl
-      refreshing={tweetsQuery.isRefetching}
+      refreshing={activeQuery.isRefetching}
       onRefresh={onRefresh}
       tintColor={theme.colors.text.primary}
       colors={[theme.colors.text.primary]}
@@ -49,28 +53,18 @@ export default function HomeScreen() {
 
   // Render different content based on the selected tab
   const renderScene = () => {
-    if (homeIndex === 0) {
-      // For You tab
-      return (
-        <View style={styles.tweetContainer}>
-          <TweetList
-            data={tweets}
-            refreshControl={refreshControl}
-            onEndReached={onEndReached}
-            onEndReachedThreshold={0.5}
-            isLoading={tweetsQuery.isLoading}
-            isFetchingNextPage={tweetsQuery.isFetchingNextPage}
-          />
-        </View>
-      );
-    } else {
-      // Following tab
-      return (
-        <View style={styles.tweetContainer}>
-          <View />
-        </View>
-      );
-    }
+    return (
+      <View style={styles.tweetContainer}>
+        <TweetList
+          data={tweets}
+          refreshControl={refreshControl}
+          onEndReached={onEndReached}
+          onEndReachedThreshold={0.5}
+          isLoading={activeQuery.isLoading}
+          isFetchingNextPage={activeQuery.isFetchingNextPage}
+        />
+      </View>
+    );
   };
 
   return (
