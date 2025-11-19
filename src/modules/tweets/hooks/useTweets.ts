@@ -6,5 +6,8 @@ export const useTweets = (tweetFilters: ITweetFilters) => {
   return useQuery({
     queryKey: ['tweets', tweetFilters],
     queryFn: () => getForYou(tweetFilters),
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
