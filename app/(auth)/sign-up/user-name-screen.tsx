@@ -43,6 +43,7 @@ const UserNameScreen: React.FC = () => {
   };
 
   const handleSkip = () => {
+    setSkipRedirect(false);
     router.push('/(protected)');
   };
 
@@ -65,8 +66,6 @@ const UserNameScreen: React.FC = () => {
         usernameRequiredTitle: t('auth.signUp.userName.errors.usernameRequired'),
         usernameRequiredMessage: t('auth.signUp.userName.errors.selectOrEnter'),
       }}
-      shouldValidateWithSchema={true}
-      showExitButton={false}
     />
   );
 };

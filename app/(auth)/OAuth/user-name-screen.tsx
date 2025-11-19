@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { updateUserName } from '@/src/services/userService';
 import { useAuthStore } from '@/src/store/useAuthStore';
@@ -35,6 +35,7 @@ const UserNameScreen: React.FC = () => {
 
   const handleSkip = () => {
     setSkipRedirect(false);
+    router.push('/(protected)');
   };
 
   return (
@@ -56,8 +57,6 @@ const UserNameScreen: React.FC = () => {
         usernameRequiredTitle: t('auth.username.error'),
         usernameRequiredMessage: 'Please select a username',
       }}
-      shouldValidateWithSchema={false}
-      showExitButton={false}
     />
   );
 };

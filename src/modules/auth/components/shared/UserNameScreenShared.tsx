@@ -27,8 +27,6 @@ interface IUserNameScreenSharedProps {
     usernameRequiredTitle: string;
     usernameRequiredMessage: string;
   };
-  shouldValidateWithSchema?: boolean;
-  showExitButton?: boolean;
 }
 
 const UserNameScreenShared: React.FC<IUserNameScreenSharedProps> = ({
@@ -36,8 +34,6 @@ const UserNameScreenShared: React.FC<IUserNameScreenSharedProps> = ({
   onNext,
   onSkip,
   translations,
-  shouldValidateWithSchema = true,
-  showExitButton = false,
 }) => {
   const { theme } = useTheme();
 
@@ -88,9 +84,7 @@ const UserNameScreenShared: React.FC<IUserNameScreenSharedProps> = ({
     setUsername(selectedUsername.replace('@', ''));
   };
 
-  const isUsernameValid = shouldValidateWithSchema
-    ? username.length >= 3 && usernameSchema.safeParse(username).success
-    : username.length >= 3;
+  const isUsernameValid = username.length >= 3 && usernameSchema.safeParse(username).success;
 
   const handleNext = async () => {
     if (!username) {
@@ -129,14 +123,14 @@ const UserNameScreenShared: React.FC<IUserNameScreenSharedProps> = ({
 
   const handleSkip = async () => {
     setLoading(true);
-    await onSkip();
+    onSkip();
     setLoading(false);
   };
 
   return (
     <View style={styles.container}>
       <ActivityLoader visible={loading} />
-      <TopBar showExitButton={showExitButton} />
+      <TopBar showExitButton={false} />
       <View style={styles.scrollableContent}>
         <View style={styles.header}>
           <Text style={styles.title}>{translations.title}</Text>
