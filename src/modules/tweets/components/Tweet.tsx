@@ -7,11 +7,12 @@ import { useRouter } from 'expo-router';
 import { MoreHorizontal } from 'lucide-react-native';
 import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
 import ParentTweet from './ParentTweet';
 import RepostIndicator from './RepostIndicator';
+import TweetMedia from './TweetMedia';
 import UserInfoRow from './UserInfoRow';
 
 interface ITweetProps {
@@ -23,10 +24,11 @@ interface ITweetProps {
   onViewsPress: () => void;
   onBookmarkPress: () => void;
   onSharePress: () => void;
+  isVisible?: boolean;
 }
 
 const Tweet: React.FC<ITweetProps> = (props) => {
-  const { tweet, parentTweet, onReplyPress, onRepostPress, onLikePress, onViewsPress, onSharePress } = props;
+  const { tweet, parentTweet, onReplyPress, onRepostPress, onLikePress, onViewsPress, onSharePress, isVisible } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { t } = useTranslation();
@@ -70,19 +72,13 @@ const Tweet: React.FC<ITweetProps> = (props) => {
       )}
       <View style={styles.tweetContainer}>
         <View style={styles.imageColumn}>
-          <Pressable
-            onPress={() => router.push({ pathname: '/(protected)/(profile)/[id]', params: { id: tweet.user.id } })}
-          >
-            <Image
-              source={
-                tweet.user.avatar_url
-                  ? { uri: tweet.user.avatar_url }
-                  : require('@/assets/images/avatar-placeholder.png')
-              }
-              style={styles.avatar}
-              accessibilityLabel="tweet_image_avatar"
-            />
-          </Pressable>
+          <Image
+            source={
+              tweet.user.avatar_url ? { uri: tweet.user.avatar_url } : require('@/assets/images/avatar-placeholder.png')
+            }
+            style={styles.avatar}
+            accessibilityLabel="tweet_image_avatar"
+          />
         </View>
         <View style={styles.detailsColumn}>
           <View style={styles.topRow}>
@@ -99,6 +95,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
           <View style={styles.tweetContent}>
             <Text style={styles.tweetText}>{tweet.content}</Text>
           </View>
+          <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweet_id} isVisible={isVisible} />
           {parentTweet && <ParentTweet tweet={parentTweet} />}
           <ActionsRow
             tweet={tweet}
