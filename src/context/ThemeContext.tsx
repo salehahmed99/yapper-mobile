@@ -9,6 +9,7 @@ import {
   buttonHeights,
   colors,
   iconSizes,
+  iconSizesAlt,
   opacity,
   shadows,
   sizes,
@@ -50,6 +51,7 @@ export const ThemeProvider: React.FC<IThemeProviderProps> = (props) => {
     shadows,
     opacity,
     sizes,
+    iconSizesAlt,
   };
 
   return (

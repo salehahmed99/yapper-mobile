@@ -9,28 +9,26 @@ interface ITweetActionButtonProps {
   icon: React.FC<ISvgIconProps>;
   count?: number;
   onPress: () => void;
-  strokeColor: string;
-  fillColor?: string;
+  color?: string;
+  filled?: boolean;
   accessibilityLabel: string;
   size: 'small' | 'large';
-  isRepost?: boolean;
 }
 const TweetActionButton: React.FC<ITweetActionButtonProps> = (props) => {
-  const { icon: Icon, count, onPress, strokeColor, fillColor, accessibilityLabel, size, isRepost = false } = props;
+  const { icon: Icon, count, onPress, color, filled, accessibilityLabel, size } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const additonalSize = isRepost ? 2 : 0;
   return (
     <Pressable style={styles.actionItem} onPress={onPress} hitSlop={15} accessibilityLabel={accessibilityLabel}>
       <Icon
-        size={size === 'small' ? theme.iconSizes.xs + additonalSize : theme.iconSizes.iconSmall + additonalSize}
-        stroke={strokeColor}
-        strokeWidth={9}
-        fill={fillColor || 'transparent'}
+        size={size === 'small' ? theme.iconSizesAlt.xs : theme.iconSizesAlt.xl}
+        stroke={color || theme.colors.text.secondary}
+        filled={filled}
+        strokeWidth={0}
       />
       {count ? (
-        <Text style={[styles.actionCount, strokeColor && { color: strokeColor }]}>{formatCount(count)}</Text>
+        <Text style={[styles.actionCount, { color: color || theme.colors.text.secondary }]}>{formatCount(count)}</Text>
       ) : null}
     </Pressable>
   );
@@ -46,7 +44,6 @@ const createStyles = (theme: Theme) =>
       gap: theme.spacing.xs,
     },
     actionCount: {
-      color: theme.colors.text.secondary,
       fontFamily: theme.typography.fonts.regular,
       fontSize: theme.typography.sizes.xs,
     },

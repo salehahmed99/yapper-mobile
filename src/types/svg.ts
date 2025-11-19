@@ -9,8 +9,8 @@ export interface ISvgIconProps {
   size?: number;
   /** Preferred stroke color for the icon. */
   stroke?: string;
-  /** Preferred fill color for the icon. */
-  fill?: string;
+  /** Whether the icon should be filled. */
+  filled?: boolean;
   /** Stroke width for the icon. */
   strokeWidth?: number;
   /** Additional style for the icon container. */

@@ -2,17 +2,21 @@ import { ISvgIconProps } from '@/src/types/svg';
 import Svg, { Path } from 'react-native-svg';
 
 const BookmarkIcon: React.FC<ISvgIconProps> = (props) => {
-  const { size, width, height, stroke, fill, strokeWidth, style } = props;
+  const { size, width, height, stroke, filled, strokeWidth, style } = props;
   const w = size ?? width;
   const h = size ?? height;
 
   return (
-    <Svg width={w} height={h} viewBox="0 0 63 77" style={style}>
+    <Svg width={w} height={h} viewBox="0 0 24 24" style={style}>
       <Path
-        d="M21.9951 3.66602H40.3242C45.6121 3.66602 49.2096 3.67397 51.9033 4.03613C54.4916 4.38412 55.6909 4.99756 56.5068 5.81348C57.3226 6.62936 57.9362 7.8282 58.2842 10.416C58.6463 13.1098 58.6543 16.7072 58.6543 21.9951V70.2441L33.1514 53.7432L31.1602 52.4541L29.168 53.7432L3.66602 70.2441V21.9951C3.66602 16.7072 3.67397 13.1098 4.03613 10.416C4.38413 7.82795 4.9976 6.62936 5.81348 5.81348C6.62936 4.9976 7.82795 4.38413 10.416 4.03613C13.1098 3.67397 16.7072 3.66602 21.9951 3.66602Z"
+        d={
+          filled
+            ? 'M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5z'
+            : 'M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V4.5c0-.28-.224-.5-.5-.5h-11z'
+        }
         stroke={stroke}
         strokeWidth={strokeWidth}
-        fill={fill}
+        fill={stroke}
       />
     </Svg>
   );

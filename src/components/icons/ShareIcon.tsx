@@ -2,15 +2,17 @@ import { ISvgIconProps } from '@/src/types/svg';
 import Svg, { Path } from 'react-native-svg';
 
 const ShareIcon: React.FC<ISvgIconProps> = (props) => {
-  const { size, width, height, stroke, style } = props;
+  const { size, width, height, stroke, strokeWidth, style } = props;
   const w = size ?? width;
   const h = size ?? height;
 
   return (
-    <Svg width={w} height={h} viewBox="0 0 18 19" style={style}>
+    <Svg width={w} height={h} viewBox="0 0 24 24" style={style}>
       <Path
-        d="M9 0L14.7 5.7L13.29 7.12L10 3.82V13.41H8V3.82L4.7 7.12L3.29 5.7L9 0ZM18 12.41L17.98 15.92C17.98 17.3 16.86 18.41 15.48 18.41H2.5C1.11 18.41 0 17.29 0 15.91V12.41H2V15.91C2 16.19 2.22 16.41 2.5 16.41H15.48C15.76 16.41 15.98 16.19 15.98 15.91L16 12.41H18Z"
+        d="M12 2.59l5.7 5.7-1.41 1.42L13 6.41V16h-2V6.41l-3.3 3.3-1.41-1.42L12 2.59zM21 15l-.02 3.51c0 1.38-1.12 2.49-2.5 2.49H5.5C4.11 21 3 19.88 3 18.5V15h2v3.5c0 .28.22.5.5.5h12.98c.28 0 .5-.22.5-.5L19 15h2z"
         fill={stroke}
+        stroke={stroke}
+        strokeWidth={strokeWidth}
       />
     </Svg>
   );

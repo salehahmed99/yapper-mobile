@@ -43,25 +43,23 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
         count={tweet.repliesCount}
         onPress={onReplyPress}
         accessibilityLabel="tweet_button_reply"
-        strokeColor={theme.colors.text.secondary}
         size={size}
       />
       <TweetActionButton
         icon={RepostIcon}
         count={tweet.repostsCount}
         onPress={() => onRepostPress(tweet.isReposted)}
-        strokeColor={tweet.isReposted ? theme.colors.accent.repost : theme.colors.text.secondary}
+        color={tweet.isReposted ? theme.colors.accent.repost : theme.colors.text.secondary}
         accessibilityLabel="tweet_button_repost"
         size={size}
-        isRepost={true}
       />
 
       <TweetActionButton
         icon={LikeIcon}
         count={tweet.likesCount}
         onPress={() => onLikePress(tweet.isLiked)}
-        strokeColor={tweet.isLiked ? theme.colors.accent.like : theme.colors.text.secondary}
-        fillColor={tweet.isLiked ? theme.colors.accent.like : 'transparent'}
+        color={tweet.isLiked ? theme.colors.accent.like : theme.colors.text.secondary}
+        filled={tweet.isLiked}
         accessibilityLabel="tweet_button_like"
         size={size}
       />
@@ -70,7 +68,6 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
           icon={ViewsIcon}
           count={tweet.viewsCount}
           onPress={onViewsPress}
-          strokeColor={theme.colors.text.secondary}
           size={size}
           accessibilityLabel="tweet_button_views"
         />
@@ -79,18 +76,12 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
       <TweetActionButton
         icon={BookmarkIcon}
         onPress={onBookmarkPress}
-        strokeColor={isBookmarked ? theme.colors.accent.bookmark : theme.colors.text.secondary}
-        fillColor={isBookmarked ? theme.colors.accent.bookmark : 'transparent'}
+        color={isBookmarked ? theme.colors.accent.bookmark : theme.colors.text.secondary}
+        filled={isBookmarked}
         accessibilityLabel="tweet_button_bookmark"
         size={size}
       />
-      <TweetActionButton
-        icon={ShareIcon}
-        onPress={onSharePress}
-        accessibilityLabel="tweet_button_share"
-        size={size}
-        strokeColor={theme.colors.text.secondary}
-      />
+      <TweetActionButton icon={ShareIcon} onPress={onSharePress} accessibilityLabel="tweet_button_share" size={size} />
     </View>
   );
 };
