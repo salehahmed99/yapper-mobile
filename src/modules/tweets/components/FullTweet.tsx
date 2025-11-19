@@ -1,7 +1,9 @@
+import CustomBottomSheet from '@/src/components/CustomBottomSheet';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { formatDateDDMMYYYY, formatShortTime } from '@/src/utils/dateUtils';
 import { formatCount } from '@/src/utils/formatCount';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
@@ -10,20 +12,38 @@ import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
 import ParentTweet from './ParentTweet';
 import RepostIndicator from './RepostIndicator';
+import RepostOptionsSheet from './RepostOptionsSheet';
 
 interface IFullTweetProps {
   tweet: ITweet;
   parentTweet?: ITweet | null;
   onReplyPress: () => void;
   onRepostPress: (isReposted: boolean) => void;
+  onQuotePress: () => void;
   onLikePress: (isLiked: boolean) => void;
   onViewsPress: () => void;
+  onViewPostInteractionsPress: (tweetId: string, ownerId: string) => void;
   onBookmarkPress: () => void;
   onSharePress: () => void;
+  bottomSheetModalRef: React.RefObject<BottomSheetModal | null>;
+  openSheet: () => void;
 }
 
 const FullTweet: React.FC<IFullTweetProps> = (props) => {
-  const { tweet, parentTweet, onReplyPress, onRepostPress, onLikePress, onViewsPress, onSharePress } = props;
+  const {
+    tweet,
+    parentTweet,
+    onReplyPress,
+    onRepostPress,
+    onQuotePress,
+    onLikePress,
+    onViewsPress,
+    onViewPostInteractionsPress,
+    // onBookmarkPress,
+    onSharePress,
+    bottomSheetModalRef,
+    openSheet,
+  } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const router = useRouter();
@@ -55,14 +75,6 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
             <Text style={styles.username}>@{tweet.user.username}</Text>
           </View>
         </View>
-        {/* <View style={styles.optionsRow}>
-          <GrokLogo size={16} color={theme.colors.text.secondary} />
-          <View ref={moreButtonRef} collapsable={false}>
-            <TouchableOpacity onPress={handleMorePress} hitSlop={8}>
-              <MoreHorizontal size={16} color={theme.colors.text.secondary} />
-            </TouchableOpacity>
-          </View>
-        </View> */}
       </View>
 
       {/* Tweet Content */}
@@ -91,13 +103,22 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
           tweet={tweet}
           size="large"
           onReplyPress={onReplyPress}
-          onRepostPress={onRepostPress}
+          onRepostPress={openSheet}
           onLikePress={onLikePress}
           onViewsPress={onViewsPress}
           onBookmarkPress={() => setIsBookmarked(!isBookmarked)}
           isBookmarked={isBookmarked}
           onSharePress={onSharePress}
         />
+
+        <CustomBottomSheet bottomSheetModalRef={bottomSheetModalRef}>
+          <RepostOptionsSheet
+            isReposted={tweet.isReposted}
+            onRepostPress={() => onRepostPress(tweet.isReposted)}
+            onQuotePress={onQuotePress}
+            onViewInteractionsPress={() => onViewPostInteractionsPress(tweet.tweetId, tweet.user.id)}
+          />
+        </CustomBottomSheet>
       </View>
     </View>
   );

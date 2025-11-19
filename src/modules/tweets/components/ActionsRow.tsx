@@ -13,7 +13,7 @@ import TweetActionButton from './TweetActionButton';
 interface IActionsRowProps {
   tweet: ITweet;
   onReplyPress: () => void;
-  onRepostPress: (isReposted: boolean) => void;
+  onRepostPress: () => void;
   onLikePress: (isLiked: boolean) => void;
   onViewsPress: () => void;
   onBookmarkPress: () => void;
@@ -48,7 +48,7 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
       <TweetActionButton
         icon={RepostIcon}
         count={tweet.repostsCount}
-        onPress={() => onRepostPress(tweet.isReposted)}
+        onPress={onRepostPress}
         color={tweet.isReposted ? theme.colors.accent.repost : theme.colors.text.secondary}
         accessibilityLabel="tweet_button_repost"
         size={size}

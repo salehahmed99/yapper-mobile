@@ -1,7 +1,9 @@
+import CustomBottomSheet from '@/src/components/CustomBottomSheet';
 import DropdownMenu, { DropdownMenuItem } from '@/src/components/DropdownMenu';
 import GrokLogo from '@/src/components/icons/GrokLogo';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { MoreHorizontal } from 'lucide-react-native';
@@ -12,6 +14,7 @@ import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
 import ParentTweet from './ParentTweet';
 import RepostIndicator from './RepostIndicator';
+import RepostOptionsSheet from './RepostOptionsSheet';
 import UserInfoRow from './UserInfoRow';
 
 interface ITweetProps {
@@ -19,14 +22,31 @@ interface ITweetProps {
   parentTweet?: ITweet | null;
   onReplyPress: () => void;
   onRepostPress: (isReposted: boolean) => void;
+  onQuotePress: () => void;
   onLikePress: (isLiked: boolean) => void;
   onViewsPress: () => void;
+  onViewPostInteractionsPress: (tweetId: string, ownerId: string) => void;
   onBookmarkPress: () => void;
   onSharePress: () => void;
+  bottomSheetModalRef: React.RefObject<BottomSheetModal | null>;
+  openSheet: () => void;
 }
 
 const Tweet: React.FC<ITweetProps> = (props) => {
-  const { tweet, parentTweet, onReplyPress, onRepostPress, onLikePress, onViewsPress, onSharePress } = props;
+  const {
+    tweet,
+    parentTweet,
+    onReplyPress,
+    onRepostPress,
+    onQuotePress,
+    onLikePress,
+    onViewsPress,
+    onViewPostInteractionsPress,
+    // onBookmarkPress,
+    onSharePress,
+    bottomSheetModalRef,
+    openSheet,
+  } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { t } = useTranslation();
@@ -53,13 +73,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
     {
       label: t('tweetActivity.viewPostInteractions'),
       onPress: () => {
-        router.push({
-          pathname: '/(protected)/tweets/[tweetId]/activity',
-          params: {
-            tweetId: tweet.tweetId,
-            ownerId: tweet.user.id,
-          },
-        });
+        onViewPostInteractionsPress(tweet.tweetId, tweet.user.id);
       },
     },
   ];
@@ -114,7 +128,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
             size="small"
             tweet={tweet}
             onReplyPress={onReplyPress}
-            onRepostPress={onRepostPress}
+            onRepostPress={openSheet}
             onLikePress={onLikePress}
             onViewsPress={onViewsPress}
             onBookmarkPress={() => setIsBookmarked(!isBookmarked)}
@@ -123,6 +137,15 @@ const Tweet: React.FC<ITweetProps> = (props) => {
           />
         </View>
       </View>
+
+      <CustomBottomSheet bottomSheetModalRef={bottomSheetModalRef}>
+        <RepostOptionsSheet
+          isReposted={tweet.isReposted}
+          onRepostPress={() => onRepostPress(tweet.isReposted)}
+          onQuotePress={onQuotePress}
+          onViewInteractionsPress={() => onViewPostInteractionsPress(tweet.tweetId, tweet.user.id)}
+        />
+      </CustomBottomSheet>
       <DropdownMenu
         visible={menuVisible}
         onClose={() => setMenuVisible(false)}

@@ -28,7 +28,7 @@ const CustomBottomSheet: React.FC<ICustomBottomSheetProps> = (props) => {
         style={{ backgroundColor: theme.colors.overlay }}
       />
     ),
-    [],
+    [theme],
   );
 
   return (
@@ -38,6 +38,8 @@ const CustomBottomSheet: React.FC<ICustomBottomSheetProps> = (props) => {
       backgroundStyle={styles.backgroundStyle}
       handleIndicatorStyle={styles.handleIndicator}
       handleStyle={styles.handleContainer}
+      enablePanDownToClose={true}
+      enableOverDrag={false}
     >
       <BottomSheetView style={{ paddingBottom: insets.bottom }}>{children}</BottomSheetView>
     </BottomSheetModal>
