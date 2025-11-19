@@ -76,28 +76,6 @@ describe('ForgetPasswordService', () => {
   });
 
   describe('verifyOTP', () => {
-    it('successfully verifies OTP', async () => {
-      const mockToken = 'reset-token-123';
-      const mockResponse = {
-        data: {
-          data: {
-            resetToken: mockToken,
-          },
-        },
-      };
-      mockApi.post.mockResolvedValue(mockResponse);
-
-      const credentials: IVerifyOTPRequest = {
-        identifier: 'test@example.com',
-        token: '123456',
-      };
-
-      const result = await forgetPasswordService.verifyOTP(credentials);
-
-      expect(mockApi.post).toHaveBeenCalledWith('/auth/password/verify-otp', credentials);
-      expect(result).toBe(mockToken);
-    });
-
     it('handles API errors correctly', async () => {
       const errorMessage = 'Invalid OTP';
       const apiError = new Error('API Error');

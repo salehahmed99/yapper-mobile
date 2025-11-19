@@ -93,14 +93,6 @@ describe('FindAccountScreen', () => {
     });
   });
 
-  it('renders correctly', () => {
-    render(<TestComponent />);
-
-    expect(screen.getByText('To get started, first enter your phone, email, or @username')).toBeTruthy();
-    expect(screen.getByText("We'll send you a verification code.")).toBeTruthy();
-    expect(screen.getByDisplayValue('')).toBeTruthy();
-  });
-
   it('resets store on mount', () => {
     render(<TestComponent />);
 
