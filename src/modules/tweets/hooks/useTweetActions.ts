@@ -60,9 +60,13 @@ export const useTweetActions = () => {
       });
       return { previousTweets };
     },
+    onSuccess: (_, variables) => {
+      // Also invalidate individual tweet query to sync with media viewer
+      queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweet_id }] });
+    },
     onError: (error, _, context) => {
       if (context?.previousTweets) queryClient.setQueryData(queryKey, context.previousTweets);
-      console.log('Error updating like status:', error);
+      console.warn('Error updating like status:', error);
     },
   });
 
@@ -104,9 +108,13 @@ export const useTweetActions = () => {
       });
       return { previousTweets };
     },
+    onSuccess: (_, variables) => {
+      // Also invalidate individual tweet query to sync with media viewer
+      queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweet_id }] });
+    },
     onError: (error, _, context) => {
       if (context?.previousTweets) queryClient.setQueryData(queryKey, context.previousTweets);
-      console.log('Error updating repost status:', error);
+      console.warn('Error updating repost status:', error);
     },
   });
 
