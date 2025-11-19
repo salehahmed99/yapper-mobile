@@ -1,6 +1,6 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import { formatTweetDate } from '@/src/utils/formatTweetDate';
+import { formatTweetDate } from '@/src/modules/tweets/utils/formatTweetDate';
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { ITweet } from '../types';

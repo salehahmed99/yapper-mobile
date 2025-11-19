@@ -65,7 +65,18 @@ const Tweet: React.FC<ITweetProps> = (props) => {
   ];
 
   return (
-    <View style={styles.container} accessibilityLabel="tweet_container_main">
+    <Pressable
+      style={styles.container}
+      accessibilityLabel="tweet_container_main"
+      onPress={() =>
+        router.push({
+          pathname: '/(protected)/tweets/[tweetId]',
+          params: {
+            tweetId: tweet.tweetId,
+          },
+        })
+      }
+    >
       {tweet.type === 'repost' && (
         <RepostIndicator repostById={tweet.repostedBy?.id} repostedByName={tweet.repostedBy?.name} />
       )}
@@ -100,6 +111,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
           </View>
           {parentTweet && <ParentTweet tweet={parentTweet} />}
           <ActionsRow
+            size="small"
             tweet={tweet}
             onReplyPress={onReplyPress}
             onRepostPress={onRepostPress}
@@ -117,7 +129,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
         items={menuItems}
         position={menuPosition}
       />
-    </View>
+    </Pressable>
   );
 };
 

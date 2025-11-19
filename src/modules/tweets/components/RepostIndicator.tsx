@@ -1,4 +1,4 @@
-import RepostIcon from '@/assets/icons/repost.svg';
+import RepostIcon from '@/src/components/icons/RepostIcon';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { useAuthStore } from '@/src/store/useAuthStore';
@@ -20,7 +20,7 @@ const RepostIndicator: React.FC<IRepostIndicatorProps> = (props) => {
       <RepostIcon
         width={theme.iconSizes.xs}
         height={theme.iconSizes.xs}
-        color={theme.colors.text.secondary}
+        stroke={theme.colors.text.secondary}
         strokeWidth={13}
       />
       <Text style={styles.repostText}>{user?.id === repostById ? 'You' : repostedByName} reposted</Text>
