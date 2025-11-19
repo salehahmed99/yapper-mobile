@@ -1,7 +1,9 @@
+import ThemeSettingsSheet from '@/src/components/shell/ThemeSettingsSheet';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { BlurView } from 'expo-blur';
+import * as Haptics from 'expo-haptics';
 import { usePathname, useRouter } from 'expo-router';
 import { Bell, HelpCircle, Home, LogOut, MessageCircle, MoonStar, Search, Settings, User } from 'lucide-react-native';
 import React from 'react';
@@ -34,6 +36,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
   const { isSideMenuOpen, closeSideMenu } = useUiShell();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
+  const [isThemeSheetVisible, setIsThemeSheetVisible] = React.useState(false);
 
   const logout = useAuthStore((state) => state.logout);
 
@@ -183,9 +186,8 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
           <View style={styles.toggleWrapper}>
             <TouchableOpacity
               onPress={() => {
-                // toggle theme: add toggleTheme to the useTheme() destructure at top of this file
-                // e.g. const { theme, toggleTheme } = useTheme();
-                // then call toggleTheme() here.
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setIsThemeSheetVisible(true);
               }}
               style={styles.toggleButton}
               accessibilityLabel={t('toggle_theme')}
@@ -195,6 +197,8 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
           </View>
         </BlurView>
       </Animated.View>
+
+      <ThemeSettingsSheet visible={isThemeSheetVisible} onClose={() => setIsThemeSheetVisible(false)} />
     </Animated.View>
   );
 };
