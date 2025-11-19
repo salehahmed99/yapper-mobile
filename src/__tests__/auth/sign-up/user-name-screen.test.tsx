@@ -5,7 +5,6 @@ import { updateUserName } from '@/src/services/userService';
 import { render, waitFor, fireEvent } from '@testing-library/react-native';
 import { router } from 'expo-router';
 import React from 'react';
-import { TextInput } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 // Mock expo-router
@@ -182,6 +181,40 @@ jest.mock('lucide-react-native', () => ({
   },
 }));
 
+// Mock UserNameScreenShared
+jest.mock('@/src/modules/auth/components/shared/UserNameScreenShared', () => {
+  const React = require('react');
+
+  return function MockUserNameScreenShared(props: any) {
+    const { availableUsernames, onNext, onSkip, translations } = props;
+    const { View, Text, Button } = require('react-native');
+
+    return React.createElement(
+      View,
+      { testID: 'username-screen-shared' },
+      React.createElement(Text, { testID: 'title' }, translations.title),
+      React.createElement(Text, { testID: 'subtitle' }, translations.subtitle),
+      React.createElement(Text, { testID: 'usernames' }, availableUsernames.join(', ')),
+      React.createElement(Button, {
+        testID: 'next-button',
+        title: translations.next,
+        onPress: async () => {
+          try {
+            await onNext(availableUsernames[0]);
+          } catch {
+            // Error handled by component
+          }
+        },
+      }),
+      React.createElement(Button, {
+        testID: 'skip-button',
+        title: translations.skipForNow,
+        onPress: onSkip,
+      }),
+    );
+  };
+});
+
 describe('UserNameScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -189,176 +222,80 @@ describe('UserNameScreen', () => {
     mockUserNames = ['testuser1', 'testuser2', 'testuser3'];
   });
 
-  // Helper to get TextInput
-  const getUsernameInput = (container: ReturnType<typeof render>) => {
-    return container.UNSAFE_getByType(TextInput);
-  };
-
   describe('Rendering', () => {
-    it('should render the screen with username suggestions', () => {
-      const { getByText, getByDisplayValue, queryByText } = render(<UserNameScreen />);
+    it('should render the shared component with correct props', () => {
+      const { getByTestId, getByText } = render(<UserNameScreen />);
 
+      expect(getByTestId('username-screen-shared')).toBeTruthy();
       expect(getByText("What's your username?")).toBeTruthy();
-      expect(getByDisplayValue('testuser1')).toBeTruthy();
-      expect(getByText('testuser1')).toBeTruthy();
-      expect(getByText('testuser2')).toBeTruthy();
-      expect(queryByText('testuser3')).toBeFalsy(); // Only shows 2 initially
-      expect(getByText('Show more')).toBeTruthy();
+      expect(getByText('testuser1, testuser2, testuser3')).toBeTruthy();
     });
 
-    it('should not show "Show more" button when there are 2 or fewer usernames', () => {
-      mockUserNames = ['testuser1', 'testuser2'];
-      const { queryByText } = render(<UserNameScreen />);
+    it('should pass correct translations to shared component', () => {
+      const { getByText } = render(<UserNameScreen />);
 
-      expect(queryByText('Show more')).toBeFalsy();
+      expect(getByText("What's your username?")).toBeTruthy();
+      expect(getByText('Choose a unique username for your account')).toBeTruthy();
+      expect(getByText('Next')).toBeTruthy();
+      expect(getByText('Skip for now')).toBeTruthy();
     });
   });
 
   describe('Navigation Guards', () => {
-    it('should redirect to create account if missing required data', () => {
+    it('should redirect to create account if missing email', () => {
       mockEmail = '';
       render(<UserNameScreen />);
       expect(router.replace).toHaveBeenCalledWith('/(auth)/sign-up/create-account-screen');
+    });
 
-      jest.clearAllMocks();
-
-      mockEmail = 'test@example.com';
+    it('should redirect to create account if missing usernames', () => {
       mockUserNames = [];
       render(<UserNameScreen />);
       expect(router.replace).toHaveBeenCalledWith('/(auth)/sign-up/create-account-screen');
     });
 
-    it('should navigate to protected route when skip is pressed', () => {
+    it('should navigate to protected route when skip is pressed', async () => {
       const { getByTestId } = render(<UserNameScreen />);
-      const bottomBar = getByTestId('bottom-bar');
+      const skipButton = getByTestId('skip-button');
 
-      bottomBar.props.leftButton.onPress();
+      fireEvent.press(skipButton);
 
       expect(router.push).toHaveBeenCalledWith('/(protected)');
     });
   });
 
-  describe('Username Input', () => {
-    it('should validate username and show appropriate feedback', () => {
-      const container = render(<UserNameScreen />);
-      const input = getUsernameInput(container);
-      const { getByText, queryByTestId } = container;
-
-      // Valid username shows check mark
-      fireEvent.changeText(input, 'validuser');
-      expect(queryByTestId('check-icon')).toBeTruthy();
-
-      // Invalid username shows error
-      fireEvent.changeText(input, 'ab');
-      expect(getByText('Username must be at least 3 characters')).toBeTruthy();
-      expect(queryByTestId('check-icon')).toBeFalsy();
-    });
-  });
-
-  describe('Username Suggestions', () => {
-    it('should handle username suggestion selection', () => {
-      const container = render(<UserNameScreen />);
-      const input = getUsernameInput(container);
-      const { getByText } = container;
-
-      // Regular username
-      fireEvent.press(getByText('testuser2'));
-      expect(input.props.value).toBe('testuser2');
-    });
-
-    it('should remove @ symbol when selecting username', () => {
-      mockUserNames = ['@testuser1', '@testuser2'];
-      const container = render(<UserNameScreen />);
-      const input = getUsernameInput(container);
-      const { getByText } = container;
-
-      fireEvent.press(getByText('@testuser2'));
-      expect(input.props.value).toBe('testuser2');
-    });
-
-    it('should toggle between showing all and limited suggestions', () => {
-      const container = render(<UserNameScreen />);
-      const { getByText, queryByText } = container;
-
-      // Show more
-      fireEvent.press(getByText('Show more'));
-      expect(getByText('testuser3')).toBeTruthy();
-      expect(getByText('Show less')).toBeTruthy();
-
-      // Show less
-      fireEvent.press(getByText('Show less'));
-      expect(queryByText('testuser3')).toBeFalsy();
-      expect(getByText('Show more')).toBeTruthy();
-    });
-  });
-
-  describe('Form Validation', () => {
-    it('should enable/disable next button based on username validity', () => {
-      const container = render(<UserNameScreen />);
-      const input = getUsernameInput(container);
-      const { getByTestId } = container;
-      const bottomBar = getByTestId('bottom-bar');
-
-      // Invalid username disables button
-      fireEvent.changeText(input, 'ab');
-      expect(bottomBar.props.rightButton.enabled).toBe(false);
-
-      // Valid username enables button
-      fireEvent.changeText(input, 'validuser');
-      expect(bottomBar.props.rightButton.enabled).toBe(true);
-    });
-
-    it('should show appropriate error toast for invalid submissions', async () => {
-      const container = render(<UserNameScreen />);
-      const input = getUsernameInput(container);
-      const { getByTestId } = container;
-      const bottomBar = getByTestId('bottom-bar');
-
-      // Empty username
-      fireEvent.changeText(input, '');
-      await bottomBar.props.rightButton.onPress();
-      expect(Toast.show).toHaveBeenCalledWith({
-        type: 'error',
-        text1: 'Username is required',
-        text2: 'Please select or enter a username',
-      });
-
-      // Invalid username
-      fireEvent.changeText(input, 'ab');
-      await bottomBar.props.rightButton.onPress();
-      expect(Toast.show).toHaveBeenCalledWith({
-        type: 'error',
-        text1: 'Invalid username',
-        text2: 'Username must be 3-15 characters, letters, numbers, and underscores only',
-      });
-    });
-  });
-
   describe('Username Update Flow', () => {
-    it('should call API and navigate on successful username submission', async () => {
+    it('should call updateUserName and navigate when submitting new username', async () => {
       (updateUserName as jest.Mock).mockResolvedValue({ success: true });
+      // Use a different username to trigger API call
+      mockUserNames = ['newusername', 'testuser2', 'testuser3'];
+      mockGetState.mockReturnValue({ userNames: ['originaluser', 'testuser2'] });
 
-      const container = render(<UserNameScreen />);
-      const input = getUsernameInput(container);
-      const { getByTestId } = container;
-      const bottomBar = getByTestId('bottom-bar');
+      const { getByTestId } = render(<UserNameScreen />);
+      const nextButton = getByTestId('next-button');
 
-      fireEvent.changeText(input, 'newusername');
-      bottomBar.props.rightButton.onPress();
+      fireEvent.press(nextButton);
 
       await waitFor(() => {
         expect(updateUserName).toHaveBeenCalledWith('newusername');
+        expect(Toast.show).toHaveBeenCalledWith({
+          type: 'success',
+          text1: 'Username set',
+          text2: 'Your username is newusername',
+        });
+        expect(mockSetSkipRedirect).toHaveBeenCalledWith(false);
+        expect(router.replace).toHaveBeenCalledWith('/(protected)');
       });
     });
 
     it('should skip API call when username matches first suggestion', async () => {
-      const container = render(<UserNameScreen />);
-      const input = getUsernameInput(container);
-      const { getByTestId } = container;
-      const bottomBar = getByTestId('bottom-bar');
+      const { getByTestId } = render(<UserNameScreen />);
+      const nextButton = getByTestId('next-button');
 
-      expect(input.props.value).toBe('testuser1');
-      bottomBar.props.rightButton.onPress();
+      // Mock getState to return the same first username
+      mockGetState.mockReturnValue({ userNames: ['testuser1', 'testuser2'] });
+
+      fireEvent.press(nextButton);
 
       await waitFor(() => {
         expect(updateUserName).not.toHaveBeenCalled();
@@ -367,43 +304,24 @@ describe('UserNameScreen', () => {
       });
     });
 
-    it('should handle API errors', async () => {
+    it('should handle API errors gracefully', async () => {
       (updateUserName as jest.Mock).mockRejectedValue(new Error('Network error'));
+      // Use different username to trigger API call
+      mockUserNames = ['newusername', 'testuser2'];
 
-      const container = render(<UserNameScreen />);
-      const input = getUsernameInput(container);
-      const { getByTestId } = container;
-      const bottomBar = getByTestId('bottom-bar');
+      const { getByTestId } = render(<UserNameScreen />);
+      const nextButton = getByTestId('next-button');
 
-      fireEvent.changeText(input, 'newusername');
-      bottomBar.props.rightButton.onPress();
+      // Suppress console error from rejected promise
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      await waitFor(() => {
-        expect(Toast.show).toHaveBeenCalledWith({
-          type: 'error',
-          text1: 'Error',
-          text2: 'Network error',
-        });
-      });
-    });
-
-    it('should show loader and disable button during submission', async () => {
-      (updateUserName as jest.Mock).mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve({ success: true }), 100)),
-      );
-
-      const container = render(<UserNameScreen />);
-      const input = getUsernameInput(container);
-      const { getByTestId } = container;
-      const bottomBar = getByTestId('bottom-bar');
-
-      fireEvent.changeText(input, 'newusername');
-      bottomBar.props.rightButton.onPress();
+      fireEvent.press(nextButton);
 
       await waitFor(() => {
-        expect(container.queryByTestId('activity-loader')).toBeTruthy();
-        expect(getByTestId('bottom-bar').props.rightButton.enabled).toBe(false);
+        expect(updateUserName).toHaveBeenCalledWith('newusername');
       });
+
+      consoleSpy.mockRestore();
     });
   });
 });
