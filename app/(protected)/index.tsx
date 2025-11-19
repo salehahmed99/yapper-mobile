@@ -3,8 +3,10 @@ import YapperLogo from '@/src/components/icons/YapperLogo';
 import QueryWrapper from '@/src/components/QueryWrapper';
 import AppBar from '@/src/components/shell/AppBar';
 import type { Theme } from '@/src/constants/theme';
+import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
 import useMargins from '@/src/hooks/useMargins';
+import MediaViewerModal from '@/src/modules/tweets/components/MediaViewerModal';
 import TweetList from '@/src/modules/tweets/components/TweetList';
 import { useTweets } from '@/src/modules/tweets/hooks/useTweets';
 import { useTweetsFiltersStore } from '@/src/modules/tweets/store/useTweetsFiltersStore';
@@ -27,17 +29,20 @@ export default function HomeScreen() {
   const { marginTop, marginBottom } = useMargins();
 
   return (
-    <View style={styles.container}>
-      <View style={styles.appBarWrapper}>
-        <AppBar
-          children={<YapperLogo size={32} color={theme.colors.text.primary} />}
-          tabView={<HomeTabView index={homeIndex} onIndexChange={(i) => setHomeIndex(i)} />}
-        />
+    <MediaViewerProvider>
+      <View style={styles.container}>
+        <View style={styles.appBarWrapper}>
+          <AppBar
+            children={<YapperLogo size={32} color={theme.colors.text.primary} />}
+            tabView={<HomeTabView index={homeIndex} onIndexChange={(i) => setHomeIndex(i)} />}
+          />
+        </View>
+        <View style={[styles.tweetContainer, { marginTop, marginBottom }]}>
+          <QueryWrapper query={tweetsQuery}>{(tweets) => <TweetList data={tweets} />}</QueryWrapper>
+        </View>
+        <MediaViewerModal />
       </View>
-      <View style={[styles.tweetContainer, { marginTop, marginBottom }]}>
-        <QueryWrapper query={tweetsQuery}>{(tweets) => <TweetList data={tweets} />}</QueryWrapper>
-      </View>
-    </View>
+    </MediaViewerProvider>
   );
 }
 
