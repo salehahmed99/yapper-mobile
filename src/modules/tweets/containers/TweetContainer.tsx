@@ -7,9 +7,10 @@ import { ITweet } from '../types';
 
 interface ITweetContainerProps {
   tweet: ITweet;
+  isVisible?: boolean;
 }
 const TweetContainer: React.FC<ITweetContainerProps> = (props) => {
-  const { tweet } = props;
+  const { tweet, isVisible } = props;
 
   const shouldFetchParent = tweet.type === 'quote' && !!tweet.parent_tweet_id;
   const parentTweetQuery = useTweet(shouldFetchParent ? tweet.parent_tweet_id : undefined);
@@ -52,6 +53,7 @@ const TweetContainer: React.FC<ITweetContainerProps> = (props) => {
           onViewsPress={handleViewsPress}
           onBookmarkPress={handleBookmarkPress}
           onSharePress={handleSharePress}
+          isVisible={isVisible}
         />
       )}
     </QueryWrapper>
@@ -64,6 +66,7 @@ const TweetContainer: React.FC<ITweetContainerProps> = (props) => {
       onViewsPress={handleViewsPress}
       onBookmarkPress={handleBookmarkPress}
       onSharePress={handleSharePress}
+      isVisible={isVisible}
     />
   );
 };
