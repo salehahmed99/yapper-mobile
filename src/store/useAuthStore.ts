@@ -57,8 +57,24 @@ export const useAuthStore = create<IAuthState>((set) => ({
   /** Refresh user data from server */
   fetchAndUpdateUser: async () => {
     try {
-      const { data } = await getMyUser();
-      set({ user: data });
+      const data = await getMyUser();
+      // Map camelCase response to IUser format
+      set({
+        user: {
+          id: data.userId,
+          email: '', // Not provided
+          name: data.name,
+          username: data.username,
+          bio: data.bio,
+          avatarUrl: data.avatarUrl,
+          coverUrl: data.coverUrl,
+          country: data.country || undefined,
+          createdAt: data.createdAt,
+          followers: data.followersCount,
+          following: data.followingCount,
+          birthDate: '', // Not in response
+        },
+      });
     } catch (err) {
       console.error('Failed to fetch user:', err);
     }

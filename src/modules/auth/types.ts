@@ -1,5 +1,5 @@
-import { IUser, mapUserDTOToUser } from '../../types/user';
 import { IApiResponse } from '../../types/api';
+import { IUser, IUserDTO, mapUserDTOToUser } from '../../types/user';
 
 /* =========================================================
    AUTH — SHARED TYPES
@@ -9,6 +9,9 @@ export interface ILoginCredentials {
   type: 'email' | 'username' | 'phone_number';
   password: string;
 }
+/**
+ * Login
+ */
 
 export interface IForgetPasswordRequest {
   identifier: string;
@@ -36,7 +39,7 @@ export interface IRegisterData {
    ========================================================= */
 export type ILoginResponseDTO = IApiResponse<{
   access_token: string;
-  user: IUser;
+  user: IUserDTO;
 }>;
 
 export type ILoginResponse = IApiResponse<{

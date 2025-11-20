@@ -6,16 +6,12 @@ import {
   IGetFollowingListResponse,
   IGetMyUserResponse,
   IGetUserByIdResponse,
-  mapGetFollowersListResponseDTOToResponse,
-  mapGetFollowingListResponseDTOToResponse,
-  mapGetMyUserResponseDTOToResponse,
-  mapGetUserByIdResponseDTOToResponse,
 } from '../types';
 
 export const getMyUser = async (): Promise<IGetMyUserResponse> => {
   try {
     const response = await api.get('/users/me');
-    return mapGetMyUserResponseDTOToResponse(response.data);
+    return response.data.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.code === 'ERR_NETWORK') {
@@ -31,7 +27,7 @@ export const getMyUser = async (): Promise<IGetMyUserResponse> => {
 export const getUserById = async (userId: string): Promise<IGetUserByIdResponse> => {
   try {
     const response = await api.get(`/users/${userId}`);
-    return mapGetUserByIdResponseDTOToResponse(response.data);
+    return response.data.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.code === 'ERR_NETWORK') {
@@ -58,7 +54,7 @@ export const getFollowersList = async ({
         following,
       },
     });
-    return mapGetFollowersListResponseDTOToResponse(response.data);
+    return response.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.code === 'ERR_NETWORK') {
@@ -83,7 +79,7 @@ export const getFollowingList = async ({
         page_size: pageSize,
       },
     });
-    return mapGetFollowingListResponseDTOToResponse(response.data);
+    return response.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.code === 'ERR_NETWORK') {
@@ -230,6 +226,162 @@ export const unblockUser = async (userId: string): Promise<{ message: string }> 
     }
     if (error.response) {
       throw new Error(error.response.data.message || 'An error occurred while unblocking user.');
+    }
+    throw error;
+  }
+};
+
+/**
+ * Update current user profile
+ * @param profileData - The profile data to update
+ * @returns Success response
+ */
+export const updateUserProfile = async (profileData: {
+  bio?: string;
+  name?: string;
+  country?: string;
+  birthDate?: string;
+  avatar_url?: string | null;
+  cover_url?: string | null;
+}): Promise<{ message: string }> => {
+  try {
+    const response = await api.patch('/users/me', profileData);
+    return {
+      message: response.data.message || 'Updated user successfully',
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    if (error.response) {
+      throw new Error(error.response.data.message || 'An error occurred while updating profile.');
+    }
+    throw error;
+  }
+};
+
+/**
+ * Upload avatar image
+ * @param imageUri - Local URI of the image to upload
+ * @returns Response with uploaded image URL
+ */
+export const uploadAvatar = async (imageUri: string): Promise<{ imageUrl: string; imageName: string }> => {
+  try {
+    const formData = new FormData();
+
+    // Extract filename from URI or use a default
+    const filename = imageUri.split('/').pop() || 'avatar.jpg';
+    const match = /\.(\w+)$/.exec(filename);
+    const type = match ? `image/${match[1]}` : 'image/jpeg';
+
+    formData.append('file', {
+      uri: imageUri,
+      name: filename,
+      type,
+    } as unknown as Blob);
+
+    const response = await api.post('/users/me/upload-avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    return response.data.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    if (error.response) {
+      throw new Error(error.response.data.message || 'An error occurred while uploading avatar.');
+    }
+    throw error;
+  }
+};
+
+/**
+ * Upload cover/banner image
+ * @param imageUri - Local URI of the image to upload
+ * @returns Response with uploaded image URL
+ */
+export const uploadCover = async (imageUri: string): Promise<{ imageUrl: string; imageName: string }> => {
+  try {
+    const formData = new FormData();
+
+    // Extract filename from URI or use a default
+    const filename = imageUri.split('/').pop() || 'cover.jpg';
+    const match = /\.(\w+)$/.exec(filename);
+    const type = match ? `image/${match[1]}` : 'image/jpeg';
+
+    formData.append('file', {
+      uri: imageUri,
+      name: filename,
+      type,
+    } as unknown as Blob);
+
+    const response = await api.post('/users/me/upload-cover', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    return response.data.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    if (error.response) {
+      throw new Error(error.response.data.message || 'An error occurred while uploading cover.');
+    }
+    throw error;
+  }
+};
+
+/**
+ * Delete avatar picture and reset to default
+ * @param fileUrl - The URL of the avatar file to delete
+ * @returns Success response
+ */
+export const deleteAvatar = async (fileUrl: string): Promise<void> => {
+  try {
+    await api.delete('/users/me/delete-avatar', {
+      data: {
+        file_url: fileUrl,
+      },
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    if (error.response) {
+      throw new Error(error.response.data.message || 'An error occurred while deleting avatar.');
+    }
+    throw error;
+  }
+};
+
+/**
+ * Delete cover picture and reset to default
+ * @param fileUrl - The URL of the cover file to delete
+ * @returns Success response
+ */
+export const deleteCover = async (fileUrl: string): Promise<void> => {
+  try {
+    await api.delete('/users/me/delete-cover', {
+      data: {
+        file_url: fileUrl,
+      },
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    if (error.response) {
+      throw new Error(error.response.data.message || 'An error occurred while deleting cover.');
     }
     throw error;
   }

@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
-import { View, Image, Pressable, Text, StyleSheet } from 'react-native';
-import { useTranslation } from 'react-i18next';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface IOAuthButtonProps {
   onGooglePress?: () => void;

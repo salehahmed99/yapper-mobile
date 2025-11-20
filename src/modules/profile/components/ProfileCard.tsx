@@ -1,3 +1,4 @@
+import { DEFAULT_BANNER_URL } from '@/src/constants/defaults';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -144,7 +145,7 @@ export default function ProfileCard({ profile, onFollow, isFollowing = false }: 
   return (
     <View style={styles.card}>
       {/* Banner Image */}
-      <Image source={{ uri: profile.banner || 'https://picsum.photos/600/180' }} style={styles.banner} />
+      <Image source={{ uri: profile.banner || DEFAULT_BANNER_URL }} style={styles.banner} />
 
       <View style={styles.contentContainer}>
         {/* Avatar with overlap */}

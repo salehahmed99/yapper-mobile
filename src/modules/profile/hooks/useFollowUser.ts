@@ -1,3 +1,4 @@
+import { useAuthStore } from '@/src/store/useAuthStore';
 import { useState } from 'react';
 import Toast from 'react-native-toast-message';
 import { followUser, unfollowUser } from '../services/profileService';
@@ -17,6 +18,7 @@ interface UseFollowUserReturn {
 export const useFollowUser = (initialFollowState: boolean = false): UseFollowUserReturn => {
   const [isFollowing, setIsFollowing] = useState(initialFollowState);
   const [isLoading, setIsLoading] = useState(false);
+  const fetchAndUpdateUser = useAuthStore((state) => state.fetchAndUpdateUser);
 
   const toggleFollow = async (userId: string) => {
     if (isLoading || !userId) return;
@@ -38,6 +40,7 @@ export const useFollowUser = (initialFollowState: boolean = false): UseFollowUse
           position: 'bottom',
           visibilityTime: 2000,
         });
+        await fetchAndUpdateUser();
       } else {
         // Follow
         await followUser(userId);
@@ -48,6 +51,7 @@ export const useFollowUser = (initialFollowState: boolean = false): UseFollowUse
           position: 'bottom',
           visibilityTime: 2000,
         });
+        await fetchAndUpdateUser();
       }
     } catch (error) {
       // Revert on error

@@ -1,3 +1,4 @@
+import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import ThemeSettingsSheet from '@/src/components/shell/ThemeSettingsSheet';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
@@ -88,10 +89,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
           <View style={styles.profileAndAccountsRow}>
             <TouchableOpacity onPress={() => navigate('/(profile)/Profile/')}>
               <View style={styles.profileCol}>
-                <Image
-                  source={{ uri: user?.avatarUrl || 'https://randomuser.me/api/portraits/men/1.jpg' }}
-                  style={styles.avatar}
-                />
+                <Image source={{ uri: user?.avatarUrl || DEFAULT_AVATAR_URL }} style={styles.avatar} />
                 <Text style={styles.name}>{user?.name || 'User'}</Text>
                 <Text style={styles.username}>@{user?.username || 'username'}</Text>
               </View>

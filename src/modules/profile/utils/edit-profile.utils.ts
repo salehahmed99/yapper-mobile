@@ -1,12 +1,11 @@
 import * as ImagePicker from 'expo-image-picker';
-// eslint-disable-next-line react-native/split-platform-components
+
+import { DEFAULT_AVATAR_URL, DEFAULT_BANNER_URL } from '@/src/constants/defaults';
 import { ActionSheetIOS, Alert, Platform } from 'react-native';
 
-// Default images
-export const DEFAULT_AVATAR_URI =
-  'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
-export const DEFAULT_BANNER_URI =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='400'%3E%3Crect width='1200' height='400' fill='%23cccccc'/%3E%3C/svg%3E";
+// Re-export for backward compatibility
+export const DEFAULT_AVATAR_URI = DEFAULT_AVATAR_URL;
+export const DEFAULT_BANNER_URI = DEFAULT_BANNER_URL;
 
 export const pickImageFromLibrary = async (isAvatar: boolean): Promise<string | null> => {
   try {

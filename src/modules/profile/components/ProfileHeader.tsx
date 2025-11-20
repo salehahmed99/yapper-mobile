@@ -1,14 +1,15 @@
+import { DEFAULT_AVATAR_URL, DEFAULT_BANNER_URL } from '@/src/constants/defaults';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, Ellipsis } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native';
-import Toast from 'react-native-toast-message';
 import { useTheme } from '../../../context/ThemeContext';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { useBlockUser } from '../hooks/useBlockUser';
 import { useFollowUser } from '../hooks/useFollowUser';
-import { getUserById, muteUser, unmuteUser } from '../services/profileService';
+import { useMuteUser } from '../hooks/useMuteUser';
+import { getUserById } from '../services/profileService';
 import { createHeaderStyles } from '../styles/profile-header-styles';
 import { IUserProfile } from '../types';
 import { formatDateToDisplay } from '../utils/helper-functions.utils';
@@ -29,10 +30,9 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
   const [profileUser, setProfileUser] = useState<IUserProfile | null>(null);
   const [loading, setLoading] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [imageUri, setImageUri] = useState('https://randomuser.me/api/portraits/men/1.jpg');
-  const [bannerUri, setBannerUri] = useState('https://picsum.photos/1200/400');
+  const [imageUri, setImageUri] = useState(DEFAULT_AVATAR_URL);
+  const [bannerUri, setBannerUri] = useState(DEFAULT_BANNER_URL);
   const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const { theme } = useTheme();
   const headerStyles = useMemo(() => createHeaderStyles(theme), [theme]);
 
@@ -44,18 +44,44 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
   // Use block hook for managing block state
   const { isBlocked, isLoading: blockLoading, toggleBlock, setIsBlocked } = useBlockUser(false);
 
+  // Use mute hook for managing mute state
+  const { isMuted, isLoading: muteLoading, toggleMute, setIsMuted } = useMuteUser(false);
+
   // Fetch user data if it's another user's profile
   useEffect(() => {
     if (!isOwnProfile && userId) {
       setLoading(true);
       getUserById(userId)
-        .then((response) => {
-          setProfileUser(response.data);
-          setIsFollowing(response.data.isFollowing || false);
-          setIsMuted(response.data.isMuted || false);
-          setIsBlocked(response.data.isBlocked || false);
-          if (response.data.avatarUrl) setImageUri(response.data.avatarUrl);
-          if (response.data.coverUrl) setBannerUri(response.data.coverUrl);
+        .then((data) => {
+          // Map camelCase response to IUserProfile
+          const mappedUser: IUserProfile = {
+            id: data.userId,
+            email: '',
+            name: data.name,
+            username: data.username,
+            bio: data.bio,
+            avatarUrl: data.avatarUrl,
+            coverUrl: data.coverUrl || null,
+            country: data.country,
+            createdAt: data.createdAt,
+            followers: data.followersCount,
+            following: data.followingCount,
+            followersCount: data.followersCount,
+            followingCount: data.followingCount,
+            isFollower: data.isFollower,
+            isFollowing: data.isFollowing,
+            isMuted: data.isMuted,
+            isBlocked: data.isBlocked,
+            topMutualFollowers: data.topMutualFollowers,
+            mutualFollowersCount: parseInt(data.mutualFollowersCount, 10) || 0,
+            birthDate: '',
+          };
+          setProfileUser(mappedUser);
+          setIsFollowing(data.isFollowing || false);
+          setIsMuted(data.isMuted || false);
+          setIsBlocked(data.isBlocked || false);
+          if (data.avatarUrl) setImageUri(data.avatarUrl);
+          if (data.coverUrl) setBannerUri(data.coverUrl);
         })
         .catch((error) => {
           console.error('Error fetching user:', error);
@@ -64,22 +90,22 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
           setLoading(false);
         });
     }
-  }, [userId, isOwnProfile, setIsFollowing, setIsBlocked]);
+  }, [userId, isOwnProfile, setIsFollowing, setIsBlocked, setIsMuted]);
 
   // Use currentUser for own profile, profileUser for others
   const displayUser = isOwnProfile ? currentUser : profileUser;
 
   // Update imageUri when user data changes (for own profile)
   useEffect(() => {
-    if (isOwnProfile && currentUser?.avatarUrl) {
-      setImageUri(currentUser.avatarUrl);
+    if (isOwnProfile) {
+      setImageUri(currentUser?.avatarUrl || DEFAULT_AVATAR_URL);
     }
   }, [isOwnProfile, currentUser?.avatarUrl]);
 
   // Update bannerUri when user data changes (for own profile)
   useEffect(() => {
-    if (isOwnProfile && currentUser?.coverUrl) {
-      setBannerUri(currentUser.coverUrl);
+    if (isOwnProfile) {
+      setBannerUri(currentUser?.coverUrl || DEFAULT_BANNER_URL);
     }
   }, [isOwnProfile, currentUser?.coverUrl]);
 
@@ -92,37 +118,8 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
   const bannerRef = useRef<any>(null);
 
   const handleMute = async () => {
-    if (!userId) return;
-
-    try {
-      if (isMuted) {
-        await unmuteUser(userId);
-        setIsMuted(false);
-        Toast.show({
-          type: 'success',
-          text1: t('profile.toasts.userUnmuted'),
-          text2: t('profile.toasts.userUnmutedDesc'),
-          position: 'bottom',
-        });
-      } else {
-        await muteUser(userId);
-        setIsMuted(true);
-        Toast.show({
-          type: 'success',
-          text1: t('profile.toasts.userMuted'),
-          text2: t('profile.toasts.userMutedDesc'),
-          position: 'bottom',
-        });
-      }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to update mute status';
-      Toast.show({
-        type: 'error',
-        text1: t('profile.toasts.error'),
-        text2: errorMessage,
-        position: 'bottom',
-      });
-    }
+    if (!userId || muteLoading) return;
+    await toggleMute(userId);
   };
 
   const handleBlock = async () => {
@@ -136,23 +133,30 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
   };
 
   return (
-    <View style={headerStyles.container}>
+    <View style={headerStyles.container} testID="profile_header_container">
       {/* Banner */}
       <TouchableOpacity
+        testID="profile_header_banner_button"
         activeOpacity={0.95}
         ref={bannerRef}
-        onPress={() => openImageViewer(bannerRef, setOrigin, setViewerOpen)}
+        onPress={() => {
+          if (bannerUri !== DEFAULT_BANNER_URL) {
+            openImageViewer(bannerRef, setOrigin, setViewerOpen);
+          }
+        }}
+        disabled={bannerUri === DEFAULT_BANNER_URL}
       >
         {loading || (!isOwnProfile && !profileUser) ? (
           <View style={headerStyles.banner}>
             <ActivityIndicator size="large" color={theme.colors.text.link} />
           </View>
         ) : (
-          <Image source={{ uri: bannerUri }} style={headerStyles.banner} />
+          <Image source={{ uri: bannerUri }} style={headerStyles.banner} testID="profile_header_banner_image" />
         )}
 
         {/* Back Button */}
         <TouchableOpacity
+          testID="profile_header_back_button"
           style={headerStyles.backButton}
           onPress={() => {
             if (router.canGoBack()) {
@@ -165,7 +169,11 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
 
         {/* Profile Actions */}
         {!isOwnProfile && (
-          <TouchableOpacity style={headerStyles.actionsButton} onPress={() => setActionsMenuOpen(true)}>
+          <TouchableOpacity
+            testID="profile_header_actions_button"
+            style={headerStyles.actionsButton}
+            onPress={() => setActionsMenuOpen(true)}
+          >
             <Ellipsis color="#fff" size={25} />
           </TouchableOpacity>
         )}
@@ -174,6 +182,7 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
       {/* Image and button Container */}
       <View style={headerStyles.imageContainer}>
         <TouchableOpacity
+          testID="profile_header_avatar_button"
           activeOpacity={0.9}
           ref={avatarRef}
           onPress={() => openImageViewer(avatarRef, setOrigin, setViewerOpen)}
@@ -183,17 +192,22 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
               <ActivityIndicator size="small" color={theme.colors.text.link} />
             </View>
           ) : (
-            <Image source={{ uri: imageUri }} style={headerStyles.avatar} />
+            <Image source={{ uri: imageUri }} style={headerStyles.avatar} testID="profile_header_avatar_image" />
           )}
         </TouchableOpacity>
 
         {/* Edit or Follow button */}
         {isOwnProfile ? (
-          <TouchableOpacity style={headerStyles.editButton} onPress={() => setEditModalOpen(true)}>
+          <TouchableOpacity
+            testID="profile_header_edit_button"
+            style={headerStyles.editButton}
+            onPress={() => setEditModalOpen(true)}
+          >
             <Text style={headerStyles.editText}>{t('profile.editProfile')}</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
+            testID="profile_header_follow_button"
             style={[headerStyles.editButton, isFollowing && headerStyles.followingButton]}
             onPress={handleFollowToggle}
             disabled={followLoading}
@@ -210,23 +224,30 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
       </View>
 
       {/* Info */}
-      <View style={headerStyles.info}>
+      <View style={headerStyles.info} testID="profile_header_info_container">
         {loading || (!isOwnProfile && !profileUser) ? (
           <View style={headerStyles.loadingContainer}>
             <ActivityIndicator size="large" color={theme.colors.text.link} />
           </View>
         ) : (
           <>
-            <Text style={headerStyles.name}>{displayUser?.name || 'User'}</Text>
-            <Text style={headerStyles.handle}>@{displayUser?.username || 'username'}</Text>
-            <Text style={headerStyles.bio}>{displayUser?.bio || t('profile.noBio')}</Text>
-            <Text style={headerStyles.link}>
+            <Text style={headerStyles.name} testID="profile_header_name">
+              {displayUser?.name || 'User'}
+            </Text>
+            <Text style={headerStyles.handle} testID="profile_header_username">
+              @{displayUser?.username || 'username'}
+            </Text>
+            <Text style={headerStyles.bio} testID="profile_header_bio">
+              {displayUser?.bio || t('profile.noBio')}
+            </Text>
+            <Text style={headerStyles.link} testID="profile_header_joined_date">
               {displayUser?.username} • {t('profile.joined')} {formatDateToDisplay(displayUser?.createdAt || '')}
             </Text>
 
             {/* Stats */}
-            <View style={headerStyles.stats}>
+            <View style={headerStyles.stats} testID="profile_header_stats_container">
               <TouchableOpacity
+                testID="profile_header_following_button"
                 onPress={() => {
                   const targetUserId = isOwnProfile ? currentUser?.id : userId;
                   const targetUsername = isOwnProfile ? currentUser?.name : profileUser?.name;
@@ -236,11 +257,13 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
                   );
                 }}
               >
-                <Text style={headerStyles.stat}>
-                  <Text style={headerStyles.bold}>{displayUser?.following || 0}</Text> {t('profile.following')}
+                <Text style={headerStyles.stat} testID="profile_header_following_count">
+                  <Text style={headerStyles.bold}>{displayUser?.followingCount || displayUser?.following || 0}</Text>{' '}
+                  {t('profile.following')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
+                testID="profile_header_followers_button"
                 onPress={() => {
                   const targetUserId = isOwnProfile ? currentUser?.id : userId;
                   const targetUsername = isOwnProfile ? currentUser?.name : profileUser?.name;
@@ -250,8 +273,9 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
                   );
                 }}
               >
-                <Text style={headerStyles.statWithMargin}>
-                  <Text style={headerStyles.bold}>{displayUser?.followers || 0}</Text> {t('profile.followers')}
+                <Text style={headerStyles.statWithMargin} testID="profile_header_followers_count">
+                  <Text style={headerStyles.bold}>{displayUser?.followers || displayUser?.followersCount || 0}</Text>{' '}
+                  {t('profile.followers')}
                 </Text>
               </TouchableOpacity>
             </View>

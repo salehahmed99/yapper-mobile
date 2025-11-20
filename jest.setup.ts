@@ -21,6 +21,13 @@ jest.mock('expo-secure-store', () => ({
 }));
 
 // ----------------------------
+// Mock React Native Alert
+// ----------------------------
+jest.mock('react-native/Libraries/Alert/Alert', () => ({
+  alert: jest.fn(),
+}));
+
+// ----------------------------
 // Mock react-native-safe-area-context
 // ----------------------------
 jest.mock('react-native-safe-area-context', () => ({

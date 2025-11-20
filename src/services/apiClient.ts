@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { router } from 'expo-router';
+import humps from 'humps';
 import { deleteToken, getToken } from '../utils/secureStorage';
 
 const api = axios.create({
@@ -11,6 +12,11 @@ const api = axios.create({
 
 api.interceptors.request.use(
   async (config) => {
+    // Skip transformation for FormData (file uploads) to prevent corruption
+    if (!(config.data instanceof FormData)) {
+      config.data = humps.decamelizeKeys(config.data);
+    }
+    config.params = humps.decamelizeKeys(config.params);
     const token = await getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -21,7 +27,10 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    response.data = humps.camelizeKeys(response.data);
+    return response;
+  },
   async (error) => {
     const status = error?.response?.status;
 
