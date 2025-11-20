@@ -175,13 +175,13 @@ const createStyles = (theme: Theme) =>
     },
     topRow: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
       alignItems: 'center',
+      gap: theme.spacing.sm,
     },
     optionsRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: theme.spacing.sm,
+      gap: theme.spacing.xs,
     },
     tweetContent: {},
     avatar: {

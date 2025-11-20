@@ -16,10 +16,14 @@ const UserInfoRow: React.FC<IUserInfoRowProps> = (props) => {
 
   return (
     <View style={styles.userInfoRow}>
-      <Text style={styles.name}>{tweet.user.name}</Text>
-      <Text style={styles.username}>@{tweet.user.username}</Text>
+      <Text style={styles.name} numberOfLines={1}>
+        {tweet.user.name}
+      </Text>
+      <Text style={styles.username} numberOfLines={1}>
+        @{tweet.user.username}
+      </Text>
       <View style={styles.dot} />
-      <Text style={styles.username}>{tweet.createdAt && formatTweetDate(tweet.createdAt)}</Text>
+      <Text style={styles.timestamp}>{tweet.createdAt && formatTweetDate(tweet.createdAt)}</Text>
     </View>
   );
 };
@@ -32,20 +36,30 @@ const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       alignItems: 'center',
       gap: theme.spacing.xs,
+      flex: 1,
     },
     name: {
       fontFamily: theme.typography.fonts.semiBold,
       fontSize: theme.typography.sizes.sm,
       color: theme.colors.text.primary,
+      flexShrink: 1,
     },
     username: {
       fontFamily: theme.typography.fonts.light,
       fontSize: theme.typography.sizes.sm,
       color: theme.colors.text.secondary,
+      flexShrink: 2,
     },
     dot: {
       width: 2,
       height: 2,
       backgroundColor: theme.colors.text.secondary,
+      flexShrink: 0,
+    },
+    timestamp: {
+      fontFamily: theme.typography.fonts.light,
+      fontSize: theme.typography.sizes.sm,
+      color: theme.colors.text.secondary,
+      flexShrink: 0,
     },
   });
