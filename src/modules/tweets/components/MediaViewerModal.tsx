@@ -26,6 +26,7 @@ import { useTweet } from '@/src/modules/tweets/hooks/useTweet';
 import { useTweetActions } from '@/src/modules/tweets/hooks/useTweetActions';
 import { MediaItem, MediaViewerContentProps } from '@/src/modules/tweets/types/mediaViewer';
 import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { VideoView } from 'expo-video';
 import { ArrowLeft, Pause, Play, Volume2, VolumeX } from 'lucide-react-native';
@@ -67,6 +68,7 @@ function MediaViewerContent({
 }: MediaViewerContentProps) {
   const styles = useMemo(() => createStyles(theme), [theme]);
   const queryClient = useQueryClient();
+  const router = useRouter();
   const { data: tweet } = useTweet(tweetId);
   const { likeMutation, repostMutation } = useTweetActions();
 
@@ -180,6 +182,14 @@ function MediaViewerContent({
     setIsBookmarked(!isBookmarked);
   };
 
+  const handleUserProfilePress = () => {
+    if (!tweet?.user?.id) return;
+    router.push({
+      pathname: '/(protected)/(profile)/[id]',
+      params: { id: tweet.user.id },
+    });
+  };
+
   const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
     if (viewableItems.length > 0 && viewableItems[0].index !== null) {
       setCurrentIndex(viewableItems[0].index);
@@ -250,6 +260,7 @@ function MediaViewerContent({
               {allMedia[currentIndex]?.type === 'image' && (
                 <TouchableOpacity
                   style={styles.topBarCenter}
+                  onPress={handleUserProfilePress}
                   accessibilityLabel="media_view_profile"
                   accessibilityRole="button"
                 >
@@ -337,6 +348,7 @@ function MediaViewerContent({
               <View style={styles.userInfoContent} pointerEvents="auto">
                 <TouchableOpacity
                   style={styles.bottomUserRow}
+                  onPress={handleUserProfilePress}
                   accessibilityLabel="media_video_profile"
                   accessibilityRole="button"
                 >
