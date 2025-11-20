@@ -2,7 +2,6 @@ import DropdownMenu, { DropdownMenuItem } from '@/src/components/DropdownMenu';
 import GrokLogo from '@/src/components/icons/GrokLogo';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { MoreHorizontal } from 'lucide-react-native';
@@ -11,39 +10,27 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
-import ParentTweet from './ParentTweet';
 import RepostIndicator from './RepostIndicator';
-import RepostOptionsModal from './RepostOptionsModal';
 import UserInfoRow from './UserInfoRow';
 
 interface ITweetProps {
   tweet: ITweet;
-  parentTweet?: ITweet | null;
   onReplyPress: () => void;
-  onRepostPress: (isReposted: boolean) => void;
-  onQuotePress: () => void;
-  onLikePress: (isLiked: boolean) => void;
-  onViewsPress: () => void;
-  onViewPostInteractionsPress: (tweetId: string, ownerId: string) => void;
-  onBookmarkPress: () => void;
-  onSharePress: () => void;
-  bottomSheetModalRef: React.RefObject<BottomSheetModal | null>;
+  onLike: (isLiked: boolean) => void;
+  onViewPostInteractions: (tweetId: string, ownerId: string) => void;
+  onBookmark: () => void;
+  onShare: () => void;
   openSheet: () => void;
 }
 
 const Tweet: React.FC<ITweetProps> = (props) => {
   const {
     tweet,
-    parentTweet,
     onReplyPress,
-    onRepostPress,
-    onQuotePress,
-    onLikePress,
-    onViewsPress,
-    onViewPostInteractionsPress,
-    // onBookmarkPress,
-    onSharePress,
-    bottomSheetModalRef,
+    onLike,
+    onViewPostInteractions,
+    // onBookmark,
+    onShare,
     openSheet,
   } = props;
   const { theme } = useTheme();
@@ -72,7 +59,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
     {
       label: t('tweetActivity.viewPostInteractions'),
       onPress: () => {
-        onViewPostInteractionsPress(tweet.tweetId, tweet.user.id);
+        onViewPostInteractions(tweet.tweetId, tweet.user.id);
       },
     },
   ];
@@ -122,34 +109,26 @@ const Tweet: React.FC<ITweetProps> = (props) => {
           <View style={styles.tweetContent}>
             <Text style={styles.tweetText}>{tweet.content}</Text>
           </View>
-          {parentTweet && <ParentTweet tweet={parentTweet} />}
+          {/* {parentTweet && <ParentTweet tweet={parentTweet} />} */}
           <ActionsRow
-            size="small"
             tweet={tweet}
+            size="small"
             onReplyPress={onReplyPress}
             onRepostPress={openSheet}
-            onLikePress={onLikePress}
-            onViewsPress={onViewsPress}
+            onLikePress={onLike}
             onBookmarkPress={() => setIsBookmarked(!isBookmarked)}
             isBookmarked={isBookmarked}
-            onSharePress={onSharePress}
+            onSharePress={onShare}
+          />
+
+          <DropdownMenu
+            visible={menuVisible}
+            onClose={() => setMenuVisible(false)}
+            items={menuItems}
+            position={menuPosition}
           />
         </View>
       </View>
-
-      <RepostOptionsModal
-        isReposted={tweet.isReposted}
-        onRepostPress={() => onRepostPress(tweet.isReposted)}
-        onQuotePress={onQuotePress}
-        onViewInteractionsPress={() => onViewPostInteractionsPress(tweet.tweetId, tweet.user.id)}
-        bottomSheetModalRef={bottomSheetModalRef}
-      />
-      <DropdownMenu
-        visible={menuVisible}
-        onClose={() => setMenuVisible(false)}
-        items={menuItems}
-        position={menuPosition}
-      />
     </Pressable>
   );
 };

@@ -8,7 +8,7 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 interface ITweetActionButtonProps {
   icon: React.FC<ISvgIconProps>;
   count?: number;
-  onPress: () => void;
+  onPress?: () => void;
   color?: string;
   filled?: boolean;
   accessibilityLabel: string;

@@ -15,24 +15,13 @@ interface IActionsRowProps {
   onReplyPress: () => void;
   onRepostPress: () => void;
   onLikePress: (isLiked: boolean) => void;
-  onViewsPress: () => void;
   onBookmarkPress: () => void;
   isBookmarked: boolean;
   onSharePress: () => void;
   size: 'small' | 'large';
 }
 const ActionsRow: React.FC<IActionsRowProps> = (props) => {
-  const {
-    tweet,
-    onReplyPress,
-    onRepostPress,
-    onLikePress,
-    onViewsPress,
-    onBookmarkPress,
-    onSharePress,
-    isBookmarked,
-    size,
-  } = props;
+  const { tweet, onReplyPress, onRepostPress, onLikePress, onBookmarkPress, onSharePress, isBookmarked, size } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -67,7 +56,6 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
         <TweetActionButton
           icon={ViewsIcon}
           count={tweet.viewsCount}
-          onPress={onViewsPress}
           size={size}
           accessibilityLabel="tweet_button_views"
         />

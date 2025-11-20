@@ -2,45 +2,31 @@ import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { formatDateDDMMYYYY, formatShortTime } from '@/src/utils/dateUtils';
 import { formatCount } from '@/src/utils/formatCount';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
-import ParentTweet from './ParentTweet';
 import RepostIndicator from './RepostIndicator';
-import RepostOptionsModal from './RepostOptionsModal';
 
 interface IFullTweetProps {
   tweet: ITweet;
-  parentTweet?: ITweet | null;
   onReplyPress: () => void;
-  onRepostPress: (isReposted: boolean) => void;
-  onQuotePress: () => void;
-  onLikePress: (isLiked: boolean) => void;
-  onViewsPress: () => void;
-  onViewPostInteractionsPress: (tweetId: string, ownerId: string) => void;
-  onBookmarkPress: () => void;
-  onSharePress: () => void;
-  bottomSheetModalRef: React.RefObject<BottomSheetModal | null>;
+  onLike: (isLiked: boolean) => void;
+  onViewPostInteractions: (tweetId: string, ownerId: string) => void;
+  onBookmark: () => void;
+  onShare: () => void;
   openSheet: () => void;
 }
 
 const FullTweet: React.FC<IFullTweetProps> = (props) => {
   const {
     tweet,
-    parentTweet,
     onReplyPress,
-    onRepostPress,
-    onQuotePress,
-    onLikePress,
-    onViewsPress,
-    onViewPostInteractionsPress,
-    // onBookmarkPress,
-    onSharePress,
-    bottomSheetModalRef,
+    onLike,
+    // onBookmark,
+    onShare,
     openSheet,
   } = props;
   const { theme } = useTheme();
@@ -48,6 +34,8 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
   const router = useRouter();
 
   const [isBookmarked, setIsBookmarked] = useState(false);
+
+  console.log(tweet.type);
 
   return (
     <View style={styles.container} accessibilityLabel="full_tweet_container_main">
@@ -82,7 +70,7 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
       </View>
 
       {/* Parent Tweet (Quote) */}
-      {parentTweet && <ParentTweet tweet={parentTweet} />}
+      {/* {parentTweet && <ParentTweet tweet={parentTweet} />} */}
 
       {/* iOS-style Timestamp with Views */}
       <View style={styles.timestampViewsSection}>
@@ -103,19 +91,10 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
           size="large"
           onReplyPress={onReplyPress}
           onRepostPress={openSheet}
-          onLikePress={onLikePress}
-          onViewsPress={onViewsPress}
+          onLikePress={onLike}
           onBookmarkPress={() => setIsBookmarked(!isBookmarked)}
           isBookmarked={isBookmarked}
-          onSharePress={onSharePress}
-        />
-
-        <RepostOptionsModal
-          isReposted={tweet.isReposted}
-          onRepostPress={() => onRepostPress(tweet.isReposted)}
-          onQuotePress={onQuotePress}
-          onViewInteractionsPress={() => onViewPostInteractionsPress(tweet.tweetId, tweet.user.id)}
-          bottomSheetModalRef={bottomSheetModalRef}
+          onSharePress={onShare}
         />
       </View>
     </View>
