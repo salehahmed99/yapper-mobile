@@ -39,7 +39,7 @@ const CustomBottomSheet: React.FC<ICustomBottomSheetProps> = (props) => {
       handleIndicatorStyle={styles.handleIndicator}
       handleStyle={styles.handleContainer}
       enablePanDownToClose={true}
-      enableOverDrag={false}
+      enableOverDrag={true}
     >
       <BottomSheetView style={{ paddingBottom: insets.bottom }}>{children}</BottomSheetView>
     </BottomSheetModal>
