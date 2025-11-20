@@ -1,5 +1,14 @@
 import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
-import { likeTweet, repostTweet, undoRepostTweet, unlikeTweet } from '../services/tweetService';
+import {
+  createTweet,
+  deleteTweet,
+  likeTweet,
+  quoteTweet,
+  replyToTweet,
+  repostTweet,
+  undoRepostTweet,
+  unlikeTweet,
+} from '../services/tweetService';
 import { ITweet, ITweets } from '../types';
 import { updateTweetsInInfiniteCache } from '../utils/cacheUtils';
 
@@ -73,5 +82,43 @@ export const useTweetActions = (tweetId: string) => {
       queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
     },
   });
-  return { likeMutation, repostMutation };
+
+  const addPostMutation = useMutation({
+    mutationFn: async (content: string) => {
+      return createTweet(content);
+    },
+    onError: (error) => {
+      console.log('Error creating tweet:', error);
+    },
+  });
+
+  const replyToPostMutation = useMutation({
+    mutationFn: async (content: string) => {
+      return replyToTweet(tweetId, content);
+    },
+    onError: (error) => {
+      console.log('Error replying to tweet:', error);
+    },
+  });
+
+  const quotePostMutation = useMutation({
+    mutationFn: async (content: string) => {
+      return quoteTweet(tweetId, content);
+    },
+    onError: (error) => {
+      console.log('Error quoting tweet:', error);
+    },
+  });
+
+  const deletePostMutation = useMutation({
+    mutationFn: async () => {
+      // Implement delete tweet functionality here
+      return deleteTweet(tweetId);
+    },
+    onError: (error) => {
+      console.log('Error deleting tweet:', error);
+    },
+  });
+
+  return { likeMutation, repostMutation, addPostMutation, replyToPostMutation, quotePostMutation, deletePostMutation };
 };

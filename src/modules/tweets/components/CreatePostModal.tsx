@@ -4,24 +4,27 @@ import BottomToolBar from '@/src/modules/tweets/components/BottomToolBar';
 import CreatePostHeader from '@/src/modules/tweets/components/CreatePostHeader';
 import ReplyRestrictionModal from '@/src/modules/tweets/components/ReplyRestrictionModal';
 import ReplyRestrictionSelector from '@/src/modules/tweets/components/ReplyRestrictionSelector';
-import { createTweet } from '@/src/modules/tweets/services/tweetService';
 import { ITweet, ReplyRestrictionOptions } from '@/src/modules/tweets/types';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Image } from 'expo-image';
 import React, { useRef, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import ParentTweet from './ParentTweet';
+import ParentTweetV2 from './ParentTweetV2';
 
 const MAX_TWEET_LENGTH = 280;
 
 interface ICreatePostModalProps {
   visible: boolean;
   onClose: () => void;
-  type?: 'tweet' | 'quote' | 'reply';
+  type: 'tweet' | 'quote' | 'reply';
   tweet?: ITweet | null;
+  onPost: (content: string) => void;
+  onRepost?: () => void;
 }
 const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
-  const { visible, onClose } = props;
+  const { visible, onClose, type, tweet, onPost, onRepost } = props;
 
   const { theme } = useTheme();
   const styles = createStyles(theme);
@@ -36,14 +39,16 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
   const characterCount = tweetText.length;
   const remainingCharacters = MAX_TWEET_LENGTH - characterCount;
   const progressPercentage = (characterCount / MAX_TWEET_LENGTH) * 100;
-  const canPost = characterCount > 0 && characterCount <= MAX_TWEET_LENGTH;
+  const canPost = (characterCount > 0 || type === 'quote') && characterCount <= MAX_TWEET_LENGTH;
 
   const handlePost = async () => {
-    if (canPost) {
-      // TODO: Implement post creation
-      await createTweet(tweetText);
+    if (type === 'quote' && characterCount === 0 && onRepost) {
+      onRepost();
       onClose();
+      return;
     }
+    onPost(tweetText);
+    onClose();
   };
 
   const handleOpenReplyModal = () => {
@@ -58,6 +63,17 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
     }, 300);
   };
 
+  const getPlaceholderText = () => {
+    switch (type) {
+      case 'tweet':
+        return "What's happening?";
+      case 'quote':
+        return 'Add a comment';
+      case 'reply':
+        return 'Post your reply';
+    }
+  };
+
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <BottomSheetModalProvider>
@@ -70,9 +86,10 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
           <ScrollView
             style={styles.content}
             contentContainerStyle={styles.contentContainer}
-            keyboardShouldPersistTaps="always"
+            keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={true}
           >
+            {tweet && type === 'reply' && <ParentTweetV2 tweet={tweet} />}
             {/* Profile Picture and Text Input */}
             <View style={styles.composeSection}>
               <Image
@@ -81,19 +98,24 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
                 }}
                 style={styles.avatar}
               />
-              <TextInput
-                ref={textInputRef}
-                style={styles.textInput}
-                placeholder="What's happening?"
-                placeholderTextColor={theme.colors.text.secondary}
-                multiline
-                value={tweetText}
-                onChangeText={setTweetText}
-                autoFocus
-                maxLength={MAX_TWEET_LENGTH + 100}
-                cursorColor={theme.colors.accent.bookmark}
-                selectionColor={theme.colors.accent.bookmark}
-              />
+              <View style={styles.postContentContainer}>
+                {
+                  <TextInput
+                    ref={textInputRef}
+                    style={styles.textInput}
+                    placeholder={getPlaceholderText()}
+                    placeholderTextColor={theme.colors.text.secondary}
+                    multiline
+                    value={tweetText}
+                    onChangeText={setTweetText}
+                    autoFocus
+                    maxLength={MAX_TWEET_LENGTH + 100}
+                    cursorColor={theme.colors.accent.bookmark}
+                    selectionColor={theme.colors.accent.bookmark}
+                  />
+                }
+                {tweet && type === 'quote' && <ParentTweet tweet={tweet} />}
+              </View>
             </View>
           </ScrollView>
 
@@ -133,14 +155,20 @@ const createStyles = (theme: Theme) =>
       paddingHorizontal: theme.spacing.lg,
       gap: theme.spacing.md,
       marginTop: theme.spacing.sm,
+      //   borderWidth: 1,
+      //   borderColor: 'red',
     },
     avatar: {
       width: theme.avatarSizes.sm,
       height: theme.avatarSizes.sm,
       borderRadius: theme.avatarSizes.sm / 2,
     },
-    textInput: {
+
+    postContentContainer: {
       flex: 1,
+      gap: theme.spacing.sm,
+    },
+    textInput: {
       fontSize: theme.typography.sizes.md,
       color: theme.colors.text.primary,
       fontFamily: theme.typography.fonts.regular,

@@ -40,3 +40,21 @@ export const createTweet = async (content: string): Promise<ITweet> => {
   });
   return response.data.data;
 };
+
+export const deleteTweet = async (tweetId: string): Promise<void> => {
+  await api.delete(`/tweets/${tweetId}`);
+};
+
+export const replyToTweet = async (tweetId: string, content: string): Promise<ITweet> => {
+  const response = await api.post<ISingleTweetResponse>(`/tweets/${tweetId}/reply`, {
+    content,
+  });
+  return response.data.data;
+};
+
+export const quoteTweet = async (tweetId: string, content: string): Promise<ITweet> => {
+  const response = await api.post<ISingleTweetResponse>(`/tweets/${tweetId}/quote`, {
+    content,
+  });
+  return response.data.data;
+};
