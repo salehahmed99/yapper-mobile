@@ -13,7 +13,7 @@ export interface IUserDTO {
   birth_date?: string;
   language?: string;
   verified?: boolean;
-  country?: string;
+  country?: string | null;
   online?: boolean;
   created_at?: string;
   updated_at?: string;

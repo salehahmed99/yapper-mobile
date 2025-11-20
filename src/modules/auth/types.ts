@@ -12,8 +12,6 @@ export interface ILoginCredentials {
 /**
  * Login
  */
-export type ILoginResponse = IApiResponse<{ accessToken: string; user: IUser }>;
-export type ILoginResponseDTO = IApiResponse<{ access_token: string; user: IUserDTO }>;
 
 export interface IForgetPasswordRequest {
   identifier: string;
@@ -41,7 +39,7 @@ export interface IRegisterData {
    ========================================================= */
 export type ILoginResponseDTO = IApiResponse<{
   access_token: string;
-  user: IUser;
+  user: IUserDTO;
 }>;
 
 export type ILoginResponse = IApiResponse<{

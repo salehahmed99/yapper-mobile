@@ -1,4 +1,3 @@
-
 import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import ThemeSettingsSheet from '@/src/components/shell/ThemeSettingsSheet';
 import { Theme } from '@/src/constants/theme';
