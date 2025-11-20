@@ -39,6 +39,8 @@ api.interceptors.response.use(
     // check for unauthorized or forbidden
     if ((status === 401 || status === 403) && requestUrl && !requestUrl.includes('/login')) {
       await deleteToken();
+      const { useAuthStore } = await import('../store/useAuthStore');
+      useAuthStore.getState().logout();
       router.replace('/(auth)/landing-screen');
     }
 
