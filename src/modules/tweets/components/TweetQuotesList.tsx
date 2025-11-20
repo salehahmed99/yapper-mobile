@@ -27,7 +27,12 @@ const TweetQuotesList: React.FC<ITweetQuotesListProps> = ({ tweetId }) => {
   const renderFooter = () => {
     if (quotesQuery.isFetchingNextPage) {
       return (
-        <View style={styles.loadingFooter}>
+        <View
+          style={styles.loadingFooter}
+          accessible={true}
+          accessibilityLabel="Loading more quotes"
+          accessibilityRole="progressbar"
+        >
           <ActivityIndicator size="small" color={theme.colors.text.primary} />
         </View>
       );
@@ -52,6 +57,9 @@ const TweetQuotesList: React.FC<ITweetQuotesListProps> = ({ tweetId }) => {
             ListFooterComponent={renderFooter}
             scrollIndicatorInsets={{ right: 1 }}
             scrollEnabled
+            accessible={true}
+            accessibilityLabel="Tweet quotes list"
+            accessibilityRole="list"
           />
         );
       }}

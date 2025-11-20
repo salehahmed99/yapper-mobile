@@ -73,11 +73,24 @@ const FollowButton: React.FC<IFollowButtonProps> = ({ user, onPress }) => {
       onPress={handlePress}
       activeOpacity={0.7}
       disabled={isLoading}
+      testID={`follow_button_${user.id}`}
+      accessibilityLabel={
+        isFollowing ? `unfollow_${user.username || user.name}` : `follow_${user.username || user.name}`
+      }
+      accessibilityRole="button"
+      accessibilityState={{ disabled: isLoading }}
     >
       {isLoading ? (
-        <ActivityIndicator size="small" color={isFollowing ? theme.colors.text.primary : theme.colors.text.inverse} />
+        <ActivityIndicator
+          size="small"
+          color={isFollowing ? theme.colors.text.primary : theme.colors.text.inverse}
+          testID={`follow_button_loader_${user.id}`}
+        />
       ) : (
-        <Text style={[styles.followButtonText, isFollowing && styles.followingButtonText]}>
+        <Text
+          style={[styles.followButtonText, isFollowing && styles.followingButtonText]}
+          testID={`follow_button_text_${user.id}`}
+        >
           {isFollowing ? t('userList.following') : t('userList.follow')}
         </Text>
       )}

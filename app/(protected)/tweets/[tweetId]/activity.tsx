@@ -93,10 +93,15 @@ export default function TweetActivityScreen() {
           <View style={styles.placeholder} />
         </View>
       </View>
-      <View style={styles.tabViewWrapper}>
+      <View
+        style={styles.tabViewWrapper}
+        accessible={true}
+        accessibilityLabel="Tweet activity tabs"
+        accessibilityRole="tablist"
+      >
         <CustomTabView tabs={tabs} scrollEnabled={false} />
       </View>
-      <View style={styles.content} />
+      <View style={styles.content} accessible={true} accessibilityLabel="Tweet activity content" />
     </SafeAreaView>
   );
 }
