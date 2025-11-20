@@ -17,12 +17,7 @@ const RepostIndicator: React.FC<IRepostIndicatorProps> = (props) => {
 
   return (
     <View style={styles.repostContainer}>
-      <RepostIcon
-        width={theme.iconSizes.xs}
-        height={theme.iconSizes.xs}
-        stroke={theme.colors.text.secondary}
-        strokeWidth={13}
-      />
+      <RepostIcon size={theme.iconSizes.xs} stroke={theme.colors.text.secondary} strokeWidth={0} />
       <Text style={styles.repostText}>{user?.id === repostById ? 'You' : repostedByName} reposted</Text>
     </View>
   );
