@@ -1,5 +1,5 @@
 import api from '@/src/services/apiClient';
-import { ISingleTweetResponse, ITweet, ITweetFilters, ITweets, ITweetsResponse } from '../types';
+import { IQuotesResponse, ISingleTweetResponse, ITweet, ITweetFilters, ITweets, ITweetsResponse } from '../types';
 
 export const getForYou = async (tweetFilters: ITweetFilters): Promise<ITweets> => {
   const response = await api.get<ITweetsResponse>('/timeline/for-you', {
@@ -32,4 +32,14 @@ export const repostTweet = async (tweetId: string): Promise<void> => {
 
 export const undoRepostTweet = async (tweetId: string): Promise<void> => {
   await api.delete(`/tweets/${tweetId}/repost`);
+};
+
+export const getTweetQuotes = async (
+  tweetId: string,
+  filters: { cursor?: string; limit?: number } = {},
+): Promise<IQuotesResponse> => {
+  const response = await api.get<IQuotesResponse>(`/tweets/${tweetId}/quotes`, {
+    params: filters,
+  });
+  return response.data;
 };

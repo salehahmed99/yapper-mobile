@@ -1,14 +1,15 @@
-import CustomTabView from '@/src/components/CustomTabView';
 import { ThemedText } from '@/src/components/ThemedText';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import CustomTabView, { TabConfig } from '@/src/modules/profile/components/CustomTabView';
+import TweetQuotesList from '@/src/modules/tweets/components/TweetQuotesList';
 import FollowButton from '@/src/modules/user_list/components/FollowButton';
 import UserList from '@/src/modules/user_list/components/UserList';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { IUser } from '@/src/types/user';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -32,38 +33,54 @@ export default function TweetActivityScreen() {
   const currentUserId = user?.id ?? null;
   const isTweetOwner = ownerId ? ownerId === currentUserId : false;
 
-  const [activeTabIndex, setActiveTabIndex] = useState(0);
+  const RepostsTab = useMemo(
+    () =>
+      function RepostsTab() {
+        return (
+          <UserList
+            key={`reposts-${tweetId}`}
+            type="reposts"
+            tweetId={tweetId || ''}
+            renderAction={(user: IUser) => <FollowButton user={user} />}
+          />
+        );
+      },
+    [tweetId],
+  );
 
-  const routes = useMemo(() => {
-    const baseRoutes = [
-      { key: 'reposts', title: t('tweetActivity.tabs.reposts') },
-      { key: 'quotes', title: t('tweetActivity.tabs.quotes') },
+  const QuotesTab = useMemo(
+    () =>
+      function QuotesTab() {
+        return <TweetQuotesList tweetId={tweetId || ''} />;
+      },
+    [tweetId],
+  );
+
+  const LikersTab = useMemo(
+    () =>
+      function LikersTab() {
+        return (
+          <UserList
+            key={`likers-${tweetId}`}
+            type="likes"
+            tweetId={tweetId || ''}
+            renderAction={(user: IUser) => <FollowButton user={user} />}
+          />
+        );
+      },
+    [tweetId],
+  );
+
+  const tabs: TabConfig[] = useMemo(() => {
+    const base: TabConfig[] = [
+      { key: 'reposts', title: t('tweetActivity.tabs.reposts'), component: RepostsTab },
+      { key: 'quotes', title: t('tweetActivity.tabs.quotes'), component: QuotesTab },
     ];
-
     if (isTweetOwner) {
-      baseRoutes.push({ key: 'likers', title: t('tweetActivity.tabs.likers') });
+      base.push({ key: 'likers', title: t('tweetActivity.tabs.likers'), component: LikersTab });
     }
-
-    return baseRoutes;
-  }, [t, isTweetOwner]);
-
-  const renderTabContent = () => {
-    const currentRoute = routes[activeTabIndex];
-
-    if (!currentRoute) {
-      return null;
-    }
-
-    const listType = currentRoute.key === 'likers' ? 'likes' : 'reposts';
-    return (
-      <UserList
-        key={`${currentRoute.key}-${tweetId}`}
-        type={listType}
-        tweetId={tweetId || ''}
-        renderAction={(user: IUser) => <FollowButton user={user} />}
-      />
-    );
-  };
+    return base;
+  }, [t, isTweetOwner, RepostsTab, QuotesTab, LikersTab]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -77,9 +94,9 @@ export default function TweetActivityScreen() {
         </View>
       </View>
       <View style={styles.tabViewWrapper}>
-        <CustomTabView routes={routes} index={activeTabIndex} onIndexChange={setActiveTabIndex} scrollable={false} />
+        <CustomTabView tabs={tabs} scrollEnabled={false} />
       </View>
-      <View style={styles.content}>{renderTabContent()}</View>
+      <View style={styles.content} />
     </SafeAreaView>
   );
 }

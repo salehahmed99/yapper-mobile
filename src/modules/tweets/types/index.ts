@@ -45,4 +45,11 @@ interface ITweets {
   has_more: boolean;
 }
 
-export { ISingleTweetResponse, ITweet, ITweetFilters, ITweets, ITweetsResponse };
+interface IQuotesResponse {
+  data: ITweet[];
+  count: number;
+  next_cursor?: string;
+  has_more: boolean;
+}
+
+export { IQuotesResponse, ISingleTweetResponse, ITweet, ITweetFilters, ITweets, ITweetsResponse };
