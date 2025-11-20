@@ -63,7 +63,7 @@ const createStyles = (theme: Theme) =>
     },
     postButtonText: {
       fontSize: theme.typography.sizes.sm - 1,
-      color: theme.colors.text.primary,
+      color: theme.colors.white,
       fontFamily: theme.typography.fonts.bold,
     },
   });
