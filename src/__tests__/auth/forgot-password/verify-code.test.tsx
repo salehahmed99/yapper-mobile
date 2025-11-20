@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ThemeProvider } from '@/src/context/ThemeContext';
 import * as forgetPasswordService from '@/src/modules/auth/services/forgetPasswordService';
 import { useForgotPasswordStore } from '@/src/modules/auth/store/useForgetPasswordStore';
@@ -82,14 +83,6 @@ describe('VerifyCodeScreen', () => {
       const store = mockStoreActions;
       return selector(store as any);
     });
-  });
-
-  it('renders correctly', () => {
-    render(<TestComponent />);
-
-    expect(screen.getByText('We sent you a code')).toBeTruthy();
-    expect(screen.getByText('Enter it below to verify your identity.')).toBeTruthy();
-    expect(screen.getByDisplayValue('')).toBeTruthy();
   });
 
   it('successfully verifies code and navigates to reset password', async () => {

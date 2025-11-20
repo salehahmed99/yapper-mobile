@@ -1,6 +1,7 @@
 import ActivityLoader from '@/src/components/ActivityLoader';
 import AuthInputScreen from '@/src/modules/auth/components/shared/AuthInput';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
+import AuthTitle from '@/src/modules/auth/components/shared/Title';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { requestForgetPassword } from '@/src/modules/auth/services/forgetPasswordService';
 import { useForgotPasswordStore } from '@/src/modules/auth/store/useForgetPasswordStore';
@@ -9,9 +10,15 @@ import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
+import { View, StyleSheet } from 'react-native';
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
 
 const FindAccountScreen = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
+
+  const styles = React.useMemo(() => createStyles(theme), [theme]);
 
   // Zustand store
   const identifier = useForgotPasswordStore((state) => state.identifier);
@@ -78,16 +85,18 @@ const FindAccountScreen = () => {
   };
 
   return (
-    <>
+    <View style={styles.container}>
       <ActivityLoader visible={isLoading} message={t('activityLoader.sendingCode')} />
       <TopBar onBackPress={handleTopBarBackPress} />
-      <AuthInputScreen
-        title={t('auth.forgotPassword.findAccountTitle')}
-        description={t('auth.forgotPassword.findAccountDescription')}
-        label={t('auth.login.emailLabel')}
-        value={inputValue}
-        onChange={setInputValue}
-      />
+      <View style={styles.content}>
+        <AuthTitle title={t('auth.forgotPassword.findAccountTitle')} />
+        <AuthInputScreen
+          description={t('auth.forgotPassword.findAccountDescription')}
+          label={t('auth.login.emailLabel')}
+          value={inputValue}
+          onChange={setInputValue}
+        />
+      </View>
       <BottomBar
         rightButton={{
           label: ButtonOptions.NEXT,
@@ -97,8 +106,17 @@ const FindAccountScreen = () => {
           type: 'primary',
         }}
       />
-    </>
+    </View>
   );
 };
+
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: theme.colors.background.primary },
+    content: {
+      flex: 1,
+      justifyContent: 'flex-start',
+    },
+  });
 
 export default FindAccountScreen;

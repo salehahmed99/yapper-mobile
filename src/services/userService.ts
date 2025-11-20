@@ -10,3 +10,31 @@ export const updateUserName = async (newUsername: string): Promise<ILoginRespons
     throw new Error(extractErrorMessage(error));
   }
 };
+
+/**
+ * Upload Profile Picture
+ */
+export const uploadProfilePicture = async (file: { uri: string; name: string; type: string }): Promise<boolean> => {
+  try {
+    const formData = new FormData();
+    formData.append('file', {
+      uri: file.uri,
+      name: file.name,
+      type: file.type,
+    } as unknown as Blob);
+
+    const res = await api.post('/users/me/upload-avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    const resultUser = await api.patch('/users/me', {
+      avatar_url: res.data.data.image_url,
+    });
+    return resultUser.status === 200;
+  } catch (error: unknown) {
+    const message = extractErrorMessage(error);
+    throw new Error(message);
+  }
+};

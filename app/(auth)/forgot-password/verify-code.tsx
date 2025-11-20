@@ -1,6 +1,9 @@
 import ActivityLoader from '@/src/components/ActivityLoader';
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
 import AuthInputScreen from '@/src/modules/auth/components/shared/AuthInput';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
+import AuthTitle from '@/src/modules/auth/components/shared/Title';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { verifyOTP } from '@/src/modules/auth/services/forgetPasswordService';
 import { useForgotPasswordStore } from '@/src/modules/auth/store/useForgetPasswordStore';
@@ -8,10 +11,14 @@ import { ButtonOptions } from '@/src/modules/auth/utils/enums';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 const VerifyCodeScreen = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
+
+  const styles = React.useMemo(() => createStyles(theme), [theme]);
 
   // Zustand store
   const identifier = useForgotPasswordStore((state) => state.identifier);
@@ -79,16 +86,18 @@ const VerifyCodeScreen = () => {
     router.replace('/(auth)/landing-screen');
   };
   return (
-    <>
+    <View style={styles.container}>
       <ActivityLoader visible={isLoading} message={t('activityLoader.verifyingCode')} />
       <TopBar onBackPress={handleTopBarBackPress} />
-      <AuthInputScreen
-        title={t('auth.forgotPassword.verifyCodeTitle')}
-        description={t('auth.forgotPassword.verifyCodeDescription')}
-        label={t('auth.forgotPassword.verificationCodeLabel')}
-        value={code}
-        onChange={setCode}
-      />
+      <View style={styles.content}>
+        <AuthTitle title={t('auth.forgotPassword.verifyCodeTitle')} />
+        <AuthInputScreen
+          description={t('auth.forgotPassword.verifyCodeDescription')}
+          label={t('auth.forgotPassword.verificationCodeLabel')}
+          value={code}
+          onChange={setCode}
+        />
+      </View>
       <BottomBar
         rightButton={{
           label: ButtonOptions.NEXT,
@@ -105,8 +114,17 @@ const VerifyCodeScreen = () => {
           type: 'secondary',
         }}
       />
-    </>
+    </View>
   );
 };
+
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: theme.colors.background.primary },
+    content: {
+      flex: 1,
+      justifyContent: 'flex-start',
+    },
+  });
 
 export default VerifyCodeScreen;

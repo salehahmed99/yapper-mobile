@@ -29,7 +29,7 @@ export const requestForgetPassword = async (credentials: IForgetPasswordRequest)
 export const verifyOTP = async (credentials: IVerifyOTPRequest): Promise<string> => {
   try {
     const res = await api.post<IVerifyOTPResponse>('/auth/password/verify-otp', credentials);
-    return res.data.data.resetToken;
+    return res.data.data.reset_token;
   } catch (error: unknown) {
     const message = extractErrorMessage(error);
     throw new Error(message);

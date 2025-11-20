@@ -15,18 +15,13 @@
     "openMenu": "Open menu"
   },
   "menu": {
+    "home": "Home",
     "profile": "Profile",
-    "premium": "Premium",
-    "videos": "Videos",
-    "chat": "Chat",
-    "communities": "Communities",
-    "bookmarks": "Bookmarks",
-    "lists": "Lists",
-    "spaces": "Spaces",
-    "download": "Download Grok",
-    "settings": "Settings & Privacy",
-    "help": "Help Center",
-    "purchases": "Purchases"
+    "search": "Search",
+    "notifications": "Notifications",
+    "messages": "Messages",
+    "settings": "Settings",
+    "help": "Help Center"
   },
   "nav": {
     "home": "Home",
@@ -76,6 +71,122 @@
       "alerts": {
         "backButtonPressed": "Back button pressed",
         "forgotPasswordPressed": "Forgot Password pressed"
+      }
+    },
+    "signUp": {
+      "createAccount": {
+        "title": "Create your account",
+        "nameLabel": "Name",
+        "nameError": "Maximum 50 characters ({{count}}/50)",
+        "emailLabel": "Email",
+        "emailError": "Please enter a valid email address",
+        "dateOfBirthLabel": "Date of birth",
+        "dateOfBirthDescription": "This will not be shown publicly. Confirm your own age, even if this account is for a business, a pet, or something else.",
+        "dateOfBirthError": "You must be at least 13 years old to use this service",
+        "errors": {
+          "fillAllFields": "Please fill all fields correctly before proceeding.",
+          "failedToSend": "Failed to send verification code",
+          "tryAgain": "Please try again.",
+          "error": "Error",
+          "generic": "An error occurred"
+        },
+        "success": {
+          "codeSent": "Verification code sent",
+          "checkEmail": "Please check your email for the verification code."
+        },
+        "captcha": {
+          "expired": "Verification expired",
+          "tryAgain": "Please verify again to continue"
+        }
+      },
+      "verifyCode": {
+        "title": "We sent you a code",
+        "description": "Enter it below to verify you .",
+        "label": "Verification code",
+        "resendText": "Didn't receive email?",
+        "verifying": "Verifying code...",
+        "resending": "Resending code...",
+        "emailSent": "A verification code has been sent to you .",
+        "errors": {
+          "invalidCode": "Invalid code",
+          "sixDigit": "Please enter a 6-digit verification code.",
+          "incorrectCode": "The verification code you entered is incorrect.",
+          "verificationFailed": "Verification failed",
+          "resendFailed": "Failed to resend",
+          "tryAgain": "Please try again.",
+          "error": "Error",
+          "generic": "An error occurred"
+        },
+        "success": {
+          "codeVerified": "Code verified",
+          "emailVerified": "Your email has been verified successfully.",
+          "codeResent": "Code resent",
+          "newCodeSent": "A new verification code has been sent to your email."
+        }
+      },
+      "enterPassword": {
+        "title": "You'll need a password",
+        "description": "Make sure it's 8 characters or more.",
+        "passwordLabel": "Password",
+        "passwordError": "Password must contain uppercase, lowercase, number, and special character",
+        "signUpButton": "Sign up",
+        "termsPrefix": "By signing up, you agree to the",
+        "termsOfService": "Terms of Service",
+        "and": "and",
+        "privacyPolicy": "Privacy Policy",
+        "including": "including",
+        "cookieUse": "Cookie Use",
+        "termsDescription": "X may use your contact information, including your email address and phone number for purposes outlined in our Privacy Policy, like keeping your account secure and personalizing our services, including ads.",
+        "learnMore": "Learn more",
+        "findableText": "Others will be able to find you by email or phone number, when provided, unless you choose otherwise",
+        "here": "here",
+        "errors": {
+          "invalidPassword": "Invalid password",
+          "passwordRequirements": "Please ensure your password meets all requirements.",
+          "error": "Error",
+          "generic": "An error occurred"
+        },
+        "success": {
+          "accountCreated": "Account created",
+          "accountCreatedDesc": "Your account has been created successfully."
+        }
+      },
+      "uploadPhoto": {
+        "title": "Pick a profile picture",
+        "description": "Have a favorite selfie? Upload it now.",
+        "skipButton": "Skip for now",
+        "errors": {
+          "noImage": "No image selected",
+          "uploadOrSkip": "Please upload a profile picture or skip for now.",
+          "uploadFailed": "Upload failed",
+          "tryAgain": "Failed to upload profile picture. Please try again.",
+          "error": "Error",
+          "generic": "An error occurred"
+        },
+        "success": {
+          "title": "Success",
+          "uploaded": "Profile picture uploaded successfully."
+        }
+      },
+      "userName": {
+        "title": "What should we call you?",
+        "subtitle": "Your @username is unique. You can always change it later.",
+        "usernameLabel": "Username",
+        "showMore": "Show more",
+        "showLess": "Show less",
+        "skipButton": "Skip for now",
+        "errors": {
+          "usernameRequired": "Username required",
+          "selectOrEnter": "Please select or enter a username",
+          "invalidUsername": "Invalid username",
+          "usernameFormat": "Username must be 3-30 characters and contain only letters, numbers, and underscores",
+          "minLength": "Username must be at least 3 characters",
+          "error": "Error"
+        },
+        "success": {
+          "usernameSet": "Username set",
+          "yourUsername": "Your username is @{{username}}"
+        }
       }
     },
     "oauth": {
@@ -168,7 +279,6 @@
       "resettingPassword": "Resetting your password..."
     }
   },
-
   "buttons": {
     "next": "Next",
     "back": "Back",
@@ -181,7 +291,6 @@
     "verifyingCode": "Verifying code...",
     "resettingPassword": "Resetting your password..."
   },
-
   "userList": {
     "emptyState": "Nobody yet.",
     "errorRetry": "Try again",

@@ -32,7 +32,11 @@ const AppBar: React.FC<IAppBarProps> = (props) => {
   const visibleHeight = appBarVisible ? appBarHeight : insets.top;
 
   return (
-    <BlurView intensity={30} style={[styles.container, { paddingTop: insets.top, height: visibleHeight }]}>
+    <BlurView
+      intensity={30}
+      style={[styles.container, { paddingTop: insets.top, height: visibleHeight }]}
+      experimentalBlurMethod={'dimezisBlurView'}
+    >
       {appBarVisible ? (
         <>
           <View style={styles.headerContainer}>

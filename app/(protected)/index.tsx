@@ -1,15 +1,13 @@
 import HomeTabView from '@/src/components/home/HomeTabView';
-import XLogo from '@/src/components/icons/XLogo';
-import QueryWrapper from '@/src/components/QueryWrapper';
+import YapperLogo from '@/src/components/icons/YapperLogo';
 import AppBar from '@/src/components/shell/AppBar';
 import type { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import useMargins from '@/src/hooks/useMargins';
 import TweetList from '@/src/modules/tweets/components/TweetList';
 import { useTweets } from '@/src/modules/tweets/hooks/useTweets';
 import { useTweetsFiltersStore } from '@/src/modules/tweets/store/useTweetsFiltersStore';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { RefreshControl, StyleSheet, View } from 'react-native';
 
 export default function HomeScreen() {
   const { theme } = useTheme();
@@ -21,22 +19,63 @@ export default function HomeScreen() {
   const [homeIndex, setHomeIndex] = React.useState(0);
 
   const tweetsFilters = useTweetsFiltersStore((state) => state.filters);
+  const forYouQuery = useTweets(tweetsFilters, 'for-you');
+  const followingQuery = useTweets(tweetsFilters, 'following');
 
-  const tweetsQuery = useTweets(tweetsFilters);
+  // Select the active query based on tab index
+  const activeQuery = homeIndex === 0 ? forYouQuery : followingQuery;
 
-  const { marginTop, marginBottom } = useMargins();
+  // Flatten all pages of tweets into a single array
+  const tweets = React.useMemo(() => {
+    return activeQuery.data?.pages.flatMap((page) => page.tweets) ?? [];
+  }, [activeQuery.data]);
+
+  const onRefresh = React.useCallback(() => {
+    activeQuery.refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeQuery.refetch]);
+
+  const onEndReached = React.useCallback(() => {
+    if (activeQuery.hasNextPage && !activeQuery.isFetchingNextPage) {
+      activeQuery.fetchNextPage();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeQuery.hasNextPage, activeQuery.isFetchingNextPage, activeQuery.fetchNextPage]);
+
+  const refreshControl = (
+    <RefreshControl
+      refreshing={activeQuery.isRefetching}
+      onRefresh={onRefresh}
+      tintColor={theme.colors.text.primary}
+      colors={[theme.colors.text.primary]}
+    />
+  );
+
+  // Render different content based on the selected tab
+  const renderScene = () => {
+    return (
+      <View style={styles.tweetContainer}>
+        <TweetList
+          data={tweets}
+          refreshControl={refreshControl}
+          onEndReached={onEndReached}
+          onEndReachedThreshold={0.5}
+          isLoading={activeQuery.isLoading}
+          isFetchingNextPage={activeQuery.isFetchingNextPage}
+        />
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.appBarWrapper}>
         <AppBar
-          children={<XLogo size={32} color={theme.colors.text.primary} />}
+          children={<YapperLogo size={32} color={theme.colors.text.primary} />}
           tabView={<HomeTabView index={homeIndex} onIndexChange={(i) => setHomeIndex(i)} />}
         />
       </View>
-      <View style={[styles.tweetContainer, { marginTop, marginBottom }]}>
-        <QueryWrapper query={tweetsQuery}>{(tweets) => <TweetList data={tweets} />}</QueryWrapper>
-      </View>
+      {renderScene()}
     </View>
   );
 }
@@ -56,6 +95,5 @@ const createStyles = (theme: Theme) =>
     },
     tweetContainer: {
       flex: 1,
-      justifyContent: 'center',
     },
   });
