@@ -19,7 +19,7 @@ const LandingScreen: React.FC = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const completeOauthLogin = (userData: any) => {
+  const completeOauthLogin = async (userData: any) => {
     if (userData.data && 'needsCompletion' in userData.data && userData.data.needsCompletion) {
       router.push({
         pathname: '/(auth)/OAuth/birth-date-screen',
@@ -29,9 +29,9 @@ const LandingScreen: React.FC = () => {
       });
       return;
     } else {
-      loginUser(userData.data.user, userData.data.accessToken);
+      await loginUser(userData.data.user, userData.data.accessToken);
       setSkipRedirect(false);
-      setLoading(false);
+      router.replace('/(protected)');
     }
   };
 
@@ -40,8 +40,9 @@ const LandingScreen: React.FC = () => {
     try {
       const userData = await googleSignIn();
       completeOauthLogin(userData);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('Google login failed:', error);
+      // console.error('Google login failed:', error);
     } finally {
       setLoading(false);
     }
@@ -52,8 +53,9 @@ const LandingScreen: React.FC = () => {
     try {
       const userData = await githubSignIn();
       completeOauthLogin(userData);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('GitHub login failed:', error);
+      // console.error('GitHub login failed:', error);
     } finally {
       setLoading(false);
     }
