@@ -41,8 +41,9 @@ const LandingScreen: React.FC = () => {
     try {
       const userData = await googleSignIn();
       completeOauthLogin(userData);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('Google login failed:', error);
+      // console.error('Google login failed:', error);
     } finally {
       setLoading(false);
     }
@@ -53,8 +54,9 @@ const LandingScreen: React.FC = () => {
     try {
       const userData = await githubSignIn();
       completeOauthLogin(userData);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('GitHub login failed:', error);
+      // console.error('GitHub login failed:', error);
     } finally {
       setLoading(false);
     }
