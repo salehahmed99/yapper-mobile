@@ -12,7 +12,7 @@ export const updateTweetsInInfiniteCache = (
     ...oldData,
     pages: oldData.pages.map((page: ITweets) => ({
       ...page,
-      tweets: page.tweets.map((tweet: ITweet) => {
+      data: page.data.map((tweet: ITweet) => {
         if (tweet.tweetId === tweetId) {
           return updater(tweet);
         }

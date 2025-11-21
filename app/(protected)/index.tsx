@@ -32,7 +32,7 @@ export default function HomeScreen() {
 
   // Flatten all pages of tweets into a single array
   const tweets = React.useMemo(() => {
-    return activeQuery.data?.pages.flatMap((page) => page.tweets) ?? [];
+    return activeQuery.data?.pages.flatMap((page) => page.data) ?? [];
   }, [activeQuery.data]);
 
   const onRefresh = React.useCallback(() => {

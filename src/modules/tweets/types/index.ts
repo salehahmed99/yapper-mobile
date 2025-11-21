@@ -39,10 +39,11 @@ type ISingleTweetResponse = IApiResponse<ITweet>;
 type ITweetsResponse = IApiResponse<ITweets>;
 
 interface ITweets {
-  tweets: ITweet[];
-  nextCursor?: string;
-  count: number;
-  hasMore: boolean;
+  data: ITweet[];
+  pagination: {
+    nextCursor: string;
+    hasMore: boolean;
+  };
 }
 
 type ReplyRestrictionOptions = 'Everyone' | 'Verified accounts' | 'Accounts you follow' | 'Only accounts you mention';

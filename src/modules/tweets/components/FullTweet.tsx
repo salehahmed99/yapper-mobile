@@ -35,8 +35,6 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
 
   const [isBookmarked, setIsBookmarked] = useState(false);
 
-  console.log(tweet.type);
-
   return (
     <View style={styles.container} accessibilityLabel="full_tweet_container_main">
       {tweet.type === 'repost' && (
