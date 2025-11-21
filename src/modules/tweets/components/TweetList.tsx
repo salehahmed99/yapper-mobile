@@ -1,8 +1,8 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import useSpacing, { useSpacingWithoutSafeArea } from '@/src/hooks/useSpacing';
-import { useMemo } from 'react';
-import { ActivityIndicator, FlatList, RefreshControlProps, StyleSheet, View } from 'react-native';
+import { useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, RefreshControlProps, StyleSheet, View, ViewToken } from 'react-native';
 import TweetContainer from '../containers/TweetContainer';
 import { ITweet } from '../types';
 
@@ -18,6 +18,20 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
   const { data, refreshControl, onEndReached, onEndReachedThreshold, isLoading, isFetchingNextPage } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const [visibleTweetIds, setVisibleTweetIds] = useState<Set<string>>(new Set());
+
+  const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    const visibleIds = new Set(
+      viewableItems.filter((item) => item.isViewable).map((item) => (item.item as ITweet).tweetId),
+    );
+    setVisibleTweetIds(visibleIds);
+  }).current;
+
+  const viewabilityConfig = useRef({
+    itemVisiblePercentThreshold: 50, // Item is considered visible when 50% is in view
+    waitForInteraction: false,
+  }).current;
+
   const { top, bottom } = useSpacing();
   const { top: topWithoutSafeArea, bottom: bottomWithoutSafeArea } = useSpacingWithoutSafeArea();
 
@@ -46,7 +60,7 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
       contentInset={{ top, bottom: 0 }}
       contentOffset={{ x: 0, y: -top }}
       data={data}
-      renderItem={({ item }) => <TweetContainer tweet={item} />}
+      renderItem={({ item }) => <TweetContainer tweet={item} isVisible={visibleTweetIds.has(item.tweetId)} />}
       keyExtractor={(item, index) => {
         if (item.type === 'repost') {
           return `${item.tweetId}-${item.repostedBy?.repostId}-${index}`;
@@ -61,6 +75,18 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
       ListFooterComponent={renderFooter}
       onEndReached={onEndReached}
       onEndReachedThreshold={onEndReachedThreshold ?? 0.5}
+      maintainVisibleContentPosition={{
+        minIndexForVisible: 0,
+        autoscrollToTopThreshold: 10,
+      }}
+      removeClippedSubviews={true}
+      windowSize={5}
+      maxToRenderPerBatch={5}
+      initialNumToRender={8}
+      updateCellsBatchingPeriod={50}
+      onViewableItemsChanged={onViewableItemsChanged}
+      viewabilityConfig={viewabilityConfig}
+      // persistentScrollbar={true}
     />
   );
 };

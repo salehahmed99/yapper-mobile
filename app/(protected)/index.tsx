@@ -2,9 +2,11 @@ import HomeTabView from '@/src/components/home/HomeTabView';
 import YapperLogo from '@/src/components/icons/YapperLogo';
 import AppBar from '@/src/components/shell/AppBar';
 import type { Theme } from '@/src/constants/theme';
+import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
 import CreatePostModal from '@/src/modules/tweets/components/CreatePostModal';
 import Fab from '@/src/modules/tweets/components/Fab';
+import MediaViewerModal from '@/src/modules/tweets/components/MediaViewerModal';
 import TweetList from '@/src/modules/tweets/components/TweetList';
 import { useTweetActions } from '@/src/modules/tweets/hooks/useTweetActions';
 import { useTweets } from '@/src/modules/tweets/hooks/useTweets';
@@ -31,8 +33,11 @@ export default function HomeScreen() {
   const activeQuery = homeIndex === 0 ? forYouQuery : followingQuery;
 
   // Flatten all pages of tweets into a single array
+  // Only keep the last 50 tweets to prevent excessive memory usage
   const tweets = React.useMemo(() => {
-    return activeQuery.data?.pages.flatMap((page) => page.data) ?? [];
+    const allTweets = activeQuery.data?.pages.flatMap((page) => page.data) ?? [];
+    // Keep only the last 50 tweets visible to prevent OOM issues with large scrolled lists
+    return allTweets.length > 50 ? allTweets.slice(-50) : allTweets;
   }, [activeQuery.data]);
 
   const onRefresh = React.useCallback(() => {
@@ -75,20 +80,23 @@ export default function HomeScreen() {
   const { addPostMutation } = useTweetActions('dummyId');
   return (
     <View style={styles.container}>
-      <View style={styles.appBarWrapper}>
-        <AppBar
-          children={<YapperLogo size={32} color={theme.colors.text.primary} />}
-          tabView={<HomeTabView index={homeIndex} onIndexChange={(i) => setHomeIndex(i)} />}
+      <MediaViewerProvider>
+        <View style={styles.appBarWrapper}>
+          <AppBar
+            children={<YapperLogo size={32} color={theme.colors.text.primary} />}
+            tabView={<HomeTabView index={homeIndex} onIndexChange={(i) => setHomeIndex(i)} />}
+          />
+        </View>
+        <MediaViewerModal />
+        {renderScene()}
+        <Fab onPress={() => setIsCreatePostModalVisible(true)} />
+        <CreatePostModal
+          visible={isCreatePostModalVisible}
+          onClose={() => setIsCreatePostModalVisible(false)}
+          onPost={(content, mediaUris) => addPostMutation.mutate({ content, mediaUris })}
+          type="tweet"
         />
-      </View>
-      {renderScene()}
-      <Fab onPress={() => setIsCreatePostModalVisible(true)} />
-      <CreatePostModal
-        visible={isCreatePostModalVisible}
-        onClose={() => setIsCreatePostModalVisible(false)}
-        onPost={(content) => addPostMutation.mutate(content)}
-        type="tweet"
-      />
+      </MediaViewerProvider>
     </View>
   );
 }

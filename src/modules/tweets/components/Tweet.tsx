@@ -11,6 +11,7 @@ import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-nativ
 import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
 import RepostIndicator from './RepostIndicator';
+import TweetMedia from './TweetMedia';
 import UserInfoRow from './UserInfoRow';
 
 interface ITweetProps {
@@ -21,6 +22,7 @@ interface ITweetProps {
   onBookmark: () => void;
   onShare: () => void;
   openSheet: () => void;
+  isVisible?: boolean;
 }
 
 const Tweet: React.FC<ITweetProps> = (props) => {
@@ -32,6 +34,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
     // onBookmark,
     onShare,
     openSheet,
+    isVisible = true,
   } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -91,6 +94,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
               }
               style={styles.avatar}
               accessibilityLabel="tweet_image_avatar"
+              cachePolicy="memory-disk"
             />
           </Pressable>
         </View>
@@ -109,6 +113,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
           <View style={styles.tweetContent}>
             <Text style={styles.tweetText}>{tweet.content}</Text>
           </View>
+          <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} isVisible={isVisible} />
           {/* {parentTweet && <ParentTweet tweet={parentTweet} />} */}
           <ActionsRow
             tweet={tweet}

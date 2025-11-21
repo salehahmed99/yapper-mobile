@@ -15,5 +15,8 @@ export const useTweets = (tweetFilters: ITweetFilters, timelineType: TimelineTyp
     queryFn: ({ pageParam }) => queryFn({ ...filters, cursor: pageParam }),
     getNextPageParam: (lastPage) => lastPage.pagination.nextCursor,
     initialPageParam: undefined as string | undefined,
+    gcTime: 5 * 60 * 1000, // Cache for 5 minutes
+    staleTime: 30 * 1000, // Consider data stale after 30 seconds
+    maxPages: 10, // Keep only last 10 pages in memory to prevent OOM
   });
 };
