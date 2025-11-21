@@ -1,6 +1,7 @@
 import QueryWrapper from '@/src/components/QueryWrapper';
+import { useAuthStore } from '@/src/store/useAuthStore';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams, useSegments } from 'expo-router';
 import React, { useState } from 'react';
 import CreatePostModal from '../components/CreatePostModal';
 import FullTweet from '../components/FullTweet';
@@ -22,6 +23,10 @@ type TweetContainerProps =
 
 const TweetContainer: React.FC<TweetContainerProps> = (props) => {
   const tweetQuery = useTweet(props.tweetId);
+  const currentUser = useAuthStore((state) => state.user);
+  const segments = useSegments();
+  const params = useLocalSearchParams();
+  const currentProfileId = (segments as string[]).includes('(profile)') ? params.id : null;
 
   const { likeMutation, repostMutation, replyToPostMutation, quotePostMutation } = useTweetActions(
     props.tweetId ?? props.tweet.tweetId,
@@ -47,6 +52,24 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
   //   // TODO: Implement delete post functionality
   //   deletePostMutation.mutate();
   // };
+
+  const handleTweetPress = (tweetId: string) => {
+    router.push({
+      pathname: '/(protected)/tweets/[tweetId]',
+      params: {
+        tweetId: tweetId,
+      },
+    });
+  };
+
+  const handleAvatarPress = (userId: string) => {
+    // Don't navigate if already on this profile or if it's the current user's own profile
+    const isCurrentProfile = userId === currentProfileId;
+    const isOwnProfile = !currentProfileId && userId === currentUser?.id;
+    if (!isCurrentProfile && !isOwnProfile) {
+      router.push({ pathname: '/(protected)/(profile)/[id]', params: { id: userId } });
+    }
+  };
 
   const handleReplyPress = () => {
     setCreatePostType('reply');
@@ -100,6 +123,7 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
               onBookmark={handleBookmark}
               onShare={handleShare}
               openSheet={openSheet}
+              onAvatarPress={handleAvatarPress}
             />
 
             <CreatePostModal
@@ -135,6 +159,8 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
           onBookmark={handleBookmark}
           onShare={handleShare}
           openSheet={openSheet}
+          onTweetPress={handleTweetPress}
+          onAvatarPress={handleAvatarPress}
         />
         <CreatePostModal
           visible={isCreatePostModalVisible}

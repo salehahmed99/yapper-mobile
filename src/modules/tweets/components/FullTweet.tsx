@@ -1,10 +1,8 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import { useAuthStore } from '@/src/store/useAuthStore';
 import { formatDateDDMMYYYY, formatShortTime } from '@/src/utils/dateUtils';
 import { formatCount } from '@/src/utils/formatCount';
 import { Image } from 'expo-image';
-import { useLocalSearchParams, useRouter, useSegments } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ITweet } from '../types';
@@ -19,6 +17,7 @@ interface IFullTweetProps {
   onBookmark: () => void;
   onShare: () => void;
   openSheet: () => void;
+  onAvatarPress: (userId: string) => void;
 }
 
 const FullTweet: React.FC<IFullTweetProps> = (props) => {
@@ -29,14 +28,10 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
     // onBookmark,
     onShare,
     openSheet,
+    onAvatarPress,
   } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const router = useRouter();
-  const currentUser = useAuthStore((state) => state.user);
-  const segments = useSegments();
-  const params = useLocalSearchParams();
-  const currentProfileId = (segments as string[]).includes('(profile)') ? params.id : null;
 
   const [isBookmarked, setIsBookmarked] = useState(false);
 
@@ -49,16 +44,7 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
       {/* User Info Header */}
       <View style={styles.header}>
         <View style={styles.userInfoContainer}>
-          <Pressable
-            onPress={() => {
-              // Don't navigate if already on this profile or if it's the current user's own profile
-              const isCurrentProfile = tweet.user.id === currentProfileId;
-              const isOwnProfile = !currentProfileId && tweet.user.id === currentUser?.id;
-              if (!isCurrentProfile && !isOwnProfile) {
-                router.push({ pathname: '/(protected)/(profile)/[id]', params: { id: tweet.user.id } });
-              }
-            }}
-          >
+          <Pressable onPress={() => onAvatarPress(tweet.user.id)}>
             <Image
               source={
                 tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : require('@/assets/images/avatar-placeholder.png')
