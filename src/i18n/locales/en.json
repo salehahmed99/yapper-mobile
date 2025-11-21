@@ -1,4 +1,7 @@
 {
+  "common": {
+    "loading": "Loading..."
+  },
   "home": {
     "title": "Home Screen",
     "item": "Item {{index}}",
@@ -324,10 +327,10 @@
       "likes": "Likes"
     },
     "placeholders": {
-      "tweets": "Tweets will be shown here.",
-      "tweetsReplies": "Tweets and Replies will be shown here.",
-      "media": "Media will be shown here.",
-      "likes": "Likes will be shown here."
+      "tweets": "No tweets yet.",
+      "tweetsReplies": "No tweets and replies yet.",
+      "media": "No media yet.",
+      "likes": "No likes yet."
     },
     "editModal": {
       "title": "Edit Profile",

@@ -97,7 +97,7 @@ export const useAuthStore = create<IAuthState>((set) => ({
           createdAt: data.createdAt,
           followers: data.followersCount,
           following: data.followingCount,
-          birthDate: '', // Not in response
+          birthDate: data.birthDate || undefined,
         },
       });
     } catch (err) {

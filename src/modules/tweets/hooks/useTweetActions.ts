@@ -47,17 +47,26 @@ export const useTweetActions = (tweetId: string) => {
     },
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: tweetsQueryKey });
+      await queryClient.cancelQueries({ queryKey: ['profile'] });
       await queryClient.cancelQueries({ queryKey: tweetDetailsQueryKey });
 
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
         updateTweetsInInfiniteCache(oldData, tweetId, toggleLike),
       );
 
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: ['profile'] }, (oldData) =>
+        updateTweetsInInfiniteCache(oldData, tweetId, toggleLike),
+      );
+
       queryClient.setQueryData<ITweet>(tweetDetailsQueryKey, (oldData) => (oldData ? toggleLike(oldData) : oldData));
     },
-    onError: (error) => {
-      console.log('Error updating like status:', error);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
+    },
+    onError: () => {
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
     },
   });
@@ -68,17 +77,26 @@ export const useTweetActions = (tweetId: string) => {
     },
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: tweetsQueryKey });
+      await queryClient.cancelQueries({ queryKey: ['profile'] });
       await queryClient.cancelQueries({ queryKey: tweetDetailsQueryKey });
 
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
         updateTweetsInInfiniteCache(oldData, tweetId, toggleRepost),
       );
 
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: ['profile'] }, (oldData) =>
+        updateTweetsInInfiniteCache(oldData, tweetId, toggleRepost),
+      );
+
       queryClient.setQueryData<ITweet>(tweetDetailsQueryKey, (oldData) => (oldData ? toggleRepost(oldData) : oldData));
     },
-    onError: (error) => {
-      console.log('Error updating repost status:', error);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
+    },
+    onError: () => {
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
     },
   });
@@ -87,8 +105,12 @@ export const useTweetActions = (tweetId: string) => {
     mutationFn: async (content: string) => {
       return createTweet(content);
     },
-    onError: (error) => {
-      console.log('Error creating tweet:', error);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+    },
+    onError: () => {
+      // Error creating tweet
     },
   });
 
@@ -96,8 +118,13 @@ export const useTweetActions = (tweetId: string) => {
     mutationFn: async (content: string) => {
       return replyToTweet(tweetId, content);
     },
-    onError: (error) => {
-      console.log('Error replying to tweet:', error);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
+    },
+    onError: () => {
+      // Error replying to tweet
     },
   });
 
@@ -105,8 +132,12 @@ export const useTweetActions = (tweetId: string) => {
     mutationFn: async (content: string) => {
       return quoteTweet(tweetId, content);
     },
-    onError: (error) => {
-      console.log('Error quoting tweet:', error);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+    },
+    onError: () => {
+      // Error quoting tweet
     },
   });
 
@@ -115,8 +146,12 @@ export const useTweetActions = (tweetId: string) => {
       // Implement delete tweet functionality here
       return deleteTweet(tweetId);
     },
-    onError: (error) => {
-      console.log('Error deleting tweet:', error);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+    },
+    onError: () => {
+      // Error deleting tweet
     },
   });
 

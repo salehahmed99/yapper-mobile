@@ -22,7 +22,9 @@ interface ICustomTabViewProps {
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
-    container: { flex: 1 },
+    container: {
+      height: 800,
+    },
     tabBarContainer: {
       borderBottomWidth: 1,
       elevation: 0,
@@ -35,6 +37,14 @@ const createStyles = (theme: Theme) =>
       height: 4,
       borderRadius: 2,
       backgroundColor: theme.colors.text.link,
+    },
+    label: {
+      fontWeight: 'bold',
+      fontSize: 15,
+      textTransform: 'none',
+    },
+    scene: {
+      flex: 1,
     },
   });
 
@@ -60,7 +70,11 @@ const CustomTabView: React.FC<ICustomTabViewProps> = ({ tabs, initialTab, scroll
 
   const [index, setIndex] = useState(getInitialIndex());
 
-  // Dynamic scene renderer
+  const navigationState: NavigationState<RouteType> = {
+    index,
+    routes,
+  };
+
   const renderScene = ({ route }: { route: RouteType }) => {
     const tab = tabs.find((t) => t.key === route.key);
     if (!tab) return null;
@@ -74,7 +88,7 @@ const CustomTabView: React.FC<ICustomTabViewProps> = ({ tabs, initialTab, scroll
       scrollEnabled={scrollEnabled}
       indicatorStyle={styles.activeUnderline}
       style={styles.tabBarContainer}
-      tabStyle={styles.tab}
+      tabStyle={[styles.tab, styles.label]}
       activeColor={theme.colors.text.link}
       inactiveColor={theme.colors.text.secondary}
     />
@@ -82,12 +96,14 @@ const CustomTabView: React.FC<ICustomTabViewProps> = ({ tabs, initialTab, scroll
 
   return (
     <TabView
-      navigationState={{ index, routes }}
+      navigationState={navigationState}
       renderScene={renderScene}
+      renderTabBar={renderTabBar}
       onIndexChange={setIndex}
       initialLayout={{ width: layout.width }}
-      renderTabBar={renderTabBar}
+      swipeEnabled={true}
       style={styles.container}
+      testID="profile_custom_tab_view"
     />
   );
 };

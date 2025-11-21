@@ -28,6 +28,10 @@ export const useUserList = (options: UseUserListOptions): IUseUserListResult => 
 
   const loadingRef = useRef(false);
   const currentPageRef = useRef(0);
+  const currentCursorRef = useRef<string | null>(null);
+
+  // Determine if this list type uses cursor-based pagination
+  const usesCursorPagination = options.type === 'followers' || options.type === 'following';
 
   const fetchPage = useCallback(
     async (pageNumber: number, isRefresh = false) => {
@@ -39,21 +43,42 @@ export const useUserList = (options: UseUserListOptions): IUseUserListResult => 
       setRefreshing(isRefresh);
 
       try {
-        const data = await getUserList({ ...options, page: pageNumber });
+        // For cursor-based pagination (followers/following)
+        if (usesCursorPagination) {
+          const cursor = isRefresh ? '' : currentCursorRef.current || '';
+          const data = await getUserList({ ...options, cursor });
 
-        setUsers((prev) => {
-          if (isRefresh) {
-            return data.users;
-          }
+          setUsers((prev) => {
+            if (isRefresh) {
+              return data.users;
+            }
 
-          // Deduplicate: only add users that don't already exist
-          const existingIds = new Set(prev.map((u) => u.id));
-          const newUsers = data.users.filter((u) => !existingIds.has(u.id));
+            // Deduplicate: only add users that don't already exist
+            const existingIds = new Set(prev.map((u) => u.id));
+            const newUsers = data.users.filter((u) => !existingIds.has(u.id));
 
-          return [...prev, ...newUsers];
-        });
-        currentPageRef.current = pageNumber;
-        setHasNextPage(Boolean(data.nextPage));
+            return [...prev, ...newUsers];
+          });
+          currentCursorRef.current = data.nextCursor || null;
+          setHasNextPage(data.hasMore ?? false);
+        } else {
+          // For page-based pagination (likes/reposts)
+          const data = await getUserList({ ...options, page: pageNumber });
+
+          setUsers((prev) => {
+            if (isRefresh) {
+              return data.users;
+            }
+
+            // Deduplicate: only add users that don't already exist
+            const existingIds = new Set(prev.map((u) => u.id));
+            const newUsers = data.users.filter((u) => !existingIds.has(u.id));
+
+            return [...prev, ...newUsers];
+          });
+          currentPageRef.current = pageNumber;
+          setHasNextPage(Boolean(data.nextPage));
+        }
       } catch (err: unknown) {
         const error = err as { response?: { data?: { message?: string } }; message?: string };
         const message = error?.response?.data?.message || error?.message || 'Failed to load users';
@@ -62,6 +87,7 @@ export const useUserList = (options: UseUserListOptions): IUseUserListResult => 
         if (isRefresh) {
           setUsers([]);
           currentPageRef.current = 1;
+          currentCursorRef.current = null;
         }
       } finally {
         setLoading(false);
@@ -69,7 +95,7 @@ export const useUserList = (options: UseUserListOptions): IUseUserListResult => 
         loadingRef.current = false;
       }
     },
-    [options],
+    [options, usesCursorPagination],
   );
 
   const refresh = useCallback(() => fetchPage(1, true), [fetchPage]);

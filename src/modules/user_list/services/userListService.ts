@@ -37,14 +37,15 @@ export const getUserList = async (params: FetchUserListParams): Promise<IUserLis
   if (type === 'followers' && 'userId' in params) {
     const response = await getFollowersList({
       userId: params.userId,
-      pageOffset: page || 1,
-      pageSize: 20,
+      cursor: params.cursor || '',
+      limit: 20,
       following: false,
     });
 
     return {
-      users: response.data.map(mapFollowerUserToUser),
-      nextPage: response.data.length === 20 ? (page || 1) + 1 : null,
+      users: response.data.data.map(mapFollowerUserToUser),
+      nextCursor: response.data.pagination.nextCursor,
+      hasMore: response.data.pagination.hasMore,
     };
   }
 
@@ -52,13 +53,14 @@ export const getUserList = async (params: FetchUserListParams): Promise<IUserLis
   if (type === 'following' && 'userId' in params) {
     const response = await getFollowingList({
       userId: params.userId,
-      pageOffset: page || 1,
-      pageSize: 20,
+      cursor: params.cursor || '',
+      limit: 20,
     });
 
     return {
-      users: response.data.map(mapFollowerUserToUser),
-      nextPage: response.data.length === 20 ? (page || 1) + 1 : null,
+      users: response.data.data.map(mapFollowerUserToUser),
+      nextCursor: response.data.pagination.nextCursor,
+      hasMore: response.data.pagination.hasMore,
     };
   }
 
@@ -80,9 +82,11 @@ export const getUserList = async (params: FetchUserListParams): Promise<IUserLis
       users: response.data.data.data.map(mapUserDTOToUser),
       nextPage: response.data.data.pagination.has_next_page ? response.data.data.pagination.current_page + 1 : null,
     };
-  } catch (error: any) {
-    throw new Error(
-      error.response?.data?.message || t('userList.errors.fetchFailed') || 'An error occurred while fetching users.',
-    );
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error && 'response' in error
+        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message
+        : undefined;
+    throw new Error(errorMessage || t('userList.errors.fetchFailed') || 'An error occurred while fetching users.');
   }
 };

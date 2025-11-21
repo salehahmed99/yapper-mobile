@@ -27,8 +27,26 @@ export const getMockUserList = async (params: FetchUserListParams): Promise<IUse
   // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  const page = params.page || 1;
   const pageSize = 20;
+
+  // Handle cursor-based pagination for followers/following
+  if (params.type === 'followers' || params.type === 'following') {
+    const cursorIndex = params.cursor ? parseInt(params.cursor, 10) : 0;
+    const page = Math.floor(cursorIndex / pageSize) + 1;
+    const totalPages = 5; // Total 100 mock users across 5 pages
+
+    const users = generateMockUsers(page, pageSize);
+    const nextCursor = page < totalPages ? String(cursorIndex + pageSize) : null;
+
+    return {
+      users,
+      nextCursor,
+      hasMore: page < totalPages,
+    };
+  }
+
+  // Handle page-based pagination for likes/reposts
+  const page = params.page || 1;
   const totalPages = 5; // Total 100 mock users across 5 pages
 
   const users = generateMockUsers(page, pageSize);

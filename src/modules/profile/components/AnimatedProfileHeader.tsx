@@ -89,8 +89,14 @@ export default function AnimatedProfileHeader({
           transform: [{ translateY: headerTranslateY }],
         },
       ]}
+      testID="animated_profile_header"
     >
-      <Animated.Image source={{ uri: bannerUri }} style={styles.bannerBackground} blurRadius={30} />
+      <Animated.Image
+        source={{ uri: bannerUri }}
+        style={styles.bannerBackground}
+        blurRadius={30}
+        testID="animated_profile_header_banner"
+      />
       <BlurView intensity={20} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill}>
         <View style={styles.blurContainer}>
           <TouchableOpacity
@@ -100,10 +106,11 @@ export default function AnimatedProfileHeader({
                 router.back();
               }
             }}
+            testID="animated_profile_header_back_button"
           >
             <ChevronLeft color="#fff" size={25} />
           </TouchableOpacity>
-          <Text style={styles.username} numberOfLines={1}>
+          <Text style={styles.username} numberOfLines={1} testID="animated_profile_header_username">
             {username}
           </Text>
         </View>

@@ -3,7 +3,6 @@ import { useTheme } from '@/src/context/ThemeContext';
 import { formatDateDDMMYYYY, formatShortTime } from '@/src/utils/dateUtils';
 import { formatCount } from '@/src/utils/formatCount';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ITweet } from '../types';
@@ -18,6 +17,7 @@ interface IFullTweetProps {
   onBookmark: () => void;
   onShare: () => void;
   openSheet: () => void;
+  onAvatarPress: (userId: string) => void;
 }
 
 const FullTweet: React.FC<IFullTweetProps> = (props) => {
@@ -28,10 +28,10 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
     // onBookmark,
     onShare,
     openSheet,
+    onAvatarPress,
   } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const router = useRouter();
 
   const [isBookmarked, setIsBookmarked] = useState(false);
 
@@ -44,9 +44,7 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
       {/* User Info Header */}
       <View style={styles.header}>
         <View style={styles.userInfoContainer}>
-          <Pressable
-            onPress={() => router.push({ pathname: '/(protected)/(profile)/[id]', params: { id: tweet.user.id } })}
-          >
+          <Pressable onPress={() => onAvatarPress(tweet.user.id)}>
             <Image
               source={
                 tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : require('@/assets/images/avatar-placeholder.png')
