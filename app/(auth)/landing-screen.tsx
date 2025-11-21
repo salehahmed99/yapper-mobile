@@ -31,8 +31,7 @@ const LandingScreen: React.FC = () => {
     } else {
       loginUser(userData.data.user, userData.data.accessToken);
       setSkipRedirect(false);
-      // Use replace to avoid showing 404
-      router.replace('/(protected)');
+      setLoading(false);
     }
   };
 
@@ -41,9 +40,8 @@ const LandingScreen: React.FC = () => {
     try {
       const userData = await googleSignIn();
       completeOauthLogin(userData);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      // console.error('Google login failed:', error);
+      console.error('Google login failed:', error);
     } finally {
       setLoading(false);
     }
@@ -54,9 +52,8 @@ const LandingScreen: React.FC = () => {
     try {
       const userData = await githubSignIn();
       completeOauthLogin(userData);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      // console.error('GitHub login failed:', error);
+      console.error('GitHub login failed:', error);
     } finally {
       setLoading(false);
     }
