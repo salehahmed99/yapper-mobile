@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { getToken, saveToken, deleteToken } from '../utils/secureStorage';
 import api from './apiClient';
 
@@ -43,6 +44,7 @@ class TokenRefreshService {
     } catch (err) {
       console.error('Token refresh failed:', err);
       await deleteToken();
+      router.replace('/(auth)/landing-screen');
       return null;
     } finally {
       this.isRefreshing = false;

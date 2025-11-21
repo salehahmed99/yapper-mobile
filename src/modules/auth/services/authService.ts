@@ -155,8 +155,8 @@ export const githubSignIn = async (): Promise<ILoginResponse | IOAuthResponse> =
 export const OAuthStep1 = async (credentials: IOAuthBirthDateRequest): Promise<IOAuthBirthDateResponse> => {
   try {
     const res = await api.post('/auth/oauth/complete/step1', {
-      oauth_session_token: credentials.oauth_session_token,
-      birth_date: credentials.birth_date,
+      oauth_session_token: credentials.oauthSessionToken,
+      birth_date: credentials.birthDate,
     });
     return res.data;
   } catch (error) {
@@ -167,7 +167,7 @@ export const OAuthStep1 = async (credentials: IOAuthBirthDateRequest): Promise<I
 export const OAuthStep2 = async (credentials: IOAuthUserNameRequest): Promise<ILoginResponse> => {
   try {
     const res = await api.post('/auth/oauth/complete/step2', {
-      oauth_session_token: credentials.oauth_session_token,
+      oauth_session_token: credentials.oauthSessionToken,
       username: credentials.username,
     });
     return res.data;

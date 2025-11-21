@@ -9,7 +9,6 @@ import {
   IVerifySignUpOTPResponse,
   ISignUpStep3Response,
   ISignUpStep3Request,
-  mapSignUpStep3ResponseDTOToSignUpStep3Response,
 } from '../types';
 
 /**
@@ -31,7 +30,7 @@ export const signUpStep1 = async (credentials: ISignUpStep1Request): Promise<boo
 export const signUpStep3 = async (credentials: ISignUpStep3Request): Promise<ISignUpStep3Response> => {
   try {
     const res = await api.post('/auth/signup/step3', credentials);
-    return mapSignUpStep3ResponseDTOToSignUpStep3Response(res.data);
+    return res.data;
   } catch (error: unknown) {
     const message = extractErrorMessage(error);
     throw new Error(message);

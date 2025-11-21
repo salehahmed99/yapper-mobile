@@ -1,5 +1,5 @@
 import { IApiResponse } from '../../types/api';
-import { IUser, IUserDTO, mapUserDTOToUser } from '../../types/user';
+import { IUser } from '../../types/user';
 
 /* =========================================================
    AUTH — SHARED TYPES
@@ -37,26 +37,11 @@ export interface IRegisterData {
 /* =========================================================
    AUTH — LOGIN
    ========================================================= */
-export type ILoginResponseDTO = IApiResponse<{
-  access_token: string;
-  user: IUserDTO;
-}>;
 
 export type ILoginResponse = IApiResponse<{
   accessToken: string;
   user: IUser;
 }>;
-
-export function mapLoginResponseDTOToLoginResponse(dto: ILoginResponseDTO): ILoginResponse {
-  return {
-    data: {
-      accessToken: dto.data.access_token,
-      user: mapUserDTOToUser(dto.data.user),
-    },
-    count: dto.count,
-    message: dto.message,
-  };
-}
 
 /* =========================================================
    AUTH — PASSWORD RESET
@@ -67,37 +52,14 @@ export type IForgetPasswordResponse = IApiResponse<{
 
 export type IVerifyOTPResponse = IApiResponse<{
   isValid: boolean;
-  reset_token: string;
+  resetToken: string;
 }>;
 
-export type IResetPasswordRequestDTO = {
-  reset_token: string;
-  new_password: string;
-  identifier: string;
-};
-
 export type IResetPasswordResponse = IApiResponse<null>;
-
-export function mapResetPasswordRequestToDTO(request: IResetPasswordRequest): IResetPasswordRequestDTO {
-  return {
-    reset_token: request.resetToken,
-    new_password: request.newPassword,
-    identifier: request.identifier,
-  };
-}
 
 /* =========================================================
    AUTH — OAUTH
    ========================================================= */
-export interface IOAuthResponseDTO {
-  data: {
-    needs_completion: boolean;
-    session_token: string;
-    provider: 'google' | 'github';
-  };
-  count: number;
-  message: string;
-}
 
 export interface IOAuthResponse {
   data: {
@@ -110,8 +72,8 @@ export interface IOAuthResponse {
 }
 
 export interface IOAuthBirthDateRequest {
-  oauth_session_token: string;
-  birth_date?: string;
+  oauthSessionToken: string;
+  birthDate?: string;
 }
 
 export interface IOAuthBirthDateResponse {
@@ -125,20 +87,8 @@ export interface IOAuthBirthDateResponse {
 }
 
 export interface IOAuthUserNameRequest {
-  oauth_session_token: string;
+  oauthSessionToken: string;
   username: string;
-}
-
-export function mapOAuthResponseDTOToOAuthResponse(dto: IOAuthResponseDTO): IOAuthResponse {
-  return {
-    data: {
-      needsCompletion: dto.data.needs_completion,
-      sessionToken: dto.data.session_token,
-      provider: dto.data.provider,
-    },
-    count: dto.count,
-    message: dto.message,
-  };
 }
 
 /* =========================================================
@@ -146,9 +96,9 @@ export function mapOAuthResponseDTOToOAuthResponse(dto: IOAuthResponseDTO): IOAu
    ========================================================= */
 export interface ISignUpStep1Request {
   email: string;
-  birth_date: string;
+  birthDate: string;
   name: string;
-  captcha_token: string;
+  captchaToken: string;
 }
 
 export interface ISignUpStep1Response {
@@ -190,15 +140,6 @@ export interface ISignUpStep3Request {
   language: string;
 }
 
-export interface ISignUpStep3ResponseDTO {
-  data: {
-    access_token: string;
-    user: IUser;
-  };
-  count: number;
-  message: string;
-}
-
 export interface ISignUpStep3Response {
   data: {
     accessToken: string;
@@ -206,15 +147,4 @@ export interface ISignUpStep3Response {
   };
   count: number;
   message: string;
-}
-
-export function mapSignUpStep3ResponseDTOToSignUpStep3Response(dto: ISignUpStep3ResponseDTO): ISignUpStep3Response {
-  return {
-    data: {
-      accessToken: dto.data.access_token,
-      user: mapUserDTOToUser(dto.data.user),
-    },
-    count: dto.count,
-    message: dto.message,
-  };
 }
