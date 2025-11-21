@@ -1,17 +1,18 @@
-import CustomTabView from '@/src/components/CustomTabView';
 import { ThemedText } from '@/src/components/ThemedText';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import useSpacing from '@/src/hooks/useSpacing';
+import CustomTabView, { TabConfig } from '@/src/modules/profile/components/CustomTabView';
+import TweetQuotesList from '@/src/modules/tweets/components/TweetQuotesList';
 import FollowButton from '@/src/modules/user_list/components/FollowButton';
 import UserList from '@/src/modules/user_list/components/UserList';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { IUser } from '@/src/types/user';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TweetActivityScreen() {
   const { theme } = useTheme();
@@ -19,7 +20,7 @@ export default function TweetActivityScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { tweetId, ownerId } = useLocalSearchParams<{ tweetId: string; ownerId?: string }>();
-  const insets = useSafeAreaInsets();
+  const { bottom } = useSpacing();
   const user = useAuthStore((state) => state.user);
   const fetchAndUpdateUser = useAuthStore((state) => state.fetchAndUpdateUser);
 
@@ -32,42 +33,67 @@ export default function TweetActivityScreen() {
   const currentUserId = user?.id ?? null;
   const isTweetOwner = ownerId ? ownerId === currentUserId : false;
 
-  const [activeTabIndex, setActiveTabIndex] = useState(0);
-
-  const routes = useMemo(() => {
-    const baseRoutes = [
-      { key: 'reposts', title: t('tweetActivity.tabs.reposts') },
-      { key: 'quotes', title: t('tweetActivity.tabs.quotes') },
-    ];
-
-    if (isTweetOwner) {
-      baseRoutes.push({ key: 'likers', title: t('tweetActivity.tabs.likers') });
-    }
-
-    return baseRoutes;
-  }, [t, isTweetOwner]);
-
-  const renderTabContent = () => {
-    const currentRoute = routes[activeTabIndex];
-
-    if (!currentRoute) {
-      return null;
-    }
-
-    const listType = currentRoute.key === 'likers' ? 'likes' : 'reposts';
-    return (
-      <UserList
-        key={`${currentRoute.key}-${tweetId}`}
-        type={listType}
-        tweetId={tweetId || ''}
-        renderAction={(user: IUser) => <FollowButton user={user} />}
-      />
-    );
+  const handleUserPress = (selectedUser: IUser) => {
+    router.push({
+      pathname: '/(protected)/(profile)/[id]',
+      params: { id: selectedUser.id },
+    });
   };
 
+  const RepostsTab = useMemo(
+    () =>
+      function RepostsTab() {
+        return (
+          <UserList
+            key={`reposts-${tweetId}`}
+            type="reposts"
+            tweetId={tweetId || ''}
+            onUserPress={handleUserPress}
+            renderAction={(user: IUser) => <FollowButton user={user} />}
+          />
+        );
+      },
+    [tweetId],
+  );
+
+  const QuotesTab = useMemo(
+    () =>
+      function QuotesTab() {
+        return <TweetQuotesList tweetId={tweetId || ''} />;
+      },
+    [tweetId],
+  );
+
+  const LikersTab = useMemo(
+    () =>
+      function LikersTab() {
+        return (
+          <UserList
+            key={`likers-${tweetId}`}
+            type="likes"
+            tweetId={tweetId || ''}
+            onUserPress={handleUserPress}
+            renderAction={(user: IUser) => <FollowButton user={user} />}
+          />
+        );
+      },
+    [tweetId],
+  );
+
+  const tabs: TabConfig[] = useMemo(() => {
+    const base: TabConfig[] = [
+      { key: 'reposts', title: t('tweetActivity.tabs.reposts'), component: RepostsTab },
+      { key: 'quotes', title: t('tweetActivity.tabs.quotes'), component: QuotesTab },
+    ];
+    if (isTweetOwner) {
+      base.push({ key: 'likers', title: t('tweetActivity.tabs.likers'), component: LikersTab });
+    }
+    return base;
+  }, [t, isTweetOwner, RepostsTab, QuotesTab, LikersTab]);
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={[styles.header, { paddingTop: insets.top }]}>
+    <View style={styles.container}>
+      <View style={styles.header}>
         <View style={styles.headerContent}>
           <TouchableOpacity onPress={() => router.back()} accessibilityLabel="back_button" style={styles.backButton}>
             <ChevronLeft size={24} color={theme.colors.text.primary} />
@@ -76,11 +102,9 @@ export default function TweetActivityScreen() {
           <View style={styles.placeholder} />
         </View>
       </View>
-      <View style={styles.tabViewWrapper}>
-        <CustomTabView routes={routes} index={activeTabIndex} onIndexChange={setActiveTabIndex} scrollable={false} />
-      </View>
-      <View style={styles.content}>{renderTabContent()}</View>
-    </SafeAreaView>
+      <CustomTabView tabs={tabs} scrollEnabled={false} />
+      <View style={{ height: bottom }} />
+    </View>
   );
 }
 
@@ -89,6 +113,7 @@ const createStyles = (theme: Theme) =>
     container: {
       flex: 1,
       backgroundColor: theme.colors.background.primary,
+      paddingTop: theme.spacing.xxxxl,
     },
     header: {
       backgroundColor: theme.colors.background.primary,
@@ -117,12 +142,5 @@ const createStyles = (theme: Theme) =>
     },
     placeholder: {
       width: theme.ui.sideContainerWidth,
-    },
-    tabViewWrapper: {
-      borderBottomWidth: theme.borderWidth.thin / 2,
-      borderBottomColor: theme.colors.border,
-    },
-    content: {
-      flex: 1,
     },
   });

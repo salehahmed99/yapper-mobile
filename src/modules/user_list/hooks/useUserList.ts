@@ -30,11 +30,8 @@ export const useUserList = (options: UseUserListOptions): IUseUserListResult => 
   const currentPageRef = useRef(0);
   const currentCursorRef = useRef<string | null>(null);
 
-  // Determine if this list type uses cursor-based pagination
-  const usesCursorPagination = options.type === 'followers' || options.type === 'following';
-
   const fetchPage = useCallback(
-    async (pageNumber: number, isRefresh = false) => {
+    async (isRefresh = false) => {
       if (loadingRef.current) return;
 
       loadingRef.current = true;
@@ -43,42 +40,22 @@ export const useUserList = (options: UseUserListOptions): IUseUserListResult => 
       setRefreshing(isRefresh);
 
       try {
-        // For cursor-based pagination (followers/following)
-        if (usesCursorPagination) {
-          const cursor = isRefresh ? '' : currentCursorRef.current || '';
-          const data = await getUserList({ ...options, cursor });
+        const cursor = isRefresh ? '' : currentCursorRef.current || '';
+        const data = await getUserList({ ...options, cursor });
 
-          setUsers((prev) => {
-            if (isRefresh) {
-              return data.users;
-            }
+        setUsers((prev) => {
+          if (isRefresh) {
+            return data.users;
+          }
 
-            // Deduplicate: only add users that don't already exist
-            const existingIds = new Set(prev.map((u) => u.id));
-            const newUsers = data.users.filter((u) => !existingIds.has(u.id));
+          // Deduplicate: only add users that don't already exist
+          const existingIds = new Set(prev.map((u) => u.id));
+          const newUsers = data.users.filter((u) => !existingIds.has(u.id));
 
-            return [...prev, ...newUsers];
-          });
-          currentCursorRef.current = data.nextCursor || null;
-          setHasNextPage(data.hasMore ?? false);
-        } else {
-          // For page-based pagination (likes/reposts)
-          const data = await getUserList({ ...options, page: pageNumber });
-
-          setUsers((prev) => {
-            if (isRefresh) {
-              return data.users;
-            }
-
-            // Deduplicate: only add users that don't already exist
-            const existingIds = new Set(prev.map((u) => u.id));
-            const newUsers = data.users.filter((u) => !existingIds.has(u.id));
-
-            return [...prev, ...newUsers];
-          });
-          currentPageRef.current = pageNumber;
-          setHasNextPage(Boolean(data.nextPage));
-        }
+          return [...prev, ...newUsers];
+        });
+        currentCursorRef.current = data.nextCursor || null;
+        setHasNextPage(data.hasMore ?? false);
       } catch (err: unknown) {
         const error = err as { response?: { data?: { message?: string } }; message?: string };
         const message = error?.response?.data?.message || error?.message || 'Failed to load users';
@@ -95,19 +72,19 @@ export const useUserList = (options: UseUserListOptions): IUseUserListResult => 
         loadingRef.current = false;
       }
     },
-    [options, usesCursorPagination],
+    [options],
   );
 
-  const refresh = useCallback(() => fetchPage(1, true), [fetchPage]);
+  const refresh = useCallback(() => fetchPage(true), [fetchPage]);
 
   const loadMore = useCallback(() => {
     if (hasNextPage && !loadingRef.current) {
-      fetchPage(currentPageRef.current + 1, false);
+      fetchPage(false);
     }
   }, [hasNextPage, fetchPage]);
 
   useEffect(() => {
-    if (autoLoad) fetchPage(currentPageRef.current + 1, false);
+    if (autoLoad) fetchPage(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoLoad]);
 

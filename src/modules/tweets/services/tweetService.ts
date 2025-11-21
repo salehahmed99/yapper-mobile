@@ -1,5 +1,5 @@
 import api from '@/src/services/apiClient';
-import { ISingleTweetResponse, ITweet, ITweetFilters, ITweets, ITweetsResponse } from '../types';
+import { IQuotesResponse, ISingleTweetResponse, ITweet, ITweetFilters, ITweets, ITweetsResponse } from '../types';
 
 export const getForYou = async (tweetFilters: ITweetFilters): Promise<ITweets> => {
   const response = await api.get<ITweetsResponse>('/timeline/for-you', {
@@ -55,6 +55,16 @@ export const replyToTweet = async (tweetId: string, content: string): Promise<IT
 export const quoteTweet = async (tweetId: string, content: string): Promise<ITweet> => {
   const response = await api.post<ISingleTweetResponse>(`/tweets/${tweetId}/quote`, {
     content,
+  });
+  return response.data.data;
+};
+
+export const getTweetQuotes = async (
+  tweetId: string,
+  filters: { cursor?: string; limit?: number } = {},
+): Promise<IQuotesResponse> => {
+  const response = await api.get<{ data: IQuotesResponse }>(`/tweets/${tweetId}/quotes`, {
+    params: filters,
   });
   return response.data.data;
 };
