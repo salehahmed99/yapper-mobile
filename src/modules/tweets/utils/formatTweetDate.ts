@@ -1,3 +1,5 @@
+import { formatDateDDMMYYYY } from '../../../utils/dateUtils';
+
 /**
  * Formats a tweet creation date to display like Twitter
  * - Less than 1 minute: "now"
@@ -36,9 +38,5 @@ export const formatTweetDate = (dateString: string): string => {
   }
 
   // Older than 7 days - return formatted date
-  const day = String(tweetDate.getDate()).padStart(2, '0');
-  const month = String(tweetDate.getMonth() + 1).padStart(2, '0');
-  const year = tweetDate.getFullYear();
-
-  return `${day}/${month}/${year}`;
+  return formatDateDDMMYYYY(dateString);
 };

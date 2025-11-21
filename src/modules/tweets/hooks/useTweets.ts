@@ -13,7 +13,7 @@ export const useTweets = (tweetFilters: ITweetFilters, timelineType: TimelineTyp
   return useInfiniteQuery({
     queryKey: ['tweets', timelineType, filters],
     queryFn: ({ pageParam }) => queryFn({ ...filters, cursor: pageParam }),
-    getNextPageParam: (lastPage) => lastPage.next_cursor,
+    getNextPageParam: (lastPage) => lastPage.pagination.nextCursor,
     initialPageParam: undefined as string | undefined,
   });
 };

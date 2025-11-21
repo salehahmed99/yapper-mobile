@@ -49,9 +49,9 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
       renderItem={({ item }) => <TweetContainer tweet={item} />}
       keyExtractor={(item, index) => {
         if (item.type === 'repost') {
-          return `${item.tweet_id}-${item.reposted_by?.repost_id}-${index}`;
+          return `${item.tweetId}-${item.repostedBy?.repostId}-${index}`;
         } else {
-          return `${item.tweet_id}-${index}`;
+          return `${item.tweetId}-${index}`;
         }
       }}
       scrollIndicatorInsets={{ top: topWithoutSafeArea, bottom: bottomWithoutSafeArea }}
