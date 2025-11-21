@@ -17,7 +17,12 @@ const OAuthButtons: React.FC<IOAuthButtonProps> = ({ onGooglePress, onGithubPres
 
   return (
     <>
-      <Pressable onPress={onGooglePress} style={({ pressed }) => [styles.pillButton, pressed && styles.pressed]}>
+      <Pressable
+        onPress={onGooglePress}
+        style={({ pressed }) => [styles.pillButton, pressed && styles.pressed]}
+        accessibilityLabel="google-oauth-button"
+        accessibilityRole="button"
+      >
         <View style={styles.buttonContent}>
           <Image
             source={require('@/assets/images/google.png')}
@@ -29,7 +34,12 @@ const OAuthButtons: React.FC<IOAuthButtonProps> = ({ onGooglePress, onGithubPres
         </View>
       </Pressable>
 
-      <Pressable onPress={onGithubPress} style={({ pressed }) => [styles.pillButton, pressed && styles.pressed]}>
+      <Pressable
+        onPress={onGithubPress}
+        style={({ pressed }) => [styles.pillButton, pressed && styles.pressed]}
+        accessibilityLabel="github-oauth-button"
+        accessibilityRole="button"
+      >
         <View style={styles.buttonContent}>
           <Image
             source={require('@/assets/images/Github-Logo.png')}
@@ -50,6 +60,8 @@ const OAuthButtons: React.FC<IOAuthButtonProps> = ({ onGooglePress, onGithubPres
       <Pressable
         onPress={onCreateAccountPress}
         style={({ pressed }) => [styles.pillButtonCreate, pressed && styles.pressed]}
+        accessibilityLabel="create-account-button"
+        accessibilityRole="button"
       >
         <Text style={styles.pillButtonLabelDarkCreate}>{t('auth.oauth.buttons.createAccount')}</Text>
       </Pressable>

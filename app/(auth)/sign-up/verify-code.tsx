@@ -130,7 +130,13 @@ const VerifyCodeScreen = () => {
           value={code}
           onChange={setCode}
         />
-        <Pressable onPress={handleResendCode} disabled={isResending} style={styles.resendContainer}>
+        <Pressable
+          onPress={handleResendCode}
+          disabled={isResending}
+          style={styles.resendContainer}
+          accessibilityLabel="resend-code-button"
+          accessibilityRole="button"
+        >
           <Text style={styles.resendText}>{t('auth.signUp.verifyCode.resendText')}</Text>
         </Pressable>
       </View>

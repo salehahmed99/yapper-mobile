@@ -103,6 +103,8 @@ const AuthInput: React.FC<IAuthInputProps> = ({
             <Pressable
               onPress={() => setShowPicker(true)}
               style={[styles.input, isFocused && styles.inputFocused, status === 'error' && styles.inputError]}
+              accessibilityLabel="Auth_date_input"
+              accessibilityRole="button"
             >
               <Text style={displayDate ? styles.dateTextFilled : styles.dateTextPlaceholder}>
                 {displayDate || label}
@@ -129,6 +131,7 @@ const AuthInput: React.FC<IAuthInputProps> = ({
             autoCapitalize="none"
             autoCorrect={false}
             keyboardAppearance="dark"
+            accessibilityLabel="Auth_input"
           />
         )}
 
