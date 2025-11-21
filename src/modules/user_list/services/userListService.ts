@@ -4,10 +4,6 @@ import { t } from 'i18next';
 import { getFollowersList, getFollowingList } from '../../profile/services/profileService';
 import { IFollowerUser } from '../../profile/types';
 import { FetchUserListParams, IUserListResponse, IUserListResponseBackend } from '../types';
-import { getMockUserList } from './mockUserListService';
-
-// Set to true to use mock data for testing
-const USE_MOCK_DATA = false;
 
 /**
  * Helper function to convert IFollowerUser to IUser
@@ -26,25 +22,21 @@ const mapFollowerUserToUser = (follower: IFollowerUser): IUser => ({
 });
 
 export const getUserList = async (params: FetchUserListParams): Promise<IUserListResponse> => {
-  // Use mock data if enabled
-  if (USE_MOCK_DATA) {
-    return getMockUserList(params);
-  }
-
-  const { page, type } = params;
+  const { type, cursor, limit = 20 } = params;
 
   // Use the followers endpoint
   if (type === 'followers' && 'userId' in params) {
     const response = await getFollowersList({
       userId: params.userId,
-      pageOffset: page || 1,
-      pageSize: 20,
+      pageOffset: 1,
+      pageSize: limit,
       following: false,
     });
 
     return {
       users: response.data.map(mapFollowerUserToUser),
-      nextPage: response.data.length === 20 ? (page || 1) + 1 : null,
+      hasMore: response.data.length === limit,
+      nextCursor: response.data.length === limit ? response.data[response.data.length - 1].userId : undefined,
     };
   }
 
@@ -52,13 +44,14 @@ export const getUserList = async (params: FetchUserListParams): Promise<IUserLis
   if (type === 'following' && 'userId' in params) {
     const response = await getFollowingList({
       userId: params.userId,
-      pageOffset: page || 1,
-      pageSize: 20,
+      pageOffset: 1,
+      pageSize: limit,
     });
 
     return {
       users: response.data.map(mapFollowerUserToUser),
-      nextPage: response.data.length === 20 ? (page || 1) + 1 : null,
+      hasMore: response.data.length === limit,
+      nextCursor: response.data.length === limit ? response.data[response.data.length - 1].userId : undefined,
     };
   }
 
@@ -73,12 +66,16 @@ export const getUserList = async (params: FetchUserListParams): Promise<IUserLis
   }
   try {
     const response = await api.get<IUserListResponseBackend>(endpoint, {
-      params: page ? { page } : { page: 1 },
+      params: {
+        limit,
+        ...(cursor && { cursor }),
+      },
     });
     // Map backend response to frontend format
     return {
       users: response.data.data.data.map(mapUserDTOToUser),
-      nextPage: response.data.data.pagination.has_next_page ? response.data.data.pagination.current_page + 1 : null,
+      hasMore: response.data.data.has_more,
+      nextCursor: response.data.data.next_cursor,
     };
   } catch (error: any) {
     throw new Error(

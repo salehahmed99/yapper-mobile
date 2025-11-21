@@ -2,7 +2,6 @@ import { ThemedText } from '@/src/components/ThemedText';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import CustomTabView, { TabConfig } from '@/src/modules/profile/components/CustomTabView';
-import TweetQuotesList from '@/src/modules/tweets/components/TweetQuotesList';
 import FollowButton from '@/src/modules/user_list/components/FollowButton';
 import UserList from '@/src/modules/user_list/components/UserList';
 import { useAuthStore } from '@/src/store/useAuthStore';
@@ -33,6 +32,13 @@ export default function TweetActivityScreen() {
   const currentUserId = user?.id ?? null;
   const isTweetOwner = ownerId ? ownerId === currentUserId : false;
 
+  const handleUserPress = (selectedUser: IUser) => {
+    router.push({
+      pathname: '/(protected)/(profile)/[id]',
+      params: { id: selectedUser.id },
+    });
+  };
+
   const RepostsTab = useMemo(
     () =>
       function RepostsTab() {
@@ -41,6 +47,7 @@ export default function TweetActivityScreen() {
             key={`reposts-${tweetId}`}
             type="reposts"
             tweetId={tweetId || ''}
+            onUserPress={handleUserPress}
             renderAction={(user: IUser) => <FollowButton user={user} />}
           />
         );
@@ -51,7 +58,8 @@ export default function TweetActivityScreen() {
   const QuotesTab = useMemo(
     () =>
       function QuotesTab() {
-        return <TweetQuotesList tweetId={tweetId || ''} />;
+        // return <TweetQuotesList tweetId={tweetId || ''} />;
+        return <View></View>;
       },
     [tweetId],
   );
@@ -64,6 +72,7 @@ export default function TweetActivityScreen() {
             key={`likers-${tweetId}`}
             type="likes"
             tweetId={tweetId || ''}
+            onUserPress={handleUserPress}
             renderAction={(user: IUser) => <FollowButton user={user} />}
           />
         );
@@ -93,15 +102,7 @@ export default function TweetActivityScreen() {
           <View style={styles.placeholder} />
         </View>
       </View>
-      <View
-        style={styles.tabViewWrapper}
-        accessible={true}
-        accessibilityLabel="Tweet activity tabs"
-        accessibilityRole="tablist"
-      >
-        <CustomTabView tabs={tabs} scrollEnabled={false} />
-      </View>
-      <View style={styles.content} accessible={true} accessibilityLabel="Tweet activity content" />
+      <CustomTabView tabs={tabs} scrollEnabled={false} />
     </SafeAreaView>
   );
 }
@@ -139,12 +140,5 @@ const createStyles = (theme: Theme) =>
     },
     placeholder: {
       width: theme.ui.sideContainerWidth,
-    },
-    tabViewWrapper: {
-      borderBottomWidth: theme.borderWidth.thin / 2,
-      borderBottomColor: theme.colors.border,
-    },
-    content: {
-      flex: 1,
     },
   });
