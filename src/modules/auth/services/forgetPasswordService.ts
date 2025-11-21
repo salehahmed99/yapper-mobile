@@ -7,7 +7,6 @@ import {
   IForgetPasswordResponse,
   IVerifyOTPResponse,
   IResetPasswordResponse,
-  mapResetPasswordRequestToDTO,
 } from '../types';
 
 /**
@@ -29,7 +28,7 @@ export const requestForgetPassword = async (credentials: IForgetPasswordRequest)
 export const verifyOTP = async (credentials: IVerifyOTPRequest): Promise<string> => {
   try {
     const res = await api.post<IVerifyOTPResponse>('/auth/password/verify-otp', credentials);
-    return res.data.data.reset_token;
+    return res.data.data.resetToken;
   } catch (error: unknown) {
     const message = extractErrorMessage(error);
     throw new Error(message);
@@ -41,8 +40,7 @@ export const verifyOTP = async (credentials: IVerifyOTPRequest): Promise<string>
  */
 export const resetPassword = async (credentials: IResetPasswordRequest): Promise<boolean> => {
   try {
-    const request = mapResetPasswordRequestToDTO(credentials);
-    const res = await api.post<IResetPasswordResponse>('/auth/reset-password', request);
+    const res = await api.post<IResetPasswordResponse>('/auth/reset-password', credentials);
     return res.data.message === 'Password reset successfully';
   } catch (error: unknown) {
     const message = extractErrorMessage(error);

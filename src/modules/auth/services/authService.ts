@@ -11,8 +11,6 @@ import {
   IOAuthBirthDateResponse,
   IOAuthResponse,
   IOAuthUserNameRequest,
-  mapLoginResponseDTOToLoginResponse,
-  mapOAuthResponseDTOToOAuthResponse,
 } from '../types';
 
 // Complete auth session when app resumes
@@ -34,7 +32,7 @@ export const login = async (credentials: ILoginCredentials): Promise<ILoginRespo
   try {
     const res = await api.post('/auth/login', credentials);
     await setAuthProvider('local');
-    return mapLoginResponseDTOToLoginResponse(res.data);
+    return res.data;
   } catch (error) {
     throw new Error(extractErrorMessage(error));
   }
@@ -90,9 +88,9 @@ export const googleSignIn = async (): Promise<ILoginResponse | IOAuthResponse> =
     await setAuthProvider('google');
 
     if (res.data.data.needs_completion) {
-      return mapOAuthResponseDTOToOAuthResponse(res.data);
+      return res.data;
     }
-    return mapLoginResponseDTOToLoginResponse(res.data);
+    return res.data;
   } catch (error) {
     throw new Error(extractErrorMessage(error));
   }
@@ -146,9 +144,9 @@ export const githubSignIn = async (): Promise<ILoginResponse | IOAuthResponse> =
 
     await setAuthProvider('github');
     if (res.data.data.needs_completion) {
-      return mapOAuthResponseDTOToOAuthResponse(res.data);
+      return res.data;
     }
-    return mapLoginResponseDTOToLoginResponse(res.data);
+    return res.data;
   } catch (error) {
     throw new Error(extractErrorMessage(error));
   }
@@ -172,7 +170,7 @@ export const OAuthStep2 = async (credentials: IOAuthUserNameRequest): Promise<IL
       oauth_session_token: credentials.oauth_session_token,
       username: credentials.username,
     });
-    return mapLoginResponseDTOToLoginResponse(res.data);
+    return res.data;
   } catch (error) {
     throw new Error(extractErrorMessage(error));
   }

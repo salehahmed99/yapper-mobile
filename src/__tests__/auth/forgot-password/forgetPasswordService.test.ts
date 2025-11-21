@@ -1,12 +1,7 @@
 import * as forgetPasswordService from '../../../modules/auth/services/forgetPasswordService';
 import api from '../../../services/apiClient';
 import { extractErrorMessage } from '../../../utils/errorExtraction';
-import {
-  IForgetPasswordRequest,
-  IVerifyOTPRequest,
-  IResetPasswordRequest,
-  mapResetPasswordRequestToDTO,
-} from '../../../modules/auth/types';
+import { IForgetPasswordRequest, IVerifyOTPRequest, IResetPasswordRequest } from '../../../modules/auth/types';
 
 // Mock the API client
 jest.mock('../../../services/apiClient');
@@ -102,14 +97,14 @@ describe('ForgetPasswordService', () => {
       mockApi.post.mockResolvedValue(mockResponse);
 
       const credentials: IResetPasswordRequest = {
-        resetToken: 'reset-token-123',
-        newPassword: 'newpassword123',
+        reset_token: 'reset-token-123',
+        new_password: 'newpassword123',
         identifier: 'test@example.com',
       };
 
       const result = await forgetPasswordService.resetPassword(credentials);
 
-      expect(mockApi.post).toHaveBeenCalledWith('/auth/reset-password', mapResetPasswordRequestToDTO(credentials));
+      expect(mockApi.post).toHaveBeenCalledWith('/auth/reset-password', credentials);
       expect(result).toBe(true);
     });
 
@@ -122,8 +117,8 @@ describe('ForgetPasswordService', () => {
       mockApi.post.mockResolvedValue(mockResponse);
 
       const credentials: IResetPasswordRequest = {
-        resetToken: 'reset-token-123',
-        newPassword: 'newpassword123',
+        reset_token: 'reset-token-123',
+        new_password: 'newpassword123',
         identifier: 'test@example.com',
       };
 
@@ -139,8 +134,8 @@ describe('ForgetPasswordService', () => {
       mockExtractErrorMessage.mockReturnValue(errorMessage);
 
       const credentials: IResetPasswordRequest = {
-        resetToken: 'reset-token-123',
-        newPassword: 'newpassword123',
+        reset_token: 'reset-token-123',
+        new_password: 'newpassword123',
         identifier: 'test@example.com',
       };
 
