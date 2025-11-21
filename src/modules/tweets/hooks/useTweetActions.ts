@@ -100,7 +100,7 @@ export const useTweetActions = (tweetId: string) => {
     onSuccess: (_, variables) => {
       // Also invalidate individual tweet query to sync with media viewer
       queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
-         queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
     },
     onError: (error) => {
