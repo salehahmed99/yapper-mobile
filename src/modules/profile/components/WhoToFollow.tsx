@@ -106,18 +106,30 @@ export default function WhoToFollow({ profiles = defaultProfiles, onShowMore }: 
   });
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="who_to_follow_container">
       <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>{t('profile.whoToFollow.title')}</Text>
+        <Text style={styles.headerText} testID="who_to_follow_title">
+          {t('profile.whoToFollow.title')}
+        </Text>
 
         {/* Show More Button */}
-        <TouchableOpacity style={styles.showMoreButton} onPress={handleShowMore} activeOpacity={0.7}>
+        <TouchableOpacity
+          style={styles.showMoreButton}
+          onPress={handleShowMore}
+          activeOpacity={0.7}
+          testID="who_to_follow_show_more_button"
+        >
           <Text style={styles.showMoreText}>{t('profile.whoToFollow.showMore')}</Text>
           <ChevronRight size={20} color={theme.colors.text.link} />
         </TouchableOpacity>
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContainer}
+        testID="who_to_follow_scroll_view"
+      >
         {profiles.map((profile) => (
           <ProfileCard
             key={profile.id}

@@ -1,6 +1,5 @@
 import { extractErrorMessage } from '@/src/utils/errorExtraction';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import api from '../../../services/apiClient';
@@ -34,7 +33,7 @@ export const login = async (credentials: ILoginCredentials): Promise<ILoginRespo
   try {
     const res = await api.post('/auth/login', credentials);
     await setAuthProvider('local');
-    return mapLoginResponseDTOToLoginResponse(res.data);
+    return res.data;
   } catch (error) {
     throw new Error(extractErrorMessage(error));
   }
@@ -51,11 +50,11 @@ export const checkExists = async (identifier: string): Promise<boolean> => {
 
 export const logout = async (): Promise<void> => {
   try {
-    const provider = await getAuthProvider();
+    const _provider = await getAuthProvider();
 
-    if (provider === 'google') {
-      await googleSignOut();
-    }
+    // if (_provider === 'google') {
+    //   await googleSignOut();
+    // }
 
     await api.post('/auth/logout');
     await setAuthProvider(null);
@@ -68,43 +67,43 @@ export const logout = async (): Promise<void> => {
 /*                               Google Sign-In                               */
 /* -------------------------------------------------------------------------- */
 
-GoogleSignin.configure({
-  webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!,
-  iosClientId: process.env.EXPO_PUBLIC_IOS_ID,
-  offlineAccess: true,
-  forceCodeForRefreshToken: true,
-});
+// GoogleSignin.configure({
+//   webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!,
+//   iosClientId: process.env.EXPO_PUBLIC_IOS_ID,
+//   offlineAccess: true,
+//   forceCodeForRefreshToken: true,
+// });
 
-export const googleSignIn = async (): Promise<ILoginResponse | IOAuthResponse> => {
-  try {
-    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-    await googleSignOut();
-    const userInfo = await GoogleSignin.signIn();
+// export const googleSignIn = async (): Promise<ILoginResponse | IOAuthResponse> => {
+//   try {
+//     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+//     await googleSignOut();
+//     const userInfo = await GoogleSignin.signIn();
 
-    const { idToken } = userInfo.data || {};
-    if (!idToken) throw new Error('Failed to get idToken from Google');
+//     const { idToken } = userInfo.data || {};
+//     if (!idToken) throw new Error('Failed to get idToken from Google');
 
-    const res = await api.post('/auth/mobile/google', {
-      access_token: idToken,
-    });
-    await setAuthProvider('google');
+//     const res = await api.post('/auth/mobile/google', {
+//       access_token: idToken,
+//     });
+//     await setAuthProvider('google');
 
-    if (res.data.data.needs_completion) {
-      return mapOAuthResponseDTOToOAuthResponse(res.data);
-    }
-    return mapLoginResponseDTOToLoginResponse(res.data);
-  } catch (error) {
-    throw new Error(extractErrorMessage(error));
-  }
-};
+//     if (res.data.data.needs_completion) {
+//       return mapOAuthResponseDTOToOAuthResponse(res.data);
+//     }
+//     return mapLoginResponseDTOToLoginResponse(res.data);
+//   } catch (error) {
+//     throw new Error(extractErrorMessage(error));
+//   }
+// };
 
-export const googleSignOut = async (): Promise<void> => {
-  try {
-    await GoogleSignin.signOut();
-  } catch (error) {
-    throw new Error(extractErrorMessage(error));
-  }
-};
+// export const googleSignOut = async (): Promise<void> => {
+//   try {
+//     await GoogleSignin.signOut();
+//   } catch (error) {
+//     throw new Error(extractErrorMessage(error));
+//   }
+// };
 
 /* -------------------------------------------------------------------------- */
 /*                               GitHub Sign-In                               */

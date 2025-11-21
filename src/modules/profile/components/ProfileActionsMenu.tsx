@@ -75,16 +75,26 @@ const ProfileActionsMenu: React.FC<IProfileActionsMenuProps> = ({
         <VolumeOff color={theme.colors.text.primary} size={20} strokeWidth={1.5} />
       ),
       disabled: isMuteLoading,
+      testID: 'profile_actions_mute_button',
     },
     {
       label: isBlocked ? t('profile.actions.unblock') : t('profile.actions.block'),
       onPress: handleBlockToggle,
       icon: <Ban color={theme.colors.text.primary} size={20} strokeWidth={1.5} />,
       disabled: blockLoading,
+      testID: 'profile_actions_block_button',
     },
   ];
 
-  return <DropdownMenu visible={visible} onClose={onClose} items={menuItems} position={{ top: 100, right: 16 }} />;
+  return (
+    <DropdownMenu
+      visible={visible}
+      onClose={onClose}
+      items={menuItems}
+      position={{ top: 100, right: 16 }}
+      testID="profile_actions_menu"
+    />
+  );
 };
 
 export default ProfileActionsMenu;

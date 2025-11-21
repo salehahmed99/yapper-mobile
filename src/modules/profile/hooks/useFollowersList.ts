@@ -12,29 +12,29 @@ export const followersKeys = {
 interface UseFollowersListOptions
   extends Omit<UseQueryOptions<IGetFollowersListResponse, Error>, 'queryKey' | 'queryFn'> {
   userId: string;
-  pageOffset?: number;
-  pageSize?: number;
+  cursor?: string;
+  limit?: number;
   following?: boolean;
   enabled?: boolean;
 }
 
 /**
  * Hook to fetch followers list with React Query caching
- * @param options - Query options including userId, pagination, and filters
+ * @param options - Query options including userId, cursor pagination, and filters
  * @returns React Query result with followers data, loading state, and error
  */
 export const useFollowersList = ({
   userId,
-  pageOffset = 1,
-  pageSize = 20,
+  cursor = '',
+  limit = 20,
   following = false,
   enabled = true,
   ...queryOptions
 }: UseFollowersListOptions) => {
   const params: IGetFollowersListParams = {
     userId,
-    pageOffset,
-    pageSize,
+    cursor,
+    limit,
     following,
   };
 

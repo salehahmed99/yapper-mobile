@@ -77,7 +77,14 @@ export default function AvatarViewer({
   if (!visible) return null;
 
   return (
-    <Modal visible={visible} transparent animationType="none" onRequestClose={handleClose} statusBarTranslucent>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="none"
+      onRequestClose={handleClose}
+      statusBarTranslucent
+      testID="avatar_viewer_modal"
+    >
       <StatusBar barStyle="light-content" backgroundColor={colors.dark.background.primary} />
       <Animated.View style={[ImageViewerStyle.container, { opacity: fadeAnim }]}>
         {/* Backdrop */}
@@ -97,13 +104,19 @@ export default function AvatarViewer({
               source={{ uri: imageUri }}
               style={[ImageViewerStyle.image, isBanner ? ImageViewerStyle.bannerImage : ImageViewerStyle.avatarImage]}
               resizeMode="contain"
+              testID="avatar_viewer_image"
             />
           </Animated.View>
         </View>
 
         {/* Top Bar with Close Button */}
         <View style={ImageViewerStyle.topBar}>
-          <TouchableOpacity onPress={handleClose} style={ImageViewerStyle.closeButton} activeOpacity={0.8}>
+          <TouchableOpacity
+            onPress={handleClose}
+            style={ImageViewerStyle.closeButton}
+            activeOpacity={0.8}
+            testID="avatar_viewer_close_button"
+          >
             <XIcon color="#fff" size={20} strokeWidth={2} />
           </TouchableOpacity>
         </View>
@@ -111,7 +124,12 @@ export default function AvatarViewer({
         {/* Bottom Bar with Edit Button */}
         {onEditRequested && (
           <View style={ImageViewerStyle.bottomBar}>
-            <TouchableOpacity onPress={handleEdit} style={ImageViewerStyle.editButton} activeOpacity={0.8}>
+            <TouchableOpacity
+              onPress={handleEdit}
+              style={ImageViewerStyle.editButton}
+              activeOpacity={0.8}
+              testID="avatar_viewer_edit_button"
+            >
               <Text style={ImageViewerStyle.editButtonText}>{t('profile.actions.edit')}</Text>
             </TouchableOpacity>
           </View>

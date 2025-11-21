@@ -2,8 +2,9 @@ import DropdownMenu, { DropdownMenuItem } from '@/src/components/DropdownMenu';
 import GrokLogo from '@/src/components/icons/GrokLogo';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useAuthStore } from '@/src/store/useAuthStore';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, useSegments } from 'expo-router';
 import { MoreHorizontal } from 'lucide-react-native';
 import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -37,6 +38,10 @@ const Tweet: React.FC<ITweetProps> = (props) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { t } = useTranslation();
   const router = useRouter();
+  const currentUser = useAuthStore((state) => state.user);
+  const segments = useSegments();
+  const params = useLocalSearchParams();
+  const currentProfileId = (segments as string[]).includes('(profile)') ? params.id : null;
 
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
@@ -83,7 +88,14 @@ const Tweet: React.FC<ITweetProps> = (props) => {
       <View style={styles.tweetContainer}>
         <View style={styles.imageColumn}>
           <Pressable
-            onPress={() => router.push({ pathname: '/(protected)/(profile)/[id]', params: { id: tweet.user.id } })}
+            onPress={() => {
+              // Don't navigate if already on this profile or if it's the current user's own profile
+              const isCurrentProfile = tweet.user.id === currentProfileId;
+              const isOwnProfile = !currentProfileId && tweet.user.id === currentUser?.id;
+              if (!isCurrentProfile && !isOwnProfile) {
+                router.push({ pathname: '/(protected)/(profile)/[id]', params: { id: tweet.user.id } });
+              }
+            }}
           >
             <Image
               source={

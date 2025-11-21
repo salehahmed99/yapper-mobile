@@ -4,7 +4,7 @@ import { useTheme } from '@/src/context/ThemeContext';
 import OAuthButtons from '@/src/modules/auth/components/oAuth/OAuthButtons';
 import OAuthHeadLine from '@/src/modules/auth/components/oAuth/OAuthHeadLine';
 import OAuthLegalText from '@/src/modules/auth/components/oAuth/OAuthLegalText';
-import { githubSignIn, googleSignIn } from '@/src/modules/auth/services/authService';
+import { githubSignIn } from '@/src/modules/auth/services/authService';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
@@ -36,17 +36,17 @@ const LandingScreen: React.FC = () => {
     }
   };
 
-  const onGooglePress = async () => {
-    setLoading(true);
-    try {
-      const userData = await googleSignIn();
-      completeOauthLogin(userData);
-    } catch (error) {
-      console.error('Google login failed:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const onGooglePress = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const userData = await googleSignIn();
+  //     completeOauthLogin(userData);
+  //   } catch (error) {
+  //     console.error('Google login failed:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const onGithubPress = async () => {
     setLoading(true);
@@ -71,7 +71,7 @@ const LandingScreen: React.FC = () => {
 
       <View style={styles.bottom}>
         <OAuthButtons
-          onGooglePress={onGooglePress}
+          onGooglePress={onGithubPress}
           onGithubPress={onGithubPress}
           onCreateAccountPress={onCreateAccountPress}
         />

@@ -30,8 +30,10 @@ const EmptyFollowersState: React.FC<EmptyFollowersStateProps> = ({ message }) =>
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.message}>{message}</Text>
+    <View style={styles.container} testID="empty_followers_state">
+      <Text style={styles.message} testID="empty_followers_message">
+        {message}
+      </Text>
     </View>
   );
 };

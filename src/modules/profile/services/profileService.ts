@@ -6,6 +6,14 @@ import {
   IGetFollowingListResponse,
   IGetMyUserResponse,
   IGetUserByIdResponse,
+  IUserLikesParams,
+  IUserLikesResponse,
+  IUserMediaParams,
+  IUserMediaResponse,
+  IUserPostsParams,
+  IUserPostsResponse,
+  IUserRepliesParams,
+  IUserRepliesResponse,
 } from '../types';
 
 export const getMyUser = async (): Promise<IGetMyUserResponse> => {
@@ -42,15 +50,15 @@ export const getUserById = async (userId: string): Promise<IGetUserByIdResponse>
 
 export const getFollowersList = async ({
   userId,
-  pageOffset = 1,
-  pageSize = 20,
+  cursor = '',
+  limit = 20,
   following = false,
 }: IGetFollowersListParams): Promise<IGetFollowersListResponse> => {
   try {
     const response = await api.get(`/users/${userId}/followers`, {
       params: {
-        page_offset: pageOffset,
-        page_size: pageSize,
+        cursor,
+        limit,
         following,
       },
     });
@@ -69,14 +77,14 @@ export const getFollowersList = async ({
 
 export const getFollowingList = async ({
   userId,
-  pageOffset = 1,
-  pageSize = 20,
+  cursor = '',
+  limit = 20,
 }: IGetFollowingListParams): Promise<IGetFollowingListResponse> => {
   try {
     const response = await api.get(`/users/${userId}/following`, {
       params: {
-        page_offset: pageOffset,
-        page_size: pageSize,
+        cursor,
+        limit,
       },
     });
     return response.data;
@@ -382,6 +390,118 @@ export const deleteCover = async (fileUrl: string): Promise<void> => {
     }
     if (error.response) {
       throw new Error(error.response.data.message || 'An error occurred while deleting cover.');
+    }
+    throw error;
+  }
+};
+
+/**
+ * Get user's posts with pagination
+ * @param params - Parameters including userId, cursor, and limit
+ * @returns User posts response with pagination
+ */
+export const getUserPosts = async ({ userId, cursor, limit = 20 }: IUserPostsParams): Promise<IUserPostsResponse> => {
+  try {
+    const params: Record<string, string | number> = { limit };
+    if (cursor) {
+      params.cursor = cursor;
+    }
+
+    const response = await api.get(`/users/${userId}/posts`, { params });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    if (error.response) {
+      throw new Error(error.response.data.message || 'An error occurred while fetching user posts.');
+    }
+    throw error;
+  }
+};
+
+/**
+ * Get user's media posts with pagination
+ * @param params - Parameters including userId, cursor, and limit
+ * @returns User media response with pagination
+ */
+export const getUserMedia = async ({ userId, cursor, limit = 20 }: IUserMediaParams): Promise<IUserMediaResponse> => {
+  try {
+    const params: Record<string, string | number> = { limit };
+    if (cursor) {
+      params.cursor = cursor;
+    }
+
+    const response = await api.get(`/users/${userId}/media`, { params });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    if (error.response) {
+      throw new Error(error.response.data.message || 'An error occurred while fetching user media.');
+    }
+    throw error;
+  }
+};
+
+/**
+ * Get user's liked posts with pagination
+ * @param params - Parameters including userId, cursor, and limit
+ * @returns User likes response with pagination
+ */
+export const getUserLikes = async ({
+  userId: _userId,
+  cursor = '',
+  limit = 20,
+}: IUserLikesParams): Promise<IUserLikesResponse> => {
+  try {
+    const response = await api.get(`/users/me/liked-posts`, {
+      params: {
+        cursor,
+        limit,
+      },
+    });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    if (error.response) {
+      throw new Error(error.response.data.message || 'An error occurred while fetching user likes.');
+    }
+    throw error;
+  }
+};
+
+/**
+ * Get user's replies with pagination
+ * @param params - Parameters including userId, cursor, and limit
+ * @returns User replies response with pagination
+ */
+export const getUserReplies = async ({
+  userId,
+  cursor,
+  limit = 20,
+}: IUserRepliesParams): Promise<IUserRepliesResponse> => {
+  try {
+    const params: Record<string, string | number> = { limit };
+    if (cursor) {
+      params.cursor = cursor;
+    }
+
+    const response = await api.get(`/users/${userId}/replies`, { params });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    if (error.response) {
+      throw new Error(error.response.data.message || 'An error occurred while fetching user replies.');
     }
     throw error;
   }

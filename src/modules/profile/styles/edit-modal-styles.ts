@@ -7,7 +7,7 @@ export const createEditModalStyles = (theme: Theme) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       paddingHorizontal: theme.spacing.xl,
-      paddingVertical: theme.spacing.lg,
+      paddingVertical: theme.spacing.lg + (Platform.OS === 'ios' ? 0 : 20),
       backgroundColor: theme.colors.background.primary,
     },
     buttonsText: {
