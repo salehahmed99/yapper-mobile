@@ -143,14 +143,18 @@ export default function ProfileCard({ profile, onFollow, isFollowing = false }: 
   };
 
   return (
-    <View style={styles.card}>
+    <View style={styles.card} testID={`profile_card_${profile.id}`}>
       {/* Banner Image */}
-      <Image source={{ uri: profile.banner || DEFAULT_BANNER_URL }} style={styles.banner} />
+      <Image
+        source={{ uri: profile.banner || DEFAULT_BANNER_URL }}
+        style={styles.banner}
+        testID={`profile_card_banner_${profile.id}`}
+      />
 
       <View style={styles.contentContainer}>
         {/* Avatar with overlap */}
         <View style={styles.avatarContainer}>
-          <Image source={{ uri: profile.avatar }} style={styles.avatar} />
+          <Image source={{ uri: profile.avatar }} style={styles.avatar} testID={`profile_card_avatar_${profile.id}`} />
         </View>
 
         {/* Name and Follow Button Row */}
@@ -164,6 +168,7 @@ export default function ProfileCard({ profile, onFollow, isFollowing = false }: 
             style={[styles.followButton, isFollowing && styles.followingButton]}
             onPress={() => onFollow(profile.id)}
             activeOpacity={0.7}
+            testID={`profile_card_follow_button_${profile.id}`}
           >
             <Text style={[styles.followButtonText, isFollowing && styles.followingButtonText]}>
               {isFollowing ? t('profile.following') : t('profile.follow')}

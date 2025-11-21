@@ -12,11 +12,9 @@ export const createContainerStyles = (theme: Theme) =>
     },
     scrollContent: {
       flexGrow: 1,
+      paddingBottom: 100,
     },
-    tabsContainer: {
-      flex: 1,
-      minHeight: 1000,
-    },
+    tabsContainer: {},
   });
 
 export default createContainerStyles;

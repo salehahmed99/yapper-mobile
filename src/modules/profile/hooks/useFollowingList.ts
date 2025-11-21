@@ -12,27 +12,27 @@ export const followingKeys = {
 interface UseFollowingListOptions
   extends Omit<UseQueryOptions<IGetFollowingListResponse, Error>, 'queryKey' | 'queryFn'> {
   userId: string;
-  pageOffset?: number;
-  pageSize?: number;
+  cursor?: string;
+  limit?: number;
   enabled?: boolean;
 }
 
 /**
  * Hook to fetch following list with React Query caching
- * @param options - Query options including userId and pagination
+ * @param options - Query options including userId and cursor pagination
  * @returns React Query result with following data, loading state, and error
  */
 export const useFollowingList = ({
   userId,
-  pageOffset = 1,
-  pageSize = 20,
+  cursor = '',
+  limit = 20,
   enabled = true,
   ...queryOptions
 }: UseFollowingListOptions) => {
   const params: IGetFollowingListParams = {
     userId,
-    pageOffset,
-    pageSize,
+    cursor,
+    limit,
   };
 
   return useQuery<IGetFollowingListResponse, Error>({

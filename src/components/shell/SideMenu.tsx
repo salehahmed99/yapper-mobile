@@ -179,7 +179,6 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
           pointerEvents="auto"
           intensity={16}
           style={[styles.bottomOverlay, { height: theme.ui.navHeight + insets.bottom, backgroundColor: overlayBg }]}
-          experimentalBlurMethod={'dimezisBlurView'}
         >
           <View style={styles.toggleWrapper}>
             <TouchableOpacity

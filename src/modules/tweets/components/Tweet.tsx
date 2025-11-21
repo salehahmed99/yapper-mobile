@@ -3,7 +3,6 @@ import GrokLogo from '@/src/components/icons/GrokLogo';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
 import { MoreHorizontal } from 'lucide-react-native';
 import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,7 +21,10 @@ interface ITweetProps {
   onBookmark: () => void;
   onShare: () => void;
   openSheet: () => void;
+
   isVisible?: boolean;
+  onTweetPress: (tweetId: string) => void;
+  onAvatarPress: (userId: string) => void;
 }
 
 const Tweet: React.FC<ITweetProps> = (props) => {
@@ -35,11 +37,12 @@ const Tweet: React.FC<ITweetProps> = (props) => {
     onShare,
     openSheet,
     isVisible = true,
+    onTweetPress,
+    onAvatarPress,
   } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { t } = useTranslation();
-  const router = useRouter();
 
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
@@ -71,23 +74,14 @@ const Tweet: React.FC<ITweetProps> = (props) => {
     <Pressable
       style={styles.container}
       accessibilityLabel="tweet_container_main"
-      onPress={() =>
-        router.push({
-          pathname: '/(protected)/tweets/[tweetId]',
-          params: {
-            tweetId: tweet.tweetId,
-          },
-        })
-      }
+      onPress={() => onTweetPress(tweet.tweetId)}
     >
       {tweet.type === 'repost' && (
         <RepostIndicator repostById={tweet.repostedBy?.id} repostedByName={tweet.repostedBy?.name} />
       )}
       <View style={styles.tweetContainer}>
         <View style={styles.imageColumn}>
-          <Pressable
-            onPress={() => router.push({ pathname: '/(protected)/(profile)/[id]', params: { id: tweet.user.id } })}
-          >
+          <Pressable onPress={() => onAvatarPress(tweet.user.id)}>
             <Image
               source={
                 tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : require('@/assets/images/avatar-placeholder.png')

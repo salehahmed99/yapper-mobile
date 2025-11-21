@@ -9,6 +9,7 @@ export interface DropdownMenuItem {
   icon?: ReactNode;
   textColor?: string;
   disabled?: boolean;
+  testID?: string;
 }
 
 interface IDropdownMenuProps {
@@ -17,6 +18,7 @@ interface IDropdownMenuProps {
   items: DropdownMenuItem[];
   position?: { top?: number; bottom?: number; left?: number; right?: number };
   containerStyle?: ViewStyle;
+  testID?: string;
 }
 
 const DropdownMenu: React.FC<IDropdownMenuProps> = ({
@@ -25,6 +27,7 @@ const DropdownMenu: React.FC<IDropdownMenuProps> = ({
   items,
   position = { top: 100, right: 16 },
   containerStyle,
+  testID,
 }) => {
   const { theme, isDark } = useTheme();
   const styles = createDropdownMenuStyles(theme, isDark);
@@ -32,7 +35,14 @@ const DropdownMenu: React.FC<IDropdownMenuProps> = ({
   if (!visible) return null;
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose} statusBarTranslucent>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+      statusBarTranslucent
+      testID={testID}
+    >
       <Pressable style={styles.backdrop} onPress={onClose}>
         <View style={[styles.menuContainer, position, containerStyle]}>
           {items.map((item, index) => (
@@ -46,6 +56,7 @@ const DropdownMenu: React.FC<IDropdownMenuProps> = ({
                 }}
                 activeOpacity={0.6}
                 disabled={item.disabled}
+                testID={item.testID}
               >
                 <Text
                   style={[

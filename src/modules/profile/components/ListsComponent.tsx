@@ -41,11 +41,11 @@ const UserListRoute = ({ type, userId }: UserListRouteProps) => {
   };
 
   if (!targetUserId) {
-    return <View style={styles.page} />;
+    return <View style={styles.page} testID={`user_list_route_${type}_no_user`} />;
   }
 
   return (
-    <View style={styles.page}>
+    <View style={styles.page} testID={`user_list_route_${type}`}>
       <UserList
         type={type}
         userId={targetUserId}

@@ -6,6 +6,7 @@ import { useAuthStore } from '../../../store/useAuthStore';
 import AnimatedProfileHeader from '../components/AnimatedProfileHeader';
 import ProfileHeader from '../components/ProfileHeader';
 import ProfileTabs from '../components/ProfileTabs';
+import { ProfilePostsProvider, useProfilePosts } from '../context/ProfilePostsContext';
 import { getUserById } from '../services/profileService';
 import { createContainerStyles } from '../styles/container-style';
 import { IUserProfile } from '../types';
@@ -18,11 +19,11 @@ type ProfileContainerProps = {
 const ANIMATED_HEADER_HEIGHT = 90;
 const PROFILE_HEADER_HEIGHT = 420; // Approximate height of ProfileHeader
 
-export default function ProfileContainer({ userId, isOwnProfile = true }: ProfileContainerProps) {
+function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainerProps) {
   const { theme } = useTheme();
-  // const insets = useSafeAreaInsets();
   const containerStyles = useMemo(() => createContainerStyles(theme), [theme]);
   const scrollY = useRef(new Animated.Value(0)).current;
+  const { triggerRefresh } = useProfilePosts();
 
   const currentUser = useAuthStore((state) => state.user);
   const fetchAndUpdateUser = useAuthStore((state) => state.fetchAndUpdateUser);
@@ -119,6 +120,8 @@ export default function ProfileContainer({ userId, isOwnProfile = true }: Profil
       }
       // Increment refresh key to force ProfileHeader to update
       setRefreshKey((prev) => prev + 1);
+      // Trigger refresh of tweets/posts
+      triggerRefresh();
     } catch (error) {
       console.error('Error refreshing profile:', error);
     } finally {
@@ -175,9 +178,17 @@ export default function ProfileContainer({ userId, isOwnProfile = true }: Profil
           <ProfileHeader key={refreshKey} userId={userId} isOwnProfile={isOwnProfile} />
         </Animated.View>
         <View style={containerStyles.tabsContainer}>
-          <ProfileTabs />
+          <ProfileTabs userId={userId} />
         </View>
       </Animated.ScrollView>
     </View>
+  );
+}
+
+export default function ProfileContainer(props: ProfileContainerProps) {
+  return (
+    <ProfilePostsProvider>
+      <ProfileContainerInner {...props} />
+    </ProfilePostsProvider>
   );
 }

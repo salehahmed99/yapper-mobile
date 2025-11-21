@@ -9,6 +9,7 @@ interface IGetMyUserResponse {
   avatarUrl: string;
   coverUrl: string | null;
   country: string | null;
+  birthDate?: string;
   createdAt: string;
   followersCount: number;
   followingCount: number;
@@ -62,32 +63,120 @@ interface IFollowerUser {
   isBlocked: boolean;
 }
 
+interface IFollowersPagination {
+  nextCursor: string | null;
+  hasMore: boolean;
+}
+
 interface IGetFollowersListResponse {
-  data: IFollowerUser[];
+  data: {
+    data: IFollowerUser[];
+    pagination: IFollowersPagination;
+  };
   count: number;
   message: string;
 }
 
 interface IGetFollowersListParams {
   userId: string;
-  pageOffset?: number;
-  pageSize?: number;
+  cursor?: string;
+  limit?: number;
   following?: boolean;
 }
 
-export { IFollowerUser, IGetFollowersListParams, IGetFollowersListResponse };
+export { IFollowersPagination, IFollowerUser, IGetFollowersListParams, IGetFollowersListResponse };
 
 // Following List Types
 interface IGetFollowingListParams {
   userId: string;
-  pageOffset?: number;
-  pageSize?: number;
+  cursor?: string;
+  limit?: number;
 }
 
 interface IGetFollowingListResponse {
-  data: IFollowerUser[];
+  data: {
+    data: IFollowerUser[];
+    pagination: IFollowersPagination;
+  };
   count: number;
   message: string;
 }
 
 export { IGetFollowingListParams, IGetFollowingListResponse };
+
+// User Posts Types
+interface IUserPostsParams {
+  userId: string;
+  cursor?: string;
+  limit?: number;
+}
+
+interface IUserPostsPagination {
+  nextCursor: string | null;
+  hasMore: boolean;
+}
+
+interface IUserPostsResponse {
+  data: {
+    data: unknown[];
+    pagination: IUserPostsPagination;
+  };
+  count: number;
+  message: string;
+}
+
+export { IUserPostsPagination, IUserPostsParams, IUserPostsResponse };
+
+// User Media Types
+interface IUserMediaParams {
+  userId: string;
+  cursor?: string;
+  limit?: number;
+}
+
+interface IUserMediaResponse {
+  data: {
+    data: unknown[];
+    pagination: IUserPostsPagination;
+  };
+  count: number;
+  message: string;
+}
+
+export { IUserMediaParams, IUserMediaResponse };
+
+// User Likes Types
+interface IUserLikesParams {
+  userId: string;
+  cursor?: string;
+  limit?: number;
+}
+
+interface IUserLikesResponse {
+  data: {
+    data: unknown[];
+    pagination: IUserPostsPagination;
+  };
+  count: number;
+  message: string;
+}
+
+export { IUserLikesParams, IUserLikesResponse };
+
+// User Replies Types
+interface IUserRepliesParams {
+  userId: string;
+  cursor?: string;
+  limit?: number;
+}
+
+interface IUserRepliesResponse {
+  data: {
+    data: unknown[];
+    pagination: IUserPostsPagination;
+  };
+  count: number;
+  message: string;
+}
+
+export { IUserRepliesParams, IUserRepliesResponse };

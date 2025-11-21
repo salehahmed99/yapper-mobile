@@ -19,7 +19,7 @@ const LandingScreen: React.FC = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const completeOauthLogin = (userData: any) => {
+  const completeOauthLogin = async (userData: any) => {
     if (userData.data && 'needsCompletion' in userData.data && userData.data.needsCompletion) {
       router.push({
         pathname: '/(auth)/OAuth/birth-date-screen',
@@ -29,9 +29,8 @@ const LandingScreen: React.FC = () => {
       });
       return;
     } else {
-      loginUser(userData.data.user, userData.data.accessToken);
+      await loginUser(userData.data.user, userData.data.accessToken);
       setSkipRedirect(false);
-      // Use replace to avoid showing 404
       router.replace('/(protected)');
     }
   };

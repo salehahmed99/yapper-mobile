@@ -17,6 +17,8 @@ export type UserListQuery =
 export interface IUserListResponse {
   users: IUser[];
   nextPage?: number | null;
+  nextCursor?: string | null;
+  hasMore?: boolean;
 }
 
 export interface IUserListResponseBackend {
@@ -35,4 +37,4 @@ export interface IUserListResponseBackend {
   message: string;
 }
 
-export type FetchUserListParams = UserListQuery & { page?: number | null };
+export type FetchUserListParams = UserListQuery & { page?: number | null; cursor?: string | null };
