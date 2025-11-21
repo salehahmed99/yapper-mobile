@@ -10,23 +10,29 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
-import ParentTweet from './ParentTweet';
 import RepostIndicator from './RepostIndicator';
 import UserInfoRow from './UserInfoRow';
 
 interface ITweetProps {
   tweet: ITweet;
-  parentTweet?: ITweet | null;
   onReplyPress: () => void;
-  onRepostPress: (isReposted: boolean) => void;
-  onLikePress: (isLiked: boolean) => void;
-  onViewsPress: () => void;
-  onBookmarkPress: () => void;
-  onSharePress: () => void;
+  onLike: (isLiked: boolean) => void;
+  onViewPostInteractions: (tweetId: string, ownerId: string) => void;
+  onBookmark: () => void;
+  onShare: () => void;
+  openSheet: () => void;
 }
 
 const Tweet: React.FC<ITweetProps> = (props) => {
-  const { tweet, parentTweet, onReplyPress, onRepostPress, onLikePress, onViewsPress, onSharePress } = props;
+  const {
+    tweet,
+    onReplyPress,
+    onLike,
+    onViewPostInteractions,
+    // onBookmark,
+    onShare,
+    openSheet,
+  } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { t } = useTranslation();
@@ -53,20 +59,26 @@ const Tweet: React.FC<ITweetProps> = (props) => {
     {
       label: t('tweetActivity.viewPostInteractions'),
       onPress: () => {
-        router.push({
-          pathname: '/(protected)/tweets/[tweetId]/activity',
-          params: {
-            tweetId: tweet.tweet_id,
-            ownerId: tweet.user.id,
-          },
-        });
+        onViewPostInteractions(tweet.tweetId, tweet.user.id);
       },
     },
   ];
+
   return (
-    <View style={styles.container} accessibilityLabel="tweet_container_main">
+    <Pressable
+      style={styles.container}
+      accessibilityLabel="tweet_container_main"
+      onPress={() =>
+        router.push({
+          pathname: '/(protected)/tweets/[tweetId]',
+          params: {
+            tweetId: tweet.tweetId,
+          },
+        })
+      }
+    >
       {tweet.type === 'repost' && (
-        <RepostIndicator repostById={tweet.reposted_by?.id} repostedByName={tweet.reposted_by?.name} />
+        <RepostIndicator repostById={tweet.repostedBy?.id} repostedByName={tweet.repostedBy?.name} />
       )}
       <View style={styles.tweetContainer}>
         <View style={styles.imageColumn}>
@@ -75,9 +87,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
           >
             <Image
               source={
-                tweet.user.avatar_url
-                  ? { uri: tweet.user.avatar_url }
-                  : require('@/assets/images/avatar-placeholder.png')
+                tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : require('@/assets/images/avatar-placeholder.png')
               }
               style={styles.avatar}
               accessibilityLabel="tweet_image_avatar"
@@ -99,26 +109,27 @@ const Tweet: React.FC<ITweetProps> = (props) => {
           <View style={styles.tweetContent}>
             <Text style={styles.tweetText}>{tweet.content}</Text>
           </View>
-          {parentTweet && <ParentTweet tweet={parentTweet} />}
+          {/* {parentTweet && <ParentTweet tweet={parentTweet} />} */}
           <ActionsRow
             tweet={tweet}
+            size="small"
             onReplyPress={onReplyPress}
-            onRepostPress={onRepostPress}
-            onLikePress={onLikePress}
-            onViewsPress={onViewsPress}
+            onRepostPress={openSheet}
+            onLikePress={onLike}
             onBookmarkPress={() => setIsBookmarked(!isBookmarked)}
             isBookmarked={isBookmarked}
-            onSharePress={onSharePress}
+            onSharePress={onShare}
+          />
+
+          <DropdownMenu
+            visible={menuVisible}
+            onClose={() => setMenuVisible(false)}
+            items={menuItems}
+            position={menuPosition}
           />
         </View>
       </View>
-      <DropdownMenu
-        visible={menuVisible}
-        onClose={() => setMenuVisible(false)}
-        items={menuItems}
-        position={menuPosition}
-      />
-    </View>
+    </Pressable>
   );
 };
 
@@ -143,13 +154,13 @@ const createStyles = (theme: Theme) =>
     },
     topRow: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
       alignItems: 'center',
+      gap: theme.spacing.sm,
     },
     optionsRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: theme.spacing.sm,
+      gap: theme.spacing.xs,
     },
     tweetContent: {},
     avatar: {

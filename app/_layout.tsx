@@ -2,12 +2,13 @@ import { QueryProvider } from '@/src/context/QueryProvider';
 import { ThemeProvider } from '@/src/context/ThemeContext';
 import i18n from '@/src/i18n';
 import { useAuthStore } from '@/src/store/useAuthStore';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import React from 'react';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { I18nextProvider } from 'react-i18next';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 
 interface IAuthInitializerProps {
@@ -47,15 +48,19 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryProvider>
-      <I18nextProvider i18n={i18n}>
-        <ThemeProvider>
-          <AuthInitializer>
-            <Stack screenOptions={{ headerShown: false }}></Stack>
-          </AuthInitializer>
-        </ThemeProvider>
-        <Toast />
-      </I18nextProvider>
-    </QueryProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryProvider>
+        <I18nextProvider i18n={i18n}>
+          <ThemeProvider>
+            <BottomSheetModalProvider>
+              <AuthInitializer>
+                <Stack screenOptions={{ headerShown: false }}></Stack>
+              </AuthInitializer>
+            </BottomSheetModalProvider>
+          </ThemeProvider>
+          <Toast />
+        </I18nextProvider>
+      </QueryProvider>
+    </GestureHandlerRootView>
   );
 }

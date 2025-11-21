@@ -1,6 +1,6 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import { Slot, usePathname } from 'expo-router';
+import { Stack, usePathname } from 'expo-router';
 import React from 'react';
 import type { PanResponderGestureState } from 'react-native';
 import { Animated, PanResponder, Pressable, StyleSheet, useWindowDimensions, View, ViewStyle } from 'react-native';
@@ -146,7 +146,7 @@ const SlidingShell: React.FC<ISlidingShellProps> = React.memo(function SlidingSh
         style={[styles.absoluteTranslate, { transform: [{ translateX: anim }] }]}
       >
         <View style={styles.content}>
-          <Slot />
+          <Stack screenOptions={{ headerShown: false }} />
           <Animated.View
             style={[styles.overlayBase, { opacity: overlayOpacity }]}
             pointerEvents={isSideMenuOpen ? 'auto' : 'none'}

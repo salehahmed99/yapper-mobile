@@ -1,33 +1,34 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { ISvgIconProps } from '@/src/types/svg';
 import { formatCount } from '@/src/utils/formatCount';
 import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
-import { SvgProps } from 'react-native-svg';
 
 interface ITweetActionButtonProps {
-  icon: React.FC<SvgProps>;
+  icon: React.FC<ISvgIconProps>;
   count?: number;
-  onPress: () => void;
-  strokeColor?: string;
-  fillColor?: string;
+  onPress?: () => void;
+  color?: string;
+  filled?: boolean;
   accessibilityLabel: string;
+  size: 'small' | 'large';
 }
 const TweetActionButton: React.FC<ITweetActionButtonProps> = (props) => {
-  const { icon: Icon, count, onPress, strokeColor, fillColor, accessibilityLabel } = props;
+  const { icon: Icon, count, onPress, color, filled, accessibilityLabel, size } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+
   return (
     <Pressable style={styles.actionItem} onPress={onPress} hitSlop={15} accessibilityLabel={accessibilityLabel}>
       <Icon
-        width={theme.iconSizes.xs}
-        height={theme.iconSizes.xs}
-        color={strokeColor || theme.colors.text.secondary}
-        strokeWidth={10}
-        fill={fillColor || 'transparent'}
+        size={size === 'small' ? theme.iconSizesAlt.xs : theme.iconSizesAlt.xl}
+        stroke={color || theme.colors.text.secondary}
+        filled={filled}
+        strokeWidth={0}
       />
       {count ? (
-        <Text style={[styles.actionCount, strokeColor && { color: strokeColor }]}>{formatCount(count)}</Text>
+        <Text style={[styles.actionCount, { color: color || theme.colors.text.secondary }]}>{formatCount(count)}</Text>
       ) : null}
     </Pressable>
   );
@@ -43,7 +44,6 @@ const createStyles = (theme: Theme) =>
       gap: theme.spacing.xs,
     },
     actionCount: {
-      color: theme.colors.text.secondary,
       fontFamily: theme.typography.fonts.regular,
       fontSize: theme.typography.sizes.xs,
     },

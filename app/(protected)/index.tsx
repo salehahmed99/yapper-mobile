@@ -3,10 +3,13 @@ import YapperLogo from '@/src/components/icons/YapperLogo';
 import AppBar from '@/src/components/shell/AppBar';
 import type { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import CreatePostModal from '@/src/modules/tweets/components/CreatePostModal';
+import Fab from '@/src/modules/tweets/components/Fab';
 import TweetList from '@/src/modules/tweets/components/TweetList';
+import { useTweetActions } from '@/src/modules/tweets/hooks/useTweetActions';
 import { useTweets } from '@/src/modules/tweets/hooks/useTweets';
 import { useTweetsFiltersStore } from '@/src/modules/tweets/store/useTweetsFiltersStore';
-import React from 'react';
+import React, { useState } from 'react';
 import { RefreshControl, StyleSheet, View } from 'react-native';
 
 export default function HomeScreen() {
@@ -16,7 +19,9 @@ export default function HomeScreen() {
   // We intentionally do NOT write this into the global `activeTab` state
   // so the bottom navigation remains correctly highlighted when switching
   // between these inner tabs.
-  const [homeIndex, setHomeIndex] = React.useState(0);
+  const [homeIndex, setHomeIndex] = useState(0);
+
+  const [isCreatePostModalVisible, setIsCreatePostModalVisible] = useState(false);
 
   const tweetsFilters = useTweetsFiltersStore((state) => state.filters);
   const forYouQuery = useTweets(tweetsFilters, 'for-you');
@@ -27,7 +32,7 @@ export default function HomeScreen() {
 
   // Flatten all pages of tweets into a single array
   const tweets = React.useMemo(() => {
-    return activeQuery.data?.pages.flatMap((page) => page.tweets) ?? [];
+    return activeQuery.data?.pages.flatMap((page) => page.data) ?? [];
   }, [activeQuery.data]);
 
   const onRefresh = React.useCallback(() => {
@@ -67,6 +72,7 @@ export default function HomeScreen() {
     );
   };
 
+  const { addPostMutation } = useTweetActions('dummyId');
   return (
     <View style={styles.container}>
       <View style={styles.appBarWrapper}>
@@ -76,6 +82,13 @@ export default function HomeScreen() {
         />
       </View>
       {renderScene()}
+      <Fab onPress={() => setIsCreatePostModalVisible(true)} />
+      <CreatePostModal
+        visible={isCreatePostModalVisible}
+        onClose={() => setIsCreatePostModalVisible(false)}
+        onPost={(content) => addPostMutation.mutate(content)}
+        type="tweet"
+      />
     </View>
   );
 }

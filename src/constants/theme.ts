@@ -1,5 +1,6 @@
 export const typography = {
   sizes: {
+    xxs: 9,
     tiny: 11,
     xs: 13,
     sm: 15,
@@ -51,6 +52,18 @@ export const iconSizes = {
   icon: 24,
   iconSmall: 18,
   iconLarge: 28,
+  iconExtraLarge: 50,
+};
+
+export const iconSizesAlt = {
+  xxs: 12,
+  xs: 14,
+  sm: 16,
+  md: 18,
+  lg: 20,
+  xl: 22,
+  xxl: 24,
+  xxxl: 26,
 };
 
 export const avatarSizes = {
@@ -78,6 +91,7 @@ export const borderRadius = {
 };
 
 export const borderWidth = {
+  tiny: 0.2,
   thin: 1,
   medium: 2,
   thick: 3,
@@ -94,6 +108,7 @@ export const spacing = {
   xxl: 24,
   xxll: 32,
   xxxl: 40,
+  xxxxl: 48,
 };
 
 export const shadows = {
@@ -191,8 +206,11 @@ export const colors = {
     error: '#F4212E',
     success: '#00BA7C',
     warning: '#FFD400',
-    overlay: 'rgba(91, 112, 131, 0.4)',
+    overlay: 'rgba(44, 44, 49, 0.6)',
     overlayDark: 'rgba(0, 0, 0, 0.5)',
+    white: '#FFFFFF',
+    black: '#000000',
+    charcoal: '#070707',
     accent: {
       like: '#F91880',
       repost: '#00BA7C',
@@ -218,8 +236,11 @@ export const colors = {
     error: '#F4212E',
     success: '#00BA7C',
     warning: '#FFD400',
-    overlay: 'rgba(91, 112, 131, 0.4)',
+    overlay: 'rgba(44, 44, 49, 0.6)',
     overlayDark: 'rgba(0, 0, 0, 0.5)',
+    white: '#FFFFFF',
+    black: '#000000',
+    charcoal: '#070707',
     accent: {
       like: '#F91880',
       repost: '#00BA7C',
@@ -235,6 +256,7 @@ export type Theme = {
   borderRadius: typeof borderRadius;
   ui: typeof ui;
   iconSizes: typeof iconSizes;
+  iconSizesAlt: typeof iconSizesAlt;
   borderWidth: typeof borderWidth;
   avatarSizes: typeof avatarSizes;
   buttonHeights: typeof buttonHeights;
