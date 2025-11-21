@@ -112,16 +112,34 @@ const UserListItem: React.FC<IUserListItemProps> = ({ user, onPress, renderActio
   };
 
   return (
-    <TouchableOpacity style={styles.container} onPress={handlePress} activeOpacity={0.7}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={handlePress}
+      activeOpacity={0.7}
+      accessible={true}
+      accessibilityLabel={`${user.name || user.username} user profile`}
+      accessibilityHint={user.bio ? `${user.bio}` : undefined}
+      accessibilityRole="button"
+    >
       {user.isFollower && (
-        <View style={styles.followsYouContainer}>
+        <View
+          style={styles.followsYouContainer}
+          accessible={true}
+          accessibilityLabel="Follows you"
+          accessibilityRole="text"
+        >
           <User size={theme.iconSizes.xs} color={theme.colors.text.secondary} style={styles.followsYouIcon} />
           <Text style={styles.followsYouText}>{t('userList.followsYou')}</Text>
         </View>
       )}
 
       <View style={styles.contentRow}>
-        <View style={styles.avatarWrapper}>
+        <View
+          style={styles.avatarWrapper}
+          accessible={true}
+          accessibilityLabel={`${user.name || user.username} avatar`}
+          accessibilityRole="image"
+        >
           {user.avatarUrl ? (
             <Image source={{ uri: user.avatarUrl }} style={styles.avatarImage} resizeMode="cover" />
           ) : (
@@ -141,10 +159,19 @@ const UserListItem: React.FC<IUserListItemProps> = ({ user, onPress, renderActio
                 </Text>
               )}
             </View>
-            {renderAction && <View style={styles.actionContainer}>{renderAction(user)}</View>}
+            {renderAction && (
+              <View
+                style={styles.actionContainer}
+                accessible={true}
+                accessibilityLabel="User action button"
+                accessibilityRole="button"
+              >
+                {renderAction(user)}
+              </View>
+            )}
           </View>
           {user.bio && (
-            <Text style={styles.bio} numberOfLines={2}>
+            <Text style={styles.bio} numberOfLines={2} accessible={true} accessibilityLabel={`Bio: ${user.bio}`}>
               {user.bio}
             </Text>
           )}

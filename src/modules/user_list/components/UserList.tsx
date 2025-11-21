@@ -84,10 +84,18 @@ const UserList: React.FC<UserListProps> = (props) => {
     if (loading) return null;
 
     return (
-      <View style={styles.emptyState}>
-        <Text style={error ? styles.errorText : styles.emptyText}>{error || t('userList.emptyState')}</Text>
+      <View style={styles.emptyState} testID="user_list_empty_state">
+        <Text style={error ? styles.errorText : styles.emptyText} testID="user_list_empty_text">
+          {error || t('userList.emptyState')}
+        </Text>
         {error && (
-          <TouchableOpacity style={styles.retryButton} onPress={refresh} activeOpacity={0.7}>
+          <TouchableOpacity
+            style={styles.retryButton}
+            onPress={refresh}
+            activeOpacity={0.7}
+            testID="user_list_retry_button"
+            accessibilityLabel="retry_loading_users"
+          >
             <Text style={styles.retryText}>{t('userList.errorRetry')}</Text>
           </TouchableOpacity>
         )}
@@ -99,14 +107,14 @@ const UserList: React.FC<UserListProps> = (props) => {
     if (!hasNextPage && users.length > 0) return null;
 
     return (
-      <View style={styles.footer}>
-        {loading && !refreshing && <ActivityIndicator color={theme.colors.text.link} />}
+      <View style={styles.footer} testID="user_list_footer">
+        {loading && !refreshing && <ActivityIndicator color={theme.colors.text.link} testID="user_list_loader" />}
       </View>
     );
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="user_list_container">
       <FlatList
         data={users}
         keyExtractor={(item) => item.id}
@@ -123,6 +131,7 @@ const UserList: React.FC<UserListProps> = (props) => {
         maxToRenderPerBatch={10}
         updateCellsBatchingPeriod={50}
         windowSize={21}
+        testID="user_list_flatlist"
       />
     </View>
   );
