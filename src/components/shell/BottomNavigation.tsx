@@ -67,7 +67,6 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
       intensity={10}
       style={[styles.container, styles.wrapper, translateStyle, { height: navHeight, paddingBottom: insets.bottom }]}
       accessibilityRole="tablist"
-      experimentalBlurMethod={'dimezisBlurView'}
     >
       <Animated.View pointerEvents="none" style={[styles.bgLayer, { height: navHeight, opacity: bgOpacity }]} />
       <Animated.View style={styles.row}>
