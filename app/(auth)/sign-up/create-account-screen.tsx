@@ -76,8 +76,8 @@ const CreateAccountScreen = () => {
       const isEmailSent = await signUpStep1({
         email,
         name,
-        birth_date: dateOfBirth,
-        captcha_token: token,
+        birthDate: dateOfBirth,
+        captchaToken: token,
       });
 
       if (isEmailSent) {

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { router } from 'expo-router';
 import humps from 'humps';
-import { deleteToken, getToken } from '../utils/secureStorage';
+import { getToken } from '../utils/secureStorage';
 
 const api = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL,
@@ -38,7 +38,8 @@ api.interceptors.response.use(
 
     // check for unauthorized or forbidden
     if ((status === 401 || status === 403) && requestUrl && !requestUrl.includes('/login')) {
-      await deleteToken();
+      const { useAuthStore } = await import('../store/useAuthStore');
+      useAuthStore.getState().logout();
       router.replace('/(auth)/landing-screen');
     }
 

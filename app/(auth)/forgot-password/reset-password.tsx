@@ -74,8 +74,8 @@ const ResetPasswordScreen = () => {
     setIsLoading(true);
     try {
       const succeeded = await resetPassword({
-        resetToken,
-        newPassword,
+        resetToken: resetToken,
+        newPassword: newPassword,
         identifier,
       });
 

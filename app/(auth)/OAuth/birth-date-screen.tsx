@@ -42,12 +42,12 @@ const BirthDateScreen = () => {
     try {
       setSkipRedirect(true);
       const res = await OAuthStep1({
-        oauth_session_token: _sessionToken as string,
-        birth_date: birthDate,
+        oauthSessionToken: _sessionToken as string,
+        birthDate: birthDate,
       });
 
       const secResponse = await OAuthStep2({
-        oauth_session_token: _sessionToken as string,
+        oauthSessionToken: _sessionToken as string,
         username: res.data.usernames[0],
       });
 
