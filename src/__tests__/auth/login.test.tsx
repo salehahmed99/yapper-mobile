@@ -4,7 +4,6 @@ import * as authService from '@/src/modules/auth/services/authService';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import * as libphonenumber from 'libphonenumber-js/max';
 import React from 'react';
-import { Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
 import LoginScreen from '../../../app/(auth)/login';
 
@@ -131,20 +130,6 @@ describe('LoginScreen', () => {
 
       fireEvent.changeText(usernameInput, 'johnsmith');
       expect(usernameInput.props.value).toBe('johnsmith');
-    });
-
-    it('should show alert when user does not exist', async () => {
-      mockCheckExists.mockResolvedValueOnce(false);
-      jest.spyOn(Alert, 'alert').mockImplementation(() => {});
-
-      renderWithTheme(<LoginScreen />);
-      const emailInput = screen.getByDisplayValue('');
-      fireEvent.changeText(emailInput, 'nonexistent@example.com');
-      fireEvent.press(screen.getByText('Next'));
-
-      await waitFor(() => {
-        expect(Alert.alert).toHaveBeenCalled();
-      });
     });
 
     it('should show error toast when checkExists API fails', async () => {

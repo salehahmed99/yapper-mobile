@@ -236,14 +236,14 @@ describe('BirthDateScreen', () => {
 
       await waitFor(() => {
         expect(OAuthStep1).toHaveBeenCalledWith({
-          oauth_session_token: mockSessionToken,
-          birth_date: '2000-01-15',
+          oauthSessionToken: mockSessionToken,
+          birthDate: '2000-01-15',
         });
       });
 
       await waitFor(() => {
         expect(OAuthStep2).toHaveBeenCalledWith({
-          oauth_session_token: mockSessionToken,
+          oauthSessionToken: mockSessionToken,
           username: 'testuser1',
         });
       });
@@ -291,8 +291,8 @@ describe('BirthDateScreen', () => {
 
       await waitFor(() => {
         expect(OAuthStep1).toHaveBeenCalledWith({
-          oauth_session_token: customSessionToken,
-          birth_date: '2000-01-15',
+          oauthSessionToken: customSessionToken,
+          birthDate: '2000-01-15',
         });
       });
     });

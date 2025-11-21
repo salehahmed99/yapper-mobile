@@ -23,8 +23,8 @@ export interface IVerifyOTPRequest {
 }
 
 export interface IResetPasswordRequest {
-  reset_token: string;
-  new_password: string;
+  resetToken: string;
+  newPassword: string;
   identifier: string;
 }
 
@@ -72,8 +72,8 @@ export interface IOAuthResponse {
 }
 
 export interface IOAuthBirthDateRequest {
-  oauth_session_token: string;
-  birth_date?: string;
+  oauthSessionToken: string;
+  birthDate?: string;
 }
 
 export interface IOAuthBirthDateResponse {
@@ -87,7 +87,7 @@ export interface IOAuthBirthDateResponse {
 }
 
 export interface IOAuthUserNameRequest {
-  oauth_session_token: string;
+  oauthSessionToken: string;
   username: string;
 }
 
@@ -96,9 +96,9 @@ export interface IOAuthUserNameRequest {
    ========================================================= */
 export interface ISignUpStep1Request {
   email: string;
-  birth_date: string;
+  birthDate: string;
   name: string;
-  captcha_token: string;
+  captchaToken: string;
 }
 
 export interface ISignUpStep1Response {

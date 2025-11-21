@@ -97,8 +97,8 @@ describe('ForgetPasswordService', () => {
       mockApi.post.mockResolvedValue(mockResponse);
 
       const credentials: IResetPasswordRequest = {
-        reset_token: 'reset-token-123',
-        new_password: 'newpassword123',
+        resetToken: 'reset-token-123',
+        newPassword: 'newpassword123',
         identifier: 'test@example.com',
       };
 
@@ -117,8 +117,8 @@ describe('ForgetPasswordService', () => {
       mockApi.post.mockResolvedValue(mockResponse);
 
       const credentials: IResetPasswordRequest = {
-        reset_token: 'reset-token-123',
-        new_password: 'newpassword123',
+        resetToken: 'reset-token-123',
+        newPassword: 'newpassword123',
         identifier: 'test@example.com',
       };
 
@@ -134,8 +134,8 @@ describe('ForgetPasswordService', () => {
       mockExtractErrorMessage.mockReturnValue(errorMessage);
 
       const credentials: IResetPasswordRequest = {
-        reset_token: 'reset-token-123',
-        new_password: 'newpassword123',
+        resetToken: 'reset-token-123',
+        newPassword: 'newpassword123',
         identifier: 'test@example.com',
       };
 
