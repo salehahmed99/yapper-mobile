@@ -2,7 +2,7 @@
 
 This document lists all files that were modified to add accessibility IDs (testID and accessibilityLabel) to interactive elements for E2E testing support.
 
-## Files Modified
+## Files Modified - Batch 1 (Initial Commit)
 
 ### 1. src/components/CustomTabView.tsx
 **Changes:**
@@ -201,16 +201,132 @@ This document lists all files that were modified to add accessibility IDs (testI
 >
 ```
 
+## Files Modified - Batch 2 (Extended Coverage)
+
+### 11. src/components/Button.tsx
+**Changes:**
+- Added `testID` to the generic button component with dynamic naming based on button text
+- Button already had `accessibilityLabel`
+
+**Example:**
+```tsx
+<TouchableOpacity
+  accessibilityLabel={`${text}-button`}
+  testID={`${text.toLowerCase().replace(/\s+/g, '_')}_button`}
+>
+```
+
+### 12. src/modules/tweets/components/Tweet.tsx
+**Changes:**
+- Added `testID` and `accessibilityLabel` to tweet content text
+
+**Example:**
+```tsx
+<Text
+  style={styles.tweetText}
+  accessibilityLabel="tweet_content_text"
+  testID="tweet_content_text"
+>
+  {tweet.content}
+</Text>
+```
+
+### 13. src/modules/tweets/components/FullTweet.tsx
+**Changes:**
+- Added `testID` and `accessibilityLabel` to tweet content text
+- Added `testID` and `accessibilityLabel` to user name text
+- Added `testID` and `accessibilityLabel` to username text
+- Added `testID` and `accessibilityLabel` to timestamp/date/views section and individual elements
+
+**Example:**
+```tsx
+<Text accessibilityLabel="full_tweet_content_text" testID="full_tweet_content_text">
+  {tweet.content}
+</Text>
+<Text accessibilityLabel="full_tweet_user_name" testID="full_tweet_user_name">
+  {tweet.user.name}
+</Text>
+<Text accessibilityLabel="full_tweet_views_count" testID="full_tweet_views_count">
+  {formatCount(tweet.viewsCount)}
+</Text>
+```
+
+### 14. src/modules/tweets/components/TweetActionButton.tsx
+**Changes:**
+- Added `testID` and `accessibilityLabel` to the count text that displays likes, retweets, replies, etc.
+- Uses dynamic naming based on the parent button's accessibility label
+
+**Example:**
+```tsx
+<Text
+  accessibilityLabel={`${accessibilityLabel}_count`}
+  testID={`${testID}_count`}
+>
+  {formatCount(count)}
+</Text>
+```
+
+### 15. src/modules/profile/components/ProfileCard.tsx
+**Changes:**
+- Added `testID` and `accessibilityLabel` to profile name text
+- Added `testID` and `accessibilityLabel` to username text
+- Added `testID` and `accessibilityLabel` to bio text
+- All use dynamic IDs based on profile.id
+
+**Example:**
+```tsx
+<Text
+  accessibilityLabel={`profile_card_name_${profile.id}`}
+  testID={`profile_card_name_${profile.id}`}
+>
+  {profile.name}
+</Text>
+<Text
+  accessibilityLabel={`profile_card_bio_${profile.id}`}
+  testID={`profile_card_bio_${profile.id}`}
+>
+  {profile.bio}
+</Text>
+```
+
+### 16. src/modules/profile/ui/ActionButton.tsx
+**Changes:**
+- Added `accessibilityLabel` with fallback to dynamic naming based on button title
+- Component already had optional `testID` prop
+
+**Example:**
+```tsx
+<TouchableOpacity
+  testID={testID}
+  accessibilityLabel={testID || `action_button_${title.toLowerCase().replace(/\s+/g, '_')}`}
+>
+```
+
+### 17. src/modules/profile/ui/IconButton.tsx
+**Changes:**
+- Added `accessibilityLabel` with fallback
+- Added `accessibilityRole="button"`
+- Component already had optional `testID` prop
+
+**Example:**
+```tsx
+<TouchableOpacity
+  testID={testID}
+  accessibilityLabel={testID || 'icon_button'}
+  accessibilityRole="button"
+>
+```
+
 ## Components That Already Had Accessibility IDs
 
 The following components already had proper accessibility identifiers and were not modified:
-- Button component
-- ActionsRow (tweet actions: reply, repost, like, bookmark, share)
-- Tweet component (main tweet container, avatar, more button)
-- FullTweet component
+- Button component (had accessibilityLabel, now also has testID)
+- ActionsRow (tweet actions: reply, repost, like, bookmark, share) - all buttons have testIDs
+- Tweet component (main tweet container, avatar, more button) - had testIDs
+- FullTweet component (had some testIDs, now has complete coverage)
 - CreatePostHeader component (cancel and post buttons)
 - ReplyRestrictionSelector
-- TweetActionButton
+- TweetActionButton (had testIDs for buttons, now also for counts)
 - Fab (floating action button)
 - TweetMedia (media items, mute toggle)
 - TweetMediaPicker (remove media buttons)
@@ -220,19 +336,33 @@ The following components already had proper accessibility identifiers and were n
 - DisabledInput
 - ProfilePictureUpload
 - RepostOptionsModal
+- ProfileHeader - extensive testID coverage for all interactive elements and text
+- CreatePostModal - text input has testID
 
 ## Testing Guidelines
 
 All added accessibility IDs follow a consistent naming pattern:
-- Format: `{component}_{element}_{type}` (e.g., `sidemenu_home_button`, `bottom_nav_search`)
+- Format: `{component}_{element}_{type}` (e.g., `sidemenu_home_button`, `bottom_nav_search`, `tweet_content_text`)
 - All IDs use lowercase with underscores
-- IDs are descriptive and indicate the component and action
+- IDs are descriptive and indicate the component and action/content
 - Both `testID` and `accessibilityLabel` are provided for maximum compatibility with testing frameworks
+- Dynamic IDs use parameters like `profile.id` or `tweet.id` to ensure uniqueness in lists
+
+## Critical Text Elements Now Accessible
+
+The following important text elements now have accessibility IDs for E2E testing:
+- **Tweet content** - The main text of tweets
+- **User names** - Both display name and @username in tweets and profiles
+- **Counts** - Likes, retweets, replies, views counts on tweets
+- **Profile information** - Name, username, bio in profile cards
+- **Timestamps** - Date and time information on tweets
+- **View counts** - Number of views on tweets
 
 ## Total Elements Updated
 
-- **10 files** modified
-- **40+ interactive elements** now have accessibility IDs
+- **17 files** modified (10 initial + 7 extended)
+- **70+ interactive elements** now have accessibility IDs
 - **100% coverage** of navigation and shell components
 - **Complete coverage** of tweet composition UI
 - **All clickable text links** in auth flows now have IDs
+- **All critical text content** (tweets, names, counts) now accessible for E2E testing
