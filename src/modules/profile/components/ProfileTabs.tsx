@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import { Theme } from '../../../constants/theme';
 import { useTheme } from '../../../context/ThemeContext';
@@ -29,30 +29,38 @@ interface ProfileTabsProps {
   userId?: string;
 }
 
-const PostsRoute = ({ userId }: { userId: string }) => {
+const PostsRoute = ({ userId, activeTabKey }: { userId: string; activeTabKey?: string }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { posts, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage, refetch } = useUserPostsData(userId);
+  const isActive = activeTabKey === 'tweets';
+  const { posts, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage, refetch } = useUserPostsData(
+    userId,
+    isActive,
+  );
   const { registerFetchNextPage, registerRefresh } = useProfilePosts();
 
   useEffect(() => {
-    registerFetchNextPage(
-      () => {
-        if (hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      hasNextPage ?? false,
-      isFetchingNextPage,
-    );
-  }, [registerFetchNextPage, fetchNextPage, hasNextPage, isFetchingNextPage]);
+    if (isActive) {
+      registerFetchNextPage(
+        () => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        },
+        hasNextPage ?? false,
+        isFetchingNextPage,
+      );
+    }
+  }, [isActive, registerFetchNextPage, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   useEffect(() => {
-    registerRefresh(() => {
-      refetch();
-    });
-  }, [registerRefresh, refetch]);
+    if (isActive) {
+      registerRefresh(() => {
+        refetch();
+      });
+    }
+  }, [isActive, registerRefresh, refetch]);
 
   if (isLoading) {
     return (
@@ -70,53 +78,57 @@ const PostsRoute = ({ userId }: { userId: string }) => {
     );
   }
 
-  const handleScroll = (event: {
-    nativeEvent: {
-      layoutMeasurement: { height: number };
-      contentOffset: { y: number };
-      contentSize: { height: number };
-    };
-  }) => {
-    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
-    const paddingToBottom = 100;
-    const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
-
-    if (isCloseToBottom && hasNextPage && !isFetchingNextPage) {
+  const handleEndReached = () => {
+    if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
   };
 
   return (
-    <ScrollView style={styles.page} onScroll={handleScroll} scrollEventThrottle={400}>
-      <ProfilePostsList data={posts} isLoading={isLoading} isFetchingNextPage={isFetchingNextPage} />
-    </ScrollView>
+    <View style={styles.page}>
+      <ProfilePostsList
+        data={posts}
+        isLoading={isLoading}
+        isFetchingNextPage={isFetchingNextPage}
+        onEndReached={handleEndReached}
+        isTabActive={isActive}
+      />
+    </View>
   );
 };
 
-const RepliesRoute = ({ userId }: { userId: string }) => {
+const RepliesRoute = ({ userId, activeTabKey }: { userId: string; activeTabKey?: string }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { replies, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage, refetch } = useUserRepliesData(userId);
+  const isActive = activeTabKey === 'tweetsReplies';
+  const { replies, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage, refetch } = useUserRepliesData(
+    userId,
+    isActive,
+  );
   const { registerFetchNextPage, registerRefresh } = useProfilePosts();
 
   useEffect(() => {
-    registerFetchNextPage(
-      () => {
-        if (hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      hasNextPage ?? false,
-      isFetchingNextPage,
-    );
-  }, [registerFetchNextPage, fetchNextPage, hasNextPage, isFetchingNextPage]);
+    if (isActive) {
+      registerFetchNextPage(
+        () => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        },
+        hasNextPage ?? false,
+        isFetchingNextPage,
+      );
+    }
+  }, [isActive, registerFetchNextPage, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   useEffect(() => {
-    registerRefresh(() => {
-      refetch();
-    });
-  }, [registerRefresh, refetch]);
+    if (isActive) {
+      registerRefresh(() => {
+        refetch();
+      });
+    }
+  }, [isActive, registerRefresh, refetch]);
 
   if (isLoading) {
     return (
@@ -134,53 +146,57 @@ const RepliesRoute = ({ userId }: { userId: string }) => {
     );
   }
 
-  const handleScroll = (event: {
-    nativeEvent: {
-      layoutMeasurement: { height: number };
-      contentOffset: { y: number };
-      contentSize: { height: number };
-    };
-  }) => {
-    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
-    const paddingToBottom = 100;
-    const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
-
-    if (isCloseToBottom && hasNextPage && !isFetchingNextPage) {
+  const handleEndReached = () => {
+    if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
   };
 
   return (
-    <ScrollView style={styles.page} onScroll={handleScroll} scrollEventThrottle={400}>
-      <ProfilePostsList data={replies} isLoading={isLoading} isFetchingNextPage={isFetchingNextPage} />
-    </ScrollView>
+    <View style={styles.page}>
+      <ProfilePostsList
+        data={replies}
+        isLoading={isLoading}
+        isFetchingNextPage={isFetchingNextPage}
+        onEndReached={handleEndReached}
+        isTabActive={isActive}
+      />
+    </View>
   );
 };
 
-const MediaRoute = ({ userId }: { userId: string }) => {
+const MediaRoute = ({ userId, activeTabKey }: { userId: string; activeTabKey?: string }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { media, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage, refetch } = useUserMediaData(userId);
+  const isActive = activeTabKey === 'media';
+  const { media, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage, refetch } = useUserMediaData(
+    userId,
+    isActive,
+  );
   const { registerFetchNextPage, registerRefresh } = useProfilePosts();
 
   useEffect(() => {
-    registerFetchNextPage(
-      () => {
-        if (hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      hasNextPage ?? false,
-      isFetchingNextPage,
-    );
-  }, [registerFetchNextPage, fetchNextPage, hasNextPage, isFetchingNextPage]);
+    if (isActive) {
+      registerFetchNextPage(
+        () => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        },
+        hasNextPage ?? false,
+        isFetchingNextPage,
+      );
+    }
+  }, [isActive, registerFetchNextPage, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   useEffect(() => {
-    registerRefresh(() => {
-      refetch();
-    });
-  }, [registerRefresh, refetch]);
+    if (isActive) {
+      registerRefresh(() => {
+        refetch();
+      });
+    }
+  }, [isActive, registerRefresh, refetch]);
 
   if (isLoading) {
     return (
@@ -198,53 +214,57 @@ const MediaRoute = ({ userId }: { userId: string }) => {
     );
   }
 
-  const handleScroll = (event: {
-    nativeEvent: {
-      layoutMeasurement: { height: number };
-      contentOffset: { y: number };
-      contentSize: { height: number };
-    };
-  }) => {
-    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
-    const paddingToBottom = 100;
-    const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
-
-    if (isCloseToBottom && hasNextPage && !isFetchingNextPage) {
+  const handleEndReached = () => {
+    if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
   };
 
   return (
-    <ScrollView style={styles.page} onScroll={handleScroll} scrollEventThrottle={400}>
-      <ProfilePostsList data={media} isLoading={isLoading} isFetchingNextPage={isFetchingNextPage} />
-    </ScrollView>
+    <View style={styles.page}>
+      <ProfilePostsList
+        data={media}
+        isLoading={isLoading}
+        isFetchingNextPage={isFetchingNextPage}
+        onEndReached={handleEndReached}
+        isTabActive={isActive}
+      />
+    </View>
   );
 };
 
-const LikesRoute = ({ userId }: { userId: string }) => {
+const LikesRoute = ({ userId, activeTabKey }: { userId: string; activeTabKey?: string }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { likes, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage, refetch } = useUserLikesData(userId);
+  const isActive = activeTabKey === 'likes';
+  const { likes, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage, refetch } = useUserLikesData(
+    userId,
+    isActive,
+  );
   const { registerFetchNextPage, registerRefresh } = useProfilePosts();
 
   useEffect(() => {
-    registerFetchNextPage(
-      () => {
-        if (hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      hasNextPage ?? false,
-      isFetchingNextPage,
-    );
-  }, [registerFetchNextPage, fetchNextPage, hasNextPage, isFetchingNextPage]);
+    if (isActive) {
+      registerFetchNextPage(
+        () => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        },
+        hasNextPage ?? false,
+        isFetchingNextPage,
+      );
+    }
+  }, [isActive, registerFetchNextPage, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   useEffect(() => {
-    registerRefresh(() => {
-      refetch();
-    });
-  }, [registerRefresh, refetch]);
+    if (isActive) {
+      registerRefresh(() => {
+        refetch();
+      });
+    }
+  }, [isActive, registerRefresh, refetch]);
 
   if (isLoading) {
     return (
@@ -262,26 +282,22 @@ const LikesRoute = ({ userId }: { userId: string }) => {
     );
   }
 
-  const handleScroll = (event: {
-    nativeEvent: {
-      layoutMeasurement: { height: number };
-      contentOffset: { y: number };
-      contentSize: { height: number };
-    };
-  }) => {
-    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
-    const paddingToBottom = 100;
-    const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
-
-    if (isCloseToBottom && hasNextPage && !isFetchingNextPage) {
+  const handleEndReached = () => {
+    if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
   };
 
   return (
-    <ScrollView style={styles.page} onScroll={handleScroll} scrollEventThrottle={400}>
-      <ProfilePostsList data={likes as ITweet[]} isLoading={isLoading} isFetchingNextPage={isFetchingNextPage} />
-    </ScrollView>
+    <View style={styles.page}>
+      <ProfilePostsList
+        data={likes as ITweet[]}
+        isLoading={isLoading}
+        isFetchingNextPage={isFetchingNextPage}
+        onEndReached={handleEndReached}
+        isTabActive={isActive}
+      />
+    </View>
   );
 };
 
@@ -293,27 +309,27 @@ const ProfileTabs = React.memo(({ userId }: ProfileTabsProps) => {
 
   const tabs: TabConfig[] = useMemo(
     () => [
-      { key: 'tweets', title: t('profile.tabs.tweets'), component: () => <PostsRoute userId={effectiveUserId} /> },
+      { key: 'tweets', title: t('profile.tabs.tweets'), component: PostsRoute },
       {
         key: 'tweetsReplies',
         title: t('profile.tabs.tweetsReplies'),
-        component: () => <RepliesRoute userId={effectiveUserId} />,
+        component: RepliesRoute,
       },
-      { key: 'media', title: t('profile.tabs.media'), component: () => <MediaRoute userId={effectiveUserId} /> },
+      { key: 'media', title: t('profile.tabs.media'), component: MediaRoute },
       ...(isOwnProfile
         ? [
             {
               key: 'likes',
               title: t('profile.tabs.likes'),
-              component: () => <LikesRoute userId={effectiveUserId} />,
+              component: LikesRoute,
             },
           ]
         : []),
     ],
-    [t, effectiveUserId, isOwnProfile],
+    [t, isOwnProfile],
   );
 
-  return <CustomTabView tabs={tabs} scrollEnabled={true} />;
+  return <CustomTabView tabs={tabs} scrollEnabled={true} userId={effectiveUserId} />;
 });
 
 ProfileTabs.displayName = 'ProfileTabs';

@@ -2,43 +2,61 @@ import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import TweetContainer from '@/src/modules/tweets/containers/TweetContainer';
 import { ITweet } from '@/src/modules/tweets/types';
-import React, { memo, useCallback, useMemo } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, StyleSheet, View, ViewToken } from 'react-native';
 
 interface IProfilePostsListProps {
   data: ITweet[];
   isLoading?: boolean;
   isFetchingNextPage?: boolean;
+  onEndReached?: () => void;
+  isTabActive?: boolean;
 }
 
-const TweetItem = memo(({ item, showSeparator }: { item: ITweet; showSeparator: boolean }) => {
-  const { theme } = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
-
-  return (
-    <View>
-      <TweetContainer tweet={item} />
-      {showSeparator && <View style={styles.separator} />}
-    </View>
-  );
-});
-
-TweetItem.displayName = 'TweetItem';
-
 const ProfilePostsList: React.FC<IProfilePostsListProps> = memo((props) => {
-  const { data, isLoading, isFetchingNextPage } = props;
+  const { data, isLoading, isFetchingNextPage, onEndReached, isTabActive = true } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const [visibleTweetIds, setVisibleTweetIds] = useState<Set<string>>(new Set());
+  const isTabActiveRef = useRef(isTabActive);
 
-  const renderTweetItem = useCallback(
-    (item: ITweet, index: number) => {
-      const key =
-        item.type === 'repost' ? `${item.tweetId}-${item.repostedBy?.repostId}-${index}` : `${item.tweetId}-${index}`;
+  // Keep ref updated
+  useEffect(() => {
+    isTabActiveRef.current = isTabActive;
+  }, [isTabActive]);
 
-      return <TweetItem key={key} item={item} showSeparator={index < data.length - 1} />;
-    },
-    [data.length],
-  );
+  // Clear visible tweets when tab becomes inactive to pause all videos
+  useEffect(() => {
+    if (!isTabActive) {
+      setVisibleTweetIds(new Set());
+    }
+  }, [isTabActive]);
+
+  const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    // Only update visible tweets if tab is active
+    if (isTabActiveRef.current) {
+      const visibleIds = new Set(
+        viewableItems.filter((item) => item.isViewable).map((item) => (item.item as ITweet).tweetId),
+      );
+      setVisibleTweetIds(visibleIds);
+    }
+  }).current;
+
+  const viewabilityConfig = useRef({
+    itemVisiblePercentThreshold: 50,
+    waitForInteraction: false,
+  }).current;
+
+  const renderFooter = () => {
+    if (isFetchingNextPage) {
+      return (
+        <View style={styles.loadingFooter} testID="profile_posts_list_loading_more">
+          <ActivityIndicator size="small" color={theme.colors.text.primary} />
+        </View>
+      );
+    }
+    return <View style={styles.bottomSpacing} />;
+  };
 
   if (isLoading) {
     return (
@@ -48,16 +66,38 @@ const ProfilePostsList: React.FC<IProfilePostsListProps> = memo((props) => {
     );
   }
 
+  // Don't render FlatList at all when tab is inactive to prevent video playback
+  if (!isTabActive) {
+    return <View style={styles.container} />;
+  }
+
   return (
-    <View style={styles.container} testID="profile_posts_list_container">
-      {data.map(renderTweetItem)}
-      {isFetchingNextPage && (
-        <View style={styles.loadingFooter} testID="profile_posts_list_loading_more">
-          <ActivityIndicator size="small" color={theme.colors.text.primary} />
-        </View>
+    <FlatList
+      style={styles.container}
+      data={data}
+      renderItem={({ item }) => (
+        <TweetContainer tweet={item} isVisible={isTabActive && visibleTweetIds.has(item.tweetId)} />
       )}
-      <View style={styles.bottomSpacing} />
-    </View>
+      keyExtractor={(item, index) => {
+        if (item.type === 'repost') {
+          return `${item.tweetId}-${item.repostedBy?.repostId}-${index}`;
+        } else {
+          return `${item.tweetId}-${index}`;
+        }
+      }}
+      ItemSeparatorComponent={() => <View style={styles.separator} />}
+      ListFooterComponent={renderFooter}
+      testID="profile_posts_list_container"
+      removeClippedSubviews={true}
+      windowSize={5}
+      maxToRenderPerBatch={5}
+      initialNumToRender={8}
+      updateCellsBatchingPeriod={50}
+      onViewableItemsChanged={onViewableItemsChanged}
+      viewabilityConfig={viewabilityConfig}
+      onEndReached={onEndReached}
+      onEndReachedThreshold={0.5}
+    />
   );
 });
 

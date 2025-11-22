@@ -18,6 +18,8 @@ interface ICustomTabViewProps {
   tabs: TabConfig[];
   initialTab?: string;
   scrollEnabled?: boolean;
+  lazy?: boolean;
+  userId?: string;
 }
 
 const createStyles = (theme: Theme) =>
@@ -48,7 +50,13 @@ const createStyles = (theme: Theme) =>
     },
   });
 
-const CustomTabView: React.FC<ICustomTabViewProps> = ({ tabs, initialTab, scrollEnabled = false }) => {
+const CustomTabView: React.FC<ICustomTabViewProps> = ({
+  tabs,
+  initialTab,
+  scrollEnabled = false,
+  lazy = true,
+  userId,
+}) => {
   const layout = useWindowDimensions();
   const { theme } = useTheme();
   const styles = createStyles(theme);
@@ -75,11 +83,13 @@ const CustomTabView: React.FC<ICustomTabViewProps> = ({ tabs, initialTab, scroll
     routes,
   };
 
+  const activeTabKey = routes[index]?.key;
+
   const renderScene = ({ route }: { route: RouteType }) => {
     const tab = tabs.find((t) => t.key === route.key);
     if (!tab) return null;
     const Component = tab.component;
-    return <Component />;
+    return <Component activeTabKey={activeTabKey} userId={userId} />;
   };
 
   const renderTabBar = (props: SceneRendererProps & { navigationState: NavigationState<RouteType> }) => (
@@ -102,6 +112,7 @@ const CustomTabView: React.FC<ICustomTabViewProps> = ({ tabs, initialTab, scroll
       onIndexChange={setIndex}
       initialLayout={{ width: layout.width }}
       swipeEnabled={true}
+      lazy={lazy}
       style={styles.container}
       testID="profile_custom_tab_view"
     />

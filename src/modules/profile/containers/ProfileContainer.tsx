@@ -2,7 +2,7 @@ import { DEFAULT_BANNER_URL } from '@/src/constants/defaults';
 import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
 import MediaViewerModal from '@/src/modules/tweets/components/MediaViewerModal';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, RefreshControl, View } from 'react-native';
+import { Animated, LogBox, RefreshControl, View } from 'react-native';
 import { useTheme } from '../../../context/ThemeContext';
 import { useAuthStore } from '../../../store/useAuthStore';
 import AnimatedProfileHeader from '../components/AnimatedProfileHeader';
@@ -12,6 +12,9 @@ import { ProfilePostsProvider, useProfilePosts } from '../context/ProfilePostsCo
 import { getUserById } from '../services/profileService';
 import { createContainerStyles } from '../styles/container-style';
 import { IUserProfile } from '../types';
+
+// Suppress VirtualizedList warning for nested ScrollView in profile tabs
+LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
 
 type ProfileContainerProps = {
   userId?: string;

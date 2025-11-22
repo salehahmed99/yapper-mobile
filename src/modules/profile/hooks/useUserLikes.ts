@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { PROFILE_QUERY_CONFIG, profileQueryKeys } from '../config/queryConfig';
 import { getUserLikes } from '../services/profileService';
 
-export const useUserLikesData = (userId: string) => {
+export const useUserLikesData = (userId: string, enabled: boolean = true) => {
   const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useInfiniteQuery({
     queryKey: profileQueryKeys.userLikes(userId),
     queryFn: ({ pageParam }) =>
@@ -19,7 +19,7 @@ export const useUserLikesData = (userId: string) => {
       return undefined;
     },
     initialPageParam: '',
-    enabled: !!userId,
+    enabled: !!userId && enabled,
     staleTime: PROFILE_QUERY_CONFIG.tweets.staleTime,
     gcTime: PROFILE_QUERY_CONFIG.tweets.gcTime,
     refetchOnWindowFocus: PROFILE_QUERY_CONFIG.pagination.refetchOnWindowFocus,
