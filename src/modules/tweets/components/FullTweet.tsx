@@ -63,7 +63,11 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
             <Text style={styles.name} accessibilityLabel="full_tweet_user_name" testID="full_tweet_user_name">
               {tweet.user.name}
             </Text>
-            <Text style={styles.username} accessibilityLabel="full_tweet_user_username" testID="full_tweet_user_username">
+            <Text
+              style={styles.username}
+              accessibilityLabel="full_tweet_user_username"
+              testID="full_tweet_user_username"
+            >
               @{tweet.user.username}
             </Text>
           </View>
@@ -86,7 +90,11 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
       {tweet.parentTweet && <ParentTweet tweet={tweet.parentTweet} />}
 
       {/* iOS-style Timestamp with Views */}
-      <View style={styles.timestampViewsSection} accessibilityLabel="full_tweet_timestamp_views" testID="full_tweet_timestamp_views">
+      <View
+        style={styles.timestampViewsSection}
+        accessibilityLabel="full_tweet_timestamp_views"
+        testID="full_tweet_timestamp_views"
+      >
         <Text style={styles.timestampText} accessibilityLabel="full_tweet_time" testID="full_tweet_time">
           {formatShortTime(tweet.createdAt)}
         </Text>
