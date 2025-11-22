@@ -160,7 +160,12 @@ export default function ProfileCard({ profile, onFollow, isFollowing = false }: 
         {/* Name and Follow Button Row */}
         <View style={styles.nameRow}>
           <View style={styles.nameContainer}>
-            <Text style={styles.name} numberOfLines={1}>
+            <Text
+              style={styles.name}
+              numberOfLines={1}
+              accessibilityLabel={`profile_card_name_${profile.id}`}
+              testID={`profile_card_name_${profile.id}`}
+            >
               {profile.name}
             </Text>
           </View>
@@ -177,13 +182,23 @@ export default function ProfileCard({ profile, onFollow, isFollowing = false }: 
         </View>
 
         {/* Username */}
-        <Text style={styles.username} numberOfLines={1}>
+        <Text
+          style={styles.username}
+          numberOfLines={1}
+          accessibilityLabel={`profile_card_username_${profile.id}`}
+          testID={`profile_card_username_${profile.id}`}
+        >
           @{profile.username}
         </Text>
 
         {/* Bio */}
         {profile.bio && (
-          <Text style={styles.bio} numberOfLines={2}>
+          <Text
+            style={styles.bio}
+            numberOfLines={2}
+            accessibilityLabel={`profile_card_bio_${profile.id}`}
+            testID={`profile_card_bio_${profile.id}`}
+          >
             {profile.bio}
           </Text>
         )}
