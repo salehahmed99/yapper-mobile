@@ -7,6 +7,7 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
+import ParentTweet from './ParentTweet';
 import RepostIndicator from './RepostIndicator';
 import TweetMedia from './TweetMedia';
 
@@ -72,7 +73,7 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
       )}
 
       {/* Parent Tweet (Quote) */}
-      {/* {parentTweet && <ParentTweet tweet={parentTweet} />} */}
+      {tweet.parentTweet && <ParentTweet tweet={tweet.parentTweet} />}
 
       {/* iOS-style Timestamp with Views */}
       <View style={styles.timestampViewsSection}>

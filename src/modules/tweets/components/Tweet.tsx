@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
+import ParentTweet from './ParentTweet';
 import RepostIndicator from './RepostIndicator';
 import TweetMedia from './TweetMedia';
 import UserInfoRow from './UserInfoRow';
@@ -108,7 +109,8 @@ const Tweet: React.FC<ITweetProps> = (props) => {
             <Text style={styles.tweetText}>{tweet.content}</Text>
           </View>
           <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} isVisible={isVisible} />
-          {/* {parentTweet && <ParentTweet tweet={parentTweet} />} */}
+
+          {tweet.parentTweet && <ParentTweet tweet={tweet.parentTweet} />}
           <ActionsRow
             tweet={tweet}
             size="small"
