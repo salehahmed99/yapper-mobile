@@ -25,15 +25,30 @@ const OAuthLegalText: React.FC<OAuthLegalTextProps> = ({
     <>
       <Text style={styles.legalText}>
         {t('auth.oauth.legalText')}{' '}
-        <Text style={styles.link} onPress={onTermsPress}>
+        <Text
+          style={styles.link}
+          onPress={onTermsPress}
+          accessibilityLabel="legal_terms_link"
+          testID="legal_terms_link"
+        >
           {t('auth.oauth.terms')}
         </Text>
         ,{' '}
-        <Text style={styles.link} onPress={onPrivacyPress}>
+        <Text
+          style={styles.link}
+          onPress={onPrivacyPress}
+          accessibilityLabel="legal_privacy_link"
+          testID="legal_privacy_link"
+        >
           {t('auth.oauth.privacyPolicy')}
         </Text>
         ,{' '}
-        <Text style={styles.link} onPress={onCookiePress}>
+        <Text
+          style={styles.link}
+          onPress={onCookiePress}
+          accessibilityLabel="legal_cookie_link"
+          testID="legal_cookie_link"
+        >
           {t('auth.oauth.cookieUse')}
         </Text>
         .
@@ -41,7 +56,12 @@ const OAuthLegalText: React.FC<OAuthLegalTextProps> = ({
 
       <Text style={styles.loginRow}>
         {t('auth.oauth.loginPrompt')}{' '}
-        <Text style={styles.link} onPress={onLoginPress}>
+        <Text
+          style={styles.link}
+          onPress={onLoginPress}
+          accessibilityLabel="landing_login_link"
+          testID="landing_login_link"
+        >
           {t('auth.oauth.login')}
         </Text>
       </Text>

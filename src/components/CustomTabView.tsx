@@ -127,7 +127,14 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
                     });
                   }}
                 >
-                  <TouchableOpacity style={[styles.tabTouch, styles.tabTouchScrollable]} onPress={() => setIndex(i)}>
+                  <TouchableOpacity
+                    style={[styles.tabTouch, styles.tabTouchScrollable]}
+                    onPress={() => setIndex(i)}
+                    accessibilityLabel={`tab_${route.key}_button`}
+                    testID={`tab_${route.key}_button`}
+                    accessibilityRole="tab"
+                    accessibilityState={{ selected: index === i }}
+                  >
                     <Animated.Text style={[styles.tabText, { opacity }]}>{route.title}</Animated.Text>
                   </TouchableOpacity>
                 </View>
@@ -159,7 +166,14 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
                 });
               }}
             >
-              <TouchableOpacity style={styles.tabTouch} onPress={() => setIndex(i)}>
+              <TouchableOpacity
+                style={styles.tabTouch}
+                onPress={() => setIndex(i)}
+                accessibilityLabel={`tab_${route.key}_button`}
+                testID={`tab_${route.key}_button`}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: index === i }}
+              >
                 <Animated.Text
                   onLayout={(e) => {
                     const tw = e.nativeEvent.layout.width;

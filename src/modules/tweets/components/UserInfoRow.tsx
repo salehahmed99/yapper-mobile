@@ -15,15 +15,17 @@ const UserInfoRow: React.FC<IUserInfoRowProps> = (props) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   return (
-    <View style={styles.userInfoRow}>
-      <Text style={styles.name} numberOfLines={1}>
+    <View style={styles.userInfoRow} accessibilityLabel="tweet_user_info" testID="tweet_user_info">
+      <Text style={styles.name} numberOfLines={1} accessibilityLabel="tweet_user_name">
         {tweet.user.name}
       </Text>
-      <Text style={styles.username} numberOfLines={1}>
+      <Text style={styles.username} numberOfLines={1} accessibilityLabel="tweet_user_username">
         @{tweet.user.username}
       </Text>
       <View style={styles.dot} />
-      <Text style={styles.timestamp}>{tweet.createdAt && formatTweetDate(tweet.createdAt)}</Text>
+      <Text style={styles.timestamp} accessibilityLabel="tweet_timestamp">
+        {tweet.createdAt && formatTweetDate(tweet.createdAt)}
+      </Text>
     </View>
   );
 };
