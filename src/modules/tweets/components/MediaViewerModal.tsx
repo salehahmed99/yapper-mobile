@@ -43,6 +43,7 @@ import {
   ViewToken,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import CreatePostModal from './CreatePostModal';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -68,7 +69,7 @@ function MediaViewerContent({
   const queryClient = useQueryClient();
   const router = useRouter();
   const { data: tweet } = useTweet(tweetId);
-  const { likeMutation, repostMutation } = useTweetActions(tweetId);
+  const { likeMutation, repostMutation, replyToPostMutation } = useTweetActions(tweetId);
 
   const allMedia = useMemo((): MediaItem[] => {
     const items: MediaItem[] = [];
@@ -91,6 +92,8 @@ function MediaViewerContent({
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [likesCount, setLikesCount] = useState(tweet?.likesCount ?? 0);
   const [repostsCount, setRepostsCount] = useState(tweet?.repostsCount ?? 0);
+  const [isCreatePostModalVisible, setIsCreatePostModalVisible] = useState(false);
+  const [createPostType, setCreatePostType] = useState<'tweet' | 'quote' | 'reply'>('tweet');
   const flatListRef = useRef<FlatList>(null);
   const uiOpacity = useRef(new Animated.Value(1)).current;
 
@@ -176,6 +179,15 @@ function MediaViewerContent({
     );
   };
 
+  const handleReplyPress = () => {
+    setCreatePostType('reply');
+    setIsCreatePostModalVisible(true);
+  };
+
+  const handleReply = (content: string, mediaUris?: string[]) => {
+    replyToPostMutation.mutate({ content, mediaUris });
+  };
+
   const handleBookmarkPress = () => {
     setIsBookmarked(!isBookmarked);
   };
@@ -215,341 +227,361 @@ function MediaViewerContent({
   };
 
   return (
-    <Modal visible animationType="fade" statusBarTranslucent onRequestClose={handleClose}>
-      <Pressable style={styles.container} onPress={toggleUI} accessibilityRole="button">
-        <StatusBar barStyle="light-content" backgroundColor="#000" />
+    <>
+      <Modal visible animationType="fade" statusBarTranslucent onRequestClose={handleClose}>
+        <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+          <Pressable style={styles.containerPressable} onPress={toggleUI} accessibilityRole="button">
+            <StatusBar barStyle="light-content" backgroundColor="#000" />
 
-        <FlatList
-          ref={flatListRef}
-          data={allMedia}
-          renderItem={renderItem}
-          keyExtractor={(item) => `${item.type}-${item.index}`}
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          initialScrollIndex={mediaIndex}
-          getItemLayout={(_, index) => ({
-            length: SCREEN_WIDTH,
-            offset: SCREEN_WIDTH * index,
-            index,
-          })}
-          onViewableItemsChanged={onViewableItemsChanged}
-          viewabilityConfig={viewabilityConfig}
-          snapToAlignment="center"
-          decelerationRate="fast"
-          removeClippedSubviews={false}
-          windowSize={3}
-          maxToRenderPerBatch={2}
-          initialNumToRender={1}
-          updateCellsBatchingPeriod={50}
-          disableIntervalMomentum
-          snapToInterval={SCREEN_WIDTH}
-          scrollEventThrottle={16}
-        />
+            <FlatList
+              ref={flatListRef}
+              data={allMedia}
+              renderItem={renderItem}
+              keyExtractor={(item) => `${item.type}-${item.index}`}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              initialScrollIndex={mediaIndex}
+              getItemLayout={(_, index) => ({
+                length: SCREEN_WIDTH,
+                offset: SCREEN_WIDTH * index,
+                index,
+              })}
+              onViewableItemsChanged={onViewableItemsChanged}
+              viewabilityConfig={viewabilityConfig}
+              snapToAlignment="center"
+              decelerationRate="fast"
+              removeClippedSubviews={false}
+              windowSize={3}
+              maxToRenderPerBatch={2}
+              initialNumToRender={1}
+              updateCellsBatchingPeriod={50}
+              disableIntervalMomentum
+              snapToInterval={SCREEN_WIDTH}
+              scrollEventThrottle={16}
+            />
 
-        {/* Top Bar */}
-        <Animated.View style={[styles.topBar, { opacity: uiOpacity }]} pointerEvents={showUI ? 'box-none' : 'none'}>
-          <SafeAreaView edges={['top']} style={styles.safeArea} pointerEvents="box-none">
-            <View style={styles.topBarContent} pointerEvents="auto">
-              <Pressable onPress={handleClose} style={styles.iconButton} accessibilityLabel="back_button">
-                <ArrowLeft size={theme.iconSizes.lg} color="#fff" />
-              </Pressable>
+            {/* Top Bar */}
+            <Animated.View style={[styles.topBar, { opacity: uiOpacity }]} pointerEvents={showUI ? 'box-none' : 'none'}>
+              <SafeAreaView edges={['top']} style={styles.safeArea} pointerEvents="box-none">
+                <View style={styles.topBarContent} pointerEvents="auto">
+                  <Pressable onPress={handleClose} style={styles.iconButton} accessibilityLabel="back_button">
+                    <ArrowLeft size={theme.iconSizes.lg} color="#fff" />
+                  </Pressable>
 
-              {allMedia[currentIndex]?.type === 'image' && (
-                <Pressable
-                  style={styles.topBarCenter}
-                  onPress={handleUserProfilePress}
-                  accessibilityLabel="media_view_profile"
-                  accessibilityRole="button"
-                >
-                  {tweet?.user?.avatarUrl && (
-                    <Image source={{ uri: tweet.user.avatarUrl }} style={styles.avatar} cachePolicy="memory-disk" />
-                  )}
-                  <View style={styles.userInfo}>
-                    <Text style={styles.accountText} numberOfLines={1}>
-                      {tweet?.user?.name || 'Loading...'}
-                    </Text>
-                    <Text style={styles.handleText} numberOfLines={1}>
-                      @{tweet?.user?.username || '...'}
-                    </Text>
-                  </View>
-                </Pressable>
-              )}
-            </View>
-          </SafeAreaView>
-        </Animated.View>
-
-        {allMedia[currentIndex]?.type === 'video' && (
-          <Animated.View
-            style={[styles.actionsBar, { opacity: uiOpacity }]}
-            pointerEvents={showUI ? 'box-none' : 'none'}
-          >
-            <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
-              <View style={styles.actionsRow} pointerEvents="auto">
-                <Pressable onPress={() => console.warn('Reply')} style={styles.actionItem} hitSlop={15}>
-                  <ReplyIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
-                  {tweet?.repliesCount ? (
-                    <Text style={[styles.actionCount, { color: theme.colors.text.secondary }]}>
-                      {tweet.repliesCount}
-                    </Text>
-                  ) : null}
-                </Pressable>
-                <Pressable onPress={handleRepostPress} style={styles.actionItem} hitSlop={15}>
-                  <RepostIcon
-                    size={theme.iconSizesAlt.sm}
-                    stroke={isReposted ? theme.colors.accent.repost : theme.colors.text.secondary}
-                    strokeWidth={0}
-                  />
-                  {repostsCount ? (
-                    <Text
-                      style={[
-                        styles.actionCount,
-                        { color: isReposted ? theme.colors.accent.repost : theme.colors.text.secondary },
-                      ]}
-                    >
-                      {repostsCount}
-                    </Text>
-                  ) : null}
-                </Pressable>
-                <Pressable onPress={handleLikePress} style={styles.actionItem} hitSlop={15}>
-                  <LikeIcon
-                    size={theme.iconSizesAlt.sm}
-                    stroke={isLiked ? theme.colors.accent.like : theme.colors.text.secondary}
-                    filled={isLiked}
-                    strokeWidth={0}
-                  />
-                  {likesCount ? (
-                    <Text
-                      style={[
-                        styles.actionCount,
-                        { color: isLiked ? theme.colors.accent.like : theme.colors.text.secondary },
-                      ]}
-                    >
-                      {likesCount}
-                    </Text>
-                  ) : null}
-                </Pressable>
-                <Pressable onPress={() => console.warn('Views')} style={styles.actionItem} hitSlop={15}>
-                  <ViewsIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
-                  {tweet?.viewsCount ? (
-                    <Text style={[styles.actionCount, { color: theme.colors.text.secondary }]}>{tweet.viewsCount}</Text>
-                  ) : null}
-                </Pressable>
-                <Pressable onPress={handleBookmarkPress} style={styles.actionItem} hitSlop={15}>
-                  <BookmarkIcon
-                    size={theme.iconSizesAlt.sm}
-                    stroke={isBookmarked ? theme.colors.accent.bookmark : theme.colors.text.secondary}
-                    filled={isBookmarked}
-                    strokeWidth={0}
-                  />
-                </Pressable>
-                <Pressable onPress={() => console.warn('Share')} style={styles.actionItem} hitSlop={15}>
-                  <ShareIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
-                </Pressable>
-              </View>
-            </SafeAreaView>
-          </Animated.View>
-        )}
-
-        {allMedia[currentIndex]?.type === 'video' && (
-          <Animated.View
-            style={[styles.bottomUserInfo, { opacity: uiOpacity }]}
-            pointerEvents={showUI ? 'box-none' : 'none'}
-          >
-            <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
-              <View style={styles.userInfoContent} pointerEvents="auto">
-                <Pressable
-                  style={styles.bottomUserRow}
-                  onPress={handleUserProfilePress}
-                  accessibilityLabel="media_video_profile"
-                  accessibilityRole="button"
-                >
-                  {tweet?.user?.avatarUrl && (
-                    <Image
-                      source={{ uri: tweet.user.avatarUrl }}
-                      style={styles.bottomAvatar}
-                      cachePolicy="memory-disk"
-                    />
-                  )}
-                  <View style={styles.bottomUserText}>
-                    <View style={styles.bottomUserNames}>
-                      <Text style={styles.bottomUserName} numberOfLines={1}>
-                        {tweet?.user?.name || 'Loading...'}
-                      </Text>
-                      <Text style={styles.bottomUserHandle} numberOfLines={1}>
-                        @{tweet?.user?.username || '...'}
-                      </Text>
-                    </View>
-                  </View>
-                </Pressable>
-                {tweet?.content && (
-                  <Text style={styles.bottomTweetText} numberOfLines={2}>
-                    {tweet.content}
-                  </Text>
-                )}
-              </View>
-            </SafeAreaView>
-          </Animated.View>
-        )}
-
-        {allMedia[currentIndex]?.type === 'image' && (
-          <Animated.View
-            style={[styles.bottomBar, { opacity: uiOpacity }]}
-            pointerEvents={showUI ? 'box-none' : 'none'}
-          >
-            <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
-              <View style={styles.actionsRow} pointerEvents="auto">
-                <Pressable onPress={() => console.warn('Reply')} style={styles.actionItem} hitSlop={15}>
-                  <ReplyIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
-                  {tweet?.repliesCount ? (
-                    <Text style={[styles.actionCount, { color: theme.colors.text.secondary }]}>
-                      {tweet.repliesCount}
-                    </Text>
-                  ) : null}
-                </Pressable>
-                <Pressable onPress={handleRepostPress} style={styles.actionItem} hitSlop={15}>
-                  <RepostIcon
-                    size={theme.iconSizesAlt.sm}
-                    stroke={isReposted ? theme.colors.accent.repost : theme.colors.text.secondary}
-                    strokeWidth={0}
-                  />
-                  {repostsCount ? (
-                    <Text
-                      style={[
-                        styles.actionCount,
-                        { color: isReposted ? theme.colors.accent.repost : theme.colors.text.secondary },
-                      ]}
-                    >
-                      {repostsCount}
-                    </Text>
-                  ) : null}
-                </Pressable>
-                <Pressable onPress={handleLikePress} style={styles.actionItem} hitSlop={15}>
-                  <LikeIcon
-                    size={theme.iconSizesAlt.sm}
-                    stroke={isLiked ? theme.colors.accent.like : theme.colors.text.secondary}
-                    filled={isLiked}
-                    strokeWidth={0}
-                  />
-                  {likesCount ? (
-                    <Text
-                      style={[
-                        styles.actionCount,
-                        { color: isLiked ? theme.colors.accent.like : theme.colors.text.secondary },
-                      ]}
-                    >
-                      {likesCount}
-                    </Text>
-                  ) : null}
-                </Pressable>
-                <Pressable onPress={() => console.warn('Views')} style={styles.actionItem} hitSlop={15}>
-                  <ViewsIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
-                  {tweet?.viewsCount ? (
-                    <Text style={[styles.actionCount, { color: theme.colors.text.secondary }]}>{tweet.viewsCount}</Text>
-                  ) : null}
-                </Pressable>
-                <Pressable onPress={handleBookmarkPress} style={styles.actionItem} hitSlop={15}>
-                  <BookmarkIcon
-                    size={theme.iconSizesAlt.sm}
-                    stroke={isBookmarked ? theme.colors.accent.bookmark : theme.colors.text.secondary}
-                    filled={isBookmarked}
-                    strokeWidth={0}
-                  />
-                </Pressable>
-                <Pressable onPress={() => console.warn('Share')} style={styles.actionItem} hitSlop={15}>
-                  <ShareIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
-                </Pressable>
-              </View>
-            </SafeAreaView>
-          </Animated.View>
-        )}
-
-        {allMedia[currentIndex]?.type === 'video' && videoSource && (
-          <Animated.View
-            style={[styles.videoControlsContainer, { opacity: uiOpacity }]}
-            pointerEvents={showUI ? 'box-none' : 'none'}
-          >
-            <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
-              <View style={styles.videoControls} pointerEvents="auto">
-                <Pressable
-                  onPress={togglePlayPause}
-                  style={styles.controlButton}
-                  accessibilityLabel="video_play_pause"
-                  accessibilityRole="button"
-                >
-                  {player?.playing ? (
-                    <Pause size={theme.iconSizes.md} color="#fff" fill="#fff" />
-                  ) : (
-                    <Play size={theme.iconSizes.md} color="#fff" fill="#fff" />
-                  )}
-                </Pressable>
-                <Text style={styles.timeText} accessibilityLabel="video_current_time">
-                  {formatTime(currentTime)}
-                </Text>
-                <Pressable
-                  style={styles.progressBarContainer}
-                  onPress={handleProgressBarPress}
-                  onTouchStart={onProgressBarTouchStart}
-                  onTouchMove={onProgressBarTouchMove}
-                  onTouchEnd={onProgressBarTouchEnd}
-                  accessibilityLabel="video_progress_bar"
-                  accessibilityRole="adjustable"
-                >
-                  <View ref={progressBarRef} style={styles.progressBar}>
-                    <View
-                      style={[styles.progressFill, { width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }]}
-                    >
-                      <View style={styles.progressThumb} />
-                    </View>
-                  </View>
-                </Pressable>
-                <Text style={styles.timeText} accessibilityLabel="video_duration">
-                  {formatTime(duration)}
-                </Text>
-                <Pressable
-                  onPress={toggleMute}
-                  style={styles.controlButton}
-                  accessibilityLabel="video_mute_toggle"
-                  accessibilityRole="button"
-                >
-                  {isMuted ? (
-                    <VolumeX size={theme.iconSizes.md} color="#fff" />
-                  ) : (
-                    <Volume2 size={theme.iconSizes.md} color="#fff" />
-                  )}
-                </Pressable>
-                <Pressable
-                  onPress={() => setShowSpeedMenu(!showSpeedMenu)}
-                  style={styles.speedButton}
-                  accessibilityLabel="video_speed_menu"
-                  accessibilityRole="button"
-                >
-                  <Text style={styles.speedText}>{playbackSpeed}x</Text>
-                </Pressable>
-              </View>
-
-              {showSpeedMenu && (
-                <View style={styles.speedMenu} pointerEvents="auto">
-                  {PLAYBACK_SPEEDS.map((speed) => (
+                  {allMedia[currentIndex]?.type === 'image' && (
                     <Pressable
-                      key={String(speed)}
-                      onPress={() => handleSpeedChange(speed as any)}
-                      style={[styles.speedMenuItem, playbackSpeed === speed && styles.speedMenuItemActive]}
-                      accessibilityLabel={`video_speed_${speed}`}
+                      style={styles.topBarCenter}
+                      onPress={handleUserProfilePress}
+                      accessibilityLabel="media_view_profile"
                       accessibilityRole="button"
                     >
-                      <Text style={[styles.speedMenuText, playbackSpeed === speed && styles.speedMenuTextActive]}>
-                        {speed}x
-                      </Text>
+                      {tweet?.user?.avatarUrl && (
+                        <Image source={{ uri: tweet.user.avatarUrl }} style={styles.avatar} cachePolicy="memory-disk" />
+                      )}
+                      <View style={styles.userInfo}>
+                        <Text style={styles.accountText} numberOfLines={1}>
+                          {tweet?.user?.name || 'Loading...'}
+                        </Text>
+                        <Text style={styles.handleText} numberOfLines={1}>
+                          @{tweet?.user?.username || '...'}
+                        </Text>
+                      </View>
                     </Pressable>
-                  ))}
+                  )}
                 </View>
-              )}
-            </SafeAreaView>
-          </Animated.View>
-        )}
-      </Pressable>
-    </Modal>
+              </SafeAreaView>
+            </Animated.View>
+
+            {allMedia[currentIndex]?.type === 'video' && (
+              <Animated.View
+                style={[styles.actionsBar, { opacity: uiOpacity }]}
+                pointerEvents={showUI ? 'box-none' : 'none'}
+              >
+                <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
+                  <View style={styles.actionsRow} pointerEvents="auto">
+                    <Pressable onPress={handleReplyPress} style={styles.actionItem} hitSlop={15}>
+                      <ReplyIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
+                      {tweet?.repliesCount ? (
+                        <Text style={[styles.actionCount, { color: theme.colors.text.secondary }]}>
+                          {tweet.repliesCount}
+                        </Text>
+                      ) : null}
+                    </Pressable>
+                    <Pressable onPress={handleRepostPress} style={styles.actionItem} hitSlop={15}>
+                      <RepostIcon
+                        size={theme.iconSizesAlt.sm}
+                        stroke={isReposted ? theme.colors.accent.repost : theme.colors.text.secondary}
+                        strokeWidth={0}
+                      />
+                      {repostsCount ? (
+                        <Text
+                          style={[
+                            styles.actionCount,
+                            { color: isReposted ? theme.colors.accent.repost : theme.colors.text.secondary },
+                          ]}
+                        >
+                          {repostsCount}
+                        </Text>
+                      ) : null}
+                    </Pressable>
+                    <Pressable onPress={handleLikePress} style={styles.actionItem} hitSlop={15}>
+                      <LikeIcon
+                        size={theme.iconSizesAlt.sm}
+                        stroke={isLiked ? theme.colors.accent.like : theme.colors.text.secondary}
+                        filled={isLiked}
+                        strokeWidth={0}
+                      />
+                      {likesCount ? (
+                        <Text
+                          style={[
+                            styles.actionCount,
+                            { color: isLiked ? theme.colors.accent.like : theme.colors.text.secondary },
+                          ]}
+                        >
+                          {likesCount}
+                        </Text>
+                      ) : null}
+                    </Pressable>
+                    <Pressable onPress={() => console.warn('Views')} style={styles.actionItem} hitSlop={15}>
+                      <ViewsIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
+                      {tweet?.viewsCount ? (
+                        <Text style={[styles.actionCount, { color: theme.colors.text.secondary }]}>
+                          {tweet.viewsCount}
+                        </Text>
+                      ) : null}
+                    </Pressable>
+                    <Pressable onPress={handleBookmarkPress} style={styles.actionItem} hitSlop={15}>
+                      <BookmarkIcon
+                        size={theme.iconSizesAlt.sm}
+                        stroke={isBookmarked ? theme.colors.accent.bookmark : theme.colors.text.secondary}
+                        filled={isBookmarked}
+                        strokeWidth={0}
+                      />
+                    </Pressable>
+                    <Pressable onPress={() => console.warn('Share')} style={styles.actionItem} hitSlop={15}>
+                      <ShareIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
+                    </Pressable>
+                  </View>
+                </SafeAreaView>
+              </Animated.View>
+            )}
+
+            {allMedia[currentIndex]?.type === 'video' && (
+              <Animated.View
+                style={[styles.bottomUserInfo, { opacity: uiOpacity }]}
+                pointerEvents={showUI ? 'box-none' : 'none'}
+              >
+                <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
+                  <View style={styles.userInfoContent} pointerEvents="auto">
+                    <Pressable
+                      style={styles.bottomUserRow}
+                      onPress={handleUserProfilePress}
+                      accessibilityLabel="media_video_profile"
+                      accessibilityRole="button"
+                    >
+                      {tweet?.user?.avatarUrl && (
+                        <Image
+                          source={{ uri: tweet.user.avatarUrl }}
+                          style={styles.bottomAvatar}
+                          cachePolicy="memory-disk"
+                        />
+                      )}
+                      <View style={styles.bottomUserText}>
+                        <View style={styles.bottomUserNames}>
+                          <Text style={styles.bottomUserName} numberOfLines={1}>
+                            {tweet?.user?.name || 'Loading...'}
+                          </Text>
+                          <Text style={styles.bottomUserHandle} numberOfLines={1}>
+                            @{tweet?.user?.username || '...'}
+                          </Text>
+                        </View>
+                      </View>
+                    </Pressable>
+                    {tweet?.content && (
+                      <Text style={styles.bottomTweetText} numberOfLines={2}>
+                        {tweet.content}
+                      </Text>
+                    )}
+                  </View>
+                </SafeAreaView>
+              </Animated.View>
+            )}
+
+            {allMedia[currentIndex]?.type === 'image' && (
+              <Animated.View
+                style={[styles.bottomBar, { opacity: uiOpacity }]}
+                pointerEvents={showUI ? 'box-none' : 'none'}
+              >
+                <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
+                  <View style={styles.actionsRow} pointerEvents="auto">
+                    <Pressable onPress={handleReplyPress} style={styles.actionItem} hitSlop={15}>
+                      <ReplyIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
+                      {tweet?.repliesCount ? (
+                        <Text style={[styles.actionCount, { color: theme.colors.text.secondary }]}>
+                          {tweet.repliesCount}
+                        </Text>
+                      ) : null}
+                    </Pressable>
+                    <Pressable onPress={handleRepostPress} style={styles.actionItem} hitSlop={15}>
+                      <RepostIcon
+                        size={theme.iconSizesAlt.sm}
+                        stroke={isReposted ? theme.colors.accent.repost : theme.colors.text.secondary}
+                        strokeWidth={0}
+                      />
+                      {repostsCount ? (
+                        <Text
+                          style={[
+                            styles.actionCount,
+                            { color: isReposted ? theme.colors.accent.repost : theme.colors.text.secondary },
+                          ]}
+                        >
+                          {repostsCount}
+                        </Text>
+                      ) : null}
+                    </Pressable>
+                    <Pressable onPress={handleLikePress} style={styles.actionItem} hitSlop={15}>
+                      <LikeIcon
+                        size={theme.iconSizesAlt.sm}
+                        stroke={isLiked ? theme.colors.accent.like : theme.colors.text.secondary}
+                        filled={isLiked}
+                        strokeWidth={0}
+                      />
+                      {likesCount ? (
+                        <Text
+                          style={[
+                            styles.actionCount,
+                            { color: isLiked ? theme.colors.accent.like : theme.colors.text.secondary },
+                          ]}
+                        >
+                          {likesCount}
+                        </Text>
+                      ) : null}
+                    </Pressable>
+                    <Pressable onPress={() => console.warn('Views')} style={styles.actionItem} hitSlop={15}>
+                      <ViewsIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
+                      {tweet?.viewsCount ? (
+                        <Text style={[styles.actionCount, { color: theme.colors.text.secondary }]}>
+                          {tweet.viewsCount}
+                        </Text>
+                      ) : null}
+                    </Pressable>
+                    <Pressable onPress={handleBookmarkPress} style={styles.actionItem} hitSlop={15}>
+                      <BookmarkIcon
+                        size={theme.iconSizesAlt.sm}
+                        stroke={isBookmarked ? theme.colors.accent.bookmark : theme.colors.text.secondary}
+                        filled={isBookmarked}
+                        strokeWidth={0}
+                      />
+                    </Pressable>
+                    <Pressable onPress={() => console.warn('Share')} style={styles.actionItem} hitSlop={15}>
+                      <ShareIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
+                    </Pressable>
+                  </View>
+                </SafeAreaView>
+              </Animated.View>
+            )}
+
+            {allMedia[currentIndex]?.type === 'video' && videoSource && (
+              <Animated.View
+                style={[styles.videoControlsContainer, { opacity: uiOpacity }]}
+                pointerEvents={showUI ? 'box-none' : 'none'}
+              >
+                <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
+                  <View style={styles.videoControls} pointerEvents="auto">
+                    <Pressable
+                      onPress={togglePlayPause}
+                      style={styles.controlButton}
+                      accessibilityLabel="video_play_pause"
+                      accessibilityRole="button"
+                    >
+                      {player?.playing ? (
+                        <Pause size={theme.iconSizes.md} color="#fff" fill="#fff" />
+                      ) : (
+                        <Play size={theme.iconSizes.md} color="#fff" fill="#fff" />
+                      )}
+                    </Pressable>
+                    <Text style={styles.timeText} accessibilityLabel="video_current_time">
+                      {formatTime(currentTime)}
+                    </Text>
+                    <Pressable
+                      style={styles.progressBarContainer}
+                      onPress={handleProgressBarPress}
+                      onTouchStart={onProgressBarTouchStart}
+                      onTouchMove={onProgressBarTouchMove}
+                      onTouchEnd={onProgressBarTouchEnd}
+                      accessibilityLabel="video_progress_bar"
+                      accessibilityRole="adjustable"
+                    >
+                      <View ref={progressBarRef} style={styles.progressBar}>
+                        <View
+                          style={[
+                            styles.progressFill,
+                            { width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` },
+                          ]}
+                        >
+                          <View style={styles.progressThumb} />
+                        </View>
+                      </View>
+                    </Pressable>
+                    <Text style={styles.timeText} accessibilityLabel="video_duration">
+                      {formatTime(duration)}
+                    </Text>
+                    <Pressable
+                      onPress={toggleMute}
+                      style={styles.controlButton}
+                      accessibilityLabel="video_mute_toggle"
+                      accessibilityRole="button"
+                    >
+                      {isMuted ? (
+                        <VolumeX size={theme.iconSizes.md} color="#fff" />
+                      ) : (
+                        <Volume2 size={theme.iconSizes.md} color="#fff" />
+                      )}
+                    </Pressable>
+                    <Pressable
+                      onPress={() => setShowSpeedMenu(!showSpeedMenu)}
+                      style={styles.speedButton}
+                      accessibilityLabel="video_speed_menu"
+                      accessibilityRole="button"
+                    >
+                      <Text style={styles.speedText}>{playbackSpeed}x</Text>
+                    </Pressable>
+                  </View>
+
+                  {showSpeedMenu && (
+                    <View style={styles.speedMenu} pointerEvents="auto">
+                      {PLAYBACK_SPEEDS.map((speed) => (
+                        <Pressable
+                          key={String(speed)}
+                          onPress={() => handleSpeedChange(speed as any)}
+                          style={[styles.speedMenuItem, playbackSpeed === speed && styles.speedMenuItemActive]}
+                          accessibilityLabel={`video_speed_${speed}`}
+                          accessibilityRole="button"
+                        >
+                          <Text style={[styles.speedMenuText, playbackSpeed === speed && styles.speedMenuTextActive]}>
+                            {speed}x
+                          </Text>
+                        </Pressable>
+                      ))}
+                    </View>
+                  )}
+                </SafeAreaView>
+              </Animated.View>
+            )}
+          </Pressable>
+        </SafeAreaView>
+      </Modal>
+
+      <CreatePostModal
+        visible={isCreatePostModalVisible}
+        onClose={() => setIsCreatePostModalVisible(false)}
+        type={createPostType}
+        tweet={tweet || undefined}
+        onPost={createPostType === 'reply' ? handleReply : () => {}}
+        onRepost={() => {}}
+      />
+    </>
   );
 }
 
@@ -558,6 +590,9 @@ const createStyles = (theme: Theme) =>
     container: {
       flex: 1,
       backgroundColor: '#000',
+    },
+    containerPressable: {
+      flex: 1,
     },
     safeArea: {
       width: '100%',

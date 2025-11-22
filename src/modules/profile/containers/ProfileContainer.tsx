@@ -1,4 +1,6 @@
 import { DEFAULT_BANNER_URL } from '@/src/constants/defaults';
+import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
+import MediaViewerModal from '@/src/modules/tweets/components/MediaViewerModal';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, RefreshControl, View } from 'react-native';
 import { useTheme } from '../../../context/ThemeContext';
@@ -188,7 +190,10 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
 export default function ProfileContainer(props: ProfileContainerProps) {
   return (
     <ProfilePostsProvider>
-      <ProfileContainerInner {...props} />
+      <MediaViewerProvider>
+        <ProfileContainerInner {...props} />
+        <MediaViewerModal />
+      </MediaViewerProvider>
     </ProfilePostsProvider>
   );
 }

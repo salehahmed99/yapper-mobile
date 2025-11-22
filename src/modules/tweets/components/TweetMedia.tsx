@@ -22,10 +22,11 @@ type MediaItem = {
   index: number;
 };
 
-const TweetMedia: React.FC<ITweetMediaProps> = ({ images, videos, tweetId, isVisible = true }) => {
+const TweetMedia: React.FC<ITweetMediaProps> = ({ images, videos, tweetId, isVisible = false }) => {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { openMediaViewer, isOpen: isMediaViewerOpen, lastClosedData } = useMediaViewer();
+  // const { openMediaViewer, isOpen: isMediaViewerOpen, lastClosedData } = useMediaViewer();
+  const { openMediaViewer, lastClosedData } = useMediaViewer();
   const [isMuted, setIsMuted] = useState(false);
   const toggleMute = useCallback(() => setIsMuted((prev) => !prev), []);
 
@@ -138,60 +139,61 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({ images, videos, tweetId, isVis
     }
   }, [lastClosedData, tweetId, videoUrls, videoPlayers, allMedia]);
 
+  // Disable auto-play: videos only play when explicitly opened in MediaViewerModal
   useEffect(() => {
-    const shouldPlayVideo = isVisible && videoUrls.length > 0 && !isMediaViewerOpen;
+    // const shouldPlayVideo = isVisible && videoUrls.length > 0 && !isMediaViewerOpen;
 
-    if (shouldPlayVideo) {
-      const firstVideoIndex = videoUrls[0].index;
-      const firstPlayer = videoPlayers[firstVideoIndex];
-      if (firstPlayer) {
-        try {
-          firstPlayer.play();
-        } catch {
-          // Ignore errors from released players
-        }
+    // if (shouldPlayVideo) {
+    //   const firstVideoIndex = videoUrls[0].index;
+    //   const firstPlayer = videoPlayers[firstVideoIndex];
+    //   if (firstPlayer) {
+    //     try {
+    //       firstPlayer.play();
+    //     } catch {
+    //       // Ignore errors from released players
+    //     }
+    //   }
+
+    //   videoUrls.slice(1).forEach((video) => {
+    //     try {
+    //       videoPlayers[video.index]?.pause();
+    //     } catch {
+    //       // Ignore errors from released players
+    //     }
+    //   });
+    // } else {
+    // Always pause all videos to prevent auto-play
+    Object.values(videoPlayers).forEach((player) => {
+      try {
+        player?.pause();
+      } catch {
+        // Ignore errors from released players
       }
-
-      videoUrls.slice(1).forEach((video) => {
-        try {
-          videoPlayers[video.index]?.pause();
-        } catch {
-          // Ignore errors from released players
-        }
-      });
-    } else {
-      Object.values(videoPlayers).forEach((player) => {
-        try {
-          player?.pause();
-        } catch {
-          // Ignore errors from released players
-        }
-      });
-    }
-  }, [isVisible, videoUrls, videoPlayers, isMediaViewerOpen]);
+    });
+  }, [videoPlayers]);
 
   const handleMutePress = (e: React.BaseSyntheticEvent) => {
     e.stopPropagation();
     toggleMute();
   };
 
-  const handleVideoPress = useCallback(
-    (index: number) => {
-      Object.entries(videoPlayers).forEach(([idx, player]) => {
-        const videoIdx = parseInt(idx, 10);
-        try {
-          if (videoIdx === index) {
-            player.play();
-          } else {
-            player.pause();
-          }
-        } catch {
-          // Ignore errors from released players
-        }
-      });
-    },
-    [videoPlayers],
-  );
+  // const handleVideoPress = useCallback(
+  //   (index: number) => {
+  //     Object.entries(videoPlayers).forEach(([idx, player]) => {
+  //       const videoIdx = parseInt(idx, 10);
+  //       try {
+  //         if (videoIdx === index) {
+  //           player.play();
+  //         } else {
+  //           player.pause();
+  //         }
+  //       } catch {
+  //         // Ignore errors from released players
+  //       }
+  //     });
+  //   },
+  //   [videoPlayers],
+  // );
 
   const handleMediaPress = useCallback(
     (index: number, mediaItem: MediaItem) => {
@@ -238,13 +240,8 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({ images, videos, tweetId, isVis
     const player = isVideo ? videoPlayers[item.index] : null;
 
     const handlePress = () => {
-      if (isVideo && player?.playing) {
-        handleMediaPress(position, item);
-      } else if (isVideo) {
-        handleVideoPress(item.index);
-      } else {
-        handleMediaPress(position, item);
-      }
+      // Always open the media viewer on tap (images and videos)
+      handleMediaPress(position, item);
     };
 
     const itemStyle = [
