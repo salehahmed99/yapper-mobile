@@ -75,6 +75,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
     <Pressable
       style={styles.container}
       accessibilityLabel="tweet_container_main"
+      testID="tweet_container_main"
       onPress={() => onTweetPress(tweet.tweetId)}
     >
       {tweet.type === 'repost' && (
@@ -82,7 +83,11 @@ const Tweet: React.FC<ITweetProps> = (props) => {
       )}
       <View style={styles.tweetContainer}>
         <View style={styles.imageColumn}>
-          <Pressable onPress={() => onAvatarPress(tweet.user.id)}>
+          <Pressable
+            onPress={() => onAvatarPress(tweet.user.id)}
+            accessibilityLabel="tweet_avatar"
+            testID="tweet_avatar"
+          >
             <Image
               source={
                 tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : require('@/assets/images/avatar-placeholder.png')
@@ -99,7 +104,12 @@ const Tweet: React.FC<ITweetProps> = (props) => {
             <View style={styles.optionsRow}>
               <GrokLogo size={16} color={theme.colors.text.secondary} />
               <View ref={moreButtonRef} collapsable={false}>
-                <TouchableOpacity onPress={handleMorePress} hitSlop={8}>
+                <TouchableOpacity
+                  onPress={handleMorePress}
+                  hitSlop={8}
+                  accessibilityLabel="tweet_button_more"
+                  testID="tweet_button_more"
+                >
                   <MoreHorizontal size={16} color={theme.colors.text.secondary} />
                 </TouchableOpacity>
               </View>

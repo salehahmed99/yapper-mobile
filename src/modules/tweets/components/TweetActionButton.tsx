@@ -12,15 +12,22 @@ interface ITweetActionButtonProps {
   color?: string;
   filled?: boolean;
   accessibilityLabel: string;
+  testID?: string;
   size: 'small' | 'large';
 }
 const TweetActionButton: React.FC<ITweetActionButtonProps> = (props) => {
-  const { icon: Icon, count, onPress, color, filled, accessibilityLabel, size } = props;
+  const { icon: Icon, count, onPress, color, filled, accessibilityLabel, testID, size } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   return (
-    <Pressable style={styles.actionItem} onPress={onPress} hitSlop={15} accessibilityLabel={accessibilityLabel}>
+    <Pressable
+      style={styles.actionItem}
+      onPress={onPress}
+      hitSlop={15}
+      accessibilityLabel={accessibilityLabel}
+      testID={testID}
+    >
       <Icon
         size={size === 'small' ? theme.iconSizesAlt.xs : theme.iconSizesAlt.xl}
         stroke={color || theme.colors.text.secondary}

@@ -60,7 +60,13 @@ const ReplyRestrictionModal: React.FC<IReplyRestrictionModalProps> = (props) => 
             const label = option.label as ReplyRestrictionOptions;
 
             return (
-              <Pressable key={option.label} style={styles.option} onPress={() => handleSelect(label)}>
+              <Pressable
+                key={option.label}
+                style={styles.option}
+                onPress={() => handleSelect(label)}
+                accessibilityLabel={`reply_restriction_option_${label.toLowerCase().replace(/ /g, '_')}`}
+                testID={`reply_restriction_option_${label.toLowerCase().replace(/ /g, '_')}`}
+              >
                 <View style={styles.optionLeft}>
                   <View style={styles.iconWrapper}>
                     <View style={styles.iconContainer}>

@@ -38,7 +38,7 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
   const [isBookmarked, setIsBookmarked] = useState(false);
 
   return (
-    <View style={styles.container} accessibilityLabel="full_tweet_container_main">
+    <View style={styles.container} accessibilityLabel="full_tweet_container_main" testID="full_tweet_container_main">
       {tweet.type === 'repost' && (
         <RepostIndicator repostById={tweet.repostedBy?.id} repostedByName={tweet.repostedBy?.name} />
       )}
@@ -46,7 +46,11 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
       {/* User Info Header */}
       <View style={styles.header}>
         <View style={styles.userInfoContainer}>
-          <Pressable onPress={() => onAvatarPress(tweet.user.id)}>
+          <Pressable
+            onPress={() => onAvatarPress(tweet.user.id)}
+            accessibilityLabel="full_tweet_avatar"
+            testID="full_tweet_avatar"
+          >
             <Image
               source={
                 tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : require('@/assets/images/avatar-placeholder.png')

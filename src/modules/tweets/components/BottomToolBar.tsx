@@ -101,14 +101,24 @@ const BottomToolBar: React.FC<IBottomToolBarProps> = (props) => {
         contentContainerStyle={styles.leftContainer}
         keyboardShouldPersistTaps="always"
       >
-        <Pressable onPress={onGalleryPress} disabled={mediaCount >= 4}>
+        <Pressable
+          onPress={onGalleryPress}
+          disabled={mediaCount >= 4}
+          testID="create_post_button_gallery"
+          accessibilityLabel="create_post_button_gallery"
+        >
           <ImageIcon
             size={theme.iconSizesAlt.xl}
             color={mediaCount >= 4 ? theme.colors.text.secondary : theme.colors.accent.bookmark}
             strokeWidth={2}
           />
         </Pressable>
-        <Pressable onPress={onCameraPress} disabled={mediaCount >= 4}>
+        <Pressable
+          onPress={onCameraPress}
+          disabled={mediaCount >= 4}
+          testID="create_post_button_camera"
+          accessibilityLabel="create_post_button_camera"
+        >
           <Camera
             size={theme.iconSizesAlt.xl}
             color={mediaCount >= 4 ? theme.colors.text.secondary : theme.colors.accent.bookmark}
@@ -148,7 +158,7 @@ const BottomToolBar: React.FC<IBottomToolBarProps> = (props) => {
         </Animated.View>
 
         <View style={styles.divider} />
-        <Pressable style={styles.addButton}>
+        <Pressable style={styles.addButton} testID="create_post_button_add" accessibilityLabel="create_post_button_add">
           <Plus size={theme.iconSizesAlt.xs} color={theme.colors.black} strokeWidth={3.5} />
         </Pressable>
       </View>
