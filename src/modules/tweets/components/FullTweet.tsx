@@ -8,6 +8,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
 import RepostIndicator from './RepostIndicator';
+import TweetMedia from './TweetMedia';
 
 interface IFullTweetProps {
   tweet: ITweet;
@@ -65,6 +66,11 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
         <Text style={styles.tweetText}>{tweet.content}</Text>
       </View>
 
+      {/* Tweet Media */}
+      {(tweet.images.length > 0 || tweet.videos.length > 0) && (
+        <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} isVisible={true} />
+      )}
+
       {/* Parent Tweet (Quote) */}
       {/* {parentTweet && <ParentTweet tweet={parentTweet} />} */}
 
@@ -103,6 +109,7 @@ const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
       padding: theme.spacing.md,
+      paddingBottom: theme.spacing.xxxl,
       backgroundColor: theme.colors.background.primary,
     },
     header: {

@@ -13,10 +13,12 @@ import { ITweet, ITweets } from '../types';
 import { updateTweetsInInfiniteCache } from '../utils/cacheUtils';
 
 interface ILikeMutationVariables {
+  tweetId: string;
   isLiked: boolean;
 }
 
 interface IRepostMutationVariables {
+  tweetId: string;
   isReposted: boolean;
 }
 export const useTweetActions = (tweetId: string) => {
@@ -60,11 +62,15 @@ export const useTweetActions = (tweetId: string) => {
 
       queryClient.setQueryData<ITweet>(tweetDetailsQueryKey, (oldData) => (oldData ? toggleLike(oldData) : oldData));
     },
-    onSuccess: () => {
+
+    onSuccess: (_, variables) => {
+      // Also invalidate individual tweet query to sync with media viewer
+      queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
     },
-    onError: () => {
+    onError: (error) => {
+      console.log('Error updating like status:', error);
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
@@ -90,11 +96,16 @@ export const useTweetActions = (tweetId: string) => {
 
       queryClient.setQueryData<ITweet>(tweetDetailsQueryKey, (oldData) => (oldData ? toggleRepost(oldData) : oldData));
     },
-    onSuccess: () => {
+
+    onSuccess: (_, variables) => {
+      // Also invalidate individual tweet query to sync with media viewer
+      queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
     },
-    onError: () => {
+    onError: (error) => {
+      console.log('Error updating repost status:', error);
+
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
@@ -102,8 +113,8 @@ export const useTweetActions = (tweetId: string) => {
   });
 
   const addPostMutation = useMutation({
-    mutationFn: async (content: string) => {
-      return createTweet(content);
+    mutationFn: async ({ content, mediaUris }: { content: string; mediaUris?: string[] }) => {
+      return createTweet(content, mediaUris);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
@@ -115,8 +126,8 @@ export const useTweetActions = (tweetId: string) => {
   });
 
   const replyToPostMutation = useMutation({
-    mutationFn: async (content: string) => {
-      return replyToTweet(tweetId, content);
+    mutationFn: async ({ content, mediaUris }: { content: string; mediaUris?: string[] }) => {
+      return replyToTweet(tweetId, content, mediaUris);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
@@ -129,8 +140,8 @@ export const useTweetActions = (tweetId: string) => {
   });
 
   const quotePostMutation = useMutation({
-    mutationFn: async (content: string) => {
-      return quoteTweet(tweetId, content);
+    mutationFn: async ({ content, mediaUris }: { content: string; mediaUris?: string[] }) => {
+      return quoteTweet(tweetId, content, mediaUris);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });

@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { ITweet } from '../types';
+import TweetMedia from './TweetMedia';
 import UserInfoRow from './UserInfoRow';
 
 interface IParentTweetProps {
@@ -28,6 +29,11 @@ const ParentTweet: React.FC<IParentTweetProps> = (props) => {
       <View style={styles.tweetContent}>
         <Text style={styles.tweetText}>{tweet.content}</Text>
       </View>
+
+      {/* Tweet Media */}
+      {(tweet.images.length > 0 || tweet.videos.length > 0) && (
+        <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} isVisible={true} />
+      )}
     </View>
   );
 };

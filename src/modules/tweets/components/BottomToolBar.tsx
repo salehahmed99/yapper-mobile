@@ -54,9 +54,12 @@ const CircularProgress: React.FC<ICircularProgressProps> = (props) => {
 interface IBottomToolBarProps {
   remainingCharacters: number;
   progressPercentage: number;
+  onGalleryPress?: () => void;
+  onCameraPress?: () => void;
+  mediaCount?: number;
 }
 const BottomToolBar: React.FC<IBottomToolBarProps> = (props) => {
-  const { remainingCharacters, progressPercentage } = props;
+  const { remainingCharacters, progressPercentage, onGalleryPress, onCameraPress, mediaCount = 0 } = props;
 
   const getProgressColor = () => {
     if (remainingCharacters <= 0) return theme.colors.error;
@@ -98,11 +101,19 @@ const BottomToolBar: React.FC<IBottomToolBarProps> = (props) => {
         contentContainerStyle={styles.leftContainer}
         keyboardShouldPersistTaps="always"
       >
-        <Pressable>
-          <ImageIcon size={theme.iconSizesAlt.xl} color={theme.colors.accent.bookmark} strokeWidth={2} />
+        <Pressable onPress={onGalleryPress} disabled={mediaCount >= 4}>
+          <ImageIcon
+            size={theme.iconSizesAlt.xl}
+            color={mediaCount >= 4 ? theme.colors.text.secondary : theme.colors.accent.bookmark}
+            strokeWidth={2}
+          />
         </Pressable>
-        <Pressable>
-          <Camera size={theme.iconSizesAlt.xl} color={theme.colors.accent.bookmark} strokeWidth={2} />
+        <Pressable onPress={onCameraPress} disabled={mediaCount >= 4}>
+          <Camera
+            size={theme.iconSizesAlt.xl}
+            color={mediaCount >= 4 ? theme.colors.text.secondary : theme.colors.accent.bookmark}
+            strokeWidth={2}
+          />
         </Pressable>
         <Pressable>
           <GrokLogo size={theme.iconSizesAlt.xl} color={theme.colors.accent.bookmark} />

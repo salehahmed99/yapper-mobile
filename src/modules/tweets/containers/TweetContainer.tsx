@@ -15,10 +15,12 @@ type TweetContainerProps =
   | {
       tweet: ITweet;
       tweetId?: never;
+      isVisible?: boolean;
     }
   | {
       tweet?: never;
       tweetId: string;
+      isVisible?: boolean;
     };
 
 const TweetContainer: React.FC<TweetContainerProps> = (props) => {
@@ -32,21 +34,27 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
     props.tweetId ?? props.tweet.tweetId,
   );
 
-  const handleReply = async (content: string) => {
+  const handleReply = async (content: string, mediaUris?: string[]) => {
     // TODO: Implement reply functionality
-    replyToPostMutation.mutate(content);
+    replyToPostMutation.mutate({ content, mediaUris });
   };
 
   const handleLike = (isLiked: boolean) => {
-    likeMutation.mutate({ isLiked: isLiked });
+    const id = props.tweetId ?? props.tweet?.tweetId;
+    if (id) {
+      likeMutation.mutate({ tweetId: id, isLiked: isLiked });
+    }
   };
   const handleRepost = (isReposted: boolean) => {
-    repostMutation.mutate({ isReposted: isReposted });
+    const id = props.tweetId ?? props.tweet?.tweetId;
+    if (id) {
+      repostMutation.mutate({ tweetId: id, isReposted: isReposted });
+    }
   };
 
-  const handleQuote = (content: string) => {
+  const handleQuote = (content: string, mediaUris?: string[]) => {
     // TODO: Implement quote functionality
-    quotePostMutation.mutate(content);
+    quotePostMutation.mutate({ content, mediaUris });
   };
   // const handleDeletePost = () => {
   //   // TODO: Implement delete post functionality
@@ -159,6 +167,7 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
           onBookmark={handleBookmark}
           onShare={handleShare}
           openSheet={openSheet}
+          isVisible={props.isVisible}
           onTweetPress={handleTweetPress}
           onAvatarPress={handleAvatarPress}
         />

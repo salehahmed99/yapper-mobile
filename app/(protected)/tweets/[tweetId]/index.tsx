@@ -1,5 +1,7 @@
 import { Theme } from '@/src/constants/theme';
+import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
+import MediaViewerModal from '@/src/modules/tweets/components/MediaViewerModal';
 import TweetContainer from '@/src/modules/tweets/containers/TweetContainer';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
@@ -11,9 +13,12 @@ const TweetDetailsScreen = () => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   return (
-    <SafeAreaView style={styles.container}>
-      <TweetContainer tweetId={tweetId} />
-    </SafeAreaView>
+    <MediaViewerProvider>
+      <SafeAreaView style={styles.container}>
+        <TweetContainer tweetId={tweetId} />
+        <MediaViewerModal />
+      </SafeAreaView>
+    </MediaViewerProvider>
   );
 };
 

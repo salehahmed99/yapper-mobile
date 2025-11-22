@@ -1,9 +1,12 @@
 import { ThemedText } from '@/src/components/ThemedText';
 import { Theme } from '@/src/constants/theme';
+import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
+
 import useSpacing from '@/src/hooks/useSpacing';
 import CustomTabView, { TabConfig } from '@/src/modules/profile/components/CustomTabView';
 import TweetQuotesList from '@/src/modules/tweets/components/TweetQuotesList';
+import MediaViewerModal from '@/src/modules/tweets/components/MediaViewerModal';
 import FollowButton from '@/src/modules/user_list/components/FollowButton';
 import UserList from '@/src/modules/user_list/components/UserList';
 import { useAuthStore } from '@/src/store/useAuthStore';
@@ -92,19 +95,25 @@ export default function TweetActivityScreen() {
   }, [t, isTweetOwner, RepostsTab, QuotesTab, LikersTab]);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <TouchableOpacity onPress={() => router.back()} accessibilityLabel="back_button" style={styles.backButton}>
-            <ChevronLeft size={24} color={theme.colors.text.primary} />
-          </TouchableOpacity>
-          <ThemedText style={styles.title}>{t('tweetActivity.title')}</ThemedText>
-          <View style={styles.placeholder} />
+
+    <MediaViewerProvider>
+      <SafeAreaView style={styles.container}>
+        <View style={[styles.header, { paddingTop: insets.top }]}>
+          <View style={styles.headerContent}>
+            <TouchableOpacity onPress={() => router.back()} accessibilityLabel="back_button" style={styles.backButton}>
+              <ChevronLeft size={24} color={theme.colors.text.primary} />
+            </TouchableOpacity>
+            <ThemedText style={styles.title}>{t('tweetActivity.title')}</ThemedText>
+            <View style={styles.placeholder} />
+          </View>
         </View>
-      </View>
-      <CustomTabView tabs={tabs} scrollEnabled={false} />
-      <View style={{ height: bottom }} />
-    </View>
+        <View style={styles.tabViewWrapper}>
+          <CustomTabView routes={routes} index={activeTabIndex} onIndexChange={setActiveTabIndex} scrollable={false} />
+        </View>
+        <View style={styles.content}>{renderTabContent()}</View>
+        <MediaViewerModal />
+      </SafeAreaView>
+    </MediaViewerProvider>
   );
 }
 

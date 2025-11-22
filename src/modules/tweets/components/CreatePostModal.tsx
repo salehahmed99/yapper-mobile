@@ -4,7 +4,9 @@ import BottomToolBar from '@/src/modules/tweets/components/BottomToolBar';
 import CreatePostHeader from '@/src/modules/tweets/components/CreatePostHeader';
 import ReplyRestrictionModal from '@/src/modules/tweets/components/ReplyRestrictionModal';
 import ReplyRestrictionSelector from '@/src/modules/tweets/components/ReplyRestrictionSelector';
+import TweetMediaPicker from '@/src/modules/tweets/components/TweetMediaPicker';
 import { ITweet, ReplyRestrictionOptions } from '@/src/modules/tweets/types';
+import { MediaAsset, pickMediaFromLibrary, showCameraOptions } from '@/src/modules/tweets/utils/tweetMediaPicker.utils';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Image } from 'expo-image';
@@ -20,7 +22,7 @@ interface ICreatePostModalProps {
   onClose: () => void;
   type: 'tweet' | 'quote' | 'reply';
   tweet?: ITweet | null;
-  onPost: (content: string) => void;
+  onPost: (content: string, mediaUris?: string[]) => void;
   onRepost?: () => void;
 }
 const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
@@ -32,6 +34,7 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
 
   const [tweetText, setTweetText] = useState('');
   const [replyRestriction, setReplyRestriction] = useState<ReplyRestrictionOptions>('Everyone');
+  const [media, setMedia] = useState<MediaAsset[]>([]);
   const replyRestrictionModalRef = useRef<BottomSheetModal>(null);
 
   const textInputRef = useRef<TextInput>(null);
@@ -47,8 +50,30 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
       onClose();
       return;
     }
-    onPost(tweetText);
+    const mediaUris = media.map((m) => m.uri);
+    onPost(tweetText, mediaUris);
     onClose();
+  };
+
+  const handleOpenGallery = async () => {
+    Keyboard.dismiss();
+    const selectedMedia = await pickMediaFromLibrary(4 - media.length);
+    if (selectedMedia.length > 0) {
+      setMedia((prev) => [...prev, ...selectedMedia].slice(0, 4));
+    }
+  };
+
+  const handleOpenCamera = () => {
+    Keyboard.dismiss();
+    showCameraOptions((selectedMedia) => {
+      if (selectedMedia) {
+        setMedia((prev) => [...prev, selectedMedia].slice(0, 4));
+      }
+    });
+  };
+
+  const handleRemoveMedia = (index: number) => {
+    setMedia((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleOpenReplyModal = () => {
@@ -115,6 +140,8 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
                   />
                 }
                 {tweet && type === 'quote' && <ParentTweet tweet={tweet} />}
+                {/* Media Picker */}
+                {media.length > 0 && <TweetMediaPicker media={media} onRemoveMedia={handleRemoveMedia} />}
               </View>
             </View>
           </ScrollView>
@@ -123,7 +150,13 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
           <ReplyRestrictionSelector selectedOption={replyRestriction} onPress={handleOpenReplyModal} />
 
           {/* Bottom Toolbar */}
-          <BottomToolBar remainingCharacters={remainingCharacters} progressPercentage={progressPercentage} />
+          <BottomToolBar
+            remainingCharacters={remainingCharacters}
+            progressPercentage={progressPercentage}
+            onGalleryPress={handleOpenGallery}
+            onCameraPress={handleOpenCamera}
+            mediaCount={media.length}
+          />
 
           {/* Reply Restriction Modal */}
           <ReplyRestrictionModal
