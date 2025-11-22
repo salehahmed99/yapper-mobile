@@ -72,6 +72,7 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
       refreshControl={refreshControl}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
       accessibilityLabel="tweet_list_feed"
+      testID="tweet_list_feed"
       ListFooterComponent={renderFooter}
       onEndReached={onEndReached}
       onEndReachedThreshold={onEndReachedThreshold ?? 0.5}

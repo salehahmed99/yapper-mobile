@@ -32,6 +32,7 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
         count={tweet.repliesCount}
         onPress={onReplyPress}
         accessibilityLabel="tweet_button_reply"
+        testID="tweet_button_reply"
         size={size}
       />
       <TweetActionButton
@@ -40,6 +41,7 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
         onPress={onRepostPress}
         color={tweet.isReposted ? theme.colors.accent.repost : theme.colors.text.secondary}
         accessibilityLabel="tweet_button_repost"
+        testID="tweet_button_repost"
         size={size}
       />
 
@@ -50,6 +52,7 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
         color={tweet.isLiked ? theme.colors.accent.like : theme.colors.text.secondary}
         filled={tweet.isLiked}
         accessibilityLabel="tweet_button_like"
+        testID="tweet_button_like"
         size={size}
       />
       {size === 'small' && (
@@ -58,6 +61,7 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
           count={tweet.viewsCount}
           size={size}
           accessibilityLabel="tweet_button_views"
+          testID="tweet_button_views"
         />
       )}
 
@@ -67,9 +71,16 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
         color={isBookmarked ? theme.colors.accent.bookmark : theme.colors.text.secondary}
         filled={isBookmarked}
         accessibilityLabel="tweet_button_bookmark"
+        testID="tweet_button_bookmark"
         size={size}
       />
-      <TweetActionButton icon={ShareIcon} onPress={onSharePress} accessibilityLabel="tweet_button_share" size={size} />
+      <TweetActionButton
+        icon={ShareIcon}
+        onPress={onSharePress}
+        accessibilityLabel="tweet_button_share"
+        testID="tweet_button_share"
+        size={size}
+      />
     </View>
   );
 };

@@ -34,7 +34,14 @@ const Fab: React.FC<IFabProps> = ({ onPress }) => {
 
   return (
     <Animated.View style={[styles.fab, { bottom: bottom + theme.spacing.sm }, animatedStyle]}>
-      <Pressable onPress={onPress} onPressIn={handlePressIn} onPressOut={handlePressOut} hitSlop={8}>
+      <Pressable
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        hitSlop={8}
+        accessibilityLabel="fab_create_post"
+        testID="fab_create_post"
+      >
         <Plus color={theme.colors.white} />
       </Pressable>
     </Animated.View>

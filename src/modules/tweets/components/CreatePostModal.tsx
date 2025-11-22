@@ -137,6 +137,8 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
                     maxLength={MAX_TWEET_LENGTH + 100}
                     cursorColor={theme.colors.accent.bookmark}
                     selectionColor={theme.colors.accent.bookmark}
+                    testID="create_post_text_input"
+                    accessibilityLabel="create_post_text_input"
                   />
                 }
                 {tweet && type === 'quote' && <ParentTweet tweet={tweet} />}

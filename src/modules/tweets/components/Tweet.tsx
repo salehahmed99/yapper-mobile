@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
+import ParentTweet from './ParentTweet';
 import RepostIndicator from './RepostIndicator';
 import TweetMedia from './TweetMedia';
 import UserInfoRow from './UserInfoRow';
@@ -74,6 +75,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
     <Pressable
       style={styles.container}
       accessibilityLabel="tweet_container_main"
+      testID="tweet_container_main"
       onPress={() => onTweetPress(tweet.tweetId)}
     >
       {tweet.type === 'repost' && (
@@ -81,7 +83,11 @@ const Tweet: React.FC<ITweetProps> = (props) => {
       )}
       <View style={styles.tweetContainer}>
         <View style={styles.imageColumn}>
-          <Pressable onPress={() => onAvatarPress(tweet.user.id)}>
+          <Pressable
+            onPress={() => onAvatarPress(tweet.user.id)}
+            accessibilityLabel="tweet_avatar"
+            testID="tweet_avatar"
+          >
             <Image
               source={
                 tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : require('@/assets/images/avatar-placeholder.png')
@@ -98,7 +104,12 @@ const Tweet: React.FC<ITweetProps> = (props) => {
             <View style={styles.optionsRow}>
               <GrokLogo size={16} color={theme.colors.text.secondary} />
               <View ref={moreButtonRef} collapsable={false}>
-                <TouchableOpacity onPress={handleMorePress} hitSlop={8}>
+                <TouchableOpacity
+                  onPress={handleMorePress}
+                  hitSlop={8}
+                  accessibilityLabel="tweet_button_more"
+                  testID="tweet_button_more"
+                >
                   <MoreHorizontal size={16} color={theme.colors.text.secondary} />
                 </TouchableOpacity>
               </View>
@@ -108,7 +119,8 @@ const Tweet: React.FC<ITweetProps> = (props) => {
             <Text style={styles.tweetText}>{tweet.content}</Text>
           </View>
           <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} isVisible={isVisible} />
-          {/* {parentTweet && <ParentTweet tweet={parentTweet} />} */}
+
+          {tweet.parentTweet && <ParentTweet tweet={tweet.parentTweet} />}
           <ActionsRow
             tweet={tweet}
             size="small"

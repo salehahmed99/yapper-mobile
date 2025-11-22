@@ -36,7 +36,12 @@ const ReplyRestrictionSelector: React.FC<IReplyRestrictionSelectorProps> = (prop
 
   return (
     <View style={styles.container}>
-      <Pressable style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]} onPress={onPress}>
+      <Pressable
+        style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
+        onPress={onPress}
+        accessibilityLabel="create_post_reply_restriction_selector"
+        testID="create_post_reply_restriction_selector"
+      >
         <Icon size={16} stroke={theme.colors.accent.bookmark} strokeWidth={0} filled={true} />
         <Text style={styles.text}>{selectedOption} can reply</Text>
       </Pressable>

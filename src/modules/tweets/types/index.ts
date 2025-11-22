@@ -6,7 +6,7 @@ type TweetType = 'tweet' | 'reply' | 'repost' | 'quote';
 interface ITweet {
   tweetId: string;
   type: TweetType;
-  parentTweetId?: string;
+  parentTweet?: ITweet;
   conversationId?: string;
   content: string;
   images: string[];

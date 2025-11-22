@@ -17,13 +17,20 @@ const CreatePostHeader: React.FC<ICreatePostHeaderProps> = (props) => {
   const styles = createStyles(theme);
   return (
     <View style={[styles.header, { paddingTop: insets.top }]}>
-      <Pressable onPress={handleCancel} style={styles.cancelButton}>
+      <Pressable
+        onPress={handleCancel}
+        style={styles.cancelButton}
+        accessibilityLabel="create_post_button_cancel"
+        testID="create_post_button_cancel"
+      >
         <Text style={styles.cancelButtonText}>Cancel</Text>
       </Pressable>
       <Pressable
         onPress={handlePost}
         style={[styles.postButton, !canPost && styles.postButtonDisabled]}
         disabled={!canPost}
+        accessibilityLabel="create_post_button_post"
+        testID="create_post_button_post"
       >
         <Text style={[styles.postButtonText]}>Post</Text>
       </Pressable>

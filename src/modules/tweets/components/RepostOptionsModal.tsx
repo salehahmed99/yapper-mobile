@@ -14,9 +14,11 @@ interface IRepostOptionsItemProps {
   text: string;
   onPress: () => void;
   color?: string;
+  testID?: string;
+  accessibilityLabel?: string;
 }
 const RepostOptionsItem: React.FC<IRepostOptionsItemProps> = (props) => {
-  const { icon: Icon, text, onPress, color } = props;
+  const { icon: Icon, text, onPress, color, testID, accessibilityLabel } = props;
   const { theme } = useTheme();
   const styles = createRepostOptionsItemStyles(theme);
 
@@ -28,7 +30,7 @@ const RepostOptionsItem: React.FC<IRepostOptionsItemProps> = (props) => {
   };
 
   return (
-    <Pressable style={styles.container} onPress={handlePress}>
+    <Pressable style={styles.container} onPress={handlePress} testID={testID} accessibilityLabel={accessibilityLabel}>
       <Icon size={theme.iconSizesAlt.xl} stroke={color || theme.colors.text.secondary} strokeWidth={0.3} />
       <Text style={[styles.text, { color: color || theme.colors.text.primary }]}>{text}</Text>
     </Pressable>
@@ -67,9 +69,23 @@ const RepostOptionsModal: React.FC<IRepostOptionsModalProps> = (props) => {
           text={isReposted ? 'Undo repost' : 'Repost'}
           onPress={onRepostPress}
           color={isReposted ? theme.colors.error : undefined}
+          testID="repost_option_repost"
+          accessibilityLabel="repost_option_repost"
         />
-        <RepostOptionsItem icon={QuoteIcon} text="Quote" onPress={onQuotePress} />
-        <RepostOptionsItem icon={ViewsIcon} text="View Post Interactions" onPress={onViewInteractionsPress} />
+        <RepostOptionsItem
+          icon={QuoteIcon}
+          text="Quote"
+          onPress={onQuotePress}
+          testID="repost_option_quote"
+          accessibilityLabel="repost_option_quote"
+        />
+        <RepostOptionsItem
+          icon={ViewsIcon}
+          text="View Post Interactions"
+          onPress={onViewInteractionsPress}
+          testID="repost_option_view_interactions"
+          accessibilityLabel="repost_option_view_interactions"
+        />
       </View>
     </CustomBottomSheet>
   );
