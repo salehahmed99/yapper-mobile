@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@/src/constants/theme';
 
@@ -56,14 +56,9 @@ const OAuthLegalText: React.FC<OAuthLegalTextProps> = ({
 
       <Text style={styles.loginRow}>
         {t('auth.oauth.loginPrompt')}{' '}
-        <Text
-          style={styles.link}
-          onPress={onLoginPress}
-          accessibilityLabel="landing_login_link"
-          testID="landing_login_link"
-        >
-          {t('auth.oauth.login')}
-        </Text>
+        <Pressable onPress={onLoginPress} testID="login-link" accessibilityLabel="login-link" accessibilityRole="link">
+          <Text style={styles.link}>{t('auth.oauth.login')}</Text>
+        </Pressable>
       </Text>
     </>
   );
