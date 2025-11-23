@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet, Pressable } from 'react-native';
+import { Text, StyleSheet, Pressable, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@/src/constants/theme';
 
@@ -54,12 +54,12 @@ const OAuthLegalText: React.FC<OAuthLegalTextProps> = ({
         .
       </Text>
 
-      <Text style={styles.loginRow}>
-        {t('auth.oauth.loginPrompt')}{' '}
+      <View style={styles.loginRow}>
+        <Text style={styles.loginText}>{t('auth.oauth.loginPrompt')} </Text>
         <Pressable onPress={onLoginPress} testID="login-link" accessibilityLabel="login-link" accessibilityRole="link">
           <Text style={styles.link}>{t('auth.oauth.login')}</Text>
         </Pressable>
-      </Text>
+      </View>
     </>
   );
 };
@@ -74,11 +74,14 @@ const createStyles = (theme: Theme) =>
     },
     link: { color: theme.colors.text.link },
     loginRow: {
-      color: theme.colors.text.tertiary,
-      fontSize: theme.typography.sizes.sm,
-      textAlign: 'left',
+      flexDirection: 'row',
+      alignItems: 'center',
       marginTop: theme.spacing.xxl,
       marginBottom: theme.spacing.xs,
+    },
+    loginText: {
+      color: theme.colors.text.tertiary,
+      fontSize: theme.typography.sizes.sm,
     },
   });
 
