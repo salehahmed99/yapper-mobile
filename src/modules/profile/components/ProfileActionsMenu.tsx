@@ -29,7 +29,6 @@ const ProfileActionsMenu: React.FC<IProfileActionsMenuProps> = ({
   const [isBlocked, setIsBlocked] = useState(initialBlocked);
   const [isMuteLoading, setIsMuteLoading] = useState(false);
 
-  // Sync state when initialMuted or initialBlocked changes
   useEffect(() => {
     setIsMuted(initialMuted);
   }, [initialMuted]);
@@ -46,7 +45,6 @@ const ProfileActionsMenu: React.FC<IProfileActionsMenuProps> = ({
       await onMute();
       setIsMuted(!isMuted);
     } catch (error) {
-      // Error is handled in parent component
       console.error('Error toggling mute:', error);
     } finally {
       setIsMuteLoading(false);
@@ -60,7 +58,6 @@ const ProfileActionsMenu: React.FC<IProfileActionsMenuProps> = ({
       await onBlock();
       setIsBlocked(!isBlocked);
     } catch (error) {
-      // Error is handled in parent component
       console.error('Error toggling block:', error);
     }
   };

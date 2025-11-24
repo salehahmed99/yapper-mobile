@@ -9,12 +9,6 @@ interface UseFollowUserReturn {
   toggleFollow: (userId: string) => Promise<void>;
   setIsFollowing: (value: boolean) => void;
 }
-
-/**
- * Custom hook to handle follow/unfollow functionality
- * @param initialFollowState - Initial follow state
- * @returns Object with follow state and toggle function
- */
 export const useFollowUser = (initialFollowState: boolean = false): UseFollowUserReturn => {
   const [isFollowing, setIsFollowing] = useState(initialFollowState);
   const [isLoading, setIsLoading] = useState(false);
@@ -31,7 +25,6 @@ export const useFollowUser = (initialFollowState: boolean = false): UseFollowUse
       setIsFollowing(!isFollowing);
 
       if (isFollowing) {
-        // Unfollow
         await unfollowUser(userId);
         Toast.show({
           type: 'success',
@@ -42,7 +35,6 @@ export const useFollowUser = (initialFollowState: boolean = false): UseFollowUse
         });
         await fetchAndUpdateUser();
       } else {
-        // Follow
         await followUser(userId);
         Toast.show({
           type: 'success',
@@ -54,7 +46,6 @@ export const useFollowUser = (initialFollowState: boolean = false): UseFollowUse
         await fetchAndUpdateUser();
       }
     } catch (error) {
-      // Revert on error
       setIsFollowing(previousState);
       const errorMessage = error instanceof Error ? error.message : 'Failed to update follow status';
       Toast.show({

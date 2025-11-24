@@ -43,7 +43,12 @@ const DropdownMenu: React.FC<IDropdownMenuProps> = ({
       statusBarTranslucent
       testID={testID}
     >
-      <Pressable style={styles.backdrop} onPress={onClose}>
+      <Pressable
+        style={styles.backdrop}
+        onPress={onClose}
+        accessibilityLabel="dropdown_backdrop"
+        testID="dropdown_backdrop"
+      >
         <View style={[styles.menuContainer, position, containerStyle]}>
           {items.map((item, index) => (
             <React.Fragment key={index}>
@@ -56,7 +61,9 @@ const DropdownMenu: React.FC<IDropdownMenuProps> = ({
                 }}
                 activeOpacity={0.6}
                 disabled={item.disabled}
-                testID={item.testID}
+                testID={item.testID || `dropdown_menu_item_${index}`}
+                accessibilityLabel={item.testID || `dropdown_menu_item_${index}`}
+                accessibilityRole="menuitem"
               >
                 <Text
                   style={[

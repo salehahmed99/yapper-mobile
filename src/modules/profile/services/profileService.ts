@@ -100,11 +100,6 @@ export const getFollowingList = async ({
   }
 };
 
-/**
- * Mute a user by their ID
- * @param userId - The ID of the user to mute
- * @returns Success response
- */
 export const muteUser = async (userId: string): Promise<{ message: string }> => {
   try {
     const response = await api.post(`/users/${userId}/mute`);
@@ -123,11 +118,6 @@ export const muteUser = async (userId: string): Promise<{ message: string }> => 
   }
 };
 
-/**
- * Unmute a user by their ID
- * @param userId - The ID of the user to unmute
- * @returns Success response
- */
 export const unmuteUser = async (userId: string): Promise<{ message: string }> => {
   try {
     const response = await api.delete(`/users/${userId}/unmute`);
@@ -146,11 +136,6 @@ export const unmuteUser = async (userId: string): Promise<{ message: string }> =
   }
 };
 
-/**
- * Follow a user by their ID
- * @param userId - The ID of the user to follow
- * @returns Success response with follow count
- */
 export const followUser = async (userId: string): Promise<{ count: number; message: string }> => {
   try {
     const response = await api.post(`/users/${userId}/follow`);
@@ -170,11 +155,6 @@ export const followUser = async (userId: string): Promise<{ count: number; messa
   }
 };
 
-/**
- * Unfollow a user by their ID
- * @param userId - The ID of the user to unfollow
- * @returns Success response
- */
 export const unfollowUser = async (userId: string): Promise<{ message: string }> => {
   try {
     const response = await api.delete(`/users/${userId}/unfollow`);
@@ -193,11 +173,6 @@ export const unfollowUser = async (userId: string): Promise<{ message: string }>
   }
 };
 
-/**
- * Block a user by their ID
- * @param userId - The ID of the user to block
- * @returns Success response
- */
 export const blockUser = async (userId: string): Promise<{ message: string }> => {
   try {
     const response = await api.post(`/users/${userId}/block`);
@@ -216,11 +191,6 @@ export const blockUser = async (userId: string): Promise<{ message: string }> =>
   }
 };
 
-/**
- * Unblock a user by their ID
- * @param userId - The ID of the user to unblock
- * @returns Success response
- */
 export const unblockUser = async (userId: string): Promise<{ message: string }> => {
   try {
     const response = await api.delete(`/users/${userId}/unblock`);
@@ -239,11 +209,6 @@ export const unblockUser = async (userId: string): Promise<{ message: string }> 
   }
 };
 
-/**
- * Update current user profile
- * @param profileData - The profile data to update
- * @returns Success response
- */
 export const updateUserProfile = async (profileData: {
   bio?: string;
   name?: string;
@@ -269,16 +234,9 @@ export const updateUserProfile = async (profileData: {
   }
 };
 
-/**
- * Upload avatar image
- * @param imageUri - Local URI of the image to upload
- * @returns Response with uploaded image URL
- */
 export const uploadAvatar = async (imageUri: string): Promise<{ imageUrl: string; imageName: string }> => {
   try {
     const formData = new FormData();
-
-    // Extract filename from URI or use a default
     const filename = imageUri.split('/').pop() || 'avatar.jpg';
     const match = /\.(\w+)$/.exec(filename);
     const type = match ? `image/${match[1]}` : 'image/jpeg';
@@ -308,16 +266,10 @@ export const uploadAvatar = async (imageUri: string): Promise<{ imageUrl: string
   }
 };
 
-/**
- * Upload cover/banner image
- * @param imageUri - Local URI of the image to upload
- * @returns Response with uploaded image URL
- */
 export const uploadCover = async (imageUri: string): Promise<{ imageUrl: string; imageName: string }> => {
   try {
     const formData = new FormData();
 
-    // Extract filename from URI or use a default
     const filename = imageUri.split('/').pop() || 'cover.jpg';
     const match = /\.(\w+)$/.exec(filename);
     const type = match ? `image/${match[1]}` : 'image/jpeg';
@@ -347,11 +299,6 @@ export const uploadCover = async (imageUri: string): Promise<{ imageUrl: string;
   }
 };
 
-/**
- * Delete avatar picture and reset to default
- * @param fileUrl - The URL of the avatar file to delete
- * @returns Success response
- */
 export const deleteAvatar = async (fileUrl: string): Promise<void> => {
   try {
     await api.delete('/users/me/delete-avatar', {
@@ -371,11 +318,6 @@ export const deleteAvatar = async (fileUrl: string): Promise<void> => {
   }
 };
 
-/**
- * Delete cover picture and reset to default
- * @param fileUrl - The URL of the cover file to delete
- * @returns Success response
- */
 export const deleteCover = async (fileUrl: string): Promise<void> => {
   try {
     await api.delete('/users/me/delete-cover', {
@@ -395,11 +337,6 @@ export const deleteCover = async (fileUrl: string): Promise<void> => {
   }
 };
 
-/**
- * Get user's posts with pagination
- * @param params - Parameters including userId, cursor, and limit
- * @returns User posts response with pagination
- */
 export const getUserPosts = async ({ userId, cursor, limit = 20 }: IUserPostsParams): Promise<IUserPostsResponse> => {
   try {
     const params: Record<string, string | number> = { limit };
@@ -421,11 +358,6 @@ export const getUserPosts = async ({ userId, cursor, limit = 20 }: IUserPostsPar
   }
 };
 
-/**
- * Get user's media posts with pagination
- * @param params - Parameters including userId, cursor, and limit
- * @returns User media response with pagination
- */
 export const getUserMedia = async ({ userId, cursor, limit = 20 }: IUserMediaParams): Promise<IUserMediaResponse> => {
   try {
     const params: Record<string, string | number> = { limit };
@@ -447,11 +379,6 @@ export const getUserMedia = async ({ userId, cursor, limit = 20 }: IUserMediaPar
   }
 };
 
-/**
- * Get user's liked posts with pagination
- * @param params - Parameters including userId, cursor, and limit
- * @returns User likes response with pagination
- */
 export const getUserLikes = async ({
   userId: _userId,
   cursor = '',
@@ -476,12 +403,6 @@ export const getUserLikes = async ({
     throw error;
   }
 };
-
-/**
- * Get user's replies with pagination
- * @param params - Parameters including userId, cursor, and limit
- * @returns User replies response with pagination
- */
 export const getUserReplies = async ({
   userId,
   cursor,

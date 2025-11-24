@@ -241,7 +241,13 @@ const ReCaptcha = forwardRef<ReCaptchaRef, ReCaptchaProps>(
       <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={handleClose}
+              accessibilityLabel="recaptcha_close_button"
+              testID="recaptcha_close_button"
+              accessibilityRole="button"
+            >
               <X size={24} color={themeColors?.colors.text.primary || '#000000'} />
             </TouchableOpacity>
 

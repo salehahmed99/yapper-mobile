@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { PROFILE_QUERY_CONFIG, profileQueryKeys } from '../config/queryConfig';
 import { getUserPosts } from '../services/profileService';
 
-export const useUserPosts = (userId: string) => {
+export const useUserPosts = (userId: string, enabled: boolean = true) => {
   return useInfiniteQuery({
     queryKey: profileQueryKeys.userPosts(userId),
     queryFn: async ({ pageParam }) => {
@@ -19,7 +19,7 @@ export const useUserPosts = (userId: string) => {
     getNextPageParam: (lastPage) => {
       return lastPage.pagination.hasMore ? lastPage.pagination.nextCursor : undefined;
     },
-    enabled: !!userId,
+    enabled: !!userId && enabled,
     staleTime: PROFILE_QUERY_CONFIG.tweets.staleTime,
     gcTime: PROFILE_QUERY_CONFIG.tweets.gcTime,
     refetchOnWindowFocus: PROFILE_QUERY_CONFIG.pagination.refetchOnWindowFocus,
@@ -27,8 +27,8 @@ export const useUserPosts = (userId: string) => {
   });
 };
 
-export const useUserPostsData = (userId: string) => {
-  const query = useUserPosts(userId);
+export const useUserPostsData = (userId: string, enabled: boolean = true) => {
+  const query = useUserPosts(userId, enabled);
 
   const posts: ITweet[] = useMemo(
     () => query.data?.pages.flatMap((page) => page.data as ITweet[]) ?? [],

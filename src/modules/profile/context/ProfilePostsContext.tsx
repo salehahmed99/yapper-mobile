@@ -26,13 +26,11 @@ export const ProfilePostsProvider: React.FC<{ children: React.ReactNode }> = ({ 
   );
 
   const triggerFetchNextPage = useCallback(() => {
-    // Don't fetch if already fetching or no next page
     if (isFetchingNextPageRef.current || !hasNextPageRef.current) {
       return;
     }
 
     const now = Date.now();
-    // Debounce to prevent multiple rapid calls (500ms)
     if (now - lastTriggerTime.current < 500) {
       return;
     }

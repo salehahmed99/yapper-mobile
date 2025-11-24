@@ -1,6 +1,5 @@
 import { IUser } from '@/src/types/user';
 
-// Backend response is already in camelCase
 interface IGetMyUserResponse {
   userId: string;
   name: string;
@@ -17,7 +16,6 @@ interface IGetMyUserResponse {
 
 export { IGetMyUserResponse };
 
-// Get User By ID Types - Backend response is already in camelCase
 interface IUserProfile extends IUser {
   isFollower: boolean;
   isFollowing: boolean;
@@ -50,7 +48,6 @@ interface IGetUserByIdResponse {
 
 export { IGetUserByIdResponse, IUserProfile };
 
-// Followers List Types - Backend response is already in camelCase
 interface IFollowerUser {
   userId: string;
   name: string;
@@ -86,7 +83,6 @@ interface IGetFollowersListParams {
 
 export { IFollowersPagination, IFollowerUser, IGetFollowersListParams, IGetFollowersListResponse };
 
-// Following List Types
 interface IGetFollowingListParams {
   userId: string;
   cursor?: string;
@@ -104,7 +100,6 @@ interface IGetFollowingListResponse {
 
 export { IGetFollowingListParams, IGetFollowingListResponse };
 
-// User Posts Types
 interface IUserPostsParams {
   userId: string;
   cursor?: string;
@@ -127,7 +122,6 @@ interface IUserPostsResponse {
 
 export { IUserPostsPagination, IUserPostsParams, IUserPostsResponse };
 
-// User Media Types
 interface IUserMediaParams {
   userId: string;
   cursor?: string;
@@ -145,7 +139,6 @@ interface IUserMediaResponse {
 
 export { IUserMediaParams, IUserMediaResponse };
 
-// User Likes Types
 interface IUserLikesParams {
   userId: string;
   cursor?: string;
@@ -163,7 +156,6 @@ interface IUserLikesResponse {
 
 export { IUserLikesParams, IUserLikesResponse };
 
-// User Replies Types
 interface IUserRepliesParams {
   userId: string;
   cursor?: string;

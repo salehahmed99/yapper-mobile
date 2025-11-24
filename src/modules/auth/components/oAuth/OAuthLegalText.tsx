@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet, Pressable, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@/src/constants/theme';
 
@@ -25,26 +25,41 @@ const OAuthLegalText: React.FC<OAuthLegalTextProps> = ({
     <>
       <Text style={styles.legalText}>
         {t('auth.oauth.legalText')}{' '}
-        <Text style={styles.link} onPress={onTermsPress}>
+        <Text
+          style={styles.link}
+          onPress={onTermsPress}
+          accessibilityLabel="legal_terms_link"
+          testID="legal_terms_link"
+        >
           {t('auth.oauth.terms')}
         </Text>
         ,{' '}
-        <Text style={styles.link} onPress={onPrivacyPress}>
+        <Text
+          style={styles.link}
+          onPress={onPrivacyPress}
+          accessibilityLabel="legal_privacy_link"
+          testID="legal_privacy_link"
+        >
           {t('auth.oauth.privacyPolicy')}
         </Text>
         ,{' '}
-        <Text style={styles.link} onPress={onCookiePress}>
+        <Text
+          style={styles.link}
+          onPress={onCookiePress}
+          accessibilityLabel="legal_cookie_link"
+          testID="legal_cookie_link"
+        >
           {t('auth.oauth.cookieUse')}
         </Text>
         .
       </Text>
 
-      <Text style={styles.loginRow}>
-        {t('auth.oauth.loginPrompt')}{' '}
-        <Text style={styles.link} onPress={onLoginPress}>
-          {t('auth.oauth.login')}
-        </Text>
-      </Text>
+      <View style={styles.loginRow}>
+        <Text style={styles.loginText}>{t('auth.oauth.loginPrompt')} </Text>
+        <Pressable onPress={onLoginPress} testID="login-link" accessibilityLabel="login-link" accessibilityRole="link">
+          <Text style={styles.link}>{t('auth.oauth.login')}</Text>
+        </Pressable>
+      </View>
     </>
   );
 };
@@ -59,11 +74,14 @@ const createStyles = (theme: Theme) =>
     },
     link: { color: theme.colors.text.link },
     loginRow: {
-      color: theme.colors.text.tertiary,
-      fontSize: theme.typography.sizes.sm,
-      textAlign: 'left',
+      flexDirection: 'row',
+      alignItems: 'center',
       marginTop: theme.spacing.xxl,
       marginBottom: theme.spacing.xs,
+    },
+    loginText: {
+      color: theme.colors.text.tertiary,
+      fontSize: theme.typography.sizes.sm,
     },
   });
 

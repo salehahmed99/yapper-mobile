@@ -58,7 +58,6 @@ export default function AvatarViewer({
     }, 200);
   };
 
-  // Simple swipe down to close gesture
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,

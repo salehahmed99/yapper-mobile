@@ -27,17 +27,15 @@ const UserListRoute = ({ type, userId }: UserListRouteProps) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
   const currentUser = useAuthStore((state) => state.user);
 
-  // Use the passed userId, or fallback to current user's ID
   const targetUserId = userId || currentUser?.id;
 
   const handleUserPress = (user: IUser) => {
-    // Navigate to the user's profile
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     router.push(`/(profile)/${user.id}` as any);
   };
 
   const handleFollowPress = (_user: IUser) => {
-    // Handle follow/unfollow logic here
+    // it's handled inside FollowButton this is just a placeholder
   };
 
   if (!targetUserId) {
