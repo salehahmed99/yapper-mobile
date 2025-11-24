@@ -43,7 +43,7 @@ const ProfilePostsList: React.FC<IProfilePostsListProps> = memo((props) => {
   }).current;
 
   const viewabilityConfig = useRef({
-    itemVisiblePercentThreshold: 50,
+    itemVisiblePercentThreshold: 90,
     waitForInteraction: false,
   }).current;
 

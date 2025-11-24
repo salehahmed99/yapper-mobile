@@ -24,6 +24,7 @@ import { useMediaViewerControls } from '@/src/modules/tweets/hooks/useMediaViewe
 import { useTweet } from '@/src/modules/tweets/hooks/useTweet';
 import { useTweetActions } from '@/src/modules/tweets/hooks/useTweetActions';
 import { MediaItem, MediaViewerContentProps } from '@/src/modules/tweets/types/mediaViewer';
+import { useFocusEffect } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
@@ -94,6 +95,7 @@ function MediaViewerContent({
   const [repostsCount, setRepostsCount] = useState(tweet?.repostsCount ?? 0);
   const [isCreatePostModalVisible, setIsCreatePostModalVisible] = useState(false);
   const [createPostType, setCreatePostType] = useState<'tweet' | 'quote' | 'reply'>('tweet');
+  const [isScreenFocused, setIsScreenFocused] = useState(true);
   const flatListRef = useRef<FlatList>(null);
   const uiOpacity = useRef(new Animated.Value(1)).current;
 
@@ -143,6 +145,31 @@ function MediaViewerContent({
     }
   }, [tweet]);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      setIsScreenFocused(true);
+      return () => {
+        setIsScreenFocused(false);
+      };
+    }, []),
+  );
+
+  React.useEffect(() => {
+    if (!isScreenFocused && isVideo && player) {
+      try {
+        player.pause();
+      } catch (error) {
+        console.warn('Could not pause video:', error);
+      }
+    } else if (isScreenFocused && isVideo && player) {
+      try {
+        player.play();
+      } catch (error) {
+        console.warn('Could not play video:', error);
+      }
+    }
+  }, [isScreenFocused, isVideo, player]);
+
   const toggleUI = () => {
     const newShowUI = !showUI;
     setShowUI(newShowUI);
@@ -159,7 +186,6 @@ function MediaViewerContent({
       { tweetId, isLiked: tweet.isLiked },
       {
         onSuccess: () => {
-          // Invalidate individual tweet query to sync media viewer with the main tweets list
           queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId }] });
         },
       },
@@ -172,7 +198,6 @@ function MediaViewerContent({
       { tweetId, isReposted: tweet.isReposted },
       {
         onSuccess: () => {
-          // Invalidate individual tweet query to sync media viewer with the main tweets list
           queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId }] });
         },
       },

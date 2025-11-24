@@ -28,7 +28,7 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
   }).current;
 
   const viewabilityConfig = useRef({
-    itemVisiblePercentThreshold: 50, // Item is considered visible when 50% is in view
+    itemVisiblePercentThreshold: 90, // Item is considered visible when 90% is in view
     waitForInteraction: false,
   }).current;
 

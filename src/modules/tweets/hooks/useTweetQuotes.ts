@@ -8,7 +8,6 @@ export const useTweetQuotes = (tweetId: string) => {
     queryFn: async ({ pageParam }) => {
       const response = await getTweetQuotes(tweetId, { cursor: pageParam });
 
-      // Map the parent tweet data to each quote's parentTweet field
       const enrichedData = response.data.map((quote: any) => {
         if (response.parent) {
           return {
