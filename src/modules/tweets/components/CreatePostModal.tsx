@@ -157,10 +157,8 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
               </View>
             </ScrollView>
 
-            {/* Reply Restriction Selector */}
             <ReplyRestrictionSelector selectedOption={replyRestriction} onPress={handleOpenReplyModal} />
 
-            {/* Bottom Toolbar */}
             <BottomToolBar
               remainingCharacters={remainingCharacters}
               progressPercentage={progressPercentage}
@@ -169,7 +167,6 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
               mediaCount={media.length}
             />
 
-            {/* Reply Restriction Modal */}
             <ReplyRestrictionModal
               bottomSheetRef={replyRestrictionModalRef}
               selectedOption={replyRestriction}

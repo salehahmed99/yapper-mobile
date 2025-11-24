@@ -50,7 +50,6 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
         <RepostIndicator repostById={tweet.repostedBy?.id} repostedByName={tweet.repostedBy?.name} />
       )}
 
-      {/* User Info Header */}
       <View style={styles.header}>
         <View style={styles.userInfoContainer}>
           <Pressable
@@ -81,26 +80,22 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
         </View>
       </View>
 
-      {/* Tweet Content */}
       <View style={styles.contentSection}>
         <Text style={styles.tweetText} accessibilityLabel="full_tweet_content_text" testID="full_tweet_content_text">
           {tweet.content}
         </Text>
       </View>
 
-      {/* Tweet Media */}
       {(tweet.images.length > 0 || tweet.videos.length > 0) && (
         <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} isVisible={true} />
       )}
 
-      {/* Parent Tweet (Quote) */}
       {tweet.parentTweet && (
         <View style={{ marginTop: theme.spacing.xs }}>
           <ParentTweet tweet={tweet.parentTweet} />
         </View>
       )}
 
-      {/* iOS-style Timestamp with Views */}
       <View
         style={styles.timestampViewsSection}
         accessibilityLabel="full_tweet_timestamp_views"
@@ -120,7 +115,6 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
         </Text>
       </View>
 
-      {/* Actions Row */}
       <View style={styles.actionsSection}>
         <ActionsRow
           tweet={tweet}
