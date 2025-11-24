@@ -60,15 +60,25 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
             />
           </Pressable>
           <View style={styles.userDetails}>
-            <Text style={styles.name}>{tweet.user.name}</Text>
-            <Text style={styles.username}>@{tweet.user.username}</Text>
+            <Text style={styles.name} accessibilityLabel="full_tweet_user_name" testID="full_tweet_user_name">
+              {tweet.user.name}
+            </Text>
+            <Text
+              style={styles.username}
+              accessibilityLabel="full_tweet_user_username"
+              testID="full_tweet_user_username"
+            >
+              @{tweet.user.username}
+            </Text>
           </View>
         </View>
       </View>
 
       {/* Tweet Content */}
       <View style={styles.contentSection}>
-        <Text style={styles.tweetText}>{tweet.content}</Text>
+        <Text style={styles.tweetText} accessibilityLabel="full_tweet_content_text" testID="full_tweet_content_text">
+          {tweet.content}
+        </Text>
       </View>
 
       {/* Tweet Media */}
@@ -80,12 +90,20 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
       {tweet.parentTweet && <ParentTweet tweet={tweet.parentTweet} />}
 
       {/* iOS-style Timestamp with Views */}
-      <View style={styles.timestampViewsSection}>
-        <Text style={styles.timestampText}>{formatShortTime(tweet.createdAt)}</Text>
+      <View
+        style={styles.timestampViewsSection}
+        accessibilityLabel="full_tweet_timestamp_views"
+        testID="full_tweet_timestamp_views"
+      >
+        <Text style={styles.timestampText} accessibilityLabel="full_tweet_time" testID="full_tweet_time">
+          {formatShortTime(tweet.createdAt)}
+        </Text>
         <View style={styles.dot}></View>
-        <Text style={styles.timestampText}>{formatDateDDMMYYYY(tweet.createdAt)}</Text>
+        <Text style={styles.timestampText} accessibilityLabel="full_tweet_date" testID="full_tweet_date">
+          {formatDateDDMMYYYY(tweet.createdAt)}
+        </Text>
         <View style={styles.dot}></View>
-        <Text style={styles.viewsCount}>
+        <Text style={styles.viewsCount} accessibilityLabel="full_tweet_views_count" testID="full_tweet_views_count">
           {formatCount(tweet.viewsCount)}
           <Text style={styles.timestampText}> Views</Text>{' '}
         </Text>

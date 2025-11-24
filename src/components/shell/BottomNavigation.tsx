@@ -81,6 +81,7 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
               style={[styles.item, isActive && styles.itemActive]}
               accessibilityRole="tab"
               accessibilityLabel={label}
+              testID={`bottom_nav_${item.key}`}
               accessibilityState={{ selected: isActive }}
             >
               <Icon

@@ -41,6 +41,7 @@ const AppBar: React.FC<IAppBarProps> = (props) => {
                 <Pressable
                   onPress={toggleSideMenu}
                   accessibilityLabel={t('accessibility.openMenu')}
+                  testID="appbar_menu_button"
                   accessibilityRole="button"
                   style={styles.avatarButton}
                 >

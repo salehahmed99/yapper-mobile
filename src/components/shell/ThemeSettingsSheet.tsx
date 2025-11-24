@@ -47,7 +47,13 @@ const ThemeSettingsSheet: React.FC<IThemeSettingsSheetProps> = ({ visible, onClo
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose}>
+      <TouchableOpacity
+        style={styles.backdrop}
+        activeOpacity={1}
+        onPress={onClose}
+        accessibilityLabel="theme_settings_backdrop"
+        testID="theme_settings_backdrop"
+      >
         <TouchableOpacity activeOpacity={1} style={[styles.sheet, { paddingBottom: insets.bottom + theme.spacing.lg }]}>
           <View style={styles.handle} />
           <Text style={styles.title}>Dark Mode</Text>
@@ -62,6 +68,8 @@ const ThemeSettingsSheet: React.FC<IThemeSettingsSheetProps> = ({ visible, onClo
               onValueChange={handleDarkModeToggle}
               trackColor={{ false: theme.colors.border, true: theme.colors.accent.bookmark }}
               thumbColor={theme.colors.background.primary}
+              accessibilityLabel="theme_settings_dark_mode_switch"
+              testID="theme_settings_dark_mode_switch"
             />
           </View>
 
@@ -78,6 +86,8 @@ const ThemeSettingsSheet: React.FC<IThemeSettingsSheetProps> = ({ visible, onClo
               onValueChange={handleDeviceSettingsToggle}
               trackColor={{ false: theme.colors.border, true: theme.colors.accent.bookmark }}
               thumbColor={theme.colors.background.primary}
+              accessibilityLabel="theme_settings_device_settings_switch"
+              testID="theme_settings_device_settings_switch"
             />
           </View>
 
@@ -88,7 +98,14 @@ const ThemeSettingsSheet: React.FC<IThemeSettingsSheetProps> = ({ visible, onClo
           <Text style={styles.sectionTitle}>Theme</Text>
 
           {/* Dim Option */}
-          <TouchableOpacity style={styles.radioRow} onPress={() => handleThemeSelect('dim')}>
+          <TouchableOpacity
+            style={styles.radioRow}
+            onPress={() => handleThemeSelect('dim')}
+            accessibilityLabel="theme_settings_dim_option"
+            testID="theme_settings_dim_option"
+            accessibilityRole="radio"
+            accessibilityState={{ selected: selectedTheme === 'dim' }}
+          >
             <Text style={styles.radioLabel}>Dim</Text>
             <View style={styles.radioButton}>
               {selectedTheme === 'dim' ? (
@@ -100,7 +117,14 @@ const ThemeSettingsSheet: React.FC<IThemeSettingsSheetProps> = ({ visible, onClo
           </TouchableOpacity>
 
           {/* Lights Out Option */}
-          <TouchableOpacity style={styles.radioRow} onPress={() => handleThemeSelect('lights-out')}>
+          <TouchableOpacity
+            style={styles.radioRow}
+            onPress={() => handleThemeSelect('lights-out')}
+            accessibilityLabel="theme_settings_lights_out_option"
+            testID="theme_settings_lights_out_option"
+            accessibilityRole="radio"
+            accessibilityState={{ selected: selectedTheme === 'lights-out' }}
+          >
             <Text style={styles.radioLabel}>Lights out</Text>
             <View style={styles.radioButton}>
               {selectedTheme === 'lights-out' ? (

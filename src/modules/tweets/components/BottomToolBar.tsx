@@ -125,19 +125,19 @@ const BottomToolBar: React.FC<IBottomToolBarProps> = (props) => {
             strokeWidth={2}
           />
         </Pressable>
-        <Pressable>
+        <Pressable testID="create_post_button_grok" accessibilityLabel="create_post_button_grok">
           <GrokLogo size={theme.iconSizesAlt.xl} color={theme.colors.accent.bookmark} />
         </Pressable>
-        <Pressable>
+        <Pressable testID="create_post_button_gif" accessibilityLabel="create_post_button_gif">
           <GifIcon size={theme.iconSizesAlt.xl} stroke={theme.colors.accent.bookmark} strokeWidth={0} />
         </Pressable>
-        <Pressable>
+        <Pressable testID="create_post_button_emoji" accessibilityLabel="create_post_button_emoji">
           <GifIcon size={theme.iconSizesAlt.xl} stroke={theme.colors.accent.bookmark} strokeWidth={0} />
         </Pressable>
-        <Pressable>
+        <Pressable testID="create_post_button_poll" accessibilityLabel="create_post_button_poll">
           <PollIcon size={theme.iconSizesAlt.xl} stroke={theme.colors.accent.bookmark} strokeWidth={0} />
         </Pressable>
-        <Pressable>
+        <Pressable testID="create_post_button_location" accessibilityLabel="create_post_button_location">
           <MapPin size={theme.iconSizesAlt.xl} color={theme.colors.accent.bookmark} />
         </Pressable>
       </ScrollView>
