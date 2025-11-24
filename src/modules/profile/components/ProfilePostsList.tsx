@@ -20,12 +20,10 @@ const ProfilePostsList: React.FC<IProfilePostsListProps> = memo((props) => {
   const [visibleTweetIds, setVisibleTweetIds] = useState<Set<string>>(new Set());
   const isTabActiveRef = useRef(isTabActive);
 
-  // Keep ref updated
   useEffect(() => {
     isTabActiveRef.current = isTabActive;
   }, [isTabActive]);
 
-  // Clear visible tweets when tab becomes inactive to pause all videos
   useEffect(() => {
     if (!isTabActive) {
       setVisibleTweetIds(new Set());
@@ -33,7 +31,6 @@ const ProfilePostsList: React.FC<IProfilePostsListProps> = memo((props) => {
   }, [isTabActive]);
 
   const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
-    // Only update visible tweets if tab is active
     if (isTabActiveRef.current) {
       const visibleIds = new Set(
         viewableItems.filter((item) => item.isViewable).map((item) => (item.item as ITweet).tweetId),
@@ -66,7 +63,6 @@ const ProfilePostsList: React.FC<IProfilePostsListProps> = memo((props) => {
     );
   }
 
-  // Don't render FlatList at all when tab is inactive to prevent video playback
   if (!isTabActive) {
     return <View style={styles.container} />;
   }

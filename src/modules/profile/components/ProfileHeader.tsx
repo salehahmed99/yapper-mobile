@@ -38,22 +38,17 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
 
   const router = useRouter();
 
-  // Use follow hook for managing follow state
   const { isFollowing, isLoading: followLoading, toggleFollow, setIsFollowing } = useFollowUser(false);
 
-  // Use block hook for managing block state
   const { isBlocked, isLoading: blockLoading, toggleBlock, setIsBlocked } = useBlockUser(false);
 
-  // Use mute hook for managing mute state
   const { isMuted, isLoading: muteLoading, toggleMute, setIsMuted } = useMuteUser(false);
 
-  // Fetch user data if it's another user's profile
   useEffect(() => {
     if (!isOwnProfile && userId) {
       setLoading(true);
       getUserById(userId)
         .then((data) => {
-          // Map camelCase response to IUserProfile
           const mappedUser: IUserProfile = {
             id: data.userId,
             email: '',
@@ -92,24 +87,20 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
     }
   }, [userId, isOwnProfile, setIsFollowing, setIsBlocked, setIsMuted]);
 
-  // Use currentUser for own profile, profileUser for others
   const displayUser = isOwnProfile ? currentUser : profileUser;
 
-  // Update imageUri when user data changes (for own profile)
   useEffect(() => {
     if (isOwnProfile) {
       setImageUri(currentUser?.avatarUrl || DEFAULT_AVATAR_URL);
     }
   }, [isOwnProfile, currentUser?.avatarUrl]);
 
-  // Update bannerUri when user data changes (for own profile)
   useEffect(() => {
     if (isOwnProfile) {
       setBannerUri(currentUser?.coverUrl || DEFAULT_BANNER_URL);
     }
   }, [isOwnProfile, currentUser?.coverUrl]);
 
-  // Media Related States
   const [viewerOpen, setViewerOpen] = useState(false);
   const [origin, setOrigin] = useState<ImageOrigin>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

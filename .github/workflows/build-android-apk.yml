@@ -4,7 +4,7 @@ on:
   workflow_dispatch: # Manual trigger - testers can click "Run workflow" button
   push:
     branches:
-      - release/*
+      # - release/*
       - main
 
 jobs:

@@ -12,7 +12,7 @@ export type ProfileCardData = {
   avatar: string;
   banner?: string;
   bio?: string;
-  followedBy: string[]; // Array of follower names
+  followedBy: string[];
 };
 
 type ProfileCardProps = {

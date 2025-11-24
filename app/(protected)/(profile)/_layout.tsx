@@ -16,8 +16,6 @@ export default function ProfileLayout() {
   const user = useAuthStore((state) => state.user);
   const router = useRouter();
   const params = useLocalSearchParams<{ username?: string }>();
-
-  // Get username from params or fallback to current user's name
   const username = Array.isArray(params.username) ? params.username[0] : params.username;
   const listsUsername = username || user?.name || 'User';
 

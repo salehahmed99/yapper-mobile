@@ -61,13 +61,11 @@ const CustomTabView: React.FC<ICustomTabViewProps> = ({
   const { theme } = useTheme();
   const styles = createStyles(theme);
 
-  // Map tabs to routes
   const routes: RouteType[] = tabs.map((tab) => ({
     key: tab.key,
     title: tab.title,
   }));
 
-  // Calculate initial index based on the parameter
   const getInitialIndex = () => {
     if (initialTab) {
       const tabIndex = routes.findIndex((route) => route.key.toLowerCase() === initialTab.toLowerCase());

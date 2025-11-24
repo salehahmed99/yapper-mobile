@@ -66,7 +66,6 @@ export default function AnimatedProfileHeader({
   const styles = useMemo(() => createStyles(theme), [theme]);
   const router = useRouter();
 
-  // Header appears as ProfileHeader disappears (synchronized)
   const headerOpacity = scrollY.interpolate({
     inputRange: [200, 350],
     outputRange: [0, 1],
