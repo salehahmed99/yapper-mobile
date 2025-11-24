@@ -1,3 +1,4 @@
+import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import BottomToolBar from '@/src/modules/tweets/components/BottomToolBar';
@@ -129,7 +130,7 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
               <View style={styles.composeSection}>
                 <Image
                   source={{
-                    uri: user?.avatarUrl || 'https://randomuser.me/api/portraits/men/1.jpg',
+                    uri: user?.avatarUrl || DEFAULT_AVATAR_URL,
                   }}
                   style={styles.avatar}
                 />
