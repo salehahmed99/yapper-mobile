@@ -5,7 +5,11 @@ import { Theme } from '@/src/constants/theme';
 import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
 
-const SuccessResetPassword: React.FC = () => {
+interface SuccessResetPasswordProps {
+  onContinue?: () => void;
+}
+
+const SuccessResetPassword: React.FC<SuccessResetPasswordProps> = ({ onContinue }) => {
   const { theme } = useTheme();
   const { width, height } = useWindowDimensions();
 
@@ -39,7 +43,7 @@ const SuccessResetPassword: React.FC = () => {
       <TouchableOpacity
         style={styles.button}
         activeOpacity={0.8}
-        onPress={() => router.replace('/(auth)/login')}
+        onPress={onContinue || (() => router.replace('/(auth)/login'))}
         accessibilityLabel="success-reset-password_continue_button"
       >
         <Text style={styles.buttonText}>{t('auth.forgotPassword.continueButton')}</Text>

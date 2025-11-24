@@ -279,7 +279,8 @@
       "errorTitle": "Error",
       "errorDescription": "Something went wrong. Please try again.",
       "genericError": "Something went wrong",
-      "resettingPassword": "Resetting your password..."
+      "resettingPassword": "Resetting your password...",
+      "loggingIn": "Logging you in..."
     }
   },
   "buttons": {

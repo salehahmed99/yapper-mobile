@@ -10,10 +10,12 @@ interface IForgotPasswordState {
   identifier: string;
   textType: TextType;
   resetToken: string;
+  newPassword: string;
 
   // Actions
   setIdentifier: (value: string) => void;
   setResetToken: (token: string) => void;
+  setNewPassword: (password: string) => void;
   detectTextType: (input: string) => TextType;
   reset: () => void;
 }
@@ -26,11 +28,14 @@ export const useForgotPasswordStore = create<IForgotPasswordState>((set) => {
     identifier: '',
     textType: null,
     resetToken: '',
+    newPassword: '',
 
     // Actions
     setIdentifier: (value: string) => set({ identifier: value }),
 
     setResetToken: (token: string) => set({ resetToken: token }),
+
+    setNewPassword: (password: string) => set({ newPassword: password }),
 
     detectTextType: (input: string): TextType => {
       const trimmed = input.trim();
@@ -60,6 +65,6 @@ export const useForgotPasswordStore = create<IForgotPasswordState>((set) => {
       return null;
     },
 
-    reset: () => set({ identifier: '', textType: null, resetToken: '' }),
+    reset: () => set({ identifier: '', textType: null, resetToken: '', newPassword: '' }),
   };
 });
