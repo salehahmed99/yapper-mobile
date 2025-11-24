@@ -47,6 +47,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import CreatePostModal from './CreatePostModal';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const MAX_MEDIA_HEIGHT = SCREEN_HEIGHT * 0.5;
 
 export default function MediaViewerModal() {
   const { theme } = useTheme();
@@ -758,6 +759,7 @@ const createStyles = (theme: Theme) =>
     mediaContainer: {
       width: SCREEN_WIDTH,
       height: SCREEN_HEIGHT,
+      maxHeight: MAX_MEDIA_HEIGHT,
       justifyContent: 'center',
       alignItems: 'center',
     },
