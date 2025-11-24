@@ -116,7 +116,9 @@ const Tweet: React.FC<ITweetProps> = (props) => {
             </View>
           </View>
           <View style={styles.tweetContent}>
-            <Text style={styles.tweetText}>{tweet.content}</Text>
+            <Text style={styles.tweetText} accessibilityLabel="tweet_content_text" testID="tweet_content_text">
+              {tweet.content}
+            </Text>
           </View>
           <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} isVisible={isVisible} />
 

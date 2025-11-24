@@ -19,6 +19,7 @@ const Button: React.FC<IButtonProps> = ({ text, isNextEnabled, onNext }) => {
       activeOpacity={0.7}
       disabled={!isNextEnabled}
       accessibilityLabel={`${text}-button`}
+      testID={`${text.toLowerCase().replace(/\s+/g, '_')}_button`}
     >
       <Text style={[styles.nextButtonText, !isNextEnabled && styles.nextButtonTextDisabled]}>{text}</Text>
     </TouchableOpacity>

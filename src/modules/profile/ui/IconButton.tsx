@@ -11,7 +11,13 @@ type Props = {
 
 const IconButton: React.FC<Props> = ({ onPress, style, children, testID }) => {
   return (
-    <TouchableOpacity style={[styles.wrapper, style]} onPress={onPress} testID={testID}>
+    <TouchableOpacity
+      style={[styles.wrapper, style]}
+      onPress={onPress}
+      testID={testID}
+      accessibilityLabel={testID || 'icon_button'}
+      accessibilityRole="button"
+    >
       {children}
     </TouchableOpacity>
   );
