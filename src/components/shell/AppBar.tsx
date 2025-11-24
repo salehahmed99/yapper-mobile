@@ -84,7 +84,7 @@ const createStyles = (theme: Theme) =>
       flexDirection: 'column',
       alignItems: 'center',
       paddingHorizontal: theme.spacing.md,
-      backgroundColor: theme.colors.background.primary + '6F',
+      backgroundColor: theme.colors.background.primary + 'DF',
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.border,
     },
