@@ -79,12 +79,10 @@ describe('SuccessResetPasswordScreen', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // Mock for both selector and no-selector usage
     mockUseForgotPasswordStore.mockImplementation((selector?: any) => {
       if (typeof selector === 'function') {
         return selector(mockStoreActions);
       }
-      // When called without selector, return the whole store
       return mockStoreActions;
     });
   });
