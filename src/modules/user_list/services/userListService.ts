@@ -1,5 +1,5 @@
 import api from '@/src/services/apiClient';
-import { IUser, mapUserDTOToUser } from '@/src/types/user';
+import { IUser } from '@/src/types/user';
 import { t } from 'i18next';
 import { getFollowersList, getFollowingList } from '../../profile/services/profileService';
 import { IFollowerUser } from '../../profile/types';
@@ -66,7 +66,7 @@ export const getUserList = async (params: FetchUserListParams): Promise<IUserLis
       },
     });
     return {
-      users: response.data.data.data.map(mapUserDTOToUser),
+      users: response.data.data.data,
       hasMore: response.data.data.has_more,
       nextCursor: response.data.data.has_more ? response.data.data.next_cursor : null,
     };
