@@ -46,11 +46,6 @@ class TokenRefreshService {
   private async _performRefresh(): Promise<string | null> {
     try {
       const { useAuthStore } = await import('../store/useAuthStore');
-      const token = await getToken();
-
-      if (!token) {
-        return null;
-      }
 
       const response = await api.post('/auth/refresh');
       const newToken = response.data?.data?.accessToken;
