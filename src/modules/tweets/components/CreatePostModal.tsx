@@ -10,7 +10,7 @@ import { MediaAsset, pickMediaFromLibrary, showCameraOptions } from '@/src/modul
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Image } from 'expo-image';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import ParentTweet from './ParentTweet';
 import ParentTweetV2 from './ParentTweetV2';
@@ -38,6 +38,15 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
   const replyRestrictionModalRef = useRef<BottomSheetModal>(null);
 
   const textInputRef = useRef<TextInput>(null);
+
+  // Clear all form state when modal closes
+  useEffect(() => {
+    if (!visible) {
+      setTweetText('');
+      setMedia([]);
+      setReplyRestriction('Everyone');
+    }
+  }, [visible]);
 
   const characterCount = tweetText.length;
   const remainingCharacters = MAX_TWEET_LENGTH - characterCount;
