@@ -63,6 +63,10 @@ export const useTweetActions = (tweetId: string) => {
       queryClient.setQueryData<ITweet>(tweetDetailsQueryKey, (oldData) => (oldData ? toggleLike(oldData) : oldData));
     },
 
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+    },
+
     onError: (error) => {
       console.log('Error updating like status:', error);
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
@@ -89,6 +93,10 @@ export const useTweetActions = (tweetId: string) => {
       );
 
       queryClient.setQueryData<ITweet>(tweetDetailsQueryKey, (oldData) => (oldData ? toggleRepost(oldData) : oldData));
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
 
     onError: (error) => {

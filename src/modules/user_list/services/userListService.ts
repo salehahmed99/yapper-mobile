@@ -4,17 +4,13 @@ import { t } from 'i18next';
 import { getFollowersList, getFollowingList } from '../../profile/services/profileService';
 import { IFollowerUser } from '../../profile/types';
 import { FetchUserListParams, IUserListResponse, IUserListResponseBackend } from '../types';
-
-/**
- * Helper function to convert IFollowerUser to IUser
- */
 const mapFollowerUserToUser = (follower: IFollowerUser): IUser => ({
   id: follower.userId,
   name: follower.name,
   username: follower.username,
   bio: follower.bio ?? undefined,
   avatarUrl: follower.avatarUrl,
-  email: '', // Not provided in followers endpoint
+  email: '',
   isFollowing: follower.isFollowing,
   isFollower: follower.isFollower,
   isMuted: follower.isMuted,
@@ -24,7 +20,6 @@ const mapFollowerUserToUser = (follower: IFollowerUser): IUser => ({
 export const getUserList = async (params: FetchUserListParams): Promise<IUserListResponse> => {
   const { cursor, limit, type } = params;
 
-  // Use the followers endpoint
   if (type === 'followers' && 'userId' in params) {
     const response = await getFollowersList({
       userId: params.userId,
@@ -40,7 +35,6 @@ export const getUserList = async (params: FetchUserListParams): Promise<IUserLis
     };
   }
 
-  // Use the following endpoint
   if (type === 'following' && 'userId' in params) {
     const response = await getFollowingList({
       userId: params.userId,
@@ -71,7 +65,6 @@ export const getUserList = async (params: FetchUserListParams): Promise<IUserLis
         ...(cursor && { cursor }),
       },
     });
-    // Map backend response to frontend format
     return {
       users: response.data.data.data.map(mapUserDTOToUser),
       hasMore: response.data.data.has_more,
