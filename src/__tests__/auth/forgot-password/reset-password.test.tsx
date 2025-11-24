@@ -101,6 +101,7 @@ describe('ResetPasswordScreen', () => {
   const mockStoreActions = {
     identifier: 'test@example.com',
     resetToken: 'reset-token-123',
+    setNewPassword: jest.fn(),
   };
 
   beforeEach(() => {
@@ -109,6 +110,7 @@ describe('ResetPasswordScreen', () => {
       const store = mockStoreActions;
       return selector(store as any);
     });
+    (mockUseForgotPasswordStore as any).getState = jest.fn(() => mockStoreActions);
     (passwordSchema.passwordSchema.safeParse as jest.Mock).mockReturnValue({ success: true });
   });
 
@@ -173,6 +175,10 @@ describe('ResetPasswordScreen', () => {
         newPassword: 'validpassword123',
         identifier: 'test@example.com',
       });
+    });
+
+    await waitFor(() => {
+      expect(mockStoreActions.setNewPassword).toHaveBeenCalledWith('validpassword123');
     });
 
     await waitFor(() => {
