@@ -1,5 +1,5 @@
-import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import ThemeSettingsSheet from '@/src/components/shell/ThemeSettingsSheet';
+import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { useAuthStore } from '@/src/store/useAuthStore';
@@ -87,7 +87,11 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
         <View style={[styles.innerFlex, { paddingTop: insets.top + theme.spacing.sm, paddingStart: theme.spacing.sm }]}>
           {/* Profile + other accounts in one row */}
           <View style={styles.profileAndAccountsRow}>
-            <TouchableOpacity onPress={() => navigate('/(profile)/Profile/')}>
+            <TouchableOpacity
+              accessibilityLabel="user_profile"
+              accessibilityRole="button"
+              onPress={() => navigate('/(profile)/Profile/')}
+            >
               <View style={styles.profileCol}>
                 <Image source={{ uri: user?.avatarUrl || DEFAULT_AVATAR_URL }} style={styles.avatar} />
                 <Text style={styles.name}>{user?.name || 'User'}</Text>
