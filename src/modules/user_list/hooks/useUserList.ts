@@ -48,7 +48,6 @@ export const useUserList = (options: UseUserListOptions): IUseUserListResult => 
             return data.users;
           }
 
-          // Deduplicate: only add users that don't already exist
           const existingIds = new Set(prev.map((u) => u.id));
           const newUsers = data.users.filter((u) => !existingIds.has(u.id));
 

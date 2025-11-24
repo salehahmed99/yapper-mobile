@@ -1,10 +1,11 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import useMargins from '@/src/hooks/useSpacing';
 import { formatDateDDMMYYYY, formatShortTime } from '@/src/utils/dateUtils';
 import { formatCount } from '@/src/utils/formatCount';
 import { Image } from 'expo-image';
 import React, { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
 import ParentTweet from './ParentTweet';
@@ -35,15 +36,20 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
+  const { bottom } = useMargins();
+
   const [isBookmarked, setIsBookmarked] = useState(false);
 
   return (
-    <View style={styles.container} accessibilityLabel="full_tweet_container_main" testID="full_tweet_container_main">
+    <ScrollView
+      style={[styles.container, { marginBottom: bottom }]}
+      accessibilityLabel="full_tweet_container_main"
+      testID="full_tweet_container_main"
+    >
       {tweet.type === 'repost' && (
         <RepostIndicator repostById={tweet.repostedBy?.id} repostedByName={tweet.repostedBy?.name} />
       )}
 
-      {/* User Info Header */}
       <View style={styles.header}>
         <View style={styles.userInfoContainer}>
           <Pressable
@@ -74,22 +80,22 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
         </View>
       </View>
 
-      {/* Tweet Content */}
       <View style={styles.contentSection}>
         <Text style={styles.tweetText} accessibilityLabel="full_tweet_content_text" testID="full_tweet_content_text">
           {tweet.content}
         </Text>
       </View>
 
-      {/* Tweet Media */}
       {(tweet.images.length > 0 || tweet.videos.length > 0) && (
         <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} isVisible={true} />
       )}
 
-      {/* Parent Tweet (Quote) */}
-      {tweet.parentTweet && <ParentTweet tweet={tweet.parentTweet} />}
+      {tweet.parentTweet && (
+        <View style={{ marginTop: theme.spacing.xs }}>
+          <ParentTweet tweet={tweet.parentTweet} />
+        </View>
+      )}
 
-      {/* iOS-style Timestamp with Views */}
       <View
         style={styles.timestampViewsSection}
         accessibilityLabel="full_tweet_timestamp_views"
@@ -109,7 +115,6 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
         </Text>
       </View>
 
-      {/* Actions Row */}
       <View style={styles.actionsSection}>
         <ActionsRow
           tweet={tweet}
@@ -122,7 +127,7 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
           onSharePress={onShare}
         />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

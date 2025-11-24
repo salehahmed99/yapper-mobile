@@ -120,7 +120,7 @@ export default function ProfileCard({ profile, onFollow, isFollowing = false }: 
       color: theme.colors.text.inverse,
       lineHeight: 16,
     },
-    // eslint-disable-next-line react-native/no-color-literals
+
     followingButton: {
       backgroundColor: 'transparent',
       borderWidth: theme.borderWidth.thin,
