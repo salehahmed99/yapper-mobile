@@ -44,14 +44,22 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
   const progressPercentage = (characterCount / MAX_TWEET_LENGTH) * 100;
   const canPost = (characterCount > 0 || type === 'quote') && characterCount <= MAX_TWEET_LENGTH;
 
+  const resetTweetState = () => {
+    setTweetText('');
+    setMedia([]);
+    setReplyRestriction('Everyone');
+  };
+
   const handlePost = async () => {
     if (type === 'quote' && characterCount === 0 && onRepost) {
       onRepost();
+      resetTweetState();
       onClose();
       return;
     }
     const mediaUris = media.map((m) => m.uri);
     onPost(tweetText, mediaUris);
+    resetTweetState();
     onClose();
   };
 
@@ -83,9 +91,12 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
 
   const handleSelectReplyRestriction = (option: ReplyRestrictionOptions) => {
     setReplyRestriction(option);
-    setTimeout(() => {
-      textInputRef.current?.focus();
-    }, 300);
+    textInputRef.current?.focus();
+  };
+
+  const handleClosePostModal = () => {
+    resetTweetState();
+    onClose();
   };
 
   const getPlaceholderText = () => {
@@ -100,7 +111,7 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
   };
 
   return (
-    <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
+    <Modal visible={visible} animationType="slide" onRequestClose={handleClosePostModal}>
       <BottomSheetModalProvider>
         <KeyboardAvoidingView
           style={styles.container}
