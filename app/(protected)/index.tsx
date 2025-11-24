@@ -4,6 +4,7 @@ import AppBar from '@/src/components/shell/AppBar';
 import type { Theme } from '@/src/constants/theme';
 import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
+import useSpacing from '@/src/hooks/useSpacing';
 import CreatePostModal from '@/src/modules/tweets/components/CreatePostModal';
 import Fab from '@/src/modules/tweets/components/Fab';
 import MediaViewerModal from '@/src/modules/tweets/components/MediaViewerModal';
@@ -16,6 +17,7 @@ import { RefreshControl, StyleSheet, View } from 'react-native';
 
 export default function HomeScreen() {
   const { theme } = useTheme();
+  const { top, bottom } = useSpacing();
   const styles = createStyles(theme);
   // Use a local index for the Home top tabs (For You / Following).
   // We intentionally do NOT write this into the global `activeTab` state
@@ -72,6 +74,8 @@ export default function HomeScreen() {
           onEndReachedThreshold={0.5}
           isLoading={activeQuery.isLoading}
           isFetchingNextPage={activeQuery.isFetchingNextPage}
+          topSpacing={top}
+          bottomSpacing={bottom}
         />
       </View>
     );
