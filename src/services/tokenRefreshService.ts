@@ -1,53 +1,71 @@
-import { router } from 'expo-router';
-import { getToken, saveToken, deleteToken } from '../utils/secureStorage';
+import { getToken, saveToken } from '../utils/secureStorage';
 import api from './apiClient';
 
 class TokenRefreshService {
   private refreshTimer: ReturnType<typeof setInterval> | null = null;
   private isRefreshing = false;
+  private refreshPromise: Promise<string | null> | null = null;
 
-  private readonly REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
-  private readonly MIN_REFRESH_DELAY = 5 * 60 * 1000; // 5 minutes
+  private readonly MIN_REFRESH_DELAY = 10 * 60 * 1000; // 10 minutes
   private lastRefreshTime = 0;
 
   start() {
     this.stop();
-    this.refreshTimer = setInterval(() => this.refreshToken(), this.REFRESH_INTERVAL);
+    this.refreshTimer = setInterval(() => this.refreshToken(), this.MIN_REFRESH_DELAY);
   }
 
   stop() {
     if (this.refreshTimer) clearInterval(this.refreshTimer);
     this.refreshTimer = null;
     this.isRefreshing = false;
+    this.refreshPromise = null;
   }
 
   async refreshToken(): Promise<string | null> {
+    if (this.isRefreshing && this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
     const now = Date.now();
-    if (now - this.lastRefreshTime < this.MIN_REFRESH_DELAY || this.isRefreshing) return null;
+
+    if (now - this.lastRefreshTime < this.MIN_REFRESH_DELAY) {
+      return await getToken();
+    }
 
     this.isRefreshing = true;
+    this.refreshPromise = this._performRefresh();
 
     try {
+      return await this.refreshPromise;
+    } finally {
+      this.isRefreshing = false;
+      this.refreshPromise = null;
+    }
+  }
+
+  private async _performRefresh(): Promise<string | null> {
+    try {
+      const { useAuthStore } = await import('../store/useAuthStore');
       const token = await getToken();
-      if (!token) return null;
+
+      if (!token) {
+        return null;
+      }
 
       const response = await api.post('/auth/refresh');
-      const newToken = response.data?.data?.access_token;
+      const newToken = response.data?.data?.accessToken;
 
       if (newToken) {
         await saveToken(newToken);
-        this.lastRefreshTime = now;
+        useAuthStore.setState({ token: newToken });
+        this.lastRefreshTime = Date.now();
         return newToken;
       }
 
       return null;
-    } catch (err) {
-      console.error('Token refresh failed:', err);
-      await deleteToken();
-      router.replace('/(auth)/landing-screen');
+    } catch {
+      // console.error('Token refresh failed:', err);
       return null;
-    } finally {
-      this.isRefreshing = false;
     }
   }
 }
