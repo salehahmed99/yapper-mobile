@@ -216,6 +216,17 @@ export const colors = {
       repost: '#00BA7C',
       bookmark: '#1D9BF0',
     },
+    modal: {
+      background: '#000000',
+      overlay: 'rgba(0, 0, 0, 0.7)',
+      iconColor: '#FFFFFF',
+      textPrimary: '#FFFFFF',
+      textSecondary: 'rgba(255, 255, 255, 0.7)',
+      textTertiary: 'rgba(255, 255, 255, 0.6)',
+      buttonBackground: 'rgba(255, 255, 255, 0.1)',
+      buttonActiveBackground: 'rgba(29, 155, 240, 0.1)',
+      buttonActiveColor: '#1d9bf0',
+    },
   },
   dark: {
     text: {
@@ -245,6 +256,17 @@ export const colors = {
       like: '#F91880',
       repost: '#00BA7C',
       bookmark: '#1D9BF0',
+    },
+    modal: {
+      background: '#000000',
+      overlay: 'rgba(0, 0, 0, 0.7)',
+      iconColor: '#FFFFFF',
+      textPrimary: '#FFFFFF',
+      textSecondary: 'rgba(255, 255, 255, 0.7)',
+      textTertiary: 'rgba(255, 255, 255, 0.6)',
+      buttonBackground: 'rgba(255, 255, 255, 0.1)',
+      buttonActiveBackground: 'rgba(29, 155, 240, 0.1)',
+      buttonActiveColor: '#1d9bf0',
     },
   },
 };
