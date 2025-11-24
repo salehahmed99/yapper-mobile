@@ -2,19 +2,9 @@ import { useState } from 'react';
 import Toast from 'react-native-toast-message';
 import { blockUser, unblockUser } from '../services/profileService';
 
-/**
- * Custom hook to manage block/unblock state for a user
- * @param initialBlockState - Initial block state
- * @returns Object containing block state, loading state, and toggle function
- */
 export const useBlockUser = (initialBlockState: boolean = false) => {
   const [isBlocked, setIsBlocked] = useState(initialBlockState);
   const [isLoading, setIsLoading] = useState(false);
-
-  /**
-   * Toggle block/unblock state for a user
-   * @param userId - The ID of the user to block/unblock
-   */
   const toggleBlock = async (userId: string) => {
     if (isLoading || !userId) return;
 
@@ -26,7 +16,6 @@ export const useBlockUser = (initialBlockState: boolean = false) => {
 
     try {
       if (isBlocked) {
-        // Unblock user
         await unblockUser(userId);
         Toast.show({
           type: 'success',
@@ -34,7 +23,6 @@ export const useBlockUser = (initialBlockState: boolean = false) => {
           text2: 'You have unblocked this user',
         });
       } else {
-        // Block user
         await blockUser(userId);
         Toast.show({
           type: 'success',
@@ -43,7 +31,6 @@ export const useBlockUser = (initialBlockState: boolean = false) => {
         });
       }
     } catch (error) {
-      // Revert on error
       setIsBlocked(previousState);
       Toast.show({
         type: 'error',

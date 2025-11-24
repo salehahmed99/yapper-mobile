@@ -22,7 +22,7 @@ type ProfileContainerProps = {
 };
 
 const ANIMATED_HEADER_HEIGHT = 90;
-const PROFILE_HEADER_HEIGHT = 420; // Approximate height of ProfileHeader
+const PROFILE_HEADER_HEIGHT = 420;
 
 function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainerProps) {
   const { theme } = useTheme();
@@ -38,8 +38,6 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
   );
   const [refreshing, setRefreshing] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-
-  // Fetch user data if it's another user's profile
   useEffect(() => {
     if (!isOwnProfile && userId) {
       getUserById(userId)
@@ -75,7 +73,6 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
     }
   }, [userId, isOwnProfile]);
 
-  // Update bannerUri when user data changes (for own profile)
   useEffect(() => {
     if (isOwnProfile) {
       setBannerUri(currentUser?.coverUrl || DEFAULT_BANNER_URL);
@@ -85,12 +82,10 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
   const displayUser = isOwnProfile ? currentUser : profileUser;
   const username = displayUser?.name || 'User';
 
-  // Reset scroll position when component mounts
   useEffect(() => {
     scrollY.setValue(0);
   }, [scrollY]);
 
-  // Handle pull-to-refresh
   const onRefresh = async () => {
     setRefreshing(true);
     try {
@@ -123,9 +118,7 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
         setProfileUser(mappedUser);
         if (data.coverUrl) setBannerUri(data.coverUrl);
       }
-      // Increment refresh key to force ProfileHeader to update
       setRefreshKey((prev) => prev + 1);
-      // Trigger refresh of tweets/posts
       triggerRefresh();
     } catch (error) {
       console.error('Error refreshing profile:', error);
@@ -134,7 +127,6 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
     }
   };
 
-  // Animate ProfileHeader to slide up and fade out
   const profileHeaderTranslateY = scrollY.interpolate({
     inputRange: [0, 300, 500],
     outputRange: [0, -100, -PROFILE_HEADER_HEIGHT / 2],

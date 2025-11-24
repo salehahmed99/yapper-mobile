@@ -122,11 +122,13 @@ const Tweet: React.FC<ITweetProps> = (props) => {
           </View>
           <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} isVisible={isVisible} />
 
+
           {tweet.parentTweet && (
             <View style={{ marginTop: theme.spacing.xs }}>
-              <ParentTweet tweet={tweet.parentTweet} />
+              <ParentTweet tweet={tweet.parentTweet} isVisible={isVisible} />
             </View>
           )}
+
 
           <ActionsRow
             tweet={tweet}

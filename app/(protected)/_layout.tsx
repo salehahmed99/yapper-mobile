@@ -5,8 +5,7 @@ import React from 'react';
 
 const ProtectedLayout = () => {
   const isInitialized = useAuthStore((state) => state.isInitialized);
-  const isAuthenticated = useAuthStore((state) => state.token !== null);
-  // console.log('ProtectedLayout - isInitialized:', isInitialized, 'isAuthenticated:', isAuthenticated);
+  const isAuthenticated = useAuthStore((state) => state.user !== null);
 
   if (!isInitialized) return null;
   if (!isAuthenticated) {
