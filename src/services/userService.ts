@@ -32,6 +32,12 @@ export const uploadProfilePicture = async (file: { uri: string; name: string; ty
     const resultUser = await api.patch('/users/me', {
       avatar_url: res.data.data.imageUrl,
     });
+
+    const { useAuthStore } = await import('../store/useAuthStore');
+    useAuthStore.setState((state) => ({
+      user: state.user ? { ...state.user, avatarUrl: res.data.data.imageUrl } : null,
+    }));
+
     return resultUser.status === 200;
   } catch (error: unknown) {
     const message = extractErrorMessage(error);

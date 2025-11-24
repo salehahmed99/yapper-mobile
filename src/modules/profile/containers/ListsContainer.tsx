@@ -22,7 +22,6 @@ export default function ListsContainer() {
   const { theme } = useTheme();
   const containerStyles = useMemo(() => createContainerStyles(theme), [theme]);
 
-  // Set the header title dynamically based on the username parameter
   useEffect(() => {
     const displayName = usernameValue || user?.name || 'User';
     navigation.setOptions({

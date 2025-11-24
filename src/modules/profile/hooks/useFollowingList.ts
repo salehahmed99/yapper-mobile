@@ -1,8 +1,6 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { getFollowingList } from '../services/profileService';
 import { IGetFollowingListParams, IGetFollowingListResponse } from '../types';
-
-// Query key factory for following list
 export const followingKeys = {
   all: ['following'] as const,
   lists: () => [...followingKeys.all, 'list'] as const,
@@ -16,12 +14,6 @@ interface UseFollowingListOptions
   limit?: number;
   enabled?: boolean;
 }
-
-/**
- * Hook to fetch following list with React Query caching
- * @param options - Query options including userId and cursor pagination
- * @returns React Query result with following data, loading state, and error
- */
 export const useFollowingList = ({
   userId,
   cursor = '',
@@ -38,9 +30,9 @@ export const useFollowingList = ({
   return useQuery<IGetFollowingListResponse, Error>({
     queryKey: followingKeys.list(params),
     queryFn: () => getFollowingList(params),
-    enabled: enabled && !!userId, // Only fetch if enabled and userId exists
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 30, // 30 minutes
+    enabled: enabled && !!userId,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
     ...queryOptions,
   });
 };

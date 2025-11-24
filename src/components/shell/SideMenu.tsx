@@ -1,5 +1,5 @@
-import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import ThemeSettingsSheet from '@/src/components/shell/ThemeSettingsSheet';
+import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { useAuthStore } from '@/src/store/useAuthStore';

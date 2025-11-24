@@ -16,11 +16,13 @@ type TweetContainerProps =
       tweet: ITweet;
       tweetId?: never;
       isVisible?: boolean;
+      quotedTweet?: ITweet;
     }
   | {
       tweet?: never;
       tweetId: string;
       isVisible?: boolean;
+      quotedTweet?: ITweet;
     };
 
 const TweetContainer: React.FC<TweetContainerProps> = (props) => {
@@ -160,7 +162,7 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
     return (
       <>
         <Tweet
-          tweet={props.tweet}
+          tweet={props.quotedTweet ? { ...props.tweet, parentTweet: props.quotedTweet } : props.tweet}
           onReplyPress={handleReplyPress}
           onLike={handleLike}
           onViewPostInteractions={handleViewPostInteractions}

@@ -1,4 +1,5 @@
 import { DEFAULT_AVATAR_URL, DEFAULT_BANNER_URL } from '@/src/constants/defaults';
+import { formatCount } from '@/src/utils/formatCount';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, Ellipsis } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -38,22 +39,17 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
 
   const router = useRouter();
 
-  // Use follow hook for managing follow state
   const { isFollowing, isLoading: followLoading, toggleFollow, setIsFollowing } = useFollowUser(false);
 
-  // Use block hook for managing block state
   const { isBlocked, isLoading: blockLoading, toggleBlock, setIsBlocked } = useBlockUser(false);
 
-  // Use mute hook for managing mute state
   const { isMuted, isLoading: muteLoading, toggleMute, setIsMuted } = useMuteUser(false);
 
-  // Fetch user data if it's another user's profile
   useEffect(() => {
     if (!isOwnProfile && userId) {
       setLoading(true);
       getUserById(userId)
         .then((data) => {
-          // Map camelCase response to IUserProfile
           const mappedUser: IUserProfile = {
             id: data.userId,
             email: '',
@@ -92,24 +88,20 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
     }
   }, [userId, isOwnProfile, setIsFollowing, setIsBlocked, setIsMuted]);
 
-  // Use currentUser for own profile, profileUser for others
   const displayUser = isOwnProfile ? currentUser : profileUser;
 
-  // Update imageUri when user data changes (for own profile)
   useEffect(() => {
     if (isOwnProfile) {
       setImageUri(currentUser?.avatarUrl || DEFAULT_AVATAR_URL);
     }
   }, [isOwnProfile, currentUser?.avatarUrl]);
 
-  // Update bannerUri when user data changes (for own profile)
   useEffect(() => {
     if (isOwnProfile) {
       setBannerUri(currentUser?.coverUrl || DEFAULT_BANNER_URL);
     }
   }, [isOwnProfile, currentUser?.coverUrl]);
 
-  // Media Related States
   const [viewerOpen, setViewerOpen] = useState(false);
   const [origin, setOrigin] = useState<ImageOrigin>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -130,6 +122,37 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
   const handleFollowToggle = async () => {
     if (!userId || followLoading) return;
     await toggleFollow(userId);
+    // Refetch user data to update follower count
+    if (!isOwnProfile && userId) {
+      try {
+        const data = await getUserById(userId);
+        const mappedUser: IUserProfile = {
+          id: data.userId,
+          email: '',
+          name: data.name,
+          username: data.username,
+          bio: data.bio,
+          avatarUrl: data.avatarUrl,
+          coverUrl: data.coverUrl || null,
+          country: data.country,
+          createdAt: data.createdAt,
+          followers: data.followersCount,
+          following: data.followingCount,
+          followersCount: data.followersCount,
+          followingCount: data.followingCount,
+          isFollower: data.isFollower,
+          isFollowing: data.isFollowing,
+          isMuted: data.isMuted,
+          isBlocked: data.isBlocked,
+          topMutualFollowers: data.topMutualFollowers,
+          mutualFollowersCount: parseInt(data.mutualFollowersCount, 10) || 0,
+          birthDate: '',
+        };
+        setProfileUser(mappedUser);
+      } catch (error) {
+        console.error('Error refreshing user data after follow:', error);
+      }
+    }
   };
 
   return (
@@ -258,7 +281,9 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
                 }}
               >
                 <Text style={headerStyles.stat} testID="profile_header_following_count">
-                  <Text style={headerStyles.bold}>{displayUser?.followingCount || displayUser?.following || 0}</Text>{' '}
+                  <Text style={headerStyles.bold}>
+                    {formatCount(displayUser?.followingCount || displayUser?.following || 0)}
+                  </Text>{' '}
                   {t('profile.following')}
                 </Text>
               </TouchableOpacity>
@@ -274,7 +299,9 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
                 }}
               >
                 <Text style={headerStyles.statWithMargin} testID="profile_header_followers_count">
-                  <Text style={headerStyles.bold}>{displayUser?.followers || displayUser?.followersCount || 0}</Text>{' '}
+                  <Text style={headerStyles.bold}>
+                    {formatCount(displayUser?.followers || displayUser?.followersCount || 0)}
+                  </Text>{' '}
                   {t('profile.followers')}
                 </Text>
               </TouchableOpacity>

@@ -1,6 +1,7 @@
 import { Theme } from '@/src/constants/theme';
 import { useMediaViewer } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useFocusEffect } from '@react-navigation/native';
 import { Image } from 'expo-image';
 import { VideoView, useVideoPlayer } from 'expo-video';
 import { Volume2, VolumeX } from 'lucide-react-native';
@@ -14,6 +15,7 @@ interface ITweetMediaProps {
   videos: string[];
   tweetId: string;
   isVisible?: boolean;
+  isParentMedia?: boolean;
 }
 
 type MediaItem = {
@@ -22,15 +24,19 @@ type MediaItem = {
   index: number;
 };
 
-const TweetMedia: React.FC<ITweetMediaProps> = ({ images, videos, tweetId, isVisible = false }) => {
+const TweetMedia: React.FC<ITweetMediaProps> = ({
+  images,
+  videos,
+  tweetId,
+  isVisible = false,
+  isParentMedia = false,
+}) => {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { openMediaViewer, isOpen: isMediaViewerOpen, lastClosedData } = useMediaViewer();
-  // const { openMediaViewer, lastClosedData } = useMediaViewer();
   const [isMuted, setIsMuted] = useState(false);
   const toggleMute = useCallback(() => setIsMuted((prev) => !prev), []);
 
-  // Track if component should render videos - only create players when visible
   const [shouldRenderVideos, setShouldRenderVideos] = useState(isVisible);
 
   const allMedia = useMemo<MediaItem[]>(() => {
@@ -96,12 +102,10 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({ images, videos, tweetId, isVis
     return players;
   }, [videoUrls, player0, player1, player2, player3]);
 
-  // Update shouldRenderVideos based on isVisible
   useEffect(() => {
     if (isVisible) {
       setShouldRenderVideos(true);
     } else {
-      // Pause all videos before hiding
       Object.values(videoPlayers).forEach((player) => {
         try {
           player?.pause();
@@ -109,7 +113,6 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({ images, videos, tweetId, isVis
           // Ignore
         }
       });
-      // Don't unmount videos immediately - wait to avoid rapid mount/unmount
       const timer = setTimeout(() => setShouldRenderVideos(false), 300);
       return () => clearTimeout(timer);
     }
@@ -124,7 +127,13 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({ images, videos, tweetId, isVis
   }, [isMuted, videoPlayers]);
 
   useEffect(() => {
-    if (lastClosedData?.tweetId === tweetId && videoUrls.length > 0) {
+    if (
+      lastClosedData &&
+      lastClosedData.tweetId === tweetId &&
+      videoUrls.length > 0 &&
+      lastClosedData.mediaIndex !== null &&
+      lastClosedData.mediaIndex !== undefined
+    ) {
       const mediaItem = allMedia[lastClosedData.mediaIndex];
       if (mediaItem?.type === 'video' && lastClosedData.videoTime !== undefined) {
         const player = videoPlayers[mediaItem.index];
@@ -132,16 +141,55 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({ images, videos, tweetId, isVis
           try {
             player.currentTime = lastClosedData.videoTime;
           } catch {
-            // Ignore errors from released players
+            // Ignore
           }
         }
       }
     }
   }, [lastClosedData, tweetId, videoUrls, videoPlayers, allMedia]);
 
+  // Pause all videos when screen loses focus (navigating away), resume when returning
+  useFocusEffect(
+    useCallback(() => {
+      // Don't autoplay parent media videos
+      if (isVisible && shouldRenderVideos && !isParentMedia) {
+        Object.values(videoPlayers).forEach((player) => {
+          try {
+            player?.play();
+          } catch {
+            // Ignore
+          }
+        });
+      }
+
+      return () => {
+        Object.values(videoPlayers).forEach((player) => {
+          try {
+            player?.pause();
+          } catch {
+            // Ignore
+          }
+        });
+      };
+    }, [videoPlayers, isVisible, shouldRenderVideos, isParentMedia]),
+  );
+
+  // Cleanup: pause all videos when component unmounts
+  useEffect(() => {
+    return () => {
+      Object.values(videoPlayers).forEach((player) => {
+        try {
+          player?.pause();
+        } catch {
+          // Ignore
+        }
+      });
+    };
+  }, [videoPlayers]);
+
   // Control video playback based on visibility
   useEffect(() => {
-    const shouldPlayVideo = isVisible && videoUrls.length > 0 && !isMediaViewerOpen;
+    const shouldPlayVideo = isVisible && videoUrls.length > 0 && !isMediaViewerOpen && !isParentMedia;
 
     if (shouldPlayVideo) {
       const firstVideoIndex = videoUrls[0].index;
@@ -150,7 +198,7 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({ images, videos, tweetId, isVis
         try {
           firstPlayer.play();
         } catch {
-          // Ignore errors from released players
+          // Ignore
         }
       }
 
@@ -158,43 +206,24 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({ images, videos, tweetId, isVis
         try {
           videoPlayers[video.index]?.pause();
         } catch {
-          // Ignore errors from released players
+          // Ignore
         }
       });
     } else {
-      // Always pause all videos when not visible
       Object.values(videoPlayers).forEach((player) => {
         try {
           player?.pause();
         } catch {
-          // Ignore errors from released players
+          // Ignore
         }
       });
     }
-  }, [isVisible, isMediaViewerOpen, videoUrls, videoPlayers]);
+  }, [isVisible, isMediaViewerOpen, videoUrls, videoPlayers, isParentMedia]);
 
   const handleMutePress = (e: React.BaseSyntheticEvent) => {
     e.stopPropagation();
     toggleMute();
   };
-
-  // const handleVideoPress = useCallback(
-  //   (index: number) => {
-  //     Object.entries(videoPlayers).forEach(([idx, player]) => {
-  //       const videoIdx = parseInt(idx, 10);
-  //       try {
-  //         if (videoIdx === index) {
-  //           player.play();
-  //         } else {
-  //           player.pause();
-  //         }
-  //       } catch {
-  //         // Ignore errors from released players
-  //       }
-  //     });
-  //   },
-  //   [videoPlayers],
-  // );
 
   const handleMediaPress = useCallback(
     (index: number, mediaItem: MediaItem) => {
@@ -206,7 +235,7 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({ images, videos, tweetId, isVis
           try {
             videoTime = player.currentTime || 0;
           } catch {
-            // Ignore errors from released players
+            // Ignore
           }
         }
       }
@@ -215,7 +244,7 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({ images, videos, tweetId, isVis
         try {
           player?.pause();
         } catch {
-          // Ignore errors from released players
+          // Ignore
         }
       });
 

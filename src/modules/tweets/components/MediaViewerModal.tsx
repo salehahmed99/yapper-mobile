@@ -24,6 +24,7 @@ import { useMediaViewerControls } from '@/src/modules/tweets/hooks/useMediaViewe
 import { useTweet } from '@/src/modules/tweets/hooks/useTweet';
 import { useTweetActions } from '@/src/modules/tweets/hooks/useTweetActions';
 import { MediaItem, MediaViewerContentProps } from '@/src/modules/tweets/types/mediaViewer';
+import { useFocusEffect } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
@@ -94,6 +95,7 @@ function MediaViewerContent({
   const [repostsCount, setRepostsCount] = useState(tweet?.repostsCount ?? 0);
   const [isCreatePostModalVisible, setIsCreatePostModalVisible] = useState(false);
   const [createPostType, setCreatePostType] = useState<'tweet' | 'quote' | 'reply'>('tweet');
+  const [isScreenFocused, setIsScreenFocused] = useState(true);
   const flatListRef = useRef<FlatList>(null);
   const uiOpacity = useRef(new Animated.Value(1)).current;
 
@@ -143,6 +145,31 @@ function MediaViewerContent({
     }
   }, [tweet]);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      setIsScreenFocused(true);
+      return () => {
+        setIsScreenFocused(false);
+      };
+    }, []),
+  );
+
+  React.useEffect(() => {
+    if (!isScreenFocused && isVideo && player) {
+      try {
+        player.pause();
+      } catch (error) {
+        console.warn('Could not pause video:', error);
+      }
+    } else if (isScreenFocused && isVideo && player) {
+      try {
+        player.play();
+      } catch (error) {
+        console.warn('Could not play video:', error);
+      }
+    }
+  }, [isScreenFocused, isVideo, player]);
+
   const toggleUI = () => {
     const newShowUI = !showUI;
     setShowUI(newShowUI);
@@ -159,7 +186,6 @@ function MediaViewerContent({
       { tweetId, isLiked: tweet.isLiked },
       {
         onSuccess: () => {
-          // Invalidate individual tweet query to sync media viewer with the main tweets list
           queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId }] });
         },
       },
@@ -172,7 +198,6 @@ function MediaViewerContent({
       { tweetId, isReposted: tweet.isReposted },
       {
         onSuccess: () => {
-          // Invalidate individual tweet query to sync media viewer with the main tweets list
           queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId }] });
         },
       },
@@ -231,7 +256,7 @@ function MediaViewerContent({
       <Modal visible animationType="fade" statusBarTranslucent onRequestClose={handleClose}>
         <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
           <Pressable style={styles.containerPressable} onPress={toggleUI} accessibilityRole="button">
-            <StatusBar barStyle="light-content" backgroundColor="#000" />
+            <StatusBar barStyle="light-content" backgroundColor={theme.colors.modal.background} />
 
             <FlatList
               ref={flatListRef}
@@ -266,7 +291,7 @@ function MediaViewerContent({
               <SafeAreaView edges={['top']} style={styles.safeArea} pointerEvents="box-none">
                 <View style={styles.topBarContent} pointerEvents="auto">
                   <Pressable onPress={handleClose} style={styles.iconButton} accessibilityLabel="back_button">
-                    <ArrowLeft size={theme.iconSizes.lg} color="#fff" />
+                    <ArrowLeft size={theme.iconSizes.lg} color={theme.colors.modal.iconColor} />
                   </Pressable>
 
                   {allMedia[currentIndex]?.type === 'image' && (
@@ -496,9 +521,17 @@ function MediaViewerContent({
                       accessibilityRole="button"
                     >
                       {player?.playing ? (
-                        <Pause size={theme.iconSizes.md} color="#fff" fill="#fff" />
+                        <Pause
+                          size={theme.iconSizes.md}
+                          color={theme.colors.modal.iconColor}
+                          fill={theme.colors.modal.iconColor}
+                        />
                       ) : (
-                        <Play size={theme.iconSizes.md} color="#fff" fill="#fff" />
+                        <Play
+                          size={theme.iconSizes.md}
+                          color={theme.colors.modal.iconColor}
+                          fill={theme.colors.modal.iconColor}
+                        />
                       )}
                     </Pressable>
                     <Text style={styles.timeText} accessibilityLabel="video_current_time">
@@ -534,9 +567,9 @@ function MediaViewerContent({
                       accessibilityRole="button"
                     >
                       {isMuted ? (
-                        <VolumeX size={theme.iconSizes.md} color="#fff" />
+                        <VolumeX size={theme.iconSizes.md} color={theme.colors.modal.iconColor} />
                       ) : (
-                        <Volume2 size={theme.iconSizes.md} color="#fff" />
+                        <Volume2 size={theme.iconSizes.md} color={theme.colors.modal.iconColor} />
                       )}
                     </Pressable>
                     <Pressable
@@ -589,7 +622,7 @@ const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#000',
+      backgroundColor: theme.colors.modal.background,
     },
     containerPressable: {
       flex: 1,
@@ -602,7 +635,7 @@ const createStyles = (theme: Theme) =>
       top: 0,
       left: 0,
       right: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      backgroundColor: theme.colors.modal.overlay,
       zIndex: 10,
     },
     topBarContent: {
@@ -630,12 +663,12 @@ const createStyles = (theme: Theme) =>
     accountText: {
       fontSize: theme.typography.sizes.md,
       fontFamily: theme.typography.fonts.bold,
-      color: '#fff',
+      color: theme.colors.modal.textPrimary,
     },
     handleText: {
       fontSize: theme.typography.sizes.sm,
       fontFamily: theme.typography.fonts.regular,
-      color: 'rgba(255, 255, 255, 0.7)',
+      color: theme.colors.modal.textSecondary,
     },
     iconButton: {
       width: ICON_BUTTON_SIZE,
@@ -648,7 +681,7 @@ const createStyles = (theme: Theme) =>
       bottom: 0,
       left: 0,
       right: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      backgroundColor: theme.colors.modal.overlay,
       zIndex: 10,
     },
     bottomUserInfo: {
@@ -656,7 +689,7 @@ const createStyles = (theme: Theme) =>
       bottom: USER_INFO_BOTTOM,
       left: 0,
       right: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      backgroundColor: theme.colors.modal.overlay,
       zIndex: 10,
     },
     userInfoContent: {
@@ -685,17 +718,17 @@ const createStyles = (theme: Theme) =>
     bottomUserName: {
       fontSize: theme.typography.sizes.sm,
       fontFamily: theme.typography.fonts.bold,
-      color: '#fff',
+      color: theme.colors.modal.textPrimary,
     },
     bottomUserHandle: {
       fontSize: theme.typography.sizes.sm,
       fontFamily: theme.typography.fonts.regular,
-      color: 'rgba(255, 255, 255, 0.6)',
+      color: theme.colors.modal.textTertiary,
     },
     bottomTweetText: {
       fontSize: theme.typography.sizes.sm,
       fontFamily: theme.typography.fonts.regular,
-      color: '#fff',
+      color: theme.colors.modal.textPrimary,
       lineHeight: theme.typography.lineHeights.normal * theme.typography.sizes.sm,
     },
     bottomBar: {
@@ -703,7 +736,7 @@ const createStyles = (theme: Theme) =>
       bottom: 0,
       left: 0,
       right: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      backgroundColor: theme.colors.modal.overlay,
       zIndex: 10,
     },
     actionsRow: {
@@ -733,14 +766,14 @@ const createStyles = (theme: Theme) =>
       height: '100%',
     },
     videoPlaceholder: {
-      backgroundColor: '#000',
+      backgroundColor: theme.colors.modal.background,
     },
     videoControlsContainer: {
       position: 'absolute',
       bottom: VIDEO_CONTROLS_BOTTOM,
       left: 0,
       right: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      backgroundColor: theme.colors.modal.overlay,
       zIndex: 10,
     },
     videoControls: {
@@ -761,18 +794,18 @@ const createStyles = (theme: Theme) =>
       height: CONTROL_BUTTON_SIZE,
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      backgroundColor: theme.colors.modal.buttonBackground,
       borderRadius: theme.borderRadius.sm,
       minWidth: SPEED_BUTTON_MIN_WIDTH,
     },
     speedText: {
       fontSize: theme.typography.sizes.xs,
-      color: '#fff',
+      color: theme.colors.modal.textPrimary,
       fontFamily: theme.typography.fonts.medium,
     },
     timeText: {
       fontSize: theme.typography.sizes.xs,
-      color: '#fff',
+      color: theme.colors.modal.textPrimary,
       fontFamily: theme.typography.fonts.regular,
       minWidth: 42,
     },
@@ -792,7 +825,7 @@ const createStyles = (theme: Theme) =>
     },
     progressFill: {
       height: '100%',
-      backgroundColor: '#fff',
+      backgroundColor: theme.colors.modal.textPrimary,
       borderRadius: PROGRESS_BAR_HEIGHT / 2,
       position: 'relative',
     },
@@ -803,13 +836,13 @@ const createStyles = (theme: Theme) =>
       width: PROGRESS_THUMB_SIZE,
       height: PROGRESS_THUMB_SIZE,
       borderRadius: PROGRESS_THUMB_SIZE / 2,
-      backgroundColor: '#fff',
+      backgroundColor: theme.colors.modal.textPrimary,
       ...theme.shadows.sm,
     },
     speedMenu: {
       backgroundColor: 'rgba(0, 0, 0, 0.95)',
       borderTopWidth: theme.borderWidth.thin,
-      borderTopColor: 'rgba(255, 255, 255, 0.1)',
+      borderTopColor: theme.colors.modal.buttonBackground,
       paddingVertical: theme.spacing.xs,
       maxHeight: 300,
     },
@@ -820,15 +853,15 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
     },
     speedMenuItemActive: {
-      backgroundColor: 'rgba(29, 155, 240, 0.1)',
+      backgroundColor: theme.colors.modal.buttonActiveBackground,
     },
     speedMenuText: {
       fontSize: theme.typography.sizes.sm,
-      color: 'rgba(255, 255, 255, 0.7)',
+      color: theme.colors.modal.textSecondary,
       fontFamily: theme.typography.fonts.regular,
     },
     speedMenuTextActive: {
-      color: '#1d9bf0',
+      color: theme.colors.modal.buttonActiveColor,
       fontFamily: theme.typography.fonts.bold,
     },
   });

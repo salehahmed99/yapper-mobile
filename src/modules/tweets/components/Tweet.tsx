@@ -124,7 +124,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
 
           {tweet.parentTweet && (
             <View style={{ marginTop: theme.spacing.xs }}>
-              <ParentTweet tweet={tweet.parentTweet} />
+              <ParentTweet tweet={tweet.parentTweet} isVisible={isVisible} />
             </View>
           )}
 

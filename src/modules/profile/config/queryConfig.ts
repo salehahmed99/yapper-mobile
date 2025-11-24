@@ -1,13 +1,8 @@
-/**
- * Centralized query configuration for profile module
- * Provides consistent caching and performance settings across all profile queries
- */
-
 export const PROFILE_QUERY_CONFIG = {
   // Cache user profile data for 5 minutes
   userProfile: {
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   },
 
   // Cache tweets/posts data for 2 minutes (more dynamic content)
@@ -30,10 +25,6 @@ export const PROFILE_QUERY_CONFIG = {
   },
 } as const;
 
-/**
- * Query key factory for consistent query key generation
- * Prevents key mismatches and enables easy invalidation
- */
 export const profileQueryKeys = {
   all: ['profile'] as const,
 
