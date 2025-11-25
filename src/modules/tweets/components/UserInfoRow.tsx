@@ -30,7 +30,7 @@ const UserInfoRow: React.FC<IUserInfoRowProps> = (props) => {
   );
 };
 
-export default UserInfoRow;
+export default React.memo(UserInfoRow);
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({

@@ -306,7 +306,7 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({ images, videos, tweetId, isVis
   );
 };
 
-export default TweetMedia;
+export default React.memo(TweetMedia);
 
 const MEDIA_GAP = 2;
 const SINGLE_MEDIA_MAX_HEIGHT = 400;

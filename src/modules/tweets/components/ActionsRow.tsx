@@ -85,7 +85,7 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
   );
 };
 
-export default ActionsRow;
+export default React.memo(ActionsRow);
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({

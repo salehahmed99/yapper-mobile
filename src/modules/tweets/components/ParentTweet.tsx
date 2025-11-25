@@ -38,7 +38,7 @@ const ParentTweet: React.FC<IParentTweetProps> = (props) => {
   );
 };
 
-export default ParentTweet;
+export default React.memo(ParentTweet);
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({

@@ -146,7 +146,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
   );
 };
 
-export default Tweet;
+export default React.memo(Tweet);
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({

@@ -1,11 +1,8 @@
 import QueryWrapper from '@/src/components/QueryWrapper';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { router, useLocalSearchParams, useSegments } from 'expo-router';
-import React, { useState } from 'react';
-import CreatePostModal from '../components/CreatePostModal';
+import React from 'react';
 import FullTweet from '../components/FullTweet';
-import RepostOptionsModal from '../components/RepostOptionsModal';
 import Tweet from '../components/Tweet';
 import { useTweet } from '../hooks/useTweet';
 import { useTweetActions } from '../hooks/useTweetActions';
@@ -16,11 +13,17 @@ type TweetContainerProps =
       tweet: ITweet;
       tweetId?: never;
       isVisible?: boolean;
+      onOpenReplyModal?: (tweet: ITweet) => void;
+      onOpenQuoteModal?: (tweet: ITweet) => void;
+      onOpenRepostSheet?: (tweet: ITweet) => void;
     }
   | {
       tweet?: never;
       tweetId: string;
       isVisible?: boolean;
+      onOpenReplyModal?: (tweet: ITweet) => void;
+      onOpenQuoteModal?: (tweet: ITweet) => void;
+      onOpenRepostSheet?: (tweet: ITweet) => void;
     };
 
 const TweetContainer: React.FC<TweetContainerProps> = (props) => {
@@ -30,14 +33,7 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
   const params = useLocalSearchParams();
   const currentProfileId = (segments as string[]).includes('(profile)') ? params.id : null;
 
-  const { likeMutation, repostMutation, replyToPostMutation, quotePostMutation } = useTweetActions(
-    props.tweetId ?? props.tweet.tweetId,
-  );
-
-  const handleReply = async (content: string, mediaUris?: string[]) => {
-    // TODO: Implement reply functionality
-    replyToPostMutation.mutate({ content, mediaUris });
-  };
+  const { likeMutation } = useTweetActions(props.tweetId ?? props.tweet.tweetId);
 
   const handleLike = (isLiked: boolean) => {
     const id = props.tweetId ?? props.tweet?.tweetId;
@@ -45,21 +41,6 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
       likeMutation.mutate({ tweetId: id, isLiked: isLiked });
     }
   };
-  const handleRepost = (isReposted: boolean) => {
-    const id = props.tweetId ?? props.tweet?.tweetId;
-    if (id) {
-      repostMutation.mutate({ tweetId: id, isReposted: isReposted });
-    }
-  };
-
-  const handleQuote = (content: string, mediaUris?: string[]) => {
-    // TODO: Implement quote functionality
-    quotePostMutation.mutate({ content, mediaUris });
-  };
-  // const handleDeletePost = () => {
-  //   // TODO: Implement delete post functionality
-  //   deletePostMutation.mutate();
-  // };
 
   const handleTweetPress = (tweetId: string) => {
     router.push({
@@ -79,14 +60,12 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
     }
   };
 
-  const handleReplyPress = () => {
-    setCreatePostType('reply');
-    setIsCreatePostModalVisible(true);
+  const handleReplyPress = (tweet: ITweet) => {
+    props.onOpenReplyModal?.(tweet);
   };
 
-  const handleQuotePress = () => {
-    setCreatePostType('quote');
-    setIsCreatePostModalVisible(true);
+  const handleRepostSheetOpen = (tweet: ITweet) => {
+    props.onOpenRepostSheet?.(tweet);
   };
 
   const handleViewPostInteractions = (tweetId: string, ownerId: string) => {
@@ -108,49 +87,20 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
     // TODO: Implement share functionality
   };
 
-  const [isCreatePostModalVisible, setIsCreatePostModalVisible] = useState(false);
-
-  const [createPostType, setCreatePostType] = useState<'tweet' | 'quote' | 'reply'>('tweet');
-
-  const bottomSheetModalRef = React.useRef<BottomSheetModal>(null);
-
-  const openSheet = () => {
-    bottomSheetModalRef.current?.present();
-  };
-
   if (props.tweetId) {
     return (
       <QueryWrapper query={tweetQuery}>
         {(fetchedTweet) => (
-          <>
-            <FullTweet
-              tweet={fetchedTweet}
-              onReplyPress={handleReplyPress}
-              onLike={handleLike}
-              onViewPostInteractions={handleViewPostInteractions}
-              onBookmark={handleBookmark}
-              onShare={handleShare}
-              openSheet={openSheet}
-              onAvatarPress={handleAvatarPress}
-            />
-
-            <CreatePostModal
-              visible={isCreatePostModalVisible}
-              onClose={() => setIsCreatePostModalVisible(false)}
-              type={createPostType}
-              tweet={fetchedTweet}
-              onPost={createPostType === 'reply' ? handleReply : handleQuote}
-              onRepost={() => handleRepost(fetchedTweet.isReposted)}
-            />
-
-            <RepostOptionsModal
-              isReposted={fetchedTweet.isReposted}
-              onRepostPress={() => handleRepost(fetchedTweet.isReposted)}
-              onQuotePress={handleQuotePress}
-              onViewInteractionsPress={() => handleViewPostInteractions(fetchedTweet.tweetId, fetchedTweet.user.id)}
-              bottomSheetModalRef={bottomSheetModalRef}
-            />
-          </>
+          <FullTweet
+            tweet={fetchedTweet}
+            onReplyPress={() => handleReplyPress(fetchedTweet)}
+            onLike={handleLike}
+            onViewPostInteractions={handleViewPostInteractions}
+            onBookmark={handleBookmark}
+            onShare={handleShare}
+            openSheet={() => handleRepostSheetOpen(fetchedTweet)}
+            onAvatarPress={handleAvatarPress}
+          />
         )}
       </QueryWrapper>
     );
@@ -158,37 +108,38 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
 
   if (props.tweet)
     return (
-      <>
-        <Tweet
-          tweet={props.tweet}
-          onReplyPress={handleReplyPress}
-          onLike={handleLike}
-          onViewPostInteractions={handleViewPostInteractions}
-          onBookmark={handleBookmark}
-          onShare={handleShare}
-          openSheet={openSheet}
-          isVisible={props.isVisible}
-          onTweetPress={handleTweetPress}
-          onAvatarPress={handleAvatarPress}
-        />
-        <CreatePostModal
-          visible={isCreatePostModalVisible}
-          onClose={() => setIsCreatePostModalVisible(false)}
-          type={createPostType}
-          tweet={props.tweet}
-          onPost={createPostType === 'reply' ? handleReply : handleQuote}
-          onRepost={() => handleRepost(props.tweet.isReposted)}
-        />
-
-        <RepostOptionsModal
-          isReposted={props.tweet.isReposted}
-          onRepostPress={() => handleRepost(props.tweet.isReposted)}
-          onQuotePress={handleQuotePress}
-          onViewInteractionsPress={() => handleViewPostInteractions(props.tweet.tweetId, props.tweet.user.id)}
-          bottomSheetModalRef={bottomSheetModalRef}
-        />
-      </>
+      <Tweet
+        tweet={props.tweet}
+        onReplyPress={() => handleReplyPress(props.tweet)}
+        onLike={handleLike}
+        onViewPostInteractions={handleViewPostInteractions}
+        onBookmark={handleBookmark}
+        onShare={handleShare}
+        openSheet={() => handleRepostSheetOpen(props.tweet)}
+        isVisible={props.isVisible}
+        onTweetPress={handleTweetPress}
+        onAvatarPress={handleAvatarPress}
+      />
     );
 };
 
-export default TweetContainer;
+const arePropsEqual = (prevProps: TweetContainerProps, nextProps: TweetContainerProps) => {
+  if (prevProps.tweetId && nextProps.tweetId) {
+    return prevProps.tweetId === nextProps.tweetId;
+  }
+
+  if (prevProps.tweet && nextProps.tweet) {
+    return (
+      prevProps.tweet.tweetId === nextProps.tweet.tweetId &&
+      prevProps.tweet.isLiked === nextProps.tweet.isLiked &&
+      prevProps.tweet.isReposted === nextProps.tweet.isReposted &&
+      prevProps.tweet.likesCount === nextProps.tweet.likesCount &&
+      prevProps.tweet.repostsCount === nextProps.tweet.repostsCount &&
+      prevProps.tweet.repliesCount === nextProps.tweet.repliesCount
+    );
+  }
+
+  return false;
+};
+
+export default React.memo(TweetContainer, arePropsEqual);
