@@ -1,3 +1,4 @@
+import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import useMargins from '@/src/hooks/useSpacing';
@@ -58,9 +59,7 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
             testID="full_tweet_avatar"
           >
             <Image
-              source={
-                tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : require('@/assets/images/avatar-placeholder.png')
-              }
+              source={tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : DEFAULT_AVATAR_URL}
               style={styles.avatar}
               accessibilityLabel="full_tweet_image_avatar"
             />

@@ -7,6 +7,7 @@ import { MoreHorizontal } from 'lucide-react-native';
 import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { DEFAULT_AVATAR_URI } from '../../profile/utils/edit-profile.utils';
 import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
 import ParentTweet from './ParentTweet';
@@ -89,9 +90,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
             testID="tweet_avatar"
           >
             <Image
-              source={
-                tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : require('@/assets/images/avatar-placeholder.png')
-              }
+              source={tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : DEFAULT_AVATAR_URI}
               style={styles.avatar}
               accessibilityLabel="tweet_image_avatar"
               cachePolicy="memory-disk"
