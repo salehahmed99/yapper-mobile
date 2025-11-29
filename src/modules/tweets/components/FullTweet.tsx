@@ -1,10 +1,12 @@
+import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import useMargins from '@/src/hooks/useSpacing';
 import { formatDateDDMMYYYY, formatShortTime } from '@/src/utils/dateUtils';
 import { formatCount } from '@/src/utils/formatCount';
 import { Image } from 'expo-image';
 import React, { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
 import ParentTweet from './ParentTweet';
@@ -35,15 +37,20 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
+  const { bottom } = useMargins();
+
   const [isBookmarked, setIsBookmarked] = useState(false);
 
   return (
-    <View style={styles.container} accessibilityLabel="full_tweet_container_main" testID="full_tweet_container_main">
+    <ScrollView
+      style={[styles.container, { marginBottom: bottom }]}
+      accessibilityLabel="full_tweet_container_main"
+      testID="full_tweet_container_main"
+    >
       {tweet.type === 'repost' && (
         <RepostIndicator repostById={tweet.repostedBy?.id} repostedByName={tweet.repostedBy?.name} />
       )}
 
-      {/* User Info Header */}
       <View style={styles.header}>
         <View style={styles.userInfoContainer}>
           <Pressable
@@ -52,46 +59,61 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
             testID="full_tweet_avatar"
           >
             <Image
-              source={
-                tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : require('@/assets/images/avatar-placeholder.png')
-              }
+              source={tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : DEFAULT_AVATAR_URL}
               style={styles.avatar}
               accessibilityLabel="full_tweet_image_avatar"
             />
           </Pressable>
           <View style={styles.userDetails}>
-            <Text style={styles.name}>{tweet.user.name}</Text>
-            <Text style={styles.username}>@{tweet.user.username}</Text>
+            <Text style={styles.name} accessibilityLabel="full_tweet_user_name" testID="full_tweet_user_name">
+              {tweet.user.name}
+            </Text>
+            <Text
+              style={styles.username}
+              accessibilityLabel="full_tweet_user_username"
+              testID="full_tweet_user_username"
+            >
+              @{tweet.user.username}
+            </Text>
           </View>
         </View>
       </View>
 
-      {/* Tweet Content */}
       <View style={styles.contentSection}>
-        <Text style={styles.tweetText}>{tweet.content}</Text>
+        <Text style={styles.tweetText} accessibilityLabel="full_tweet_content_text" testID="full_tweet_content_text">
+          {tweet.content}
+        </Text>
       </View>
 
-      {/* Tweet Media */}
       {(tweet.images.length > 0 || tweet.videos.length > 0) && (
         <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} isVisible={true} />
       )}
 
-      {/* Parent Tweet (Quote) */}
-      {tweet.parentTweet && <ParentTweet tweet={tweet.parentTweet} />}
+      {tweet.parentTweet && (
+        <View style={{ marginTop: theme.spacing.xs }}>
+          <ParentTweet tweet={tweet.parentTweet} />
+        </View>
+      )}
 
-      {/* iOS-style Timestamp with Views */}
-      <View style={styles.timestampViewsSection}>
-        <Text style={styles.timestampText}>{formatShortTime(tweet.createdAt)}</Text>
+      <View
+        style={styles.timestampViewsSection}
+        accessibilityLabel="full_tweet_timestamp_views"
+        testID="full_tweet_timestamp_views"
+      >
+        <Text style={styles.timestampText} accessibilityLabel="full_tweet_time" testID="full_tweet_time">
+          {formatShortTime(tweet.createdAt)}
+        </Text>
         <View style={styles.dot}></View>
-        <Text style={styles.timestampText}>{formatDateDDMMYYYY(tweet.createdAt)}</Text>
+        <Text style={styles.timestampText} accessibilityLabel="full_tweet_date" testID="full_tweet_date">
+          {formatDateDDMMYYYY(tweet.createdAt)}
+        </Text>
         <View style={styles.dot}></View>
-        <Text style={styles.viewsCount}>
+        <Text style={styles.viewsCount} accessibilityLabel="full_tweet_views_count" testID="full_tweet_views_count">
           {formatCount(tweet.viewsCount)}
           <Text style={styles.timestampText}> Views</Text>{' '}
         </Text>
       </View>
 
-      {/* Actions Row */}
       <View style={styles.actionsSection}>
         <ActionsRow
           tweet={tweet}
@@ -104,7 +126,7 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
           onSharePress={onShare}
         />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

@@ -46,14 +46,12 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
   const [newCoverUri, setNewCoverUri] = useState<string | null>(null);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
 
-  // Local state for modal preview - separate from parent state
   const [localAvatarUri, setLocalAvatarUri] = useState(imageUri);
   const [localBannerUri, setLocalBannerUri] = useState(bannerUri);
 
   const { theme } = useTheme();
   const editModalStyles = useMemo(() => createEditModalStyles(theme), [theme]);
 
-  // Update local state when modal opens with current values
   React.useEffect(() => {
     if (visible) {
       setLocalAvatarUri(imageUri);
@@ -63,14 +61,12 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
 
   const handleAvatarChange = () => {
     showImagePickerOptions(
-      true, // isAvatar
+      true,
       (uri) => {
-        // Only update local modal state, not parent
         setLocalAvatarUri(uri);
         setNewAvatarUri(uri);
       },
       async () => {
-        // Mark for deletion by setting to default
         setLocalAvatarUri(DEFAULT_AVATAR_URL);
         setNewAvatarUri(DEFAULT_AVATAR_URL);
       },
@@ -79,14 +75,12 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
 
   const handleBannerChange = () => {
     showImagePickerOptions(
-      false, // isBanner
+      false,
       (uri) => {
-        // Only update local modal state, not parent
         setLocalBannerUri(uri);
         setNewCoverUri(uri);
       },
       async () => {
-        // Mark for deletion by setting to default
         setLocalBannerUri(DEFAULT_BANNER_URL);
         setNewCoverUri(DEFAULT_BANNER_URL);
       },
@@ -104,42 +98,40 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
   };
 
   const handleSave = async () => {
+    if (!updatedUser.name.trim()) {
+      Alert.alert('Error', 'Name cannot be empty');
+      return;
+    }
+
     setIsSaving(true);
     try {
       let avatarUrl: string | undefined | null;
       let coverUrl: string | undefined | null;
 
-      // Handle avatar changes
       if (newAvatarUri) {
         if (newAvatarUri === DEFAULT_AVATAR_URL) {
-          // User deleted the avatar, delete from server and send null
           if (user?.avatarUrl && user.avatarUrl !== DEFAULT_AVATAR_URL) {
             await deleteAvatar(user.avatarUrl);
           }
           avatarUrl = null;
         } else if (newAvatarUri.startsWith('file://') || newAvatarUri.startsWith('content://')) {
-          // User selected a new avatar, upload it
           const uploadResponse = await uploadAvatar(newAvatarUri);
           avatarUrl = uploadResponse.imageUrl;
         }
       }
 
-      // Handle cover changes
       if (newCoverUri) {
         if (newCoverUri === DEFAULT_BANNER_URL) {
-          // User deleted the cover, delete from server and send null
           if (user?.coverUrl && user.coverUrl !== DEFAULT_BANNER_URL) {
             await deleteCover(user.coverUrl);
           }
           coverUrl = null;
         } else if (newCoverUri.startsWith('file://') || newCoverUri.startsWith('content://')) {
-          // User selected a new cover, upload it
           const uploadResponse = await uploadCover(newCoverUri);
           coverUrl = uploadResponse.imageUrl;
         }
       }
 
-      // Update profile with all data
       const profileData: {
         name: string;
         bio: string;
@@ -159,11 +151,9 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
       await updateUserProfile(profileData);
       await fetchAndUpdateUser();
 
-      // Update parent state with final values
       onImageChange(localAvatarUri);
       onBannerChange(localBannerUri);
 
-      // Reset local state
       setNewAvatarUri(null);
       setNewCoverUri(null);
 

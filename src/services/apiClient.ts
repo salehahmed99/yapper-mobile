@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { router } from 'expo-router';
 import humps from 'humps';
-import { getToken } from '../utils/secureStorage';
+import { deleteToken, getToken } from '../utils/secureStorage';
 
 const api = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL,
@@ -33,18 +33,48 @@ api.interceptors.response.use(
   },
   async (error) => {
     const status = error?.response?.status;
+    const originalRequest = error?.config;
+    const requestUrl = originalRequest?.url;
 
-    const requestUrl = error?.config?.url;
+    // Handle 401/403 errors
+    if (
+      (status === 401 || status === 403) &&
+      requestUrl &&
+      !requestUrl.includes('/login') &&
+      !requestUrl.includes('/refresh')
+    ) {
+      if (originalRequest._retry === true) {
+        await _handleLogout();
+        return Promise.reject(error);
+      }
 
-    // check for unauthorized or forbidden
-    if ((status === 401 || status === 403) && requestUrl && !requestUrl.includes('/login')) {
-      const { useAuthStore } = await import('../store/useAuthStore');
-      useAuthStore.getState().logout();
-      router.replace('/(auth)/landing-screen');
+      originalRequest._retry = true;
+
+      try {
+        const { tokenRefreshService } = await import('./tokenRefreshService');
+        const newToken = await tokenRefreshService.refreshToken();
+
+        if (newToken) {
+          return api(originalRequest);
+        } else {
+          await _handleLogout();
+          return Promise.reject(error);
+        }
+      } catch {
+        await _handleLogout();
+        return Promise.reject(error);
+      }
     }
 
     return Promise.reject(error);
   },
 );
+
+async function _handleLogout() {
+  await deleteToken();
+  const { useAuthStore } = await import('../store/useAuthStore');
+  useAuthStore.getState().logout();
+  router.replace('/(auth)/landing-screen');
+}
 
 export default api;

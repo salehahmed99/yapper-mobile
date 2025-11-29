@@ -41,6 +41,7 @@ const AppBar: React.FC<IAppBarProps> = (props) => {
                 <Pressable
                   onPress={toggleSideMenu}
                   accessibilityLabel={t('accessibility.openMenu')}
+                  testID="appbar_menu_button"
                   accessibilityRole="button"
                   style={styles.avatarButton}
                 >
@@ -84,7 +85,7 @@ const createStyles = (theme: Theme) =>
       flexDirection: 'column',
       alignItems: 'center',
       paddingHorizontal: theme.spacing.md,
-      backgroundColor: theme.colors.background.primary + '6F',
+      backgroundColor: theme.colors.background.primary + 'DF',
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.border,
     },

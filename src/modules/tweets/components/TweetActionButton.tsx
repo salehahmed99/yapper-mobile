@@ -35,7 +35,13 @@ const TweetActionButton: React.FC<ITweetActionButtonProps> = (props) => {
         strokeWidth={0}
       />
       {count ? (
-        <Text style={[styles.actionCount, { color: color || theme.colors.text.secondary }]}>{formatCount(count)}</Text>
+        <Text
+          style={[styles.actionCount, { color: color || theme.colors.text.secondary }]}
+          accessibilityLabel={`${accessibilityLabel}_count`}
+          testID={`${testID}_count`}
+        >
+          {formatCount(count)}
+        </Text>
       ) : null}
     </Pressable>
   );

@@ -1,3 +1,4 @@
+import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import BottomToolBar from '@/src/modules/tweets/components/BottomToolBar';
@@ -10,8 +11,9 @@ import { MediaAsset, pickMediaFromLibrary, showCameraOptions } from '@/src/modul
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Image } from 'expo-image';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ParentTweet from './ParentTweet';
 import ParentTweetV2 from './ParentTweetV2';
 
@@ -39,19 +41,37 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
 
   const textInputRef = useRef<TextInput>(null);
 
+  // Clear all form state when modal closes
+  useEffect(() => {
+    if (!visible) {
+      setTweetText('');
+      setMedia([]);
+      setReplyRestriction('Everyone');
+    }
+  }, [visible]);
+
   const characterCount = tweetText.length;
   const remainingCharacters = MAX_TWEET_LENGTH - characterCount;
   const progressPercentage = (characterCount / MAX_TWEET_LENGTH) * 100;
   const canPost = (characterCount > 0 || type === 'quote') && characterCount <= MAX_TWEET_LENGTH;
+  const insets = useSafeAreaInsets();
+
+  const resetTweetState = () => {
+    setTweetText('');
+    setMedia([]);
+    setReplyRestriction('Everyone');
+  };
 
   const handlePost = async () => {
     if (type === 'quote' && characterCount === 0 && onRepost) {
       onRepost();
+      resetTweetState();
       onClose();
       return;
     }
     const mediaUris = media.map((m) => m.uri);
     onPost(tweetText, mediaUris);
+    resetTweetState();
     onClose();
   };
 
@@ -83,9 +103,12 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
 
   const handleSelectReplyRestriction = (option: ReplyRestrictionOptions) => {
     setReplyRestriction(option);
-    setTimeout(() => {
-      textInputRef.current?.focus();
-    }, 300);
+    textInputRef.current?.focus();
+  };
+
+  const handleClosePostModal = () => {
+    resetTweetState();
+    onClose();
   };
 
   const getPlaceholderText = () => {
@@ -100,31 +123,27 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
   };
 
   return (
-    <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
+    <Modal visible={visible} animationType="slide" onRequestClose={onClose} presentationStyle="overFullScreen">
       <BottomSheetModalProvider>
-        <KeyboardAvoidingView
-          style={styles.container}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={0}
-        >
-          <CreatePostHeader canPost={canPost} handleCancel={onClose} handlePost={handlePost} />
-          <ScrollView
-            style={styles.content}
-            contentContainerStyle={styles.contentContainer}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={true}
-          >
-            {tweet && type === 'reply' && <ParentTweetV2 tweet={tweet} />}
-            {/* Profile Picture and Text Input */}
-            <View style={styles.composeSection}>
-              <Image
-                source={{
-                  uri: user?.avatarUrl || 'https://randomuser.me/api/portraits/men/1.jpg',
-                }}
-                style={styles.avatar}
-              />
-              <View style={styles.postContentContainer}>
-                {
+        <View style={[styles.container, { paddingBottom: insets.bottom }]}>
+          <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+            <CreatePostHeader canPost={canPost} handleCancel={handleClosePostModal} handlePost={handlePost} />
+            <ScrollView
+              style={{ flex: 1 }}
+              contentContainerStyle={{ flexGrow: 1 }}
+              keyboardShouldPersistTaps="always"
+              showsVerticalScrollIndicator={true}
+            >
+              {tweet && type === 'reply' && <ParentTweetV2 tweet={tweet} />}
+              {/* Profile Picture and Text Input */}
+              <View style={styles.composeSection}>
+                <Image
+                  source={{
+                    uri: user?.avatarUrl || DEFAULT_AVATAR_URL,
+                  }}
+                  style={styles.avatar}
+                />
+                <View style={styles.postContentContainer}>
                   <TextInput
                     ref={textInputRef}
                     style={styles.textInput}
@@ -140,33 +159,30 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
                     testID="create_post_text_input"
                     accessibilityLabel="create_post_text_input"
                   />
-                }
-                {tweet && type === 'quote' && <ParentTweet tweet={tweet} />}
-                {/* Media Picker */}
-                {media.length > 0 && <TweetMediaPicker media={media} onRemoveMedia={handleRemoveMedia} />}
+                  {tweet && type === 'quote' && <ParentTweet tweet={tweet} />}
+                  {/* Media Picker */}
+                  {media.length > 0 && <TweetMediaPicker media={media} onRemoveMedia={handleRemoveMedia} />}
+                </View>
               </View>
-            </View>
-          </ScrollView>
+            </ScrollView>
 
-          {/* Reply Restriction Selector */}
-          <ReplyRestrictionSelector selectedOption={replyRestriction} onPress={handleOpenReplyModal} />
+            <ReplyRestrictionSelector selectedOption={replyRestriction} onPress={handleOpenReplyModal} />
 
-          {/* Bottom Toolbar */}
-          <BottomToolBar
-            remainingCharacters={remainingCharacters}
-            progressPercentage={progressPercentage}
-            onGalleryPress={handleOpenGallery}
-            onCameraPress={handleOpenCamera}
-            mediaCount={media.length}
-          />
+            <BottomToolBar
+              remainingCharacters={remainingCharacters}
+              progressPercentage={progressPercentage}
+              onGalleryPress={handleOpenGallery}
+              onCameraPress={handleOpenCamera}
+              mediaCount={media.length}
+            />
 
-          {/* Reply Restriction Modal */}
-          <ReplyRestrictionModal
-            bottomSheetRef={replyRestrictionModalRef}
-            selectedOption={replyRestriction}
-            onSelect={handleSelectReplyRestriction}
-          />
-        </KeyboardAvoidingView>
+            <ReplyRestrictionModal
+              bottomSheetRef={replyRestrictionModalRef}
+              selectedOption={replyRestriction}
+              onSelect={handleSelectReplyRestriction}
+            />
+          </KeyboardAvoidingView>
+        </View>
       </BottomSheetModalProvider>
     </Modal>
   );
@@ -177,13 +193,6 @@ const createStyles = (theme: Theme) =>
     container: {
       flex: 1,
       backgroundColor: theme.colors.background.primary,
-    },
-    content: {
-      flex: 1,
-    },
-    contentContainer: {
-      flexGrow: 1,
-      paddingBottom: theme.spacing.xxl,
     },
     composeSection: {
       flexDirection: 'row',

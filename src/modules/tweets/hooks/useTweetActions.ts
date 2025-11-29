@@ -63,12 +63,10 @@ export const useTweetActions = (tweetId: string) => {
       queryClient.setQueryData<ITweet>(tweetDetailsQueryKey, (oldData) => (oldData ? toggleLike(oldData) : oldData));
     },
 
-    onSuccess: (_, variables) => {
-      // Also invalidate individual tweet query to sync with media viewer
-      queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
-      queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
     },
+
     onError: (error) => {
       console.log('Error updating like status:', error);
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
@@ -97,12 +95,10 @@ export const useTweetActions = (tweetId: string) => {
       queryClient.setQueryData<ITweet>(tweetDetailsQueryKey, (oldData) => (oldData ? toggleRepost(oldData) : oldData));
     },
 
-    onSuccess: (_, variables) => {
-      // Also invalidate individual tweet query to sync with media viewer
-      queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
-      queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
     },
+
     onError: (error) => {
       console.log('Error updating repost status:', error);
 
@@ -122,6 +118,8 @@ export const useTweetActions = (tweetId: string) => {
     },
     onError: () => {
       // Error creating tweet
+      queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
   });
 
@@ -132,10 +130,11 @@ export const useTweetActions = (tweetId: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
-      queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
     },
     onError: () => {
       // Error replying to tweet
+      queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
   });
 
@@ -149,6 +148,8 @@ export const useTweetActions = (tweetId: string) => {
     },
     onError: () => {
       // Error quoting tweet
+      queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
   });
 
@@ -163,6 +164,8 @@ export const useTweetActions = (tweetId: string) => {
     },
     onError: () => {
       // Error deleting tweet
+      queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
   });
 

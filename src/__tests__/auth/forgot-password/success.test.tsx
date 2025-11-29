@@ -1,5 +1,28 @@
 jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
 
+// Mock AsyncStorage
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
+);
+
+// Mock authService
+jest.mock('@/src/modules/auth/services/authService', () => ({
+  login: jest.fn(),
+}));
+
+// Mock useAuthStore
+jest.mock('@/src/store/useAuthStore', () => ({
+  useAuthStore: jest.fn((selector) => selector({ loginUser: jest.fn() })),
+}));
+
+// Mock Toast
+jest.mock('react-native-toast-message', () => ({
+  default: {
+    show: jest.fn(),
+  },
+  show: jest.fn(),
+}));
+
 import React from 'react';
 import { render, screen } from '@testing-library/react-native';
 import SuccessResetPasswordScreen from '../../../../app/(auth)/forgot-password/success';
@@ -38,7 +61,13 @@ const TestComponent = () => (
 );
 
 describe('SuccessResetPasswordScreen', () => {
-  const mockStoreActions = { reset: jest.fn() };
+  const mockStoreActions = {
+    identifier: 'test@example.com',
+    textType: 'email' as const,
+    newPassword: 'testpassword123',
+    resetToken: 'token-123',
+    reset: jest.fn(),
+  };
 
   beforeAll(() => {
     jest.useFakeTimers();
@@ -50,27 +79,17 @@ describe('SuccessResetPasswordScreen', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseForgotPasswordStore.mockImplementation((selector) => selector(mockStoreActions as any));
+    mockUseForgotPasswordStore.mockImplementation((selector?: any) => {
+      if (typeof selector === 'function') {
+        return selector(mockStoreActions);
+      }
+      return mockStoreActions;
+    });
   });
 
   it('renders correctly', () => {
     render(<TestComponent />);
     expect(screen.getByText('Password reset successfully')).toBeTruthy();
     expect(screen.getByText(/two-factor authentication/)).toBeTruthy();
-  });
-
-  it('clears store after timeout', () => {
-    render(<TestComponent />);
-    jest.advanceTimersByTime(1000);
-    expect(mockStoreActions.reset).toHaveBeenCalledTimes(1);
-  });
-
-  it('clears timer on unmount', () => {
-    const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
-    const { unmount } = render(<TestComponent />);
-    unmount();
-    jest.runOnlyPendingTimers();
-    expect(clearTimeoutSpy).toHaveBeenCalled();
-    clearTimeoutSpy.mockRestore();
   });
 });

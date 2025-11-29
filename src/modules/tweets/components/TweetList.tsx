@@ -1,8 +1,8 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import useSpacing, { useSpacingWithoutSafeArea } from '@/src/hooks/useSpacing';
 import { useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, RefreshControlProps, StyleSheet, View, ViewToken } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TweetContainer from '../containers/TweetContainer';
 import { ITweet } from '../types';
 
@@ -13,10 +13,22 @@ interface ITweetListProps {
   onEndReachedThreshold?: number;
   isLoading?: boolean;
   isFetchingNextPage?: boolean;
+  topSpacing?: number;
+  bottomSpacing?: number;
 }
 const TweetList: React.FC<ITweetListProps> = (props) => {
-  const { data, refreshControl, onEndReached, onEndReachedThreshold, isLoading, isFetchingNextPage } = props;
+  const {
+    data,
+    refreshControl,
+    onEndReached,
+    onEndReachedThreshold,
+    isLoading,
+    isFetchingNextPage,
+    topSpacing = 0,
+    bottomSpacing = 0,
+  } = props;
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [visibleTweetIds, setVisibleTweetIds] = useState<Set<string>>(new Set());
 
@@ -28,22 +40,28 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
   }).current;
 
   const viewabilityConfig = useRef({
-    itemVisiblePercentThreshold: 50, // Item is considered visible when 50% is in view
+    itemVisiblePercentThreshold: 90, // Item is considered visible when 90% is in view
     waitForInteraction: false,
   }).current;
 
-  const { top, bottom } = useSpacing();
-  const { top: topWithoutSafeArea, bottom: bottomWithoutSafeArea } = useSpacingWithoutSafeArea();
+  const renderHeader = () => {
+    if (topSpacing > 0) {
+      return <View style={{ height: topSpacing }} />;
+    }
+    return null;
+  };
 
   const renderFooter = () => {
-    if (isFetchingNextPage) {
-      return (
-        <View style={styles.loadingFooter}>
-          <ActivityIndicator size="small" color={theme.colors.text.primary} />
-        </View>
-      );
-    }
-    return <View style={{ height: bottom }}></View>;
+    return (
+      <View>
+        {isFetchingNextPage && (
+          <View style={styles.loadingFooter}>
+            <ActivityIndicator size="small" color={theme.colors.text.primary} />
+          </View>
+        )}
+        {bottomSpacing > 0 && <View style={{ height: bottomSpacing }} />}
+      </View>
+    );
   };
 
   if (isLoading) {
@@ -57,8 +75,6 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
   return (
     <FlatList
       style={{ flex: 1 }}
-      contentInset={{ top, bottom: 0 }}
-      contentOffset={{ x: 0, y: -top }}
       data={data}
       renderItem={({ item }) => <TweetContainer tweet={item} isVisible={visibleTweetIds.has(item.tweetId)} />}
       keyExtractor={(item, index) => {
@@ -68,11 +84,12 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
           return `${item.tweetId}-${index}`;
         }
       }}
-      scrollIndicatorInsets={{ top: topWithoutSafeArea, bottom: bottomWithoutSafeArea }}
+      scrollIndicatorInsets={{ top: topSpacing - insets.top, bottom: bottomSpacing - insets.bottom }}
       refreshControl={refreshControl}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
       accessibilityLabel="tweet_list_feed"
       testID="tweet_list_feed"
+      ListHeaderComponent={renderHeader}
       ListFooterComponent={renderFooter}
       onEndReached={onEndReached}
       onEndReachedThreshold={onEndReachedThreshold ?? 0.5}

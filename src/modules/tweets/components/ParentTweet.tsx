@@ -1,21 +1,34 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Image } from 'expo-image';
+import { router } from 'expo-router';
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ITweet } from '../types';
 import TweetMedia from './TweetMedia';
 import UserInfoRow from './UserInfoRow';
 
 interface IParentTweetProps {
   tweet: ITweet;
+  isVisible?: boolean;
 }
 const ParentTweet: React.FC<IParentTweetProps> = (props) => {
-  const { tweet } = props;
+  const { tweet, isVisible = true } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   return (
-    <View style={styles.container} accessibilityLabel="tweet_container_parent">
+    <Pressable
+      style={styles.container}
+      accessibilityLabel="tweet_container_parent"
+      onPress={() => {
+        router.push({
+          pathname: '/(protected)/tweets/[tweetId]',
+          params: {
+            tweetId: tweet.tweetId,
+          },
+        });
+      }}
+    >
       <View style={styles.userInfo}>
         <Image
           source={
@@ -32,9 +45,15 @@ const ParentTweet: React.FC<IParentTweetProps> = (props) => {
 
       {/* Tweet Media */}
       {(tweet.images.length > 0 || tweet.videos.length > 0) && (
-        <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} isVisible={true} />
+        <TweetMedia
+          images={tweet.images}
+          videos={tweet.videos}
+          tweetId={tweet.tweetId}
+          isVisible={isVisible}
+          isParentMedia={true}
+        />
       )}
-    </View>
+    </Pressable>
   );
 };
 

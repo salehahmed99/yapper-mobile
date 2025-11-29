@@ -80,6 +80,8 @@ const ResetPasswordScreen = () => {
       });
 
       if (succeeded) {
+        useForgotPasswordStore.getState().setNewPassword(newPassword);
+
         Toast.show({
           type: 'success',
           text1: t('auth.forgotPassword.successTitle'),
