@@ -12,11 +12,16 @@ const AppShell: React.FC = () => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const [anim] = React.useState(() => new Animated.Value(0));
+  const pathname = usePathname();
+
+  // Hide bottom nav on settings screen
+  const shouldShowBottomNav = !pathname.includes('/settings');
+
   return (
     <UiShellProvider>
       <View style={styles.container}>
         <SlidingShell styles={styles} theme={theme} anim={anim} />
-        <BottomNavigation anim={anim} />
+        {shouldShowBottomNav && <BottomNavigation anim={anim} />}
       </View>
     </UiShellProvider>
   );

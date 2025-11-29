@@ -88,6 +88,7 @@ export const borderRadius = {
   xxl: 20,
   full: 9999,
   rounded: 22,
+  fullRounded: 24,
 };
 
 export const borderWidth = {
