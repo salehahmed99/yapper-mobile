@@ -1,40 +1,41 @@
 import React, { useMemo } from 'react';
-import { View, ScrollView, StyleSheet, StatusBar } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
-import { SettingsSearchBar } from '@/src/modules/settings/components/SettingsSearchBar';
 import { SettingsSection } from '@/src/modules/settings/components/SettingsSection';
-import { SETTINGS_DATA } from '@/src/modules/settings/components/settingsConfig';
+import { YOUR_ACCOUNT_DATA } from '@/src/modules/settings/components/settingsConfig';
 import { ISettingsItem } from '@/src/modules/settings/types/types';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
 
-export const SettingsScreen: React.FC = () => {
-  const handleItemPress = (item: ISettingsItem) => {
-    if (item.route) {
-      router.push(`/(protected)/(settings)/${item.route}`);
-    }
-  };
-
+export const YourAccountScreen: React.FC = () => {
   const user = useAuthStore((state) => state.user);
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+
+  const handleItemPress = (item: ISettingsItem) => {
+    router.push(`/(protected)/(settings)/your-account/${item.route}`);
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      <StatusBar
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor={theme.colors.background.primary}
+      />
       <View style={styles.container}>
         {/* Header */}
-        <SettingsTopBar
-          title="Settings"
-          subtitle={`@${user?.username}`}
-          onBackPress={() => router.replace('/(protected)')}
-        />
+        <SettingsTopBar title="Your account" subtitle={`@${user?.username}`} onBackPress={() => router.back()} />
 
-        {/* Search Bar */}
-        <SettingsSearchBar />
+        {/* Description */}
+        <View style={styles.descriptionContainer}>
+          <Text style={styles.descriptionText}>
+            See information about your account, download an archive of your data, or learn about your account
+            deactivation options.
+          </Text>
+        </View>
 
         {/* Settings List */}
         <ScrollView
@@ -42,7 +43,7 @@ export const SettingsScreen: React.FC = () => {
           contentContainerStyle={styles.scrollViewContent}
           showsVerticalScrollIndicator={false}
         >
-          <SettingsSection items={SETTINGS_DATA} onItemPress={handleItemPress} />
+          <SettingsSection items={YOUR_ACCOUNT_DATA} onItemPress={handleItemPress} showIcons={true} />
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -59,6 +60,15 @@ const createStyles = (theme: Theme) =>
       flex: 1,
       backgroundColor: theme.colors.background.primary,
     },
+    descriptionContainer: {
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: theme.spacing.lg,
+    },
+    descriptionText: {
+      fontSize: theme.typography.sizes.sm,
+      color: theme.colors.text.secondary,
+      lineHeight: 20,
+    },
     scrollView: {
       flex: 1,
     },
@@ -67,4 +77,4 @@ const createStyles = (theme: Theme) =>
     },
   });
 
-export default SettingsScreen;
+export default YourAccountScreen;

@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 import { SettingsItem as SettingsItemComponent } from './SettingsItem';
-import { ISettingsItem as SettingsItemType } from '../types';
+import { ISettingsItem as SettingsItemType } from '../types/types';
 
 interface ISettingsSectionProps {
   items: SettingsItemType[];

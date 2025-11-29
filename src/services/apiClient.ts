@@ -41,7 +41,8 @@ api.interceptors.response.use(
       (status === 401 || status === 403) &&
       requestUrl &&
       !requestUrl.includes('/login') &&
-      !requestUrl.includes('/refresh')
+      !requestUrl.includes('/refresh') &&
+      !requestUrl.includes('/confirm-password')
     ) {
       if (originalRequest._retry === true) {
         await _handleLogout();

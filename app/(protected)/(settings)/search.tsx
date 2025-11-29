@@ -4,8 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SettingsSection } from '@/src/modules/settings/components/SettingsSection';
-import { SETTINGS_DATA } from '@/src/modules/settings/settingsConfig';
-import { ISettingsItem } from '@/src/modules/settings/types';
+import { SETTINGS_DATA } from '@/src/modules/settings/components/settingsConfig';
+import { ISettingsItem } from '@/src/modules/settings/types/types';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
 

@@ -11,3 +11,12 @@ export interface ISettingsSection {
   id: string;
   items: ISettingsItem[];
 }
+
+export interface IChangePasswordRequest {
+  oldPassword: string;
+  newPassword: string;
+}
+
+export interface IConfirmPasswordResetRequest {
+  password: string;
+}

@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
-import { ISettingsItem as SettingsItemType } from '../types';
+import { ISettingsItem as SettingsItemType } from '../types/types';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
 

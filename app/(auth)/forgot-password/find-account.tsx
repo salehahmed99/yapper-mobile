@@ -31,9 +31,13 @@ const FindAccountScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isNextEnabled, setIsNextEnabled] = useState(false);
 
-  // Reset store on mount (fresh start)
+  // Reset store on mount (fresh start) but preserve returnRoute
   useEffect(() => {
+    const currentReturnRoute = useForgotPasswordStore.getState().returnRoute;
     reset();
+    if (currentReturnRoute) {
+      useForgotPasswordStore.getState().setReturnRoute(currentReturnRoute);
+    }
   }, [reset]);
 
   useEffect(() => {
@@ -81,7 +85,14 @@ const FindAccountScreen = () => {
   };
 
   const handleTopBarBackPress = () => {
-    router.replace('/(auth)/landing-screen');
+    const returnRoute = useForgotPasswordStore.getState().returnRoute;
+    console.log('Return route:', returnRoute);
+    if (returnRoute) {
+      useForgotPasswordStore.getState().setReturnRoute(null);
+      router.back();
+    } else {
+      router.replace('/(auth)/landing-screen');
+    }
   };
 
   return (
