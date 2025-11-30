@@ -83,7 +83,11 @@
     "errorRetry": "حاول مرة أخرى",
     "followsYou": "يتابعك",
     "follow": "متابعة",
-    "following": "متابع"
+    "following": "متابع",
+    "mute": "كتم",
+    "unmute": "إلغاء الكتم",
+    "block": "حظر",
+    "unblock": "إلغاء الحظر"
   },
   "tweetActivity": {
     "title": "نشاط المنشور",
@@ -99,6 +103,8 @@
   },
   "profile": {
     "editProfile": "تعديل الملف الشخصي",
+    "blocked": "محظور",
+    "viewPosts": "عرض المنشورات",
     "follow": "متابعة",
     "following": "متابع",
     "followers": "متابعون",

@@ -25,7 +25,7 @@ export const SETTINGS_DATA: ISettingsItem[] = [
     icon: 'shield-checkmark-outline',
     iconFamily: 'Ionicons',
     description: 'Manage what information you see and share on X.',
-    route: 'PrivacySettings',
+    route: 'MuteAndBlock/MuteAndBlockScreen',
   },
   {
     id: 'accessibility',

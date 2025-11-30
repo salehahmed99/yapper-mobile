@@ -300,7 +300,11 @@
     "errorRetry": "Try again",
     "followsYou": "Follows you",
     "follow": "Follow",
-    "following": "Following"
+    "following": "Following",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "block": "Block",
+    "unblock": "Unblock"
   },
   "tweetActivity": {
     "title": "Post activity",
@@ -316,6 +320,8 @@
   },
   "profile": {
     "editProfile": "Edit profile",
+    "blocked": "Blocked",
+    "viewPosts": "View posts",
     "follow": "Follow",
     "following": "Following",
     "followers": "Followers",

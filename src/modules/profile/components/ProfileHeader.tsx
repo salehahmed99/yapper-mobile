@@ -9,6 +9,7 @@ import { useTheme } from '../../../context/ThemeContext';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { useBlockUser } from '../hooks/useBlockUser';
 import { useFollowUser } from '../hooks/useFollowUser';
+// import BlockButton from '@/src/modules/user_list/components/BlockButton';
 import { useMuteUser } from '../hooks/useMuteUser';
 import { getUserById } from '../services/profileService';
 import { createHeaderStyles } from '../styles/profile-header-styles';
@@ -24,7 +25,33 @@ type ProfileHeaderProps = {
   isOwnProfile?: boolean;
 };
 
-export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHeaderProps) {
+import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
+
+import { Theme } from '@/src/constants/theme';
+
+const blockedButtonStyles = (theme: Theme, headerStyles: any) =>
+  StyleSheet.create<{ button: ViewStyle; text: TextStyle }>({
+    button: {
+      ...headerStyles.editButton,
+      backgroundColor: 'transparent',
+      borderColor: theme.colors.error,
+      borderWidth: 1.5,
+    },
+    text: {
+      ...headerStyles.editText,
+      color: theme.colors.error,
+    },
+  });
+
+type ProfileHeaderPropsWithBlock = ProfileHeaderProps & {
+  onBlockStateChange?: (blocked: boolean) => void;
+};
+
+export default function ProfileHeader({
+  userId,
+  isOwnProfile = true,
+  onBlockStateChange,
+}: ProfileHeaderPropsWithBlock) {
   const { t } = useTranslation();
   const currentUser = useAuthStore((state) => state.user);
 
@@ -117,6 +144,9 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
   const handleBlock = async () => {
     if (!userId || blockLoading) return;
     await toggleBlock(userId);
+    if (onBlockStateChange) {
+      onBlockStateChange(!isBlocked);
+    }
   };
 
   const handleFollowToggle = async () => {
@@ -219,7 +249,7 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
           )}
         </TouchableOpacity>
 
-        {/* Edit or Follow button */}
+        {/* Edit, Follow, or Block button */}
         {isOwnProfile ? (
           <TouchableOpacity
             testID="profile_header_edit_button"
@@ -227,6 +257,23 @@ export default function ProfileHeader({ userId, isOwnProfile = true }: ProfileHe
             onPress={() => setEditModalOpen(true)}
           >
             <Text style={headerStyles.editText}>{t('profile.editProfile')}</Text>
+          </TouchableOpacity>
+        ) : isBlocked ? (
+          <TouchableOpacity
+            style={blockedButtonStyles(theme, headerStyles).button}
+            onPress={handleBlock}
+            activeOpacity={0.7}
+            disabled={blockLoading}
+            testID="profile_header_block_button"
+            accessibilityLabel={`unblock_${displayUser?.username || displayUser?.name}`}
+            accessibilityRole="button"
+            accessibilityState={{ disabled: blockLoading }}
+          >
+            {blockLoading ? (
+              <ActivityIndicator size="small" color={theme.colors.error} />
+            ) : (
+              <Text style={blockedButtonStyles(theme, headerStyles).text}>{t('profile.blocked')}</Text>
+            )}
           </TouchableOpacity>
         ) : (
           <TouchableOpacity

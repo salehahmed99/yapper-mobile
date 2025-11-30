@@ -100,6 +100,54 @@ export const getFollowingList = async ({
   }
 };
 
+export const getMutedList = async ({
+  cursor = '',
+  limit = 20,
+}: IGetFollowersListParams): Promise<IGetFollowersListResponse> => {
+  try {
+    const response = await api.get('/users/me/muted', {
+      params: {
+        cursor,
+        limit,
+      },
+    });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    if (error.response) {
+      throw new Error(error.response.data.message || 'An error occurred while fetching muted list.');
+    }
+    throw error;
+  }
+};
+
+export const getBlockedList = async ({
+  cursor = '',
+  limit = 20,
+}: IGetFollowersListParams): Promise<IGetFollowersListResponse> => {
+  try {
+    const response = await api.get('/users/me/blocked', {
+      params: {
+        cursor,
+        limit,
+      },
+    });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    if (error.response) {
+      throw new Error(error.response.data.message || 'An error occurred while fetching blocked list.');
+    }
+    throw error;
+  }
+};
+
 export const muteUser = async (userId: string): Promise<{ message: string }> => {
   try {
     const response = await api.post(`/users/${userId}/mute`);
