@@ -9,49 +9,65 @@ import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
 import { confirmCurrentPassword, changePassword } from '@/src/modules/settings/services/yourAccountService';
 import Toast from 'react-native-toast-message';
+import ActivityLoader from '@/src/components/ActivityLoader';
+import { passwordSchema } from '@/src/modules/settings/types/schemas';
+import { PASSWORD_RULES } from '@/src/modules/settings/types/schemas';
+import ValidationItem from '@/src/modules/settings/components/ValidationItem';
 
 export const ChangePasswordScreen: React.FC = () => {
   const user = useAuthStore((state) => state.user);
   const { theme, isDark } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPasswordError, setShowPasswordError] = useState(false);
+  const [passwords, setPasswords] = useState({ current: '', new: '', confirm: '' });
+  const [showValidation, setShowValidation] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const isFormValid = currentPassword.length > 0 && newPassword.length >= 8 && confirmPassword.length >= 8;
+  const passwordValidation = useMemo(
+    () => PASSWORD_RULES.map((rule) => ({ ...rule, isValid: rule.test(passwords.new) })),
+    [passwords.new],
+  );
+
+  const isPasswordValid = passwordValidation.every((rule) => rule.isValid);
+  const passwordsMatch = !passwords.confirm || passwords.new === passwords.confirm;
+  const isFormValid = passwords.current && isPasswordValid && passwordsMatch && passwords.confirm;
+
+  const showToast = (type: 'success' | 'error', text1: string, text2: string) => {
+    Toast.show({ type, text1, text2 });
+  };
 
   const handleUpdatePassword = async () => {
-    // Validate password match first
-    if (newPassword !== confirmPassword) {
-      setShowPasswordError(true);
+    if (!isPasswordValid || !passwordsMatch) {
+      showToast(
+        'error',
+        'Invalid Password',
+        !isPasswordValid ? 'Please meet all password requirements' : 'Passwords do not match',
+      );
       return;
     }
 
-    setShowPasswordError(false);
+    const schemaValidation = passwordSchema.safeParse({ newPassword: passwords.new });
+    if (!schemaValidation.success) {
+      showToast(
+        'error',
+        'Invalid Password',
+        schemaValidation.error.errors[0]?.message || 'Please meet all password requirements',
+      );
+      return;
+    }
 
     try {
-      // Step 1: Confirm current password
-      await confirmCurrentPassword({ password: currentPassword });
+      setIsLoading(true);
+      await confirmCurrentPassword({ password: passwords.current });
+      await changePassword({ oldPassword: passwords.current, newPassword: passwords.new });
 
-      // Step 2: Change password
-      await changePassword({
-        oldPassword: currentPassword,
-        newPassword: newPassword,
-      });
-
-      Toast.show({
-        type: 'success',
-        text1: 'Success',
-        text2: 'Your password has been updated',
-      });
+      showToast('success', 'Success', 'Your password has been updated');
+      setPasswords({ current: '', new: '', confirm: '' });
+      setShowValidation(false);
     } catch (error) {
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: error instanceof Error ? error.message : 'An unexpected error occurred',
-      });
+      showToast('error', 'Error', error instanceof Error ? error.message : 'An unexpected error occurred');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -63,117 +79,124 @@ export const ChangePasswordScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar
-        barStyle={isDark ? 'light-content' : 'dark-content'}
-        backgroundColor={theme.colors.background.primary}
-      />
-      <View style={styles.container}>
-        {/* Header */}
-        <SettingsTopBar
-          title="Change your password"
-          subtitle={`@${user?.username}`}
-          onBackPress={() => router.back()}
+    <>
+      <ActivityLoader visible={isLoading} message="Changing your password..." />
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar
+          barStyle={isDark ? 'light-content' : 'dark-content'}
+          backgroundColor={theme.colors.background.primary}
         />
+        <View style={styles.container}>
+          <SettingsTopBar
+            title="Change your password"
+            subtitle={`@${user?.username}`}
+            onBackPress={() => router.back()}
+          />
 
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollViewContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          {/* Current Password */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Current password</Text>
-            <AnimatedTextInput
-              value={currentPassword}
-              onChangeText={setCurrentPassword}
-              placeholder=""
-              placeholderTextColor={theme.colors.text.tertiary}
-              secureTextEntry
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-          </View>
-
-          {/* New Password */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>New password</Text>
-            <AnimatedTextInput
-              value={newPassword}
-              onChangeText={setNewPassword}
-              placeholder="At least 8 characters"
-              placeholderTextColor={theme.colors.text.tertiary}
-              secureTextEntry
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-          </View>
-
-          {/* Confirm Password */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Confirm password</Text>
-            <AnimatedTextInput
-              value={confirmPassword}
-              onChangeText={(text) => {
-                setConfirmPassword(text);
-                if (showPasswordError) setShowPasswordError(false);
-              }}
-              placeholder="At least 8 characters"
-              placeholderTextColor={theme.colors.text.tertiary}
-              secureTextEntry
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-            {showPasswordError && <Text style={styles.errorText}>Passwords do not match</Text>}
-          </View>
-
-          {/* Update Button */}
-          <TouchableOpacity
-            style={[styles.updateButton, !isFormValid && styles.updateButtonDisabled]}
-            onPress={handleUpdatePassword}
-            disabled={!isFormValid}
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollViewContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
           >
-            <Text style={[styles.updateButtonText, !isFormValid && styles.updateButtonTextDisabled]}>
-              Update password
-            </Text>
-          </TouchableOpacity>
+            {/* Current Password */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Current password</Text>
+              <AnimatedTextInput
+                value={passwords.current}
+                onChangeText={(text) => setPasswords((prev) => ({ ...prev, current: text }))}
+                placeholder=""
+                placeholderTextColor={theme.colors.text.tertiary}
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
 
-          {/* Forgot Password Link */}
-          <TouchableOpacity onPress={handleForgotPassword} style={styles.forgotPasswordContainer}>
-            <Text style={styles.forgotPasswordText}>Forgot password?</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </View>
-    </SafeAreaView>
+            {/* New Password */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>New password</Text>
+              <AnimatedTextInput
+                value={passwords.new}
+                onChangeText={(text) => {
+                  setPasswords((prev) => ({ ...prev, new: text }));
+                  if (text.length > 0) setShowValidation(true);
+                }}
+                placeholder="Enter new password"
+                placeholderTextColor={theme.colors.text.tertiary}
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+
+              {showValidation && (
+                <View style={styles.validationContainer}>
+                  <Text style={styles.validationTitle}>Password must contain:</Text>
+                  {passwordValidation.map((rule) => (
+                    <ValidationItem key={rule.key} isValid={rule.isValid} text={rule.text} theme={theme} />
+                  ))}
+                </View>
+              )}
+            </View>
+
+            {/* Confirm Password */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Confirm password</Text>
+              <AnimatedTextInput
+                value={passwords.confirm}
+                onChangeText={(text) => setPasswords((prev) => ({ ...prev, confirm: text }))}
+                placeholder="Re-enter new password"
+                placeholderTextColor={theme.colors.text.tertiary}
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+              {!passwordsMatch && passwords.confirm && <Text style={styles.errorText}>Passwords do not match</Text>}
+              {passwordsMatch && passwords.confirm && isPasswordValid && (
+                <Text style={styles.successText}>Passwords match ✓</Text>
+              )}
+            </View>
+
+            {/* Update Button */}
+            <TouchableOpacity
+              style={[styles.updateButton, !isFormValid && styles.updateButtonDisabled]}
+              onPress={handleUpdatePassword}
+              disabled={!isFormValid}
+            >
+              <Text style={[styles.updateButtonText, !isFormValid && styles.updateButtonTextDisabled]}>
+                Update password
+              </Text>
+            </TouchableOpacity>
+
+            {/* Forgot Password Link */}
+            <TouchableOpacity onPress={handleForgotPassword} style={styles.forgotPasswordContainer}>
+              <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    </>
   );
 };
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
-    safeArea: {
-      flex: 1,
-      backgroundColor: theme.colors.background.primary,
-    },
-    container: {
-      flex: 1,
-      backgroundColor: theme.colors.background.primary,
-    },
-    scrollView: {
-      flex: 1,
-    },
+    safeArea: { flex: 1, backgroundColor: theme.colors.background.primary },
+    container: { flex: 1, backgroundColor: theme.colors.background.primary },
+    scrollView: { flex: 1 },
     scrollViewContent: {
       paddingHorizontal: theme.spacing.lg,
       paddingTop: theme.spacing.xl,
       paddingBottom: theme.spacing.xxl,
     },
-    inputGroup: {
-      marginBottom: theme.spacing.xl,
-    },
-    label: {
-      fontSize: theme.typography.sizes.sm,
+    inputGroup: { marginBottom: theme.spacing.xl },
+    label: { fontSize: theme.typography.sizes.sm, color: theme.colors.text.secondary, marginBottom: theme.spacing.sm },
+    validationContainer: { marginTop: theme.spacing.md, paddingVertical: theme.spacing.sm },
+    validationTitle: {
+      fontSize: theme.typography.sizes.xs,
       color: theme.colors.text.secondary,
-      marginBottom: theme.spacing.sm,
+      marginBottom: theme.spacing.xs,
+      fontFamily: theme.typography.fonts.medium,
     },
     updateButton: {
       backgroundColor: theme.colors.text.link,
@@ -182,34 +205,17 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       marginTop: theme.spacing.xl,
     },
-    updateButtonDisabled: {
-      backgroundColor: theme.colors.text.link,
-      opacity: 0.6,
-    },
+    updateButtonDisabled: { opacity: 0.6 },
     updateButtonText: {
       fontSize: theme.typography.sizes.md,
       fontFamily: theme.typography.fonts.bold,
       color: theme.colors.text.primary,
     },
-    updateButtonTextDisabled: {
-      color: theme.colors.text.primary,
-    },
-    forgotPasswordContainer: {
-      alignItems: 'center',
-      paddingVertical: theme.spacing.md,
-    },
-    forgotPasswordText: {
-      fontSize: theme.typography.sizes.sm,
-      color: theme.colors.text.secondary,
-    },
-    errorText: {
-      fontSize: theme.typography.sizes.sm,
-      color: '#FF3B30',
-      marginTop: theme.spacing.xs,
-    },
-    AnimatedView: {
-      borderBottomWidth: 1,
-    },
+    updateButtonTextDisabled: { color: theme.colors.text.primary },
+    forgotPasswordContainer: { alignItems: 'center', paddingVertical: theme.spacing.md },
+    forgotPasswordText: { fontSize: theme.typography.sizes.sm, color: theme.colors.text.secondary },
+    errorText: { fontSize: theme.typography.sizes.sm, color: theme.colors.error, marginTop: theme.spacing.xs },
+    successText: { fontSize: theme.typography.sizes.sm, color: theme.colors.success, marginTop: theme.spacing.xs },
   });
 
 export default ChangePasswordScreen;

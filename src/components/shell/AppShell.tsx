@@ -14,8 +14,8 @@ const AppShell: React.FC = () => {
   const [anim] = React.useState(() => new Animated.Value(0));
   const pathname = usePathname();
 
-  // Hide bottom nav on settings screen
-  const shouldShowBottomNav = !pathname.includes('/settings');
+  const settingsRoutes = ['/settingsScreen', '/yourAccount', '/search', '/changePassword', '/MuteAndBlock'];
+  const shouldShowBottomNav = !settingsRoutes.some((route) => pathname.includes(route));
 
   return (
     <UiShellProvider>
