@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState } from 'react';
+import { ITweet } from '../modules/tweets/types';
 
 type MediaViewerData = {
   tweetId: string;
+  tweet: ITweet;
   mediaIndex: number;
   images: string[];
   videos: string[];

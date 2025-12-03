@@ -80,6 +80,11 @@ const mockTheme = {
 describe('TweetMedia', () => {
   const mockOpenMediaViewer = jest.fn();
   const mockUseFocusEffectCallback = jest.fn();
+  const mockTweet = {
+    tweetId: 'tweet1',
+    content: 'Test tweet',
+    user: { id: 'user1', name: 'Test User', username: 'testuser' },
+  } as any;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -104,7 +109,9 @@ describe('TweetMedia', () => {
 
   describe('Rendering', () => {
     it('should render nothing when no media is provided', () => {
-      const rendered = render(<TweetMedia images={[]} videos={[]} tweetId="tweet1" isVisible={true} />);
+      const rendered = render(
+        <TweetMedia images={[]} videos={[]} tweetId="tweet1" tweet={mockTweet} isVisible={true} />,
+      );
 
       expect(rendered.root == null || rendered.root).toBe(true);
     });
@@ -112,7 +119,9 @@ describe('TweetMedia', () => {
     it('should render images correctly', () => {
       const images = ['https://example.com/image1.jpg', 'https://example.com/image2.jpg'];
 
-      const rendered = render(<TweetMedia images={images} videos={[]} tweetId="tweet1" isVisible={true} />);
+      const rendered = render(
+        <TweetMedia images={images} videos={[]} tweetId="tweet1" tweet={mockTweet} isVisible={true} />,
+      );
 
       expect(rendered.root).toBeTruthy();
     });
@@ -120,7 +129,16 @@ describe('TweetMedia', () => {
     it('should render video with mute button', () => {
       const videos = ['https://example.com/video1.mp4'];
 
-      render(<TweetMedia images={[]} videos={videos} tweetId="tweet1" isVisible={true} isParentMedia={false} />);
+      render(
+        <TweetMedia
+          images={[]}
+          videos={videos}
+          tweetId="tweet1"
+          tweet={mockTweet}
+          isVisible={true}
+          isParentMedia={false}
+        />,
+      );
 
       expect(screen.getByLabelText('video_mute_toggle')).toBeTruthy();
     });
@@ -130,7 +148,7 @@ describe('TweetMedia', () => {
     it('should open media viewer when image is pressed', () => {
       const images = ['https://example.com/image1.jpg'];
 
-      render(<TweetMedia images={images} videos={[]} tweetId="tweet1" isVisible={true} />);
+      render(<TweetMedia images={images} videos={[]} tweetId="tweet1" tweet={mockTweet} isVisible={true} />);
 
       const pressables = screen.getAllByRole('button');
       fireEvent.press(pressables[0]);
@@ -149,7 +167,16 @@ describe('TweetMedia', () => {
     it('should render videos when isVisible is true', () => {
       const videos = ['https://example.com/video1.mp4'];
 
-      render(<TweetMedia images={[]} videos={videos} tweetId="tweet1" isVisible={true} isParentMedia={false} />);
+      render(
+        <TweetMedia
+          images={[]}
+          videos={videos}
+          tweetId="tweet1"
+          tweet={mockTweet}
+          isVisible={true}
+          isParentMedia={false}
+        />,
+      );
 
       expect(screen.getByLabelText('video_mute_toggle')).toBeTruthy();
     });
@@ -157,7 +184,16 @@ describe('TweetMedia', () => {
     it('should not render videos when isVisible is false', async () => {
       const videos = ['https://example.com/video1.mp4'];
 
-      render(<TweetMedia images={[]} videos={videos} tweetId="tweet1" isVisible={false} isParentMedia={false} />);
+      render(
+        <TweetMedia
+          images={[]}
+          videos={videos}
+          tweetId="tweet1"
+          tweet={mockTweet}
+          isVisible={false}
+          isParentMedia={false}
+        />,
+      );
 
       await waitFor(
         () => {
@@ -172,7 +208,16 @@ describe('TweetMedia', () => {
     it('should not play video when isParentMedia is true', async () => {
       const videos = ['https://example.com/video1.mp4'];
 
-      render(<TweetMedia images={[]} videos={videos} tweetId="tweet1" isVisible={true} isParentMedia={true} />);
+      render(
+        <TweetMedia
+          images={[]}
+          videos={videos}
+          tweetId="tweet1"
+          tweet={mockTweet}
+          isVisible={true}
+          isParentMedia={true}
+        />,
+      );
 
       await waitFor(() => {
         expect(true).toBe(true);
@@ -184,7 +229,7 @@ describe('TweetMedia', () => {
     it('should have proper accessibility labels', () => {
       const images = ['https://example.com/image1.jpg'];
 
-      render(<TweetMedia images={images} videos={[]} tweetId="tweet1" isVisible={true} />);
+      render(<TweetMedia images={images} videos={[]} tweetId="tweet1" tweet={mockTweet} isVisible={true} />);
 
       expect(screen.getByLabelText('media_image_0')).toBeTruthy();
     });

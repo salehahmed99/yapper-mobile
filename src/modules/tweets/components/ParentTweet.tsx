@@ -49,6 +49,7 @@ const ParentTweet: React.FC<IParentTweetProps> = (props) => {
           images={tweet.images}
           videos={tweet.videos}
           tweetId={tweet.tweetId}
+          tweet={tweet}
           isVisible={isVisible}
           isParentMedia={true}
         />

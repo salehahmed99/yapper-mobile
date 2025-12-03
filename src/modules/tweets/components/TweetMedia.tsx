@@ -1,6 +1,8 @@
 import { Theme } from '@/src/constants/theme';
 import { useMediaViewer } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useCachedMedia } from '@/src/modules/tweets/hooks/useCachedMedia';
+import { ITweet } from '@/src/modules/tweets/types';
 import { useFocusEffect } from '@react-navigation/native';
 import { Image } from 'expo-image';
 import { VideoView, useVideoPlayer } from 'expo-video';
@@ -14,6 +16,7 @@ interface ITweetMediaProps {
   images: string[];
   videos: string[];
   tweetId: string;
+  tweet: ITweet;
   isVisible?: boolean;
   isParentMedia?: boolean;
 }
@@ -28,6 +31,7 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({
   images,
   videos,
   tweetId,
+  tweet,
   isVisible = false,
   isParentMedia = false,
 }) => {
@@ -37,7 +41,20 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({
   const [isMuted, setIsMuted] = useState(false);
   const toggleMute = useCallback(() => setIsMuted((prev) => !prev), []);
 
-  const [shouldRenderVideos, setShouldRenderVideos] = useState(isVisible);
+  const shouldRenderVideos = isVisible;
+
+  // Prefetch images
+  useEffect(() => {
+    images.forEach((url) => {
+      Image.prefetch(url);
+    });
+  }, [images]);
+
+  // Cache videos
+  const cachedVideo0 = useCachedMedia(videos[0] || '', 'video');
+  const cachedVideo1 = useCachedMedia(videos[1] || '', 'video');
+  const cachedVideo2 = useCachedMedia(videos[2] || '', 'video');
+  const cachedVideo3 = useCachedMedia(videos[3] || '', 'video');
 
   const allMedia = useMemo<MediaItem[]>(() => {
     const mediaItems: MediaItem[] = [];
@@ -63,30 +80,30 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({
   );
 
   // Only create video players if visible and have videos
-  const hasVideos = shouldRenderVideos && videoUrls.length > 0;
+  const hasVideos = videoUrls.length > 0;
 
-  const player0 = useVideoPlayer(hasVideos && videoUrls[0] ? videoUrls[0].url : '', (player) => {
+  const player0 = useVideoPlayer(hasVideos && videoUrls[0] ? cachedVideo0 : '', (player) => {
     if (hasVideos && videoUrls[0]) {
       player.loop = true;
       player.muted = isMuted;
     }
   });
 
-  const player1 = useVideoPlayer(hasVideos && videoUrls[1] ? videoUrls[1].url : '', (player) => {
+  const player1 = useVideoPlayer(hasVideos && videoUrls[1] ? cachedVideo1 : '', (player) => {
     if (hasVideos && videoUrls[1]) {
       player.loop = true;
       player.muted = isMuted;
     }
   });
 
-  const player2 = useVideoPlayer(hasVideos && videoUrls[2] ? videoUrls[2].url : '', (player) => {
+  const player2 = useVideoPlayer(hasVideos && videoUrls[2] ? cachedVideo2 : '', (player) => {
     if (hasVideos && videoUrls[2]) {
       player.loop = true;
       player.muted = isMuted;
     }
   });
 
-  const player3 = useVideoPlayer(hasVideos && videoUrls[3] ? videoUrls[3].url : '', (player) => {
+  const player3 = useVideoPlayer(hasVideos && videoUrls[3] ? cachedVideo3 : '', (player) => {
     if (hasVideos && videoUrls[3]) {
       player.loop = true;
       player.muted = isMuted;
@@ -101,22 +118,6 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({
     if (videoUrls[3]) players[videoUrls[3].index] = player3;
     return players;
   }, [videoUrls, player0, player1, player2, player3]);
-
-  useEffect(() => {
-    if (isVisible) {
-      setShouldRenderVideos(true);
-    } else {
-      Object.values(videoPlayers).forEach((player) => {
-        try {
-          player?.pause();
-        } catch {
-          // Ignore
-        }
-      });
-      const timer = setTimeout(() => setShouldRenderVideos(false), 300);
-      return () => clearTimeout(timer);
-    }
-  }, [isVisible, videoPlayers]);
 
   useEffect(() => {
     Object.values(videoPlayers).forEach((player) => {
@@ -152,7 +153,7 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({
   useFocusEffect(
     useCallback(() => {
       // Don't autoplay parent media videos
-      if (isVisible && shouldRenderVideos && !isParentMedia) {
+      if (isVisible && !isParentMedia) {
         Object.values(videoPlayers).forEach((player) => {
           try {
             player?.play();
@@ -171,7 +172,7 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({
           }
         });
       };
-    }, [videoPlayers, isVisible, shouldRenderVideos, isParentMedia]),
+    }, [videoPlayers, isVisible, isParentMedia]),
   );
 
   // Cleanup: pause all videos when component unmounts
@@ -250,13 +251,14 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({
 
       openMediaViewer({
         tweetId,
+        tweet,
         mediaIndex: index,
         images,
         videos,
         videoTime,
       });
     },
-    [videoPlayers, openMediaViewer, tweetId, images, videos],
+    [videoPlayers, openMediaViewer, tweetId, tweet, images, videos],
   );
 
   if (allMedia.length === 0) {

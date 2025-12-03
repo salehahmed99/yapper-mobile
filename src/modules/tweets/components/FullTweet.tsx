@@ -86,7 +86,13 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
       </View>
 
       {(tweet.images.length > 0 || tweet.videos.length > 0) && (
-        <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} isVisible={true} />
+        <TweetMedia
+          images={tweet.images}
+          videos={tweet.videos}
+          tweetId={tweet.tweetId}
+          tweet={tweet}
+          isVisible={true}
+        />
       )}
 
       {tweet.parentTweet && (

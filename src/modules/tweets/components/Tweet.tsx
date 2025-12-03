@@ -3,6 +3,7 @@ import GrokLogo from '@/src/components/icons/GrokLogo';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
 import { MoreHorizontal } from 'lucide-react-native';
 import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -45,6 +46,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { t } = useTranslation();
+  const router = useRouter();
 
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
@@ -61,6 +63,13 @@ const Tweet: React.FC<ITweetProps> = (props) => {
         setMenuVisible(true);
       },
     );
+  };
+
+  const handleGrokPress = () => {
+    router.push({
+      pathname: '/(protected)/tweet-summary',
+      params: { tweet: JSON.stringify(tweet) },
+    });
   };
 
   const menuItems: DropdownMenuItem[] = [
@@ -101,7 +110,9 @@ const Tweet: React.FC<ITweetProps> = (props) => {
           <View style={styles.topRow}>
             <UserInfoRow tweet={tweet} />
             <View style={styles.optionsRow}>
-              <GrokLogo size={16} color={theme.colors.text.secondary} />
+              <TouchableOpacity onPress={handleGrokPress} hitSlop={8}>
+                <GrokLogo size={16} color={theme.colors.text.secondary} />
+              </TouchableOpacity>
               <View ref={moreButtonRef} collapsable={false}>
                 <TouchableOpacity
                   onPress={handleMorePress}
@@ -119,7 +130,13 @@ const Tweet: React.FC<ITweetProps> = (props) => {
               {tweet.content}
             </Text>
           </View>
-          <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} isVisible={isVisible} />
+          <TweetMedia
+            images={tweet.images}
+            videos={tweet.videos}
+            tweetId={tweet.tweetId}
+            tweet={tweet}
+            isVisible={isVisible}
+          />
 
           {tweet.parentTweet && (
             <View style={{ marginTop: theme.spacing.xs }}>
