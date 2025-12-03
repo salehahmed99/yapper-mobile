@@ -21,7 +21,6 @@ import {
   VIDEO_CONTROLS_BOTTOM,
 } from '@/src/modules/tweets/constants/mediaViewer';
 import { useMediaViewerControls } from '@/src/modules/tweets/hooks/useMediaViewerControls';
-import { useTweet } from '@/src/modules/tweets/hooks/useTweet';
 import { useTweetActions } from '@/src/modules/tweets/hooks/useTweetActions';
 import { MediaItem, MediaViewerContentProps } from '@/src/modules/tweets/types/mediaViewer';
 import { useFocusEffect } from '@react-navigation/native';
@@ -43,7 +42,7 @@ import {
   View,
   ViewToken,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { EdgeInsets, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import CreatePostModal from './CreatePostModal';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -59,6 +58,7 @@ export default function MediaViewerModal() {
 
 function MediaViewerContent({
   tweetId,
+  tweet,
   mediaIndex,
   images,
   videos,
@@ -66,10 +66,10 @@ function MediaViewerContent({
   onClose,
   theme,
 }: MediaViewerContentProps) {
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const insets = useSafeAreaInsets();
+  const styles = useMemo(() => createStyles(theme, insets), [theme, insets]);
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { data: tweet } = useTweet(tweetId);
   const { likeMutation, repostMutation, replyToPostMutation } = useTweetActions(tweetId);
 
   const allMedia = useMemo((): MediaItem[] => {
@@ -618,7 +618,7 @@ function MediaViewerContent({
   );
 }
 
-const createStyles = (theme: Theme) =>
+const createStyles = (theme: Theme, insets: EdgeInsets) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -637,6 +637,7 @@ const createStyles = (theme: Theme) =>
       right: 0,
       backgroundColor: theme.colors.modal.overlay,
       zIndex: 10,
+      paddingTop: insets.top,
     },
     topBarContent: {
       flexDirection: 'row',
@@ -683,10 +684,11 @@ const createStyles = (theme: Theme) =>
       right: 0,
       backgroundColor: theme.colors.modal.overlay,
       zIndex: 10,
+      paddingBottom: insets.bottom,
     },
     bottomUserInfo: {
       position: 'absolute',
-      bottom: USER_INFO_BOTTOM,
+      bottom: USER_INFO_BOTTOM + insets.bottom,
       left: 0,
       right: 0,
       backgroundColor: theme.colors.modal.overlay,
@@ -738,6 +740,7 @@ const createStyles = (theme: Theme) =>
       right: 0,
       backgroundColor: theme.colors.modal.overlay,
       zIndex: 10,
+      paddingBottom: insets.bottom,
     },
     actionsRow: {
       flexDirection: 'row',
@@ -770,7 +773,7 @@ const createStyles = (theme: Theme) =>
     },
     videoControlsContainer: {
       position: 'absolute',
-      bottom: VIDEO_CONTROLS_BOTTOM,
+      bottom: VIDEO_CONTROLS_BOTTOM + insets.bottom,
       left: 0,
       right: 0,
       backgroundColor: theme.colors.modal.overlay,
