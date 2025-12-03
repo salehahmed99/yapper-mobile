@@ -18,6 +18,7 @@ import { formatDateToDisplay } from '../utils/helper-functions.utils';
 import { ImageOrigin, openImageViewer } from '../utils/profile-header.utils';
 import AvatarViewer from './AvatarViewer';
 import EditProfileModal from './EditProfileModal';
+import MutualFollowers from './MutualFollowers';
 import ProfileActionsMenu from './ProfileActionsMenu';
 
 type ProfileHeaderProps = {
@@ -304,12 +305,21 @@ export default function ProfileHeader({
             <Text style={headerStyles.name} testID="profile_header_name">
               {displayUser?.name || 'User'}
             </Text>
-            <Text style={headerStyles.handle} testID="profile_header_username">
-              @{displayUser?.username || 'username'}
-            </Text>
+            <View style={headerStyles.nameContainer}>
+              <Text style={headerStyles.handle} testID="profile_header_username">
+                @{displayUser?.username || 'username'}
+              </Text>
+
+              {!isOwnProfile && profileUser?.isFollower && (
+                <View style={headerStyles.followsYouContainer}>
+                  <Text style={headerStyles.followsYouText}>{t('profile.followsYou')}</Text>
+                </View>
+              )}
+            </View>
             <Text style={headerStyles.bio} testID="profile_header_bio">
               {displayUser?.bio || t('profile.noBio')}
             </Text>
+
             <Text style={headerStyles.link} testID="profile_header_joined_date">
               {displayUser?.username} • {t('profile.joined')} {formatDateToDisplay(displayUser?.createdAt || '')}
             </Text>
@@ -353,6 +363,25 @@ export default function ProfileHeader({
                 </Text>
               </TouchableOpacity>
             </View>
+            {/* Mutual Followers - Only show for other profiles */}
+            {!isOwnProfile && profileUser && (
+              <TouchableOpacity
+                testID="profile_header_mutual_followers_button"
+                onPress={() => {
+                  const targetUserId = userId;
+                  const targetUsername = profileUser?.name;
+                  router.push(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    `/(profile)/Lists?tab=mutualFollowers&userId=${targetUserId}&username=${targetUsername}` as any,
+                  );
+                }}
+              >
+                <MutualFollowers
+                  mutualFollowers={profileUser.topMutualFollowers || []}
+                  totalCount={profileUser.mutualFollowersCount || 0}
+                />
+              </TouchableOpacity>
+            )}
           </>
         )}
       </View>

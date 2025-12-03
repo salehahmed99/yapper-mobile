@@ -16,12 +16,21 @@ interface IGetMyUserResponse {
 
 export { IGetMyUserResponse };
 
+interface IMutualFollower {
+  userId: string;
+  name: string;
+  username: string;
+  avatarUrl: string;
+}
+
+export { IMutualFollower };
+
 interface IUserProfile extends IUser {
   isFollower: boolean;
   isFollowing: boolean;
   isMuted: boolean;
   isBlocked: boolean;
-  topMutualFollowers: unknown[];
+  topMutualFollowers: IMutualFollower[];
   mutualFollowersCount: number;
   followersCount: number;
   followingCount: number;
@@ -42,7 +51,7 @@ interface IGetUserByIdResponse {
   isFollowing: boolean;
   isMuted: boolean;
   isBlocked: boolean;
-  topMutualFollowers: unknown[];
+  topMutualFollowers: IMutualFollower[];
   mutualFollowersCount: string;
 }
 

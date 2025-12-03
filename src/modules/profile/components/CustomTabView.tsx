@@ -53,7 +53,7 @@ const createStyles = (theme: Theme) =>
 const CustomTabView: React.FC<ICustomTabViewProps> = ({
   tabs,
   initialTab,
-  scrollEnabled = false,
+  scrollEnabled = true,
   lazy = true,
   userId,
 }) => {

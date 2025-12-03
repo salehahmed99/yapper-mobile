@@ -18,7 +18,7 @@ export const createHeaderStyles = (theme: Theme) =>
       borderRadius: theme.sizes.avatar.md / 2,
       borderWidth: 4,
       borderColor: theme.colors.background.primary,
-      marginTop: -theme.spacing.xl,
+      marginTop: -theme.spacing.xxl,
       zIndex: 5,
     },
     imageContainer: {
@@ -88,9 +88,26 @@ export const createHeaderStyles = (theme: Theme) =>
     followingText: {
       color: theme.colors.background.primary,
     },
+    followsYouContainer: {
+      backgroundColor: theme.colors.background.tertiary,
+      alignSelf: 'flex-start',
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs / 2,
+      borderRadius: theme.borderRadius.sm,
+      marginTop: theme.spacing.xs,
+    },
+    followsYouText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.typography.sizes.xs,
+    },
+    nameContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.md,
+    },
     info: {
       paddingHorizontal: theme.spacing.lg,
-      marginTop: theme.spacing.md - 2,
+      marginTop: theme.spacing.md - 4,
     },
     loadingContainer: {
       marginTop: theme.spacing.lg,

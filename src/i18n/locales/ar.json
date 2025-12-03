@@ -108,6 +108,8 @@
     "follow": "متابعة",
     "following": "متابع",
     "followers": "متابعون",
+    "followsYou": "يتابعك",
+    "followedBy": "متابع بواسطة",
     "joined": "انضم",
     "noBio": "لا توجد سيرة ذاتية",
     "tabs": {
@@ -115,6 +117,11 @@
       "tweetsReplies": "التغريدات والردود",
       "media": "الوسائط",
       "likes": "الإعجابات"
+    },
+    "lists": {
+      "followers": "المتابعون",
+      "following": "المتابعة",
+      "followersYouKnow": "المتابعون الذين تعرفهم"
     },
     "placeholders": {
       "tweets": "لا توجد تغريدات بعد.",

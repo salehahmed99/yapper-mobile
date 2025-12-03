@@ -325,6 +325,8 @@
     "follow": "Follow",
     "following": "Following",
     "followers": "Followers",
+    "followsYou": "Follows you",
+    "followedBy": "Followed by",
     "joined": "Joined",
     "noBio": "No bio available",
     "tabs": {
@@ -332,6 +334,11 @@
       "tweetsReplies": "Tweets & Replies",
       "media": "Media",
       "likes": "Likes"
+    },
+    "lists": {
+      "followers": "Followers",
+      "following": "Following",
+      "followersYouKnow": "Followers You Know"
     },
     "placeholders": {
       "tweets": "No tweets yet.",

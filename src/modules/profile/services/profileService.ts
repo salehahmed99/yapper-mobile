@@ -75,6 +75,33 @@ export const getFollowersList = async ({
   }
 };
 
+export const getMutualFollowers = async ({
+  userId,
+  cursor = '',
+  limit = 20,
+  following = true,
+}: IGetFollowersListParams): Promise<IGetFollowersListResponse> => {
+  try {
+    const response = await api.get(`/users/${userId}/followers`, {
+      params: {
+        cursor,
+        limit,
+        following,
+      },
+    });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    if (error.response) {
+      throw new Error(error.response.data.message || 'An error occurred while fetching followers list.');
+    }
+    throw error;
+  }
+};
+
 export const getFollowingList = async ({
   userId,
   cursor = '',

@@ -6,6 +6,7 @@ import {
   getFollowersList,
   getFollowingList,
   getMutedList,
+  getMutualFollowers,
 } from '../../profile/services/profileService';
 import { IFollowerUser } from '../../profile/types';
 import { FetchUserListParams, IUserListResponse, IUserListResponseBackend } from '../types';
@@ -71,6 +72,20 @@ export const getUserList = async (params: FetchUserListParams): Promise<IUserLis
   if (type === 'blocked') {
     const response = await getBlockedList({
       userId: '', // not used for blocked list
+      cursor: params.cursor || '',
+      limit: 20,
+    });
+
+    return {
+      users: response.data.data.map(mapFollowerUserToUser),
+      nextCursor: response.data.pagination.nextCursor,
+      hasMore: response.data.pagination.hasMore,
+    };
+  }
+
+  if (type === 'mutualFollowers' && 'userId' in params) {
+    const response = await getMutualFollowers({
+      userId: params.userId,
       cursor: params.cursor || '',
       limit: 20,
     });
