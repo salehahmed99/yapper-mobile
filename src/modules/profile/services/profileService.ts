@@ -475,3 +475,19 @@ export const getUserReplies = async ({
     throw error;
   }
 };
+
+export const getUserRelations = async (): Promise<{ blockedCount: number; mutedCount: number }> => {
+  try {
+    const response = await api.get('/users/me/relations-count');
+    return response.data.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    if (error.response) {
+      throw new Error(error.response.data.message || 'An error occurred while fetching user relations.');
+    }
+    throw error;
+  }
+};

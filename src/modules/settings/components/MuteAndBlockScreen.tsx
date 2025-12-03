@@ -1,6 +1,6 @@
 import { ChevronRight } from 'lucide-react-native';
 import React, { useMemo } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../../context/ThemeContext';
 import { createMuteAndBlockStyles } from '../styles/mute-and-block-styles';
 
@@ -8,6 +8,7 @@ interface IMuteAndBlockScreenProps {
   username: string;
   blockedCount?: number;
   mutedCount?: number;
+  isLoading?: boolean;
   onBlockedAccountsPress: () => void;
   onMutedAccountsPress: () => void;
 }
@@ -15,6 +16,7 @@ interface IMuteAndBlockScreenProps {
 const MuteAndBlockScreen: React.FC<IMuteAndBlockScreenProps> = ({
   blockedCount = 0,
   mutedCount = 0,
+  isLoading = false,
   onBlockedAccountsPress,
   onMutedAccountsPress,
 }) => {
@@ -37,7 +39,11 @@ const MuteAndBlockScreen: React.FC<IMuteAndBlockScreenProps> = ({
             <Text style={styles.menuItemTitle}>Blocked accounts</Text>
           </View>
           <View style={styles.menuItemRight}>
-            {blockedCount > 0 && <Text style={styles.menuItemCount}>{blockedCount}</Text>}
+            {isLoading ? (
+              <ActivityIndicator size="small" color={theme.colors.text.secondary} style={styles.loader} />
+            ) : (
+              blockedCount > 0 && <Text style={styles.menuItemCount}>{blockedCount}</Text>
+            )}
             <ChevronRight color={theme.colors.text.secondary} size={theme.sizes.icon.sm} strokeWidth={2} />
           </View>
         </TouchableOpacity>
@@ -48,7 +54,11 @@ const MuteAndBlockScreen: React.FC<IMuteAndBlockScreenProps> = ({
             <Text style={styles.menuItemTitle}>Muted accounts</Text>
           </View>
           <View style={styles.menuItemRight}>
-            {mutedCount > 0 && <Text style={styles.menuItemCount}>{mutedCount}</Text>}
+            {isLoading ? (
+              <ActivityIndicator size="small" color={theme.colors.text.secondary} style={styles.loader} />
+            ) : (
+              mutedCount > 0 && <Text style={styles.menuItemCount}>{mutedCount}</Text>
+            )}
             <ChevronRight color={theme.colors.text.secondary} size={theme.sizes.icon.sm} strokeWidth={2} />
           </View>
         </TouchableOpacity>

@@ -48,6 +48,9 @@ export const createMuteAndBlockStyles = (theme: Theme) =>
       fontWeight: theme.typography.weights.medium,
       color: theme.colors.text.secondary,
     },
+    loader: {
+      marginRight: theme.spacing.xs,
+    },
   });
 
 export default createMuteAndBlockStyles;

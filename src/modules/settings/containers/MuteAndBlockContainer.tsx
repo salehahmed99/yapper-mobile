@@ -1,15 +1,33 @@
+import { getUserRelations } from '@/src/modules/profile/services/profileService';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import MuteAndBlockScreen from '../components/MuteAndBlockScreen';
 
 export default function MuteAndBlockContainer() {
-  // TODO: Get actual blocked count from store
-  const blockedCount = 12;
-  const mutedCount = 2;
+  const [blockedCount, setBlockedCount] = useState(0);
+  const [mutedCount, setMutedCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   const user = useAuthStore((state) => state.user);
 
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchRelations = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getUserRelations();
+        setBlockedCount(data.blockedCount);
+        setMutedCount(data.mutedCount);
+      } catch (error) {
+        console.error('Error fetching user relations:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRelations();
+  }, []);
 
   const handleBlockedAccountsPress = () => {
     router.push('/(protected)/(settings)/MuteAndBlock/Blocked');
@@ -24,6 +42,7 @@ export default function MuteAndBlockContainer() {
       username={user?.username || ''}
       blockedCount={blockedCount}
       mutedCount={mutedCount}
+      isLoading={isLoading}
       onBlockedAccountsPress={handleBlockedAccountsPress}
       onMutedAccountsPress={handleMutedAccountsPress}
     />
