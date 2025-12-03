@@ -2,11 +2,30 @@ import * as ImagePicker from 'expo-image-picker';
 // eslint-disable-next-line react-native/split-platform-components
 import { ActionSheetIOS, Alert, Platform } from 'react-native';
 
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
+const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50 MB
+
 export type MediaAsset = {
   uri: string;
   type: 'image' | 'video';
   mimeType: string;
   duration?: number; // For videos
+};
+
+const validateMediaSize = (asset: ImagePicker.ImagePickerAsset): boolean => {
+  if (!asset.fileSize) return true; // Cannot validate if size is missing
+
+  const isVideo = asset.type === 'video' || asset.mimeType?.startsWith('video/');
+  const limit = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
+
+  if (asset.fileSize > limit) {
+    const limitMB = limit / (1024 * 1024);
+    Alert.alert('File Too Large', `The selected ${isVideo ? 'video' : 'image'} exceeds the ${limitMB}MB limit.`, [
+      { text: 'OK' },
+    ]);
+    return false;
+  }
+  return true;
 };
 
 /**
@@ -45,8 +64,11 @@ export const pickMediaFromLibrary = async (maxItems: number = 4): Promise<MediaA
       return [];
     }
 
+    // Filter assets by size
+    const validAssets = result.assets.filter(validateMediaSize);
+
     // Convert assets to MediaAsset format
-    const mediaAssets: MediaAsset[] = result.assets.map((asset) => {
+    const mediaAssets: MediaAsset[] = validAssets.map((asset) => {
       // Determine type from type or mimeType
       let type: 'image' | 'video' = 'image';
       if (asset.type === 'video' || asset.mimeType?.startsWith('video/')) {
@@ -102,6 +124,11 @@ export const captureMedia = async (mediaType: 'photo' | 'video' = 'photo'): Prom
     }
 
     const asset = result.assets[0];
+
+    if (!validateMediaSize(asset)) {
+      return null;
+    }
+
     const type = mediaType === 'video' ? 'video' : 'image';
 
     return {

@@ -1,4 +1,5 @@
 import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Alert } from 'react-native';
 import {
   createTweet,
   deleteTweet,
@@ -117,7 +118,7 @@ export const useTweetActions = (tweetId: string) => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
     onError: () => {
-      // Error creating tweet
+      Alert.alert('Post Failed', 'Something went wrong while posting your tweet. Please try again.');
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
@@ -132,7 +133,7 @@ export const useTweetActions = (tweetId: string) => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
     onError: () => {
-      // Error replying to tweet
+      Alert.alert('Reply Failed', 'Something went wrong while posting your reply. Please try again.');
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
@@ -147,7 +148,7 @@ export const useTweetActions = (tweetId: string) => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
     onError: () => {
-      // Error quoting tweet
+      Alert.alert('Quote Failed', 'Something went wrong while posting your quote. Please try again.');
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
