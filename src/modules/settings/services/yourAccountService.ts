@@ -42,7 +42,7 @@ export const changeUsername = async (newUsername: string): Promise<boolean> => {
 
 export const changeEmail = async (newEmail: string): Promise<boolean> => {
   try {
-    const res = await api.patch('/users/me', { email: newEmail });
+    const res = await api.patch('/auth/update-email', { email: newEmail });
     useAuthStore.getState().setEmail(newEmail);
     return res.status === 200;
   } catch (error) {

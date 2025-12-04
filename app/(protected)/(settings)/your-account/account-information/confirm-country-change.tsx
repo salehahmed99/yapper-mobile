@@ -24,12 +24,11 @@ export const ConfirmCountryChangeScreen: React.FC = () => {
         text2: 'Your country has been updated successfully',
       });
       router.back();
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       Toast.show({
         type: 'error',
         text1: 'Update Failed',
-        text2: 'Failed to update country. Please try again later.',
+        text2: error instanceof Error ? error?.message : 'Failed to update country. Please try again later.',
       });
       setIsUpdating(false);
     }

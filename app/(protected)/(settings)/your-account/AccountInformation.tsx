@@ -84,7 +84,16 @@ export const AccountInformationScreen: React.FC = () => {
               onPress={() => router.push('/(protected)/(settings)/your-account/account-information/change-username')}
             />
 
-            <InfoRow label="Email" value={user?.email || 'Add'} />
+            <InfoRow
+              label="Email"
+              value={user?.email || 'Add'}
+              onPress={() =>
+                router.push({
+                  pathname: '/(protected)/(settings)/your-account/verify-password',
+                  params: { returnTo: '/(protected)/(settings)/your-account/account-information/update-email' },
+                })
+              }
+            />
 
             <InfoRow
               label="Country"
