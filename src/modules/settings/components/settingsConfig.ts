@@ -12,16 +12,6 @@ export const SETTINGS_DATA: ISettingsItem[] = [
     prefix: '',
   },
   {
-    id: 'security-access',
-    title: 'Security and account access',
-    icon: 'lock-outline',
-    iconFamily: 'MaterialCommunityIcons',
-    description:
-      "Manage your account's security and keep track of your account's usage including apps that you have connected to your account.",
-    route: 'SecuritySettings',
-    prefix: '',
-  },
-  {
     id: 'privacy-safety',
     title: 'Privacy and safety',
     icon: 'shield-checkmark-outline',
