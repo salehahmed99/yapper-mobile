@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SettingsSection } from '@/src/modules/settings/components/SettingsSection';
 import { SETTINGS_DATA } from '@/src/modules/settings/components/settingsConfig';
+import { YOUR_ACCOUNT_DATA } from '@/src/modules/settings/components/settingsConfig';
 import { ISettingsItem } from '@/src/modules/settings/types/types';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
@@ -30,12 +31,16 @@ export const SettingsSearchScreen: React.FC = () => {
     }
 
     const query = searchQuery.toLowerCase().trim();
-    return SETTINGS_DATA.filter((item) => item.title.toLowerCase().includes(query));
+    return SETTINGS_DATA.filter((item) => item.title.toLowerCase().includes(query)).concat(
+      YOUR_ACCOUNT_DATA.filter((item) => item.title.toLowerCase().includes(query)),
+    );
   }, [searchQuery]);
 
   const handleItemPress = (item: ISettingsItem) => {
-    // Handle navigation here
-    console.log('Navigate to:', item.title);
+    console.log('Navigating to:', item.route);
+    if (item.route) {
+      router.push(`/(protected)/(settings)/${item.prefix || ''}${item.route}`);
+    }
   };
 
   return (

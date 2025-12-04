@@ -9,6 +9,7 @@ export const SETTINGS_DATA: ISettingsItem[] = [
     description:
       'See information about your account, download an archive of your data, or learn about your account deactivation options.',
     route: 'yourAccount',
+    prefix: '',
   },
   {
     id: 'security-access',
@@ -18,6 +19,7 @@ export const SETTINGS_DATA: ISettingsItem[] = [
     description:
       "Manage your account's security and keep track of your account's usage including apps that you have connected to your account.",
     route: 'SecuritySettings',
+    prefix: '',
   },
   {
     id: 'privacy-safety',
@@ -26,6 +28,7 @@ export const SETTINGS_DATA: ISettingsItem[] = [
     iconFamily: 'Ionicons',
     description: 'Manage what information you see and share on X.',
     route: 'MuteAndBlock/MuteAndBlockScreen',
+    prefix: '',
   },
   {
     id: 'accessibility',
@@ -34,6 +37,7 @@ export const SETTINGS_DATA: ISettingsItem[] = [
     iconFamily: 'Ionicons',
     description: 'Manage how X content is displayed to you.',
     route: 'AccessibilitySettings',
+    prefix: '',
   },
 ];
 
@@ -45,6 +49,7 @@ export const YOUR_ACCOUNT_DATA: ISettingsItem[] = [
     iconFamily: 'Ionicons',
     description: 'See your account information like your phone number and email address.',
     route: 'AccountInformation',
+    prefix: 'your-account/',
   },
   {
     id: 'change-password',
@@ -53,6 +58,7 @@ export const YOUR_ACCOUNT_DATA: ISettingsItem[] = [
     iconFamily: 'MaterialCommunityIcons',
     description: 'Change your password at any time.',
     route: 'changePassword',
+    prefix: 'your-account/',
   },
   {
     id: 'deactivate-account',
@@ -61,5 +67,6 @@ export const YOUR_ACCOUNT_DATA: ISettingsItem[] = [
     iconFamily: 'Ionicons',
     description: 'Find out how you can deactivate your account.',
     route: 'deactivateAccount',
+    prefix: 'your-account/',
   },
 ];

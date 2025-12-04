@@ -5,6 +5,7 @@ export interface ISettingsItem {
   iconFamily?: 'MaterialCommunityIcons' | 'Ionicons';
   description: string;
   route?: string;
+  prefix?: string;
 }
 
 export interface ISettingsSection {
