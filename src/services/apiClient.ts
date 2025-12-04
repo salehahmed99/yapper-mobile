@@ -8,6 +8,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
 });
 
 api.interceptors.request.use(
@@ -74,7 +75,7 @@ api.interceptors.response.use(
 async function _handleLogout() {
   await deleteToken();
   const { useAuthStore } = await import('../store/useAuthStore');
-  useAuthStore.getState().logout();
+  useAuthStore.getState().logout(false);
   router.replace('/(auth)/landing-screen');
 }
 

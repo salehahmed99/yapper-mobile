@@ -12,6 +12,7 @@ interface IGetMyUserResponse {
   createdAt: string;
   followersCount: number;
   followingCount: number;
+  email: string;
 }
 
 export { IGetMyUserResponse };

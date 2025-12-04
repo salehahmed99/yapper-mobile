@@ -42,7 +42,7 @@ const SuccessResetPasswordScreen = () => {
       });
 
       if (response.data?.user && response.data?.accessToken) {
-        await loginUser(response.data.user, response.data.accessToken);
+        await loginUser(response.data.user, response.data.accessToken, response.data.refreshToken);
         setSkipRedirect(false);
         reset();
         router.replace('/(protected)');

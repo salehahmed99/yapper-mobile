@@ -55,7 +55,26 @@ export const logout = async (): Promise<void> => {
       await googleSignOut();
     }
 
-    await api.post('/auth/logout');
+    // Get refresh token and send it in the body for mobile
+    const refreshToken = await AsyncStorage.getItem('refreshToken');
+    await api.post('/auth/logout', { refresh_token: refreshToken });
+    await setAuthProvider(null);
+  } catch (error) {
+    throw new Error(extractErrorMessage(error));
+  }
+};
+
+export const logOutAll = async (): Promise<void> => {
+  try {
+    const provider = await getAuthProvider();
+
+    if (provider === 'google') {
+      await googleSignOut();
+    }
+
+    // Get refresh token and send it in the body for mobile
+    const refreshToken = await AsyncStorage.getItem('refreshToken');
+    await api.post('/auth/logout-all', { refresh_token: refreshToken });
     await setAuthProvider(null);
   } catch (error) {
     throw new Error(extractErrorMessage(error));

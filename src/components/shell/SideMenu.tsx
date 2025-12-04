@@ -43,7 +43,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
 
   const handleLogout = () => {
     closeSideMenu();
-    logout();
+    logout(false);
     router.replace('/(auth)/landing-screen');
   };
 

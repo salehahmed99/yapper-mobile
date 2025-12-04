@@ -1,5 +1,5 @@
 import React, { useRef, useMemo } from 'react';
-import { TextInput, Animated, StyleSheet, TextInputProps, TouchableOpacity, View } from 'react-native';
+import { TextInput, Animated, StyleSheet, TextInputProps, TouchableOpacity, View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
@@ -7,12 +7,14 @@ import { Theme } from '@/src/constants/theme';
 interface AnimatedTextInputProps extends TextInputProps {
   onFocusChange?: (isFocused: boolean) => void;
   showPasswordToggle?: boolean;
+  isUsername?: boolean; // <-- NEW PROP
 }
 
 export const AnimatedTextInput: React.FC<AnimatedTextInputProps> = ({
   onFocusChange,
   style,
   showPasswordToggle,
+  isUsername,
   ...props
 }) => {
   const { theme } = useTheme();
@@ -52,22 +54,21 @@ export const AnimatedTextInput: React.FC<AnimatedTextInputProps> = ({
   return (
     <Animated.View style={[styles.animatedView, { borderBottomColor: getBorderColor() }]}>
       <View style={styles.inputWrapper}>
+        {isUsername && <Text style={styles.usernamePrefix}>@</Text>}
+
         <TextInput
           {...props}
           style={[styles.input, showPasswordToggle && styles.inputWithIcon, style]}
           onFocus={handleFocus}
           onBlur={handleBlur}
           secureTextEntry={showPasswordToggle ? !isPasswordVisible : props.secureTextEntry}
-          accessibilityLabel={props.accessibilityLabel}
-          testID={props.testID}
         />
+
         {showPasswordToggle && (
           <TouchableOpacity
             style={styles.eyeIcon}
             onPress={() => setIsPasswordVisible(!isPasswordVisible)}
             activeOpacity={0.7}
-            accessibilityLabel={isPasswordVisible ? 'Hide password' : 'Show password'}
-            testID={isPasswordVisible ? 'hide-password-button' : 'show-password-button'}
           >
             <Ionicons
               name={isPasswordVisible ? 'eye-outline' : 'eye-off-outline'}
@@ -89,7 +90,16 @@ const createStyles = (theme: Theme) =>
     inputWrapper: {
       flexDirection: 'row',
       alignItems: 'center',
+      borderBottomColor: theme.colors.border,
+      borderBottomWidth: 1,
     },
+
+    /* ------- FIXED @ PREFIX ------- */
+    usernamePrefix: {
+      fontSize: theme.typography.sizes.md,
+      color: theme.colors.text.primary,
+    },
+
     input: {
       flex: 1,
       paddingVertical: theme.spacing.sm,

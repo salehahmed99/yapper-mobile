@@ -55,7 +55,7 @@ export const ConfirmDeactivateScreen: React.FC = () => {
         text2: 'Your account has been deactivated successfully',
       });
 
-      await logOut();
+      await logOut(true);
       router.replace('/(auth)/landing-screen');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

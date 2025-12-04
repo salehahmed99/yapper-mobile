@@ -62,7 +62,7 @@ const EnterPasswordScreen = () => {
         language: 'en',
       });
       setSkipRedirect(true);
-      await loginUser(response.data.user, response.data.accessToken);
+      await loginUser(response.data.user, response.data.accessToken, response.data.refreshToken);
 
       Toast.show({
         type: 'success',
