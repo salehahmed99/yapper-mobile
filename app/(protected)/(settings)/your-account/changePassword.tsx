@@ -11,8 +11,8 @@ import { confirmCurrentPassword, changePassword } from '@/src/modules/settings/s
 import Toast from 'react-native-toast-message';
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { passwordSchema } from '@/src/modules/settings/types/schemas';
-import { PASSWORD_RULES } from '@/src/modules/settings/types/schemas';
 import ValidationItem from '@/src/modules/settings/components/ValidationItem';
+import { validatePassword, isPasswordValid } from '@/src/modules/settings/utils/passwordValidation';
 
 export const ChangePasswordScreen: React.FC = () => {
   const user = useAuthStore((state) => state.user);
@@ -23,25 +23,22 @@ export const ChangePasswordScreen: React.FC = () => {
   const [showValidation, setShowValidation] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const passwordValidation = useMemo(
-    () => PASSWORD_RULES.map((rule) => ({ ...rule, isValid: rule.test(passwords.new) })),
-    [passwords.new],
-  );
+  const passwordValidation = useMemo(() => validatePassword(passwords.new), [passwords.new]);
 
-  const isPasswordValid = passwordValidation.every((rule) => rule.isValid);
+  const passwordIsValid = isPasswordValid(passwords.new);
   const passwordsMatch = !passwords.confirm || passwords.new === passwords.confirm;
-  const isFormValid = passwords.current && isPasswordValid && passwordsMatch && passwords.confirm;
+  const isFormValid = passwords.current && passwordIsValid && passwordsMatch && passwords.confirm;
 
   const showToast = (type: 'success' | 'error', text1: string, text2: string) => {
     Toast.show({ type, text1, text2 });
   };
 
   const handleUpdatePassword = async () => {
-    if (!isPasswordValid || !passwordsMatch) {
+    if (!isPasswordValid(passwords.new) || !passwordsMatch) {
       showToast(
         'error',
         'Invalid Password',
-        !isPasswordValid ? 'Please meet all password requirements' : 'Passwords do not match',
+        !passwordIsValid ? 'Please meet all password requirements' : 'Passwords do not match',
       );
       return;
     }
@@ -110,6 +107,9 @@ export const ChangePasswordScreen: React.FC = () => {
                 secureTextEntry
                 autoCapitalize="none"
                 autoCorrect={false}
+                accessibilityLabel="Current password input"
+                testID="current-password-input"
+                showPasswordToggle
               />
             </View>
 
@@ -127,6 +127,9 @@ export const ChangePasswordScreen: React.FC = () => {
                 secureTextEntry
                 autoCapitalize="none"
                 autoCorrect={false}
+                accessibilityLabel="New password input"
+                testID="new-password-input"
+                showPasswordToggle
               />
 
               {showValidation && (
@@ -150,9 +153,12 @@ export const ChangePasswordScreen: React.FC = () => {
                 secureTextEntry
                 autoCapitalize="none"
                 autoCorrect={false}
+                accessibilityLabel="Confirm password input"
+                testID="confirm-password-input"
+                showPasswordToggle
               />
               {!passwordsMatch && passwords.confirm && <Text style={styles.errorText}>Passwords do not match</Text>}
-              {passwordsMatch && passwords.confirm && isPasswordValid && (
+              {passwordsMatch && passwords.confirm && isPasswordValid(passwords.new) && (
                 <Text style={styles.successText}>Passwords match ✓</Text>
               )}
             </View>
@@ -162,6 +168,8 @@ export const ChangePasswordScreen: React.FC = () => {
               style={[styles.updateButton, !isFormValid && styles.updateButtonDisabled]}
               onPress={handleUpdatePassword}
               disabled={!isFormValid}
+              accessibilityLabel="Update password button"
+              testID="update-password-button"
             >
               <Text style={[styles.updateButtonText, !isFormValid && styles.updateButtonTextDisabled]}>
                 Update password
@@ -169,7 +177,12 @@ export const ChangePasswordScreen: React.FC = () => {
             </TouchableOpacity>
 
             {/* Forgot Password Link */}
-            <TouchableOpacity onPress={handleForgotPassword} style={styles.forgotPasswordContainer}>
+            <TouchableOpacity
+              onPress={handleForgotPassword}
+              style={styles.forgotPasswordContainer}
+              accessibilityLabel="Forgot password link"
+              testID="forgot-password-link"
+            >
               <Text style={styles.forgotPasswordText}>Forgot password?</Text>
             </TouchableOpacity>
           </ScrollView>

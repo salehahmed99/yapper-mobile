@@ -60,6 +60,6 @@ export const YOUR_ACCOUNT_DATA: ISettingsItem[] = [
     icon: 'heart-dislike-outline',
     iconFamily: 'Ionicons',
     description: 'Find out how you can deactivate your account.',
-    route: 'DeactivateAccount',
+    route: 'deactivateAccount',
   },
 ];

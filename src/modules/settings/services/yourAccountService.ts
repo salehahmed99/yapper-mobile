@@ -5,7 +5,7 @@ import { IChangePasswordRequest, IConfirmPasswordResetRequest } from '../types/t
 export const confirmCurrentPassword = async (credentials: IConfirmPasswordResetRequest): Promise<boolean> => {
   try {
     const res = await api.post('/auth/confirm-password', credentials);
-    return res.status === 200;
+    return res.data.data.valid === true;
   } catch (error) {
     throw new Error(extractErrorMessage(error));
   }
@@ -14,6 +14,15 @@ export const confirmCurrentPassword = async (credentials: IConfirmPasswordResetR
 export const changePassword = async (credentials: IChangePasswordRequest): Promise<boolean> => {
   try {
     const res = await api.post('/auth/change-password', credentials);
+    return res.status === 200;
+  } catch (error) {
+    throw new Error(extractErrorMessage(error));
+  }
+};
+
+export const deleteAccount = async (): Promise<boolean> => {
+  try {
+    const res = await api.delete('/users/me/delete-account');
     return res.status === 200;
   } catch (error) {
     throw new Error(extractErrorMessage(error));
