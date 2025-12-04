@@ -28,12 +28,14 @@ export const AnimatedTextInput: React.FC<AnimatedTextInputProps> = ({
     }).start();
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleFocus = (e: any) => {
     animateBorder(1);
     onFocusChange?.(true);
     props.onFocus?.(e);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleBlur = (e: any) => {
     animateBorder(0);
     onFocusChange?.(false);
