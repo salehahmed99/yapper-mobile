@@ -86,7 +86,11 @@ export const AccountInformationScreen: React.FC = () => {
 
             <InfoRow label="Email" value={user?.email || 'Add'} />
 
-            <InfoRow label="Country" value={user?.country || 'Egypt'} />
+            <InfoRow
+              label="Country"
+              value={user?.country || 'Add'}
+              onPress={() => router.push('/(protected)/(settings)/your-account/account-information/edit-country')}
+            />
 
             <View style={styles.helperTextContainer}>
               <Text style={styles.helperText}>Select the country you live in.</Text>

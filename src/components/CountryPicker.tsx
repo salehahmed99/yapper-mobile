@@ -1,4 +1,4 @@
-import { ChevronLeft } from 'lucide-react-native';
+import { ChevronLeft, Check } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import { FlatList, ListRenderItem, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
@@ -287,13 +287,21 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
     return countries.filter((c) => c.name.toLowerCase().includes(q));
   }, [countries, query]);
 
-  const renderItem: ListRenderItem<Country> = ({ item }) => (
-    <TouchableOpacity onPress={() => onSelect?.(item)} style={[styles.row, { borderBottomColor: theme.colors.border }]}>
-      <Text style={[styles.rowText, { color: theme.colors.text.primary, fontSize: theme.typography.sizes.md }]}>
-        {item.name}
-      </Text>
-    </TouchableOpacity>
-  );
+  const renderItem: ListRenderItem<Country> = ({ item }) => {
+    const isCurrentCountry = _initialCountry?.name === item.name;
+
+    return (
+      <TouchableOpacity
+        onPress={() => onSelect?.(item)}
+        style={[styles.row, { borderBottomColor: theme.colors.border }]}
+      >
+        <Text style={[styles.rowText, { color: theme.colors.text.primary, fontSize: theme.typography.sizes.md }]}>
+          {item.name}
+        </Text>
+        {isCurrentCountry && <Check size={20} color={theme.colors.success} strokeWidth={2.5} />}
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
@@ -372,6 +380,9 @@ const styles = StyleSheet.create({
     paddingBottom: 120,
   },
   row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 18,
     paddingHorizontal: 16,
     borderBottomWidth: StyleSheet.hairlineWidth,
