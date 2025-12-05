@@ -18,6 +18,7 @@ interface ITweet {
   repliesCount: number;
   isLiked: boolean;
   isReposted: boolean;
+  isBookmarked: boolean;
   createdAt: string;
   updatedAt: string;
   user: IUser;

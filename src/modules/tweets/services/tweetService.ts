@@ -163,6 +163,14 @@ export const deleteTweet = async (tweetId: string): Promise<void> => {
   await api.delete(`/tweets/${tweetId}`);
 };
 
+export const bookmarkTweet = async (tweetId: string): Promise<void> => {
+  await api.post(`/tweets/${tweetId}/bookmark`);
+};
+
+export const unbookmarkTweet = async (tweetId: string): Promise<void> => {
+  await api.delete(`/tweets/${tweetId}/bookmark`);
+};
+
 export const replyToTweet = async (tweetId: string, content: string, mediaUris?: string[]): Promise<ITweet> => {
   let images: string[] = [];
   let videos: string[] = [];

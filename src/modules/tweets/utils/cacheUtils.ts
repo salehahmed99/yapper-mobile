@@ -48,3 +48,37 @@ export const updateTweetsInInfiniteCache = (
     }),
   };
 };
+
+export const removeTweetFromInfiniteCache = (oldData: InfiniteData<ITweets> | undefined, tweetId: string) => {
+  if (!oldData?.pages) return oldData;
+
+  return {
+    ...oldData,
+    pages: oldData.pages.map((page: ITweets) => {
+      // Handle profile endpoints structure: { data: { data: [], pagination: {} }, count, message }
+      if (
+        'data' in page &&
+        page.data &&
+        typeof page.data === 'object' &&
+        'data' in page.data &&
+        Array.isArray(page.data.data)
+      ) {
+        return {
+          ...page,
+          data: {
+            ...page.data,
+            data: page.data.data.filter((tweet: ITweet) => tweet.tweetId !== tweetId),
+          },
+        };
+      }
+      // Handle home feed structure: { data: [], pagination: {} }
+      if (Array.isArray(page.data)) {
+        return {
+          ...page,
+          data: page.data.filter((tweet: ITweet) => tweet.tweetId !== tweetId),
+        };
+      }
+      return page;
+    }),
+  };
+};
