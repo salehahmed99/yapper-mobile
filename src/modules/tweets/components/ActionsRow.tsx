@@ -66,7 +66,7 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
 
       <TweetActionButton
         icon={BookmarkIcon}
-        // count={tweet.bookmarksCount}     // TODO: still not implemented on backend
+        count={tweet.bookmarksCount}
         onPress={() => onBookmarkPress(tweet.isBookmarked)}
         color={tweet.isBookmarked ? theme.colors.accent.bookmark : theme.colors.text.secondary}
         filled={tweet.isBookmarked}

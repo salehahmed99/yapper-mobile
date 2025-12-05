@@ -16,6 +16,7 @@ interface ITweet {
   viewsCount: number;
   quotesCount: number;
   repliesCount: number;
+  bookmarksCount?: number;
   isLiked: boolean;
   isReposted: boolean;
   isBookmarked: boolean;
