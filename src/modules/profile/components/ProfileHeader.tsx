@@ -1,7 +1,7 @@
 import { DEFAULT_AVATAR_URL, DEFAULT_BANNER_URL } from '@/src/constants/defaults';
 import { formatCount } from '@/src/utils/formatCount';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, Ellipsis } from 'lucide-react-native';
+import { ChevronLeft, Ellipsis, Mail } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native';
@@ -259,38 +259,60 @@ export default function ProfileHeader({
           >
             <Text style={headerStyles.editText}>{t('profile.editProfile')}</Text>
           </TouchableOpacity>
-        ) : isBlocked ? (
-          <TouchableOpacity
-            style={blockedButtonStyles(theme, headerStyles).button}
-            onPress={handleBlock}
-            activeOpacity={0.7}
-            disabled={blockLoading}
-            testID="profile_header_block_button"
-            accessibilityLabel={`unblock_${displayUser?.username || displayUser?.name}`}
-            accessibilityRole="button"
-            accessibilityState={{ disabled: blockLoading }}
-          >
-            {blockLoading ? (
-              <ActivityIndicator size="small" color={theme.colors.error} />
-            ) : (
-              <Text style={blockedButtonStyles(theme, headerStyles).text}>{t('profile.blocked')}</Text>
-            )}
-          </TouchableOpacity>
         ) : (
-          <TouchableOpacity
-            testID="profile_header_follow_button"
-            style={[headerStyles.editButton, isFollowing && headerStyles.followingButton]}
-            onPress={handleFollowToggle}
-            disabled={followLoading}
-          >
-            {followLoading ? (
-              <ActivityIndicator size="small" color={theme.colors.text.primary} />
+          <View style={headerStyles.buttonsContainer}>
+            {/* Message Button */}
+            <TouchableOpacity
+              testID="profile_header_message_button"
+              style={headerStyles.messageButton}
+              onPress={() => {
+                // Navigate to messages with this user
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                router.push('/(protected)/messages' as any);
+              }}
+            >
+              <Mail size={15} color={theme.colors.text.primary} />
+            </TouchableOpacity>
+
+            {/* Follow or Block Button */}
+            {isBlocked ? (
+              <TouchableOpacity
+                style={blockedButtonStyles(theme, headerStyles).button}
+                onPress={handleBlock}
+                activeOpacity={0.7}
+                disabled={blockLoading}
+                testID="profile_header_block_button"
+                accessibilityLabel={`unblock_${displayUser?.username || displayUser?.name}`}
+                accessibilityRole="button"
+                accessibilityState={{ disabled: blockLoading }}
+              >
+                {blockLoading ? (
+                  <ActivityIndicator size="small" color={theme.colors.error} />
+                ) : (
+                  <Text style={blockedButtonStyles(theme, headerStyles).text}>{t('profile.blocked')}</Text>
+                )}
+              </TouchableOpacity>
             ) : (
-              <Text style={[headerStyles.editText, isFollowing && headerStyles.followingText]}>
-                {isFollowing ? t('profile.following') : t('profile.follow')}
-              </Text>
+              <TouchableOpacity
+                testID="profile_header_follow_button"
+                style={[headerStyles.editButton, isFollowing && headerStyles.followingButton]}
+                onPress={handleFollowToggle}
+                disabled={followLoading}
+              >
+                {followLoading ? (
+                  <ActivityIndicator size="small" color={theme.colors.text.primary} />
+                ) : (
+                  <Text style={[headerStyles.editText, isFollowing && headerStyles.followingText]}>
+                    {isFollowing
+                      ? t('profile.following')
+                      : profileUser?.isFollower
+                        ? t('profile.followBack')
+                        : t('profile.follow')}
+                  </Text>
+                )}
+              </TouchableOpacity>
             )}
-          </TouchableOpacity>
+          </View>
         )}
       </View>
 
