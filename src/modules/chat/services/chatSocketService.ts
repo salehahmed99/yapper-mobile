@@ -15,17 +15,18 @@ export interface IChatSocketSender {
   avatarUrl: string | null;
 }
 
-// Message data from socket
+// Message data from socket (uses snake_case from backend)
 export interface IChatSocketMessage {
   id: string;
   content: string;
-  senderId: string;
-  messageType: MessageType;
-  replyTo: string | null;
-  isRead: boolean;
-  isEdited?: boolean;
-  createdAt: string;
-  updatedAt?: string;
+  sender_id: string;
+  message_type: MessageType;
+  reply_to?: string | null;
+  reply_to_message_id?: string | null;
+  is_read: boolean;
+  is_edited?: boolean;
+  created_at: string;
+  updated_at?: string;
   sender?: IChatSocketSender;
 }
 
@@ -46,7 +47,7 @@ export interface ISendMessagePayload {
   message: {
     content: string;
     message_type: MessageType;
-    reply_to: string | null;
+    reply_to_message_id: string | null;
   };
 }
 
@@ -90,13 +91,17 @@ export interface ILeftChatData {
 export interface IMessageSentData {
   id: string;
   content: string;
-  senderId: string;
-  isRead: boolean;
-  createdAt: string;
+  sender_id: string;
+  message_type: string;
+  reply_to?: string | null;
+  reply_to_message_id?: string | null;
+  is_read: boolean;
+  created_at: string;
+  updated_at?: string;
 }
 
 export interface INewMessageData {
-  chatId: string;
+  chat_id: string;
   message: IChatSocketMessage;
 }
 
@@ -112,8 +117,8 @@ export interface IMessageDeletedData {
 }
 
 export interface IUserTypingData {
-  chatId: string;
-  userId: string;
+  chat_id: string;
+  user_id: string;
 }
 
 export interface IMessagesRetrievedData {
@@ -207,7 +212,7 @@ class ChatSocketService {
       message: {
         content,
         message_type: messageType,
-        reply_to: replyTo,
+        reply_to_message_id: replyTo,
       },
     };
     socketService.emit(ChatSocketEvents.SEND_MESSAGE, payload);

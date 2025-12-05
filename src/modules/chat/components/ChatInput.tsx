@@ -1,15 +1,18 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import { Send } from 'lucide-react-native';
+import { IReplyContext } from '@/src/modules/chat/types';
+import { Send, X } from 'lucide-react-native';
 import React from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 interface ChatInputProps {
   value: string;
   onChangeText: (text: string) => void;
   onSend: () => void;
   placeholder?: string;
-  style?: any;
+  style?: ViewStyle;
+  replyingTo?: IReplyContext | null;
+  onCancelReply?: () => void;
 }
 
 export default function ChatInput({
@@ -18,6 +21,8 @@ export default function ChatInput({
   onSend,
   placeholder = 'Start a new message',
   style,
+  replyingTo,
+  onCancelReply,
 }: ChatInputProps) {
   const { theme } = useTheme();
   const styles = createStyles(theme);
@@ -30,24 +35,40 @@ export default function ChatInput({
 
   return (
     <View style={[styles.container, style]}>
-      <View style={styles.inputWrapper}>
-        <TextInput
-          style={styles.input}
-          placeholder={placeholder}
-          placeholderTextColor={theme.colors.text.secondary}
-          value={value}
-          onChangeText={onChangeText}
-          multiline
-          maxLength={1000}
-        />
+      {/* Reply preview banner */}
+      {replyingTo && (
+        <View style={styles.replyBanner}>
+          <View style={styles.replyBannerContent}>
+            <Text style={styles.replyBannerLabel}>Replying to {replyingTo.senderName}</Text>
+            <Text style={styles.replyBannerText} numberOfLines={1}>
+              {replyingTo.content}
+            </Text>
+          </View>
+          <TouchableOpacity style={styles.replyBannerClose} onPress={onCancelReply}>
+            <X color={theme.colors.text.secondary} size={20} />
+          </TouchableOpacity>
+        </View>
+      )}
+      <View style={styles.inputRow}>
+        <View style={styles.inputWrapper}>
+          <TextInput
+            style={styles.input}
+            placeholder={placeholder}
+            placeholderTextColor={theme.colors.text.secondary}
+            value={value}
+            onChangeText={onChangeText}
+            multiline
+            maxLength={1000}
+          />
+        </View>
+        <TouchableOpacity
+          style={[styles.sendButton, !value.trim() && styles.sendButtonDisabled]}
+          onPress={handleSend}
+          disabled={!value.trim()}
+        >
+          <Send color={value.trim() ? theme.colors.text.inverse : theme.colors.text.secondary} size={20} />
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity
-        style={[styles.sendButton, !value.trim() && styles.sendButtonDisabled]}
-        onPress={handleSend}
-        disabled={!value.trim()}
-      >
-        <Send color={value.trim() ? theme.colors.text.inverse : theme.colors.text.secondary} size={20} />
-      </TouchableOpacity>
     </View>
   );
 }
@@ -55,12 +76,14 @@ export default function ChatInput({
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
-      flexDirection: 'row',
-      alignItems: 'flex-end',
-      padding: theme.spacing.lg,
       borderTopWidth: 1,
       borderTopColor: theme.colors.border,
       backgroundColor: theme.colors.background.primary,
+    },
+    inputRow: {
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+      padding: theme.spacing.lg,
       gap: theme.spacing.sm,
     },
     inputWrapper: {
@@ -87,5 +110,31 @@ const createStyles = (theme: Theme) =>
     },
     sendButtonDisabled: {
       backgroundColor: theme.colors.background.secondary,
+    },
+    // Reply banner styles
+    replyBanner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: theme.spacing.sm,
+      backgroundColor: theme.colors.background.secondary,
+      borderLeftWidth: 3,
+      borderLeftColor: theme.colors.accent.bookmark,
+    },
+    replyBannerContent: {
+      flex: 1,
+    },
+    replyBannerLabel: {
+      fontSize: theme.typography.sizes.xs,
+      fontFamily: theme.typography.fonts.bold,
+      color: theme.colors.accent.bookmark,
+      marginBottom: 2,
+    },
+    replyBannerText: {
+      fontSize: theme.typography.sizes.sm,
+      color: theme.colors.text.secondary,
+    },
+    replyBannerClose: {
+      padding: theme.spacing.xs,
     },
   });

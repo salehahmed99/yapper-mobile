@@ -87,10 +87,18 @@ export const getMessages = async (params: IGetMessagesParams): Promise<IGetMessa
 
     const response = await api.get<IGetMessagesResponse>(url);
 
+    // Map messages to include senderId from the sender object
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const messagesWithSenderId = response.data.data.data.messages.map((msg: any) => ({
+      ...msg,
+      // Extract senderId from sender object or sender_id field
+      senderId: msg.sender?.id || msg.sender_id || msg.senderId,
+    }));
+
     return {
       chatId: response.data.data.data.chatId,
       sender: response.data.data.data.sender,
-      messages: response.data.data.data.messages,
+      messages: messagesWithSenderId,
       pagination: response.data.data.pagination,
     };
   } catch (error) {

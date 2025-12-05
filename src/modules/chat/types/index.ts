@@ -69,10 +69,22 @@ export interface IChatMessageItem {
   content: string;
   messageType: 'text' | 'reply' | 'image' | 'video';
   replyTo: string | null;
+  replyToMessage?: {
+    id: string;
+    content: string;
+    senderId: string;
+  } | null;
   isRead: boolean;
   createdAt: string;
   updatedAt: string;
   senderId?: string;
+}
+
+// Reply context for UI state management
+export interface IReplyContext {
+  messageId: string;
+  content: string;
+  senderName: string;
 }
 
 export interface IChatMessagesData {

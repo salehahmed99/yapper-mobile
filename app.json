@@ -44,7 +44,8 @@
           "image": "./assets/images/yapper.png",
           "backgroundColor": "#000000"
         }
-      }
+      },
+      "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
       "output": "static",

@@ -1,9 +1,10 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import ChatBubble from '@/src/modules/chat/components/ChatBubble';
-import { IChatMessageItem, IChatMessageSender } from '@/src/modules/chat/types';
+import TypingIndicator from '@/src/modules/chat/components/TypingIndicator';
+import { IChatMessageItem, IChatMessageSender, IReplyContext } from '@/src/modules/chat/types';
 import { FlashList, FlashListRef } from '@shopify/flash-list';
-import React from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 interface ChatMessagesListProps {
@@ -14,6 +15,8 @@ interface ChatMessagesListProps {
   isLoadingMore?: boolean;
   hasMore?: boolean;
   isOtherUserTyping?: boolean;
+  onReplyToMessage?: (message: IChatMessageItem, senderName: string) => void;
+  replyingTo?: IReplyContext | null;
 }
 
 export default function ChatMessagesList({
@@ -24,20 +27,38 @@ export default function ChatMessagesList({
   isLoadingMore,
   hasMore,
   isOtherUserTyping,
+  onReplyToMessage,
+  replyingTo,
 }: ChatMessagesListProps) {
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  const flashListRef = React.useRef<FlashListRef<IChatMessageItem> | null>(null);
+  const flashListRef = useRef<FlashListRef<IChatMessageItem> | null>(null);
 
+  // Create a map of message IDs to messages for O(1) lookup of replied messages
+  const messagesMap = useMemo(() => {
+    const map = new Map<string, IChatMessageItem>();
+    messages.forEach((msg) => map.set(msg.id, msg));
+    return map;
+  }, [messages]);
+  const lastMessageIdRef = useRef<string | null>(null);
   React.useEffect(() => {
-    if (messages.length > 0) {
+    if (messages.length === 0) return;
+    const currentLastMessageId = messages[messages.length - 1]?.id;
+    const prevLastMessageId = lastMessageIdRef.current;
+    if (currentLastMessageId && currentLastMessageId !== prevLastMessageId && prevLastMessageId !== null) {
       setTimeout(() => {
         flashListRef.current?.scrollToEnd({ animated: true });
       }, 100);
     }
-  }, [messages.length]);
-
-  // Also scroll when typing indicator appears
+    lastMessageIdRef.current = currentLastMessageId;
+  }, [messages]);
+  React.useEffect(() => {
+    if (messages.length > 0) {
+      setTimeout(() => {
+        flashListRef.current?.scrollToEnd({ animated: false });
+      }, 200);
+    }
+  }, []);
   React.useEffect(() => {
     if (isOtherUserTyping) {
       setTimeout(() => {
@@ -45,14 +66,53 @@ export default function ChatMessagesList({
       }, 100);
     }
   }, [isOtherUserTyping]);
+  React.useEffect(() => {
+    if (replyingTo) {
+      setTimeout(() => {
+        flashListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    }
+  }, [replyingTo]);
+  const renderMessage = useCallback(
+    ({ item }: { item: IChatMessageItem }) => {
+      let isOwn: boolean;
+      if (item.senderId) {
+        isOwn = item.senderId === currentUserId;
+      } else {
+        isOwn = false;
+      }
+      const cachedReplyMessage = item.replyTo ? messagesMap.get(item.replyTo) : null;
+      const replyMessage =
+        cachedReplyMessage ||
+        (item.replyToMessage
+          ? ({
+              id: item.replyToMessage.id,
+              content: item.replyToMessage.content,
+              senderId: item.replyToMessage.senderId,
+            } as IChatMessageItem)
+          : null);
 
-  const renderMessage = ({ item }: { item: IChatMessageItem }) => {
-    // Determine if message is from current user
-    // If senderId exists on message, use it; otherwise use sender info from response
-    const isOwn = item.senderId ? item.senderId === currentUserId : sender?.id !== currentUserId;
+      const getReplyMessageSenderName = () => {
+        if (!replyMessage) return undefined;
+        const replyIsOwn = replyMessage.senderId ? replyMessage.senderId === currentUserId : false;
+        return replyIsOwn ? 'You' : sender?.name || sender?.username || 'Unknown';
+      };
+      const getSenderName = () => {
+        return isOwn ? 'You' : sender?.name || sender?.username || 'Unknown';
+      };
 
-    return <ChatBubble message={item} isOwn={isOwn} />;
-  };
+      return (
+        <ChatBubble
+          message={item}
+          isOwn={isOwn}
+          replyMessage={replyMessage}
+          replyMessageSenderName={getReplyMessageSenderName()}
+          onReply={() => onReplyToMessage?.(item, getSenderName())}
+        />
+      );
+    },
+    [currentUserId, messagesMap, sender, onReplyToMessage],
+  );
 
   const renderHeader = () => {
     if (!isLoadingMore) return null;
@@ -65,24 +125,14 @@ export default function ChatMessagesList({
 
   const renderFooter = () => {
     if (!isOtherUserTyping) return null;
-    return (
-      <View style={styles.typingIndicator}>
-        <View style={styles.typingBubble}>
-          <View style={styles.typingDots}>
-            <View style={[styles.typingDot, styles.typingDot1]} />
-            <View style={[styles.typingDot, styles.typingDot2]} />
-            <View style={[styles.typingDot, styles.typingDot3]} />
-          </View>
-        </View>
-      </View>
-    );
+    return <TypingIndicator />;
   };
 
-  const handleStartReached = () => {
+  const handleLoadMore = useCallback(() => {
     if (hasMore && !isLoadingMore && onLoadMore) {
       onLoadMore();
     }
-  };
+  }, [hasMore, isLoadingMore, onLoadMore]);
 
   return (
     <FlashList
@@ -90,14 +140,12 @@ export default function ChatMessagesList({
       data={messages}
       renderItem={renderMessage}
       keyExtractor={(item) => item.id}
-      contentContainerStyle={[styles.listContent, { paddingBottom: theme.spacing.sm }]}
-      maintainVisibleContentPosition={{
-        autoscrollToTopThreshold: 100,
-        startRenderingFromBottom: true,
-      }}
+      contentContainerStyle={styles.listContent}
+      onStartReached={handleLoadMore}
+      onStartReachedThreshold={0.5}
       ListHeaderComponent={renderHeader}
       ListFooterComponent={renderFooter}
-      onScrollBeginDrag={handleStartReached}
+      extraData={messagesMap}
     />
   );
 }
@@ -106,41 +154,10 @@ const createStyles = (theme: Theme) =>
   StyleSheet.create({
     listContent: {
       paddingTop: theme.spacing.md,
+      paddingBottom: theme.spacing.sm,
     },
     loadingHeader: {
       paddingVertical: theme.spacing.lg,
       alignItems: 'center',
-    },
-    typingIndicator: {
-      paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.xs,
-      alignItems: 'flex-start',
-    },
-    typingBubble: {
-      backgroundColor: theme.colors.background.secondary,
-      borderRadius: theme.borderRadius.xl,
-      paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.md,
-    },
-    typingDots: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 4,
-    },
-    typingDot: {
-      width: 8,
-      height: 8,
-      borderRadius: 4,
-      backgroundColor: theme.colors.text.secondary,
-      opacity: 0.6,
-    },
-    typingDot1: {
-      opacity: 0.4,
-    },
-    typingDot2: {
-      opacity: 0.6,
-    },
-    typingDot3: {
-      opacity: 0.8,
     },
   });

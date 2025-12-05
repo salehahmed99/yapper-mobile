@@ -5,9 +5,19 @@ import ChatHeader from '@/src/modules/chat/components/ChatHeader';
 import ChatInput from '@/src/modules/chat/components/ChatInput';
 import ChatMessagesList from '@/src/modules/chat/components/ChatMessagesList';
 import { useChatConversation } from '@/src/modules/chat/hooks/useChatConversation';
+import { useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
+import React, { useRef } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 export default function ChatConversationPage() {
   const params = useLocalSearchParams<{ id: string; name?: string; username?: string; avatarUrl?: string }>();
@@ -17,12 +27,11 @@ export default function ChatConversationPage() {
   const { top, bottom } = useSpacing();
   const headerPadding = top - theme.ui.appBarHeight - theme.ui.tabViewHeight;
   const styles = createStyles(theme);
-
-  // Use route params for participant info (passed from chat list)
   const userName = params.name || 'Unknown User';
   const userUsername = params.username || 'unknown';
+  const hasTypedThisSession = useRef<boolean>(false);
+  const wasKeyboardVisible = useRef<boolean>(false);
 
-  // Use custom hook for all chat logic
   const {
     messages,
     sender,
@@ -34,15 +43,49 @@ export default function ChatConversationPage() {
     inputText,
     isOtherUserTyping,
     isKeyboardVisible,
+    keyboardHeight,
+    replyingTo,
     handleTextChange,
     handleSend,
     handleLoadMore,
+    handleReplyToMessage,
+    handleCancelReply,
   } = useChatConversation({ chatId: chatId as string });
 
-  const inputPadding = isKeyboardVisible ? theme.spacing.lg : bottom + theme.spacing.lg;
+  const inputLengthOnKeyboardOpen = useRef<number>(0);
+
+  if (!wasKeyboardVisible.current && isKeyboardVisible) {
+    inputLengthOnKeyboardOpen.current = inputText.length;
+    hasTypedThisSession.current = false;
+  }
+  if (wasKeyboardVisible.current && !isKeyboardVisible) {
+    hasTypedThisSession.current = false;
+  }
+  wasKeyboardVisible.current = isKeyboardVisible;
+  if (isKeyboardVisible && inputText.length !== inputLengthOnKeyboardOpen.current && !hasTypedThisSession.current) {
+    hasTypedThisSession.current = true;
+  }
+
+  const inputPadding =
+    Platform.OS === 'ios'
+      ? isKeyboardVisible
+        ? 0
+        : bottom
+      : isKeyboardVisible
+        ? hasTypedThisSession.current
+          ? keyboardHeight
+          : bottom + theme.spacing.xxl
+        : bottom;
 
   const handleBack = () => {
     router.back();
+  };
+
+  // For testing: clear and refetch the messages cache
+  const queryClient = useQueryClient();
+  const handleClearCache = () => {
+    queryClient.resetQueries({ queryKey: ['messages', chatId] });
+    Alert.alert('Cache Cleared', 'Messages cache has been reset and refetching...');
   };
 
   return (
@@ -53,7 +96,7 @@ export default function ChatConversationPage() {
           username={userUsername}
           avatarUrl={params.avatarUrl}
           onBack={handleBack}
-          onInfo={() => {}}
+          onInfo={handleClearCache}
         />
       </View>
       <View style={styles.messagesContainer}>
@@ -64,6 +107,12 @@ export default function ChatConversationPage() {
         ) : isError ? (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>Failed to load messages</Text>
+            <TouchableOpacity
+              style={styles.retryButton}
+              onPress={() => queryClient.invalidateQueries({ queryKey: ['messages', chatId] })}
+            >
+              <Text style={styles.retryButtonText}>Tap to Retry</Text>
+            </TouchableOpacity>
           </View>
         ) : (
           <ChatMessagesList
@@ -74,6 +123,8 @@ export default function ChatConversationPage() {
             isLoadingMore={isFetchingNextPage}
             hasMore={hasNextPage}
             isOtherUserTyping={isOtherUserTyping}
+            onReplyToMessage={handleReplyToMessage}
+            replyingTo={replyingTo}
           />
         )}
       </View>
@@ -82,6 +133,8 @@ export default function ChatConversationPage() {
         onChangeText={handleTextChange}
         onSend={handleSend}
         style={{ paddingBottom: inputPadding }}
+        replyingTo={replyingTo}
+        onCancelReply={handleCancelReply}
       />
     </KeyboardAvoidingView>
   );
@@ -92,7 +145,6 @@ const createStyles = (theme: Theme) =>
     container: {
       flex: 1,
       backgroundColor: theme.colors.background.primary,
-      paddingBottom: theme.spacing.lg,
     },
     header: {
       backgroundColor: theme.colors.background.primary,
@@ -113,5 +165,17 @@ const createStyles = (theme: Theme) =>
     errorText: {
       fontSize: theme.typography.sizes.md,
       color: theme.colors.text.secondary,
+      marginBottom: theme.spacing.md,
+    },
+    retryButton: {
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: theme.spacing.sm,
+      backgroundColor: theme.colors.accent.bookmark,
+      borderRadius: theme.borderRadius.md,
+    },
+    retryButtonText: {
+      color: theme.colors.background.primary,
+      fontSize: theme.typography.sizes.sm,
+      fontWeight: '600',
     },
   });

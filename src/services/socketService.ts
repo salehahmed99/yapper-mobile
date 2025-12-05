@@ -1,9 +1,8 @@
 import { getToken } from '@/src/utils/secureStorage';
 import { io, Socket } from 'socket.io-client';
 
-// TODO: Move these to environment variables/config
-const SOCKET_URL = 'https://yapper.cmp27.space';
-const SOCKET_PATH = '/socket-local.io';
+const SOCKET_URL = process.env.EXPO_PUBLIC_SOCKET_URL;
+const SOCKET_PATH = process.env.EXPO_PUBLIC_SOCKET_PATH;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SocketCallback = (...args: any[]) => void;
@@ -11,6 +10,7 @@ type SocketCallback = (...args: any[]) => void;
 class SocketService {
   private socket: Socket | null = null;
   private listeners: Map<string, SocketCallback[]> = new Map();
+  private debugMode = true; // Set to false to disable socket logging
 
   public async connect(): Promise<Socket | null> {
     const token = await getToken();
@@ -64,6 +64,9 @@ class SocketService {
 
   public emit(event: string, data: unknown) {
     if (this.socket) {
+      if (this.debugMode) {
+        console.log(`[Socket EMIT] 📤 ${event}`, JSON.stringify(data, null, 2));
+      }
       this.socket.emit(event, data);
     } else {
       console.warn('SocketService: Socket not connected, cannot emit', event);
@@ -74,10 +77,19 @@ class SocketService {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, []);
     }
-    this.listeners.get(event)?.push(callback);
+
+    // Wrap callback with logging
+    const wrappedCallback: SocketCallback = (...args) => {
+      if (this.debugMode) {
+        console.log(`[Socket RECV] 📥 ${event}`, JSON.stringify(args, null, 2));
+      }
+      callback(...args);
+    };
+
+    this.listeners.get(event)?.push(wrappedCallback);
 
     if (this.socket) {
-      this.socket.on(event, callback);
+      this.socket.on(event, wrappedCallback);
     }
   }
 
@@ -99,18 +111,21 @@ class SocketService {
     if (!this.socket) return;
 
     this.socket.on('connect', () => {
-      // Connection established
+      if (this.debugMode) {
+        console.log('[Socket] ✅ Connected');
+      }
     });
 
-    this.socket.on('disconnect', () => {
-      // Disconnected
+    this.socket.on('disconnect', (reason) => {
+      if (this.debugMode) {
+        console.log('[Socket] ❌ Disconnected:', reason);
+      }
     });
 
     this.socket.on('connect_error', (error) => {
-      console.error('SocketService: Connection Error', error);
+      console.warn('[Socket] ⚠️ Connection error:', error.message);
     });
 
-    // Re-attach listeners
     this.listeners.forEach((callbacks, event) => {
       callbacks.forEach((callback) => {
         this.socket?.on(event, callback);

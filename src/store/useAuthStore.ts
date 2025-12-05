@@ -100,7 +100,11 @@ export const useAuthStore = create<IAuthState>((set) => ({
       set({ isInitialized: true });
     }
     if (authSuccessful) {
-      await socketService.connect();
+      try {
+        await socketService.connect();
+      } catch (socketErr) {
+        console.warn('Socket connection failed, but auth remains valid:', socketErr);
+      }
     }
   },
 
@@ -118,7 +122,11 @@ export const useAuthStore = create<IAuthState>((set) => ({
       set({ user: null, token: null });
       return; // Don't connect socket if login failed
     }
-    await socketService.connect();
+    try {
+      await socketService.connect();
+    } catch (socketErr) {
+      console.warn('Socket connection failed, but auth remains valid:', socketErr);
+    }
   },
 
   /** Optional: skip redirect flag */
