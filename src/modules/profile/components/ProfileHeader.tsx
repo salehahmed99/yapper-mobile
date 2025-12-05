@@ -1,10 +1,11 @@
 import { DEFAULT_AVATAR_URL, DEFAULT_BANNER_URL } from '@/src/constants/defaults';
 import { formatCount } from '@/src/utils/formatCount';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, Ellipsis, Mail } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image as RNImage, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../../context/ThemeContext';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { useBlockUser } from '../hooks/useBlockUser';
@@ -30,6 +31,7 @@ import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 
 import { Theme } from '@/src/constants/theme';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const blockedButtonStyles = (theme: Theme, headerStyles: any) =>
   StyleSheet.create<{ button: ViewStyle; text: TextStyle }>({
     button: {
@@ -204,8 +206,16 @@ export default function ProfileHeader({
           <View style={headerStyles.banner}>
             <ActivityIndicator size="large" color={theme.colors.text.link} />
           </View>
+        ) : isOwnProfile ? (
+          <Image
+            source={{ uri: bannerUri }}
+            style={headerStyles.banner}
+            testID="profile_header_banner_image"
+            cachePolicy="memory-disk"
+            priority="high"
+          />
         ) : (
-          <Image source={{ uri: bannerUri }} style={headerStyles.banner} testID="profile_header_banner_image" />
+          <RNImage source={{ uri: bannerUri }} style={headerStyles.banner} testID="profile_header_banner_image" />
         )}
 
         {/* Back Button */}
@@ -245,8 +255,16 @@ export default function ProfileHeader({
             <View style={headerStyles.avatar}>
               <ActivityIndicator size="small" color={theme.colors.text.link} />
             </View>
+          ) : isOwnProfile ? (
+            <Image
+              source={{ uri: imageUri }}
+              style={headerStyles.avatar}
+              testID="profile_header_avatar_image"
+              cachePolicy="memory-disk"
+              priority="high"
+            />
           ) : (
-            <Image source={{ uri: imageUri }} style={headerStyles.avatar} testID="profile_header_avatar_image" />
+            <RNImage source={{ uri: imageUri }} style={headerStyles.avatar} testID="profile_header_avatar_image" />
           )}
         </TouchableOpacity>
 

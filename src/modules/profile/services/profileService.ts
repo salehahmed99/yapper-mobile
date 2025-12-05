@@ -312,14 +312,17 @@ export const updateUserProfile = async (profileData: {
 export const uploadAvatar = async (imageUri: string): Promise<{ imageUrl: string; imageName: string }> => {
   try {
     const formData = new FormData();
-    const filename = imageUri.split('/').pop() || 'avatar.jpg';
-    const match = /\.(\w+)$/.exec(filename);
-    const type = match ? `image/${match[1]}` : 'image/jpeg';
+    let filename = imageUri.split('/').pop() || 'avatar.jpg';
+
+    // Convert HEIC to JPEG filename and type
+    if (filename.toLowerCase().endsWith('.heic') || filename.toLowerCase().endsWith('.heif')) {
+      filename = filename.replace(/\.(heic|heif)$/i, '.jpg');
+    }
 
     formData.append('file', {
       uri: imageUri,
       name: filename,
-      type,
+      type: 'image/jpeg',
     } as unknown as Blob);
 
     const response = await api.post('/users/me/upload-avatar', formData, {
@@ -345,14 +348,17 @@ export const uploadCover = async (imageUri: string): Promise<{ imageUrl: string;
   try {
     const formData = new FormData();
 
-    const filename = imageUri.split('/').pop() || 'cover.jpg';
-    const match = /\.(\w+)$/.exec(filename);
-    const type = match ? `image/${match[1]}` : 'image/jpeg';
+    let filename = imageUri.split('/').pop() || 'cover.jpg';
+
+    // Convert HEIC to JPEG filename and type
+    if (filename.toLowerCase().endsWith('.heic') || filename.toLowerCase().endsWith('.heif')) {
+      filename = filename.replace(/\.(heic|heif)$/i, '.jpg');
+    }
 
     formData.append('file', {
       uri: imageUri,
       name: filename,
-      type,
+      type: 'image/jpeg',
     } as unknown as Blob);
 
     const response = await api.post('/users/me/upload-cover', formData, {
@@ -420,7 +426,7 @@ export const getUserPosts = async ({ userId, cursor, limit = 20 }: IUserPostsPar
     }
 
     const response = await api.get(`/users/${userId}/posts`, { params });
-    return response.data;
+    return response.data.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.code === 'ERR_NETWORK') {
@@ -441,7 +447,7 @@ export const getUserMedia = async ({ userId, cursor, limit = 20 }: IUserMediaPar
     }
 
     const response = await api.get(`/users/${userId}/media`, { params });
-    return response.data;
+    return response.data.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.code === 'ERR_NETWORK') {
@@ -466,7 +472,7 @@ export const getUserLikes = async ({
         limit,
       },
     });
-    return response.data;
+    return response.data.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.code === 'ERR_NETWORK') {
@@ -490,7 +496,7 @@ export const getUserReplies = async ({
     }
 
     const response = await api.get(`/users/${userId}/replies`, { params });
-    return response.data;
+    return response.data.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.code === 'ERR_NETWORK') {

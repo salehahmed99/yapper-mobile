@@ -1,9 +1,9 @@
 import { InfiniteData } from '@tanstack/react-query';
-import { ITweet, ITweets } from '../types';
+import { ITweet, ITweets } from '../../tweets/types';
 
-export const updateTweetsInInfiniteCache = (
+export const updateUserStateInTweetsCache = (
   oldData: InfiniteData<ITweets> | undefined,
-  tweetId: string,
+  userId: string,
   updater: (tweet: ITweet) => ITweet,
 ) => {
   if (!oldData?.pages) return oldData;
@@ -13,7 +13,7 @@ export const updateTweetsInInfiniteCache = (
     pages: oldData.pages.map((page: ITweets) => ({
       ...page,
       data: page.data.map((tweet: ITweet) => {
-        if (tweet.tweetId === tweetId) {
+        if (tweet.user.id === userId) {
           return updater(tweet);
         }
         return tweet;

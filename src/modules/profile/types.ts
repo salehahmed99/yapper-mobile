@@ -1,3 +1,4 @@
+import { ITweet } from '@/src/modules/tweets/types';
 import { IUser } from '@/src/types/user';
 
 interface IGetMyUserResponse {
@@ -121,12 +122,8 @@ interface IUserPostsPagination {
 }
 
 interface IUserPostsResponse {
-  data: {
-    data: unknown[];
-    pagination: IUserPostsPagination;
-  };
-  count: number;
-  message: string;
+  data: ITweet[];
+  pagination: IUserPostsPagination;
 }
 
 export { IUserPostsPagination, IUserPostsParams, IUserPostsResponse };
@@ -138,12 +135,8 @@ interface IUserMediaParams {
 }
 
 interface IUserMediaResponse {
-  data: {
-    data: unknown[];
-    pagination: IUserPostsPagination;
-  };
-  count: number;
-  message: string;
+  data: ITweet[];
+  pagination: IUserPostsPagination;
 }
 
 export { IUserMediaParams, IUserMediaResponse };
@@ -155,12 +148,8 @@ interface IUserLikesParams {
 }
 
 interface IUserLikesResponse {
-  data: {
-    data: unknown[];
-    pagination: IUserPostsPagination;
-  };
-  count: number;
-  message: string;
+  data: ITweet[];
+  pagination: IUserPostsPagination;
 }
 
 export { IUserLikesParams, IUserLikesResponse };
@@ -172,12 +161,8 @@ interface IUserRepliesParams {
 }
 
 interface IUserRepliesResponse {
-  data: {
-    data: unknown[];
-    pagination: IUserPostsPagination;
-  };
-  count: number;
-  message: string;
+  data: ITweet[];
+  pagination: IUserPostsPagination;
 }
 
 export { IUserRepliesParams, IUserRepliesResponse };

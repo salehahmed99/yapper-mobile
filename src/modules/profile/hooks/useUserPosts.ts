@@ -8,12 +8,11 @@ export const useUserPosts = (userId: string, enabled: boolean = true) => {
   return useInfiniteQuery({
     queryKey: profileQueryKeys.userPosts(userId),
     queryFn: async ({ pageParam }) => {
-      const response = await getUserPosts({
+      return await getUserPosts({
         userId,
         cursor: pageParam,
         limit: PROFILE_QUERY_CONFIG.pagination.defaultLimit,
       });
-      return response.data;
     },
     initialPageParam: '',
     getNextPageParam: (lastPage) => {
@@ -30,10 +29,7 @@ export const useUserPosts = (userId: string, enabled: boolean = true) => {
 export const useUserPostsData = (userId: string, enabled: boolean = true) => {
   const query = useUserPosts(userId, enabled);
 
-  const posts: ITweet[] = useMemo(
-    () => query.data?.pages.flatMap((page) => page.data as ITweet[]) ?? [],
-    [query.data?.pages],
-  );
+  const posts: ITweet[] = useMemo(() => query.data?.pages.flatMap((page) => page.data) ?? [], [query.data?.pages]);
 
   return {
     ...query,
