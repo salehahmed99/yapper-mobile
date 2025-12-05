@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
 
@@ -17,7 +18,11 @@ export const SettingsTopBar: React.FC<ISettingsTopBarProps> = ({
   onBackPress,
   showBackButton = true,
 }) => {
+  const { i18n } = useTranslation();
   const { theme } = useTheme();
+
+  // Check if the current language is RTL
+  const isRTL = i18n.language === 'ar';
   const styles = useMemo(() => createStyles(theme), [theme]);
   return (
     <View style={styles.header}>
@@ -29,7 +34,7 @@ export const SettingsTopBar: React.FC<ISettingsTopBarProps> = ({
             accessibilityLabel="Go_back"
             testID="Go_back"
           >
-            <Ionicons name="arrow-back" style={styles.icon} />
+            <Ionicons name={isRTL ? 'arrow-forward' : 'arrow-back'} style={styles.icon} />
           </TouchableOpacity>
         )}
         <View style={styles.headerTextContainer}>

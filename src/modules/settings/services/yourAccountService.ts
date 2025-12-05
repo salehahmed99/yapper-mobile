@@ -50,6 +50,15 @@ export const changeEmail = async (newEmail: string): Promise<boolean> => {
   }
 };
 
+export const verifyChangeEmail = async (token: string, newEmail: string): Promise<boolean> => {
+  try {
+    const res = await api.post('/auth/verify-update-email', { token, newEmail });
+    return res.status === 200;
+  } catch (error) {
+    throw new Error(extractErrorMessage(error));
+  }
+};
+
 export const changeCountry = async (newCountry: string): Promise<boolean> => {
   try {
     const res = await api.patch('/users/me', { country: newCountry });

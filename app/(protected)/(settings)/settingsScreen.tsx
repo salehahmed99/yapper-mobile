@@ -14,7 +14,7 @@ import { Theme } from '@/src/constants/theme';
 
 export const SettingsScreen: React.FC = () => {
   const { t } = useTranslation();
-  const SETTINGS_DATA = getSettingsData();
+  const SETTINGS_DATA = useMemo(() => getSettingsData(t), [t]);
   const handleItemPress = (item: ISettingsItem) => {
     if (item.route) {
       router.push(`/(protected)/(settings)/${item.route}`);

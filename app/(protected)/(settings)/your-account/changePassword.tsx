@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, StatusBar, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, StatusBar, ScrollView, I18nManager } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -16,10 +16,11 @@ import ValidationItem from '@/src/modules/settings/components/ValidationItem';
 import { validatePassword, isPasswordValid } from '@/src/modules/settings/utils/passwordValidation';
 
 export const ChangePasswordScreen: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
   const user = useAuthStore((state) => state.user);
   const { theme, isDark } = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const styles = useMemo(() => createStyles(theme, isRTL), [theme, isRTL]);
 
   const [passwords, setPasswords] = useState({ current: '', new: '', confirm: '' });
   const [showValidation, setShowValidation] = useState(false);
@@ -200,7 +201,7 @@ export const ChangePasswordScreen: React.FC = () => {
   );
 };
 
-const createStyles = (theme: Theme) =>
+const createStyles = (theme: Theme, isRTL: boolean = false) =>
   StyleSheet.create({
     safeArea: { flex: 1, backgroundColor: theme.colors.background.primary },
     container: { flex: 1, backgroundColor: theme.colors.background.primary },
@@ -211,13 +212,19 @@ const createStyles = (theme: Theme) =>
       paddingBottom: theme.spacing.xxl,
     },
     inputGroup: { marginBottom: theme.spacing.xl },
-    label: { fontSize: theme.typography.sizes.sm, color: theme.colors.text.secondary, marginBottom: theme.spacing.sm },
+    label: {
+      fontSize: theme.typography.sizes.sm,
+      color: theme.colors.text.secondary,
+      marginBottom: theme.spacing.sm,
+      textAlign: isRTL ? 'left' : 'right',
+    },
     validationContainer: { marginTop: theme.spacing.md, paddingVertical: theme.spacing.sm },
     validationTitle: {
       fontSize: theme.typography.sizes.xs,
       color: theme.colors.text.secondary,
       marginBottom: theme.spacing.xs,
       fontFamily: theme.typography.fonts.medium,
+      textAlign: isRTL ? 'left' : 'right',
     },
     updateButton: {
       backgroundColor: theme.colors.text.link,
@@ -235,8 +242,18 @@ const createStyles = (theme: Theme) =>
     updateButtonTextDisabled: { color: theme.colors.text.primary },
     forgotPasswordContainer: { alignItems: 'center', paddingVertical: theme.spacing.md },
     forgotPasswordText: { fontSize: theme.typography.sizes.sm, color: theme.colors.text.secondary },
-    errorText: { fontSize: theme.typography.sizes.sm, color: theme.colors.error, marginTop: theme.spacing.xs },
-    successText: { fontSize: theme.typography.sizes.sm, color: theme.colors.success, marginTop: theme.spacing.xs },
+    errorText: {
+      fontSize: theme.typography.sizes.sm,
+      color: theme.colors.error,
+      marginTop: theme.spacing.xs,
+      textAlign: isRTL ? 'left' : 'right',
+    },
+    successText: {
+      fontSize: theme.typography.sizes.sm,
+      color: theme.colors.success,
+      marginTop: theme.spacing.xs,
+      textAlign: isRTL ? 'left' : 'right',
+    },
   });
 
 export default ChangePasswordScreen;

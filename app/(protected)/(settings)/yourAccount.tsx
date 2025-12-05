@@ -13,7 +13,7 @@ import { Theme } from '@/src/constants/theme';
 
 export const YourAccountScreen: React.FC = () => {
   const { t } = useTranslation();
-  const YOUR_ACCOUNT_DATA = getYourAccountData();
+  const YOUR_ACCOUNT_DATA = useMemo(() => getYourAccountData(t), [t]);
   const user = useAuthStore((state) => state.user);
   const { theme, isDark } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);

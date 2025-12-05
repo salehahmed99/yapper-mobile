@@ -1,10 +1,8 @@
 import { ISettingsItem } from '../types/types';
-import i18n from '@/src/i18n';
+import { TFunction } from 'i18next';
 
-const t = (key: string) => i18n.t(key);
-
-// Function to get localized settings data - call this dynamically in components
-export const getSettingsData = (): ISettingsItem[] => [
+// Function to get localized settings data - accepts t function from component
+export const getSettingsData = (t: TFunction): ISettingsItem[] => [
   {
     id: 'your-account',
     title: t('settings.your_account.title'),
@@ -34,7 +32,7 @@ export const getSettingsData = (): ISettingsItem[] => [
   },
 ];
 
-export const getYourAccountData = (): ISettingsItem[] => [
+export const getYourAccountData = (t: TFunction): ISettingsItem[] => [
   {
     id: 'account-information',
     title: t('settings.account_info.title'),
@@ -63,7 +61,3 @@ export const getYourAccountData = (): ISettingsItem[] => [
     prefix: 'your-account/',
   },
 ];
-
-// Keep old exports for backward compatibility
-export const SETTINGS_DATA = getSettingsData();
-export const YOUR_ACCOUNT_DATA = getYourAccountData();

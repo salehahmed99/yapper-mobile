@@ -11,8 +11,8 @@ import { Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { verifyOTP } from '@/src/modules/auth/services/forgetPasswordService';
 import { resendVerificationCode } from '@/src/modules/auth/services/signUpService';
+import { verifyChangeEmail } from '@/src/modules/settings/services/yourAccountService';
 
 const ConfirmEmailChangeScreen = () => {
   const { t } = useTranslation();
@@ -49,7 +49,7 @@ const ConfirmEmailChangeScreen = () => {
     setIsLoading(true);
     setIsVerifyEnabled(false);
     try {
-      const isVerified = await verifyOTP({ identifier: email, token: code });
+      const isVerified = await verifyChangeEmail(code, email);
 
       if (isVerified) {
         Toast.show({

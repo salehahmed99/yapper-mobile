@@ -1,13 +1,23 @@
 import React, { useRef, useMemo } from 'react';
-import { TextInput, Animated, StyleSheet, TextInputProps, TouchableOpacity, View, Text } from 'react-native';
+import {
+  TextInput,
+  Animated,
+  StyleSheet,
+  TextInputProps,
+  TouchableOpacity,
+  View,
+  Text,
+  I18nManager,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
+import { useTranslation } from 'react-i18next';
 
 interface AnimatedTextInputProps extends TextInputProps {
   onFocusChange?: (isFocused: boolean) => void;
   showPasswordToggle?: boolean;
-  isUsername?: boolean; // <-- NEW PROP
+  isUsername?: boolean;
 }
 
 export const AnimatedTextInput: React.FC<AnimatedTextInputProps> = ({
@@ -18,7 +28,9 @@ export const AnimatedTextInput: React.FC<AnimatedTextInputProps> = ({
   ...props
 }) => {
   const { theme } = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const { i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
+  const styles = useMemo(() => createStyles(theme, isRTL), [theme, isRTL]);
   const borderAnim = useRef(new Animated.Value(0)).current;
   const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
 
@@ -62,6 +74,7 @@ export const AnimatedTextInput: React.FC<AnimatedTextInputProps> = ({
           onFocus={handleFocus}
           onBlur={handleBlur}
           secureTextEntry={showPasswordToggle ? !isPasswordVisible : props.secureTextEntry}
+          textAlign={isRTL ? 'right' : 'left'}
         />
 
         {showPasswordToggle && (
@@ -82,7 +95,7 @@ export const AnimatedTextInput: React.FC<AnimatedTextInputProps> = ({
   );
 };
 
-const createStyles = (theme: Theme) =>
+const createStyles = (theme: Theme, isRTL: boolean) =>
   StyleSheet.create({
     animatedView: {
       borderBottomWidth: 1,
@@ -107,11 +120,13 @@ const createStyles = (theme: Theme) =>
       color: theme.colors.text.primary,
     },
     inputWithIcon: {
-      paddingRight: 32,
+      paddingRight: isRTL ? 32 : 0,
+      paddingLeft: isRTL ? 0 : 32,
     },
     eyeIcon: {
       position: 'absolute',
-      right: 0,
+      right: isRTL ? 0 : undefined,
+      left: isRTL ? undefined : 0,
       padding: 4,
     },
   });

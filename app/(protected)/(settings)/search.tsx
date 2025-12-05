@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, StatusBar, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, StatusBar, TextInput, TouchableOpacity, I18nManager } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,13 +11,14 @@ import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
 
 export const SettingsSearchScreen: React.FC = () => {
-  const { t } = useTranslation();
-  const SETTINGS_DATA = getSettingsData();
-  const YOUR_ACCOUNT_DATA = getYourAccountData();
+  const { t, i18n } = useTranslation();
+  const SETTINGS_DATA = useMemo(() => getSettingsData(t), [t]);
+  const YOUR_ACCOUNT_DATA = useMemo(() => getYourAccountData(t), [t]);
   const [searchQuery, setSearchQuery] = useState('');
   const inputRef = useRef<TextInput>(null);
   const { theme, isDark } = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
+  const styles = useMemo(() => createStyles(theme, isRTL), [theme, isRTL]);
 
   // Auto-focus input when screen loads
   useEffect(() => {
@@ -46,7 +47,6 @@ export const SettingsSearchScreen: React.FC = () => {
   }, [SETTINGS_DATA, YOUR_ACCOUNT_DATA, searchQuery]);
 
   const handleItemPress = (item: ISettingsItem) => {
-    console.log('Navigating to:', item.route);
     if (item.route) {
       router.push(`/(protected)/(settings)/${item.prefix || ''}${item.route}`);
     }
@@ -67,7 +67,7 @@ export const SettingsSearchScreen: React.FC = () => {
             accessibilityLabel="Go back"
             testID="Go_Back"
           >
-            <Ionicons name="arrow-back" size={24} color={theme.colors.text.primary} />
+            <Ionicons name={isRTL ? 'arrow-forward' : 'arrow-back'} size={24} color={theme.colors.text.primary} />
           </TouchableOpacity>
           <TextInput
             ref={inputRef}
@@ -124,7 +124,7 @@ export const SettingsSearchScreen: React.FC = () => {
   );
 };
 
-const createStyles = (theme: Theme) =>
+const createStyles = (theme: Theme, isRTL: boolean) =>
   StyleSheet.create({
     safeArea: {
       flex: 1,
@@ -144,7 +144,8 @@ const createStyles = (theme: Theme) =>
       borderBottomColor: theme.colors.border,
     },
     backButton: {
-      marginRight: theme.spacing.md,
+      marginRight: isRTL ? 0 : theme.spacing.md,
+      marginLeft: isRTL ? theme.spacing.md : 0,
       padding: theme.spacing.xs,
     },
     searchInput: {
@@ -152,9 +153,11 @@ const createStyles = (theme: Theme) =>
       fontSize: theme.typography.sizes.lg,
       color: theme.colors.text.primary,
       padding: 0,
+      textAlign: isRTL ? 'right' : 'left',
     },
     clearButton: {
-      marginLeft: theme.spacing.md,
+      marginLeft: isRTL ? 0 : theme.spacing.md,
+      marginRight: isRTL ? theme.spacing.md : 0,
       padding: theme.spacing.xs,
     },
     scrollView: {
@@ -166,7 +169,7 @@ const createStyles = (theme: Theme) =>
     emptyState: {
       flex: 1,
       justifyContent: 'flex-start',
-      alignItems: 'flex-start',
+      alignItems: isRTL ? 'flex-end' : 'flex-start',
       paddingVertical: theme.spacing.xxl,
       paddingHorizontal: theme.spacing.xxl,
     },
@@ -176,22 +179,26 @@ const createStyles = (theme: Theme) =>
       color: theme.colors.text.primary,
       marginTop: theme.spacing.md,
       marginBottom: theme.spacing.xs,
+      textAlign: isRTL ? 'right' : 'left',
     },
     emptyStateSubtext: {
       fontSize: theme.typography.sizes.sm,
       color: theme.colors.text.tertiary,
       lineHeight: 20,
+      textAlign: isRTL ? 'right' : 'left',
     },
     noResultsTitle: {
       fontSize: theme.typography.sizes.xxl,
       fontFamily: theme.typography.fonts.bold,
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.sm,
+      textAlign: isRTL ? 'right' : 'left',
     },
     noResultsSubtext: {
       fontSize: theme.typography.sizes.sm,
       color: theme.colors.text.tertiary,
       lineHeight: 20,
+      textAlign: isRTL ? 'right' : 'left',
     },
   });
 
