@@ -2,15 +2,18 @@ import React, { useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
 import { SettingsSection } from '@/src/modules/settings/components/SettingsSection';
-import { YOUR_ACCOUNT_DATA } from '@/src/modules/settings/components/settingsConfig';
+import { getYourAccountData } from '@/src/modules/settings/components/settingsConfig';
 import { ISettingsItem } from '@/src/modules/settings/types/types';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
 
 export const YourAccountScreen: React.FC = () => {
+  const { t } = useTranslation();
+  const YOUR_ACCOUNT_DATA = getYourAccountData();
   const user = useAuthStore((state) => state.user);
   const { theme, isDark } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -27,14 +30,15 @@ export const YourAccountScreen: React.FC = () => {
       />
       <View style={styles.container}>
         {/* Header */}
-        <SettingsTopBar title="Your account" subtitle={`@${user?.username}`} onBackPress={() => router.back()} />
+        <SettingsTopBar
+          title={t('settings.your_account.title')}
+          subtitle={`@${user?.username}`}
+          onBackPress={() => router.back()}
+        />
 
         {/* Description */}
         <View style={styles.descriptionContainer}>
-          <Text style={styles.descriptionText}>
-            See information about your account, download an archive of your data, or learn about your account
-            deactivation options.
-          </Text>
+          <Text style={styles.descriptionText}>{t('settings.your_account.description')}</Text>
         </View>
 
         {/* Settings List */}

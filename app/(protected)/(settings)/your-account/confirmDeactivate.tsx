@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, StatusBar, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { AnimatedTextInput } from '@/src/modules/settings/components/AnimatedTextInput';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
@@ -13,6 +14,7 @@ import { confirmCurrentPassword, deleteAccount } from '@/src/modules/settings/se
 import { useAuthStore } from '@/src/store/useAuthStore';
 
 export const ConfirmDeactivateScreen: React.FC = () => {
+  const { t } = useTranslation();
   const { theme, isDark } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const logOut = useAuthStore((state) => state.logout);
@@ -24,8 +26,8 @@ export const ConfirmDeactivateScreen: React.FC = () => {
     if (!password) {
       Toast.show({
         type: 'error',
-        text1: 'Password Required',
-        text2: 'Please enter your password to continue',
+        text1: t('settings.confirm_deactivate.password_required'),
+        text2: t('settings.confirm_deactivate.password_required_message'),
       });
       return;
     }
@@ -36,8 +38,8 @@ export const ConfirmDeactivateScreen: React.FC = () => {
       if (!isConfirmed) {
         Toast.show({
           type: 'error',
-          text1: 'Incorrect Password',
-          text2: 'The password you entered is incorrect. Please try again.',
+          text1: t('settings.confirm_deactivate.incorrect_password'),
+          text2: t('settings.confirm_deactivate.incorrect_password_message'),
         });
         setIsLoading(false);
         return;
@@ -51,8 +53,8 @@ export const ConfirmDeactivateScreen: React.FC = () => {
 
       Toast.show({
         type: 'success',
-        text1: 'Account Deactivated',
-        text2: 'Your account has been deactivated successfully',
+        text1: t('settings.confirm_deactivate.deactivated_title'),
+        text2: t('settings.confirm_deactivate.deactivated_message'),
       });
 
       await logOut(true);
@@ -61,8 +63,8 @@ export const ConfirmDeactivateScreen: React.FC = () => {
     } catch (error: any) {
       Toast.show({
         type: 'error',
-        text1: 'Deactivation Failed',
-        text2: error?.message || 'Failed to deactivate account. Please try again.',
+        text1: t('settings.confirm_deactivate.failed_title'),
+        text2: error?.message || t('settings.confirm_deactivate.failed_message'),
       });
     } finally {
       setIsLoading(false);
@@ -90,10 +92,8 @@ export const ConfirmDeactivateScreen: React.FC = () => {
 
         {/* Title and Description */}
         <View style={styles.textContainer}>
-          <Text style={styles.title}>Confirm your password</Text>
-          <Text style={styles.description}>
-            Complete your deactivation request by entering the password associated with your account.
-          </Text>
+          <Text style={styles.title}>{t('settings.confirm_deactivate.title')}</Text>
+          <Text style={styles.description}>{t('settings.confirm_deactivate.description')}</Text>
         </View>
 
         {/* Password Input */}

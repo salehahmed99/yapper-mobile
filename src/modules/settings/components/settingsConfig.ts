@@ -1,62 +1,69 @@
 import { ISettingsItem } from '../types/types';
+import i18n from '@/src/i18n';
 
-export const SETTINGS_DATA: ISettingsItem[] = [
+const t = (key: string) => i18n.t(key);
+
+// Function to get localized settings data - call this dynamically in components
+export const getSettingsData = (): ISettingsItem[] => [
   {
     id: 'your-account',
-    title: 'Your account',
+    title: t('settings.your_account.title'),
     icon: 'account-outline',
     iconFamily: 'MaterialCommunityIcons',
-    description:
-      'See information about your account, download an archive of your data, or learn about your account deactivation options.',
+    description: t('settings.your_account.description'),
     route: 'yourAccount',
     prefix: '',
   },
   {
     id: 'privacy-safety',
-    title: 'Privacy and safety',
+    title: t('settings.privacy_safety.title'),
     icon: 'shield-checkmark-outline',
     iconFamily: 'Ionicons',
-    description: 'Manage what information you see and share on X.',
+    description: t('settings.privacy_safety.description'),
     route: 'MuteAndBlock/MuteAndBlockScreen',
     prefix: '',
   },
   {
     id: 'accessibility',
-    title: 'Accessibility, display and languages',
+    title: t('settings.accessibility.title'),
     icon: 'planet-outline',
     iconFamily: 'Ionicons',
-    description: 'Manage how X content is displayed to you.',
+    description: t('settings.accessibility.description'),
     route: 'accessibility-display-languages',
     prefix: '',
   },
 ];
 
-export const YOUR_ACCOUNT_DATA: ISettingsItem[] = [
+export const getYourAccountData = (): ISettingsItem[] => [
   {
     id: 'account-information',
-    title: 'Account information',
+    title: t('settings.account_info.title'),
     icon: 'person-outline',
     iconFamily: 'Ionicons',
-    description: 'See your account information like your phone number and email address.',
+    description: t('settings.account_info.description'),
     route: 'AccountInformation',
     prefix: 'your-account/',
   },
   {
     id: 'change-password',
-    title: 'Change your password',
+    title: t('settings.password.title'),
     icon: 'lock-outline',
     iconFamily: 'MaterialCommunityIcons',
-    description: 'Change your password at any time.',
+    description: t('settings.password.description'),
     route: 'changePassword',
     prefix: 'your-account/',
   },
   {
     id: 'deactivate-account',
-    title: 'Deactivate Account',
+    title: t('settings.deactivate.title'),
     icon: 'heart-dislike-outline',
     iconFamily: 'Ionicons',
-    description: 'Find out how you can deactivate your account.',
+    description: t('settings.deactivate.description'),
     route: 'deactivateAccount',
     prefix: 'your-account/',
   },
 ];
+
+// Keep old exports for backward compatibility
+export const SETTINGS_DATA = getSettingsData();
+export const YOUR_ACCOUNT_DATA = getYourAccountData();

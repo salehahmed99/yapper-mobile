@@ -5,6 +5,7 @@ import { IUser } from '@/src/types/user';
 import { useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Theme } from '../../../constants/theme';
 import { useTheme } from '../../../context/ThemeContext';
 import { createMutedAccountsStyles } from '../styles/muted-and-blocked-accounts-styles';
@@ -16,6 +17,7 @@ const createStyles = (theme: Theme) =>
 
 export default function MutedAccountsContainer() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const mutedStyles = useMemo(() => createMutedAccountsStyles(theme), [theme]);
@@ -36,11 +38,8 @@ export default function MutedAccountsContainer() {
     <View style={styles.container}>
       {showEmptyHeader ? (
         <View style={mutedStyles.header}>
-          <Text style={mutedStyles.title}>Muted accounts</Text>
-          <Text style={mutedStyles.description}>
-            Posts from muted accounts won&apos;t show up in your Home timeline. Mute accounts directly from their
-            profile or posts.
-          </Text>
+          <Text style={mutedStyles.title}>{t('settings.mute_block.muted_accounts_title')}</Text>
+          <Text style={mutedStyles.description}>{t('settings.mute_block.muted_accounts_description')}</Text>
         </View>
       ) : null}
       <UserList

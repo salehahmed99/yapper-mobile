@@ -2,25 +2,27 @@ import React, { useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet, StatusBar, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
 
 export const AccountInformationScreen: React.FC = () => {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const { theme, isDark } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const handleLogout = () => {
-    Alert.alert('Log out', 'Logging out will remove all yapper data from this device', [
+    Alert.alert(t('settings.account_info.logout_title'), t('settings.account_info.logout_message'), [
       {
-        text: 'Cancel',
+        text: t('settings.common.cancel'),
         style: 'cancel',
       },
       {
-        text: 'Log out',
+        text: t('settings.account_info.logout_button'),
         style: 'destructive',
         onPress: async () => {
           await logout(false);
@@ -31,13 +33,13 @@ export const AccountInformationScreen: React.FC = () => {
   };
 
   const handleLogoutAll = () => {
-    Alert.alert('Log out', 'Logging out will remove all yapper data from all connected devices', [
+    Alert.alert(t('settings.account_info.logout_title'), t('settings.account_info.logout_all_message'), [
       {
-        text: 'Cancel',
+        text: t('settings.common.cancel'),
         style: 'cancel',
       },
       {
-        text: 'Log out All',
+        text: t('settings.account_info.logout_all_button'),
         style: 'destructive',
         onPress: async () => {
           await logout(true);
@@ -69,7 +71,11 @@ export const AccountInformationScreen: React.FC = () => {
       />
       <View style={styles.container}>
         {/* Header */}
-        <SettingsTopBar title="Account information" subtitle={`@${user?.username}`} onBackPress={() => router.back()} />
+        <SettingsTopBar
+          title={t('settings.account_info.title')}
+          subtitle={`@${user?.username}`}
+          onBackPress={() => router.back()}
+        />
 
         {/* Content */}
         <ScrollView
@@ -79,14 +85,14 @@ export const AccountInformationScreen: React.FC = () => {
         >
           <View>
             <InfoRow
-              label="Username"
+              label={t('settings.account_info.username_label')}
               value={`@${user?.username}`}
               onPress={() => router.push('/(protected)/(settings)/your-account/account-information/change-username')}
             />
 
             <InfoRow
-              label="Email"
-              value={user?.email || 'Add'}
+              label={t('settings.account_info.email_label')}
+              value={user?.email || t('settings.account_info.add_label')}
               onPress={() =>
                 router.push({
                   pathname: '/(protected)/(settings)/your-account/verify-password',
@@ -96,13 +102,13 @@ export const AccountInformationScreen: React.FC = () => {
             />
 
             <InfoRow
-              label="Country"
-              value={user?.country || 'Add'}
+              label={t('settings.account_info.country_label')}
+              value={user?.country || t('settings.account_info.add_label')}
               onPress={() => router.push('/(protected)/(settings)/your-account/account-information/edit-country')}
             />
 
             <View style={styles.helperTextContainer}>
-              <Text style={styles.helperText}>Select the country you live in.</Text>
+              <Text style={styles.helperText}>{t('settings.account_info.country_helper')}</Text>
             </View>
 
             {/* Logout Button */}
@@ -112,7 +118,7 @@ export const AccountInformationScreen: React.FC = () => {
               accessibilityLabel="Log out"
               testID="Logout_Button"
             >
-              <Text style={styles.logoutText}>Log out</Text>
+              <Text style={styles.logoutText}>{t('settings.account_info.logout_button')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -121,7 +127,7 @@ export const AccountInformationScreen: React.FC = () => {
               accessibilityLabel="Log out All"
               testID="Logout_All_Button"
             >
-              <Text style={styles.logoutText}>Log out All</Text>
+              <Text style={styles.logoutText}>{t('settings.account_info.logout_all_button')}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

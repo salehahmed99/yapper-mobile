@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View, ScrollView, StyleSheet, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
 import { SettingsSection } from '@/src/modules/settings/components/SettingsSection';
 import { ISettingsItem } from '@/src/modules/settings/types/types';
@@ -9,18 +10,20 @@ import { useAuthStore } from '@/src/store/useAuthStore';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
 
-const ACCESSIBILITY_DISPLAY_DATA: ISettingsItem[] = [
+const getAccessibilityDisplayData = (t: (key: string) => string): ISettingsItem[] => [
   {
     id: 'languages',
-    title: 'Languages',
+    title: t('settings.languages.title'),
     icon: 'globe-outline',
     iconFamily: 'Ionicons',
-    description: 'Manage which languages are used to personalize your X experience.',
+    description: t('settings.languages.description'),
     route: 'languages',
   },
 ];
 
 export const AccessibilityDisplayLanguagesScreen: React.FC = () => {
+  const { t } = useTranslation();
+  const ACCESSIBILITY_DISPLAY_DATA = getAccessibilityDisplayData(t);
   const handleItemPress = (item: ISettingsItem) => {
     if (item.route) {
       router.push(`/(protected)/(settings)/accessibility-display-languages/${item.route}`);
@@ -39,7 +42,7 @@ export const AccessibilityDisplayLanguagesScreen: React.FC = () => {
       />
       <View style={styles.container}>
         <SettingsTopBar
-          title="Accessibility, display and languages"
+          title={t('settings.accessibility.title')}
           subtitle={`@${user?.username}`}
           onBackPress={() => router.back()}
         />

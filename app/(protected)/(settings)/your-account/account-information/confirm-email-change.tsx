@@ -8,12 +8,14 @@ import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { verifyOTP } from '@/src/modules/auth/services/forgetPasswordService';
 import { resendVerificationCode } from '@/src/modules/auth/services/signUpService';
 
 const ConfirmEmailChangeScreen = () => {
+  const { t } = useTranslation();
   const { theme, isDark } = useTheme();
   const styles = React.useMemo(() => createStyles(theme), [theme]);
   const { email } = useLocalSearchParams<{ email: string }>();
@@ -38,8 +40,8 @@ const ConfirmEmailChangeScreen = () => {
     if (code.trim().length !== 6) {
       Toast.show({
         type: 'error',
-        text1: 'Invalid Code',
-        text2: 'Please enter a 6-digit verification code',
+        text1: t('settings.email_verify.invalid_code_title'),
+        text2: t('settings.email_verify.invalid_code_message'),
       });
       return;
     }
@@ -52,8 +54,8 @@ const ConfirmEmailChangeScreen = () => {
       if (isVerified) {
         Toast.show({
           type: 'success',
-          text1: 'Email Verified',
-          text2: 'Your email has been successfully updated',
+          text1: t('settings.email_verify.verified'),
+          text2: t('settings.email_verify.verified_message'),
         });
         router.back();
         router.back();
@@ -61,13 +63,13 @@ const ConfirmEmailChangeScreen = () => {
       } else {
         Toast.show({
           type: 'error',
-          text1: 'Invalid Code',
-          text2: 'The verification code you entered is incorrect',
+          text1: t('settings.email_verify.incorrect_title'),
+          text2: t('settings.email_verify.incorrect_message'),
         });
       }
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to verify code';
-      Toast.show({ type: 'error', text1: 'Verification Failed', text2: message });
+      const message = error instanceof Error ? error.message : t('settings.email_verify.failed_title');
+      Toast.show({ type: 'error', text1: t('settings.email_verify.failed_title'), text2: message });
     } finally {
       setIsVerifyEnabled(true);
       setIsLoading(false);
@@ -81,12 +83,12 @@ const ConfirmEmailChangeScreen = () => {
 
       Toast.show({
         type: 'success',
-        text1: 'Code Resent',
-        text2: 'A new verification code has been sent to your email',
+        text1: t('settings.email_verify.code_resent'),
+        text2: t('settings.email_verify.code_resent_message'),
       });
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to resend code';
-      Toast.show({ type: 'error', text1: 'Error', text2: message });
+      Toast.show({ type: 'error', text1: t('settings.common.error'), text2: message });
     } finally {
       setIsResending(false);
     }
@@ -102,12 +104,20 @@ const ConfirmEmailChangeScreen = () => {
         barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor={theme.colors.background.primary}
       />
-      <ActivityLoader visible={isLoading || isResending} message={isLoading ? 'Verifying...' : 'Resending...'} />
+      <ActivityLoader
+        visible={isLoading || isResending}
+        message={isLoading ? t('settings.common.verifying') : t('settings.common.resending')}
+      />
       <TopBar onBackPress={handleBack} showExitButton={false} />
       <View style={styles.content}>
-        <AuthTitle title="We sent you a code" />
-        <Text style={styles.description}>Enter it below to verify {email}</Text>
-        <AuthInput description={`Sent to ${email}`} label="Verification code" value={code} onChange={setCode} />
+        <AuthTitle title={t('settings.email_verify.title')} />
+        <Text style={styles.description}>{t('settings.email_verify.description', { email })}</Text>
+        <AuthInput
+          description={t('settings.email_verify.sent_to', { email })}
+          label={t('settings.email_verify.label')}
+          value={code}
+          onChange={setCode}
+        />
         <Pressable
           onPress={handleResendCode}
           disabled={isResending}
@@ -115,12 +125,12 @@ const ConfirmEmailChangeScreen = () => {
           accessibilityLabel="resend-code-button"
           accessibilityRole="button"
         >
-          <Text style={styles.resendText}>Didn't receive email?</Text>
+          <Text style={styles.resendText}>{t('settings.email_verify.resend_link')}</Text>
         </Pressable>
       </View>
       <BottomBar
         rightButton={{
-          label: 'Verify',
+          label: t('settings.common.verify'),
           onPress: handleVerify,
           enabled: isVerifyEnabled,
           visible: true,

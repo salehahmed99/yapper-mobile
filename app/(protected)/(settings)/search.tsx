@@ -3,14 +3,17 @@ import { View, Text, ScrollView, StyleSheet, StatusBar, TextInput, TouchableOpac
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { SettingsSection } from '@/src/modules/settings/components/SettingsSection';
-import { SETTINGS_DATA } from '@/src/modules/settings/components/settingsConfig';
-import { YOUR_ACCOUNT_DATA } from '@/src/modules/settings/components/settingsConfig';
+import { getSettingsData, getYourAccountData } from '@/src/modules/settings/components/settingsConfig';
 import { ISettingsItem } from '@/src/modules/settings/types/types';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
 
 export const SettingsSearchScreen: React.FC = () => {
+  const { t } = useTranslation();
+  const SETTINGS_DATA = getSettingsData();
+  const YOUR_ACCOUNT_DATA = getYourAccountData();
   const [searchQuery, setSearchQuery] = useState('');
   const inputRef = useRef<TextInput>(null);
   const { theme, isDark } = useTheme();
@@ -30,11 +33,17 @@ export const SettingsSearchScreen: React.FC = () => {
       return [];
     }
 
-    const query = searchQuery.toLowerCase().trim();
-    return SETTINGS_DATA.filter((item) => item.title.toLowerCase().includes(query)).concat(
-      YOUR_ACCOUNT_DATA.filter((item) => item.title.toLowerCase().includes(query)),
-    );
-  }, [searchQuery]);
+    const query = searchQuery.trim();
+    const allData = [...SETTINGS_DATA, ...YOUR_ACCOUNT_DATA];
+
+    return allData.filter((item) => {
+      const itemTitle = item.title || '';
+      const queryLower = query.toLowerCase();
+      const titleLower = itemTitle.toLowerCase();
+
+      return titleLower.includes(queryLower) || itemTitle.includes(query);
+    });
+  }, [SETTINGS_DATA, YOUR_ACCOUNT_DATA, searchQuery]);
 
   const handleItemPress = (item: ISettingsItem) => {
     console.log('Navigating to:', item.route);
@@ -65,7 +74,7 @@ export const SettingsSearchScreen: React.FC = () => {
             style={styles.searchInput}
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Search settings"
+            placeholder={t('settings.search.placeholder')}
             placeholderTextColor={theme.colors.text.tertiary}
             autoCapitalize="none"
             autoCorrect={false}
@@ -93,9 +102,7 @@ export const SettingsSearchScreen: React.FC = () => {
         >
           {searchQuery.trim().length === 0 ? (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyStateSubtext}>
-                Try searching for account, privacy, notifications, or security
-              </Text>
+              <Text style={styles.emptyStateSubtext}>{t('settings.search.empty_hint')}</Text>
             </View>
           ) : filteredSettings.length > 0 ? (
             <SettingsSection
@@ -107,10 +114,8 @@ export const SettingsSearchScreen: React.FC = () => {
             />
           ) : (
             <View style={styles.emptyState}>
-              <Text style={styles.noResultsTitle}>No results for "{searchQuery}"</Text>
-              <Text style={styles.noResultsSubtext}>
-                The term you entered did not bring up any results. Try a different search term.
-              </Text>
+              <Text style={styles.noResultsTitle}>{t('settings.search.no_results', { query: searchQuery })}</Text>
+              <Text style={styles.noResultsSubtext}>{t('settings.search.no_results_hint')}</Text>
             </View>
           )}
         </ScrollView>

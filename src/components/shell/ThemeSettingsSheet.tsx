@@ -1,5 +1,6 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import React from 'react';
 import { Modal, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
@@ -11,6 +12,7 @@ interface IThemeSettingsSheetProps {
 }
 
 const ThemeSettingsSheet: React.FC<IThemeSettingsSheetProps> = ({ visible, onClose }) => {
+  const { t } = useTranslation();
   const {
     theme,
     isDark,
@@ -54,12 +56,12 @@ const ThemeSettingsSheet: React.FC<IThemeSettingsSheetProps> = ({ visible, onClo
       >
         <TouchableOpacity activeOpacity={1} style={[styles.sheet, { paddingBottom: insets.bottom + theme.spacing.lg }]}>
           <View style={styles.handle} />
-          <Text style={styles.title}>Dark Mode</Text>
+          <Text style={styles.title}>{t('settings.theme.title')}</Text>
 
           {/* Dark Mode Switch */}
           <View style={styles.switchRow}>
             <View style={styles.switchTextContainer}>
-              <Text style={styles.switchLabel}>Dark </Text>
+              <Text style={styles.switchLabel}>{t('settings.theme.dark_mode')}</Text>
             </View>
             <Switch
               value={darkMode}
@@ -75,10 +77,8 @@ const ThemeSettingsSheet: React.FC<IThemeSettingsSheetProps> = ({ visible, onClo
           {/* Use Device Settings Switch */}
           <View style={styles.switchRow}>
             <View style={styles.switchTextContainer}>
-              <Text style={styles.switchLabel}>Use device settings</Text>
-              <Text style={styles.switchSubtitle}>
-                Set Dark mode to use the Light or Dark selection located in your device Display & Brightness settings.
-              </Text>
+              <Text style={styles.switchLabel}>{t('settings.theme.device_settings')}</Text>
+              <Text style={styles.switchSubtitle}>{t('settings.theme.device_settings_description')}</Text>
             </View>
             <Switch
               value={useDeviceSettings}

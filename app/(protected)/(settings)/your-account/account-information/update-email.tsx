@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, StatusBar, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/src/context/ThemeContext';
 import { changeEmail } from '@/src/modules/settings/services/yourAccountService';
 import { Theme } from '@/src/constants/theme';
@@ -14,6 +15,7 @@ import { useAuthStore } from '@/src/store/useAuthStore';
 import { emailSchema } from '@/src/modules/auth/schemas/schemas';
 
 export const UpdateEmailScreen: React.FC = () => {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -31,8 +33,8 @@ export const UpdateEmailScreen: React.FC = () => {
     if (!isFormValid) {
       Toast.show({
         type: 'error',
-        text1: 'Invalid Email',
-        text2: 'Please enter a valid email address',
+        text1: t('settings.email.invalid_title'),
+        text2: t('settings.email.invalid_error'),
       });
       return;
     }
@@ -42,8 +44,8 @@ export const UpdateEmailScreen: React.FC = () => {
       await changeEmail(email);
       Toast.show({
         type: 'success',
-        text1: 'Email Updated',
-        text2: 'Your email has been updated successfully',
+        text1: t('settings.email.updated'),
+        text2: t('settings.email.updated_message'),
       });
       router.push({
         pathname: '/(protected)/(settings)/your-account/account-information/confirm-email-change',
@@ -53,8 +55,8 @@ export const UpdateEmailScreen: React.FC = () => {
     } catch (error: any) {
       Toast.show({
         type: 'error',
-        text1: 'Update Failed',
-        text2: error instanceof Error ? error?.message : 'Failed to update email. Please try again.',
+        text1: t('settings.email.update_failed'),
+        text2: error instanceof Error ? error?.message : t('settings.email.update_failed_message'),
       });
     } finally {
       setIsLoading(false);
@@ -79,29 +81,28 @@ export const UpdateEmailScreen: React.FC = () => {
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
-          <Text style={[styles.title, { color: theme.colors.text.primary }]}>Change email</Text>
+          <Text style={[styles.title, { color: theme.colors.text.primary }]}>{t('settings.email.title')}</Text>
 
           <Text style={[styles.description, { color: theme.colors.text.secondary }]}>
-            Your current email is {currentEmail}. What would you like to update it to? Your email is not displayed in
-            your public profile on X.
+            {t('settings.email.description', { email: currentEmail })}
           </Text>
 
           <Text style={[styles.warning, { color: theme.colors.text.secondary }]}>
-            If you change your email address, any existing Google SSO connections will be removed. Review Connected
-            accounts <Text style={[styles.link, { color: theme.colors.text.link }]}>here</Text>.
+            {t('settings.email.warning')}{' '}
+            <Text style={[styles.link, { color: theme.colors.text.link }]}>{t('settings.email.warning_link')}</Text>.
           </Text>
 
           <View style={styles.inputContainer}>
             <AuthInput
               description=""
-              label="Email address"
+              label={t('settings.email.label')}
               value={email}
               onChange={setEmail}
               status={
                 email.length > 0 && !isEmailValid ? 'error' : email.length > 0 && isEmailValid ? 'success' : 'none'
               }
               showCheck={email.length > 0 && isEmailValid}
-              errorMessage={email.length > 0 && !isEmailValid ? 'Please enter a valid email address' : ''}
+              errorMessage={email.length > 0 && !isEmailValid ? t('settings.email.invalid_error') : ''}
               type="text"
             />
           </View>
@@ -110,14 +111,14 @@ export const UpdateEmailScreen: React.FC = () => {
 
       <BottomBar
         leftButton={{
-          label: 'Cancel',
+          label: t('settings.common.cancel'),
           onPress: handleCancel,
           enabled: !isLoading,
           visible: true,
           type: 'secondary',
         }}
         rightButton={{
-          label: 'Next',
+          label: t('settings.common.next'),
           onPress: handleUpdate,
           enabled: isFormValid,
           visible: true,

@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, StatusBar, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { useTheme } from '@/src/context/ThemeContext';
@@ -9,6 +10,7 @@ import { Theme } from '@/src/constants/theme';
 import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 
 export const DeactivateAccountScreen: React.FC = () => {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const { theme, isDark } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -20,7 +22,7 @@ export const DeactivateAccountScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      <SettingsTopBar title="Deactivate your account" onBackPress={() => router.back()} />
+      <SettingsTopBar title={t('settings.deactivate.title')} onBackPress={() => router.back()} />
 
       <ScrollView
         style={styles.content}
@@ -41,25 +43,23 @@ export const DeactivateAccountScreen: React.FC = () => {
 
         {/* Main Warning Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>This will deactivate your account</Text>
-          <Text style={styles.sectionText}>
-            You're about to start the process of deactivating your Y account. Your display name, @username, and public
-            profile will no longer be viewable on Y.com, Y for iOS, or Y for Android.
-          </Text>
+          <Text style={styles.sectionTitle}>{t('settings.deactivate.warning_title')}</Text>
+          <Text style={styles.sectionText}>{t('settings.deactivate.warning_message')}</Text>
         </View>
 
         {/* What else you should know Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>What else you should know</Text>
+          <Text style={styles.sectionTitle}>{t('settings.deactivate.else_title')}</Text>
 
           <Text style={styles.sectionText}>
-            If you just want to change your @username, you don't need to deactivate your account — edit it in your{' '}
-            <Text style={styles.link}>settings</Text>.
+            {t('settings.deactivate.else_message_1')}{' '}
+            <Text style={styles.link}>{t('settings.deactivate.else_link_1')}</Text>.
           </Text>
 
           <Text style={styles.sectionText}>
-            To use your current @username or email address with a different Y account,{' '}
-            <Text style={styles.link}>change them</Text> before you deactivate this account.
+            {t('settings.deactivate.else_message_2')}{' '}
+            <Text style={styles.link}>{t('settings.deactivate.else_link_2')}</Text>{' '}
+            {t('settings.deactivate.else_message_3')}
           </Text>
         </View>
 
@@ -76,7 +76,7 @@ export const DeactivateAccountScreen: React.FC = () => {
           accessibilityLabel="Deactivate button"
           testID="deactivate-button"
         >
-          <Text style={styles.deactivateButtonText}>Deactivate</Text>
+          <Text style={styles.deactivateButtonText}>{t('settings.deactivate.button')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

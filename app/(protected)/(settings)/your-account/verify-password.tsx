@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, StatusBar, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/src/context/ThemeContext';
 import { confirmCurrentPassword } from '@/src/modules/settings/services/yourAccountService';
 import { Theme } from '@/src/constants/theme';
@@ -12,6 +13,7 @@ import PasswordInput from '@/src/modules/auth/components/shared/PasswordInput';
 import ActivityLoader from '@/src/components/ActivityLoader';
 
 export const VerifyPasswordScreen: React.FC = () => {
+  const { t } = useTranslation();
   const { returnTo } = useLocalSearchParams<{ returnTo?: string }>();
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -21,8 +23,8 @@ export const VerifyPasswordScreen: React.FC = () => {
     if (!password.trim()) {
       Toast.show({
         type: 'error',
-        text1: 'Password Required',
-        text2: 'Please enter your password',
+        text1: t('settings.verify_password.required_error'),
+        text2: t('settings.verify_password.required_message'),
       });
       return;
     }
@@ -34,8 +36,8 @@ export const VerifyPasswordScreen: React.FC = () => {
       if (isValid) {
         Toast.show({
           type: 'success',
-          text1: 'Password Verified',
-          text2: 'Password verification successful',
+          text1: t('settings.verify_password.verified'),
+          text2: t('settings.verify_password.verified_message'),
         });
 
         // Navigate to the return destination or back
@@ -48,16 +50,16 @@ export const VerifyPasswordScreen: React.FC = () => {
       } else {
         Toast.show({
           type: 'error',
-          text1: 'Invalid Password',
-          text2: 'The password you entered is incorrect',
+          text1: t('settings.verify_password.invalid_title'),
+          text2: t('settings.verify_password.invalid_message'),
         });
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       Toast.show({
         type: 'error',
-        text1: 'Verification Failed',
-        text2: 'Failed to verify password. Please try again.',
+        text1: t('settings.verify_password.failed_title'),
+        text2: t('settings.verify_password.failed_message'),
       });
     } finally {
       setIsLoading(false);
@@ -84,14 +86,16 @@ export const VerifyPasswordScreen: React.FC = () => {
 
       <View style={styles.container}>
         <View style={styles.content}>
-          <Text style={[styles.title, { color: theme.colors.text.primary }]}>Verify your password</Text>
+          <Text style={[styles.title, { color: theme.colors.text.primary }]}>
+            {t('settings.verify_password.title')}
+          </Text>
           <Text style={[styles.description, { color: theme.colors.text.secondary }]}>
-            Re-enter your X password to continue.
+            {t('settings.verify_password.description')}
           </Text>
 
           <View style={styles.inputContainer}>
             <PasswordInput
-              label="Password"
+              label={t('settings.verify_password.label')}
               value={password}
               onChangeText={setPassword}
               onToggleVisibility={() => setIsPasswordVisible(!isPasswordVisible)}
@@ -104,14 +108,14 @@ export const VerifyPasswordScreen: React.FC = () => {
 
       <BottomBar
         leftButton={{
-          label: 'Cancel',
+          label: t('settings.common.cancel'),
           onPress: handleCancel,
           enabled: !isLoading,
           visible: true,
           type: 'secondary',
         }}
         rightButton={{
-          label: 'Next',
+          label: t('settings.common.next'),
           onPress: handleVerify,
           enabled: isFormValid,
           visible: true,

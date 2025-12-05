@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
 import { useAuthStore } from '@/src/store/useAuthStore';
@@ -21,6 +22,7 @@ import Toast from 'react-native-toast-message';
 import { changeUsername } from '@/src/modules/settings/services/yourAccountService';
 
 export const ChangeUsernameScreen: React.FC = () => {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const { theme, isDark } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -36,13 +38,13 @@ export const ChangeUsernameScreen: React.FC = () => {
     }
 
     if (username === user?.username) {
-      setError('New username must be different from current username');
+      setError(t('settings.username.error_same'));
       return;
     }
 
     const result = usernameSchema.safeParse(username);
     if (!result.success) {
-      setError(result.error.errors[0]?.message || 'Invalid username');
+      setError(result.error.errors[0]?.message || t('settings.username.error_invalid'));
     } else {
       setError(null);
     }
@@ -52,8 +54,8 @@ export const ChangeUsernameScreen: React.FC = () => {
     if (!newUsername.trim()) {
       Toast.show({
         type: 'error',
-        text1: 'Error',
-        text2: 'Please enter a new username',
+        text1: t('settings.common.error'),
+        text2: t('settings.username.empty_error'),
       });
       return;
     }
@@ -61,7 +63,7 @@ export const ChangeUsernameScreen: React.FC = () => {
     if (error) {
       Toast.show({
         type: 'error',
-        text1: 'Error',
+        text1: t('settings.common.error'),
         text2: error,
       });
       return;
@@ -73,22 +75,22 @@ export const ChangeUsernameScreen: React.FC = () => {
       if (!response) {
         Toast.show({
           type: 'error',
-          text1: 'Error',
-          text2: 'Failed to change username',
+          text1: t('settings.common.error'),
+          text2: t('settings.username.error_failed'),
         });
         return;
       }
       Toast.show({
         type: 'success',
-        text1: 'Success',
-        text2: 'Username changed successfully',
+        text1: t('settings.common.success'),
+        text2: t('settings.username.success'),
       });
       router.back();
     } catch (err) {
       Toast.show({
         type: 'error',
-        text1: 'Error',
-        text2: err instanceof Error ? err.message : 'An unexpected error occurred',
+        text1: t('settings.common.error'),
+        text2: err instanceof Error ? err.message : t('settings.common.unexpected_error'),
       });
     } finally {
       setIsLoading(false);
@@ -111,7 +113,7 @@ export const ChangeUsernameScreen: React.FC = () => {
       />
       <View style={styles.container}>
         {/* Header */}
-        <SettingsTopBar title="Change username" onBackPress={() => router.back()} />
+        <SettingsTopBar title={t('settings.username.title')} onBackPress={() => router.back()} />
 
         {/* Content */}
         <ScrollView
@@ -122,13 +124,13 @@ export const ChangeUsernameScreen: React.FC = () => {
           <View style={styles.contentContainer}>
             {/* Current Username */}
             <View style={styles.section}>
-              <Text style={styles.label}>Current</Text>
+              <Text style={styles.label}>{t('settings.username.current')}</Text>
               <Text style={styles.currentUsername}>@{user?.username}</Text>
             </View>
 
             {/* New Username Input */}
             <View style={styles.section}>
-              <Text style={styles.label}>New</Text>
+              <Text style={styles.label}>{t('settings.username.new')}</Text>
               <View
                 style={[
                   styles.inputContainer,
@@ -147,7 +149,7 @@ export const ChangeUsernameScreen: React.FC = () => {
                   onFocus={() => setIsFocused(true)}
                   onBlur={() => setIsFocused(false)}
                   editable={!isLoading}
-                  placeholder="new_username"
+                  placeholder={t('settings.username.placeholder')}
                   placeholderTextColor={theme.colors.text.secondary}
                 />
                 {error && (
@@ -174,7 +176,7 @@ export const ChangeUsernameScreen: React.FC = () => {
             {isLoading ? (
               <ActivityIndicator color={theme.colors.text.primary} />
             ) : (
-              <Text style={styles.doneButtonText}>Done</Text>
+              <Text style={styles.doneButtonText}>{t('settings.username.done')}</Text>
             )}
           </TouchableOpacity>
         </View>

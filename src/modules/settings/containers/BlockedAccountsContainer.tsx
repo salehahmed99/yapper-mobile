@@ -5,6 +5,7 @@ import { IUser } from '@/src/types/user';
 import { useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Theme } from '../../../constants/theme';
 import { useTheme } from '../../../context/ThemeContext';
 import { createMutedAccountsStyles } from '../styles/muted-and-blocked-accounts-styles';
@@ -16,12 +17,14 @@ const createStyles = (theme: Theme) =>
 
 export default function BlockedAccountsContainer() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const mutedStyles = useMemo(() => createMutedAccountsStyles(theme), [theme]);
   const { users, loading, error } = useUserList({ type: 'blocked', autoLoad: true });
 
   const handleUserPress = (user: IUser) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     router.push(`/(profile)/${user.id}` as any);
   };
 
@@ -36,11 +39,8 @@ export default function BlockedAccountsContainer() {
     <View style={styles.container}>
       {showEmptyHeader ? (
         <View style={mutedStyles.header}>
-          <Text style={mutedStyles.title}>Block unwanted accounts</Text>
-          <Text style={mutedStyles.description}>
-            They will be able to see your public posts, but will no longer be able to engage with them. They will also
-            not be able to follow or message you, and you will not see notifications from them.
-          </Text>
+          <Text style={mutedStyles.title}>{t('settings.mute_block.blocked_accounts_title')}</Text>
+          <Text style={mutedStyles.description}>{t('settings.mute_block.blocked_accounts_description')}</Text>
         </View>
       ) : null}
       <UserList

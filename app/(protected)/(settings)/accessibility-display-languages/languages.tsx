@@ -27,7 +27,7 @@ const LANGUAGES: Language[] = [
 ];
 
 export const LanguagesScreen: React.FC = () => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const setLanguage = useAuthStore((state) => state.setLanguage);
   const [selectedLanguage, setSelectedLanguage] = useState<string>(i18n.language || 'en');
   const [isLoading, setIsLoading] = useState(false);
@@ -62,8 +62,8 @@ export const LanguagesScreen: React.FC = () => {
 
       Toast.show({
         type: 'success',
-        text1: 'Language Updated',
-        text2: 'Your language preference has been saved',
+        text1: t('settings.languages.updated_title'),
+        text2: t('settings.languages.updated_message'),
       });
 
       router.back();
@@ -71,8 +71,8 @@ export const LanguagesScreen: React.FC = () => {
     } catch (error) {
       Toast.show({
         type: 'error',
-        text1: 'Update Failed',
-        text2: 'Failed to update language. Please try again.',
+        text1: t('settings.languages.update_failed'),
+        text2: t('settings.languages.update_failed_message'),
       });
     } finally {
       setIsLoading(false);
@@ -94,9 +94,9 @@ export const LanguagesScreen: React.FC = () => {
 
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
           <View style={styles.content}>
-            <Text style={[styles.title, { color: theme.colors.text.primary }]}>Select language</Text>
+            <Text style={[styles.title, { color: theme.colors.text.primary }]}>{t('settings.languages.title')}</Text>
             <Text style={[styles.description, { color: theme.colors.text.secondary }]}>
-              Choose the language(s) you want to use to personalize your X experience.
+              {t('settings.languages.description')}
             </Text>
 
             <View style={styles.languageList}>
@@ -128,14 +128,14 @@ export const LanguagesScreen: React.FC = () => {
 
         <BottomBar
           leftButton={{
-            label: 'Skip for now',
+            label: t('settings.common.skip'),
             onPress: handleSkip,
             enabled: !isLoading,
             visible: true,
             type: 'secondary',
           }}
           rightButton={{
-            label: 'Next',
+            label: t('settings.common.next'),
             onPress: handleNext,
             enabled: !isLoading,
             visible: true,

@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, StatusBar, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/src/context/ThemeContext';
 import { changeCountry } from '@/src/modules/settings/services/yourAccountService';
 import { Theme } from '@/src/constants/theme';
@@ -9,6 +10,7 @@ import Toast from 'react-native-toast-message';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 
 export const ConfirmCountryChangeScreen: React.FC = () => {
+  const { t } = useTranslation();
   const { country } = useLocalSearchParams<{ country: string }>();
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -20,15 +22,15 @@ export const ConfirmCountryChangeScreen: React.FC = () => {
       await changeCountry(country);
       Toast.show({
         type: 'success',
-        text1: 'Country Updated',
-        text2: 'Your country has been updated successfully',
+        text1: t('settings.country.updated'),
+        text2: t('settings.country.updated_message'),
       });
       router.back();
     } catch (error) {
       Toast.show({
         type: 'error',
-        text1: 'Update Failed',
-        text2: error instanceof Error ? error?.message : 'Failed to update country. Please try again later.',
+        text1: t('settings.country.update_failed'),
+        text2: error instanceof Error ? error?.message : t('settings.country.update_failed_message'),
       });
       setIsUpdating(false);
     }
@@ -51,19 +53,21 @@ export const ConfirmCountryChangeScreen: React.FC = () => {
 
       <View style={styles.container}>
         <View style={styles.content}>
-          <Text style={styles.title}>Change country?</Text>
-          <Text style={styles.message}>This will customize your X experience based on the country you live in.</Text>
+          <Text style={styles.title}>{t('settings.country.title')}</Text>
+          <Text style={styles.message}>{t('settings.country.message')}</Text>
 
           <TouchableOpacity
             style={[styles.button, styles.changeButton]}
             onPress={handleConfirmChange}
             disabled={isUpdating}
           >
-            <Text style={styles.buttonTextChange}>{isUpdating ? 'Updating...' : 'Change'}</Text>
+            <Text style={styles.buttonTextChange}>
+              {isUpdating ? t('settings.common.updating') : t('settings.common.change')}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={[styles.button]} onPress={handleCancel} disabled={isUpdating}>
-            <Text style={styles.buttonTextCancel}>Cancel</Text>
+            <Text style={styles.buttonTextCancel}>{t('settings.common.cancel')}</Text>
           </TouchableOpacity>
         </View>
       </View>
