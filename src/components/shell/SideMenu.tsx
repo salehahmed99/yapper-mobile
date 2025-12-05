@@ -193,7 +193,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(protected)/(settings)/settingsScreen')}
+              // onPress={() => navigate('/(protected)/(settings)/settingsScreen')}
               onPress={() => navigate('/(protected)/bookmarks')}
               accessibilityLabel="sidemenu_bookmarks_button"
               testID="sidemenu_bookmarks_button"
