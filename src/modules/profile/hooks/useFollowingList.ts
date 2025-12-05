@@ -7,8 +7,10 @@ export const followingKeys = {
   list: (params: IGetFollowingListParams) => [...followingKeys.lists(), params] as const,
 };
 
-interface UseFollowingListOptions
-  extends Omit<UseQueryOptions<IGetFollowingListResponse, Error>, 'queryKey' | 'queryFn'> {
+interface UseFollowingListOptions extends Omit<
+  UseQueryOptions<IGetFollowingListResponse, Error>,
+  'queryKey' | 'queryFn'
+> {
   userId: string;
   cursor?: string;
   limit?: number;

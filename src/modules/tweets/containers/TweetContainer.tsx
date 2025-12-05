@@ -136,6 +136,7 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
               onViewPostInteractions={handleViewPostInteractions}
               onBookmark={handleBookmark}
               onShare={handleShare}
+              onDeletePress={handleDeletePress}
               openSheet={openSheet}
               onAvatarPress={handleAvatarPress}
             />
