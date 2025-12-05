@@ -13,6 +13,7 @@ interface IGetMyUserResponse {
   followersCount: number;
   followingCount: number;
   email: string;
+  language?: string;
 }
 
 export { IGetMyUserResponse };

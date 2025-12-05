@@ -5,6 +5,7 @@ import { create } from 'zustand';
 import { getMyUser } from '../modules/profile/services/profileService';
 import { logout, logOutAll } from '../modules/auth/services/authService';
 import { tokenRefreshService } from '../services/tokenRefreshService';
+import i18n, { changeLanguage } from '@/src/i18n';
 
 interface IAuthState {
   user: IUser | null;
@@ -17,6 +18,7 @@ interface IAuthState {
   setUserName: (newUsername: string) => void;
   setEmail: (newEmail: string) => void;
   setCountry: (newCountry: string) => void;
+  setLanguage: (newLanguage: string) => void;
   fetchAndUpdateUser: () => Promise<void>;
   logout: (all: boolean) => Promise<void>;
 }
@@ -50,8 +52,16 @@ export const useAuthStore = create<IAuthState>((set) => ({
               followers: data.followersCount,
               following: data.followingCount,
               birthDate: data.birthDate || undefined,
+              language: data.language,
             },
           });
+
+          // Sync language from backend with local i18n
+          if (data.language && data.language !== i18n.language) {
+            await changeLanguage(data.language);
+            await AsyncStorage.setItem('app-language', data.language);
+          }
+
           tokenRefreshService.start();
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (validationErr) {
@@ -106,8 +116,15 @@ export const useAuthStore = create<IAuthState>((set) => ({
           followers: data.followersCount,
           following: data.followingCount,
           birthDate: data.birthDate || undefined,
+          language: data.language || undefined,
         },
       });
+
+      // Sync language from backend with local i18n
+      if (data.language && data.language !== i18n.language) {
+        await changeLanguage(data.language);
+        await AsyncStorage.setItem('app-language', data.language);
+      }
     } catch (err) {
       console.error('Failed to fetch user:', err);
     }
@@ -123,6 +140,10 @@ export const useAuthStore = create<IAuthState>((set) => ({
   setCountry: (newCountry: string) =>
     set((state) => ({
       user: state.user ? { ...state.user, country: newCountry } : null,
+    })),
+  setLanguage: (newLanguage: string) =>
+    set((state) => ({
+      user: state.user ? { ...state.user, language: newLanguage } : null,
     })),
 
   /** Logout & cleanup */

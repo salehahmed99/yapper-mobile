@@ -26,7 +26,7 @@ export const SETTINGS_DATA: ISettingsItem[] = [
     icon: 'planet-outline',
     iconFamily: 'Ionicons',
     description: 'Manage how X content is displayed to you.',
-    route: 'AccessibilitySettings',
+    route: 'accessibility-display-languages',
     prefix: '',
   },
 ];
