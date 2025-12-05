@@ -37,13 +37,14 @@ api.interceptors.response.use(
     const originalRequest = error?.config;
     const requestUrl = originalRequest?.url;
 
-    // Handle 401/403 errors
+    // Handle 401/403 errors (but skip logout endpoints since token might be expired)
     if (
       (status === 401 || status === 403) &&
       requestUrl &&
       !requestUrl.includes('/login') &&
       !requestUrl.includes('/refresh') &&
-      !requestUrl.includes('/confirm-password')
+      !requestUrl.includes('/confirm-password') &&
+      !requestUrl.includes('/logout')
     ) {
       if (originalRequest._retry === true) {
         await _handleLogout();

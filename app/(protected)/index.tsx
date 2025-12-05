@@ -13,7 +13,7 @@ import { useTweetActions } from '@/src/modules/tweets/hooks/useTweetActions';
 import { useTweets } from '@/src/modules/tweets/hooks/useTweets';
 import { useTweetsFiltersStore } from '@/src/modules/tweets/store/useTweetsFiltersStore';
 import React, { useState } from 'react';
-import { RefreshControl, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 export default function HomeScreen() {
   const { theme } = useTheme();
@@ -35,11 +35,9 @@ export default function HomeScreen() {
   const activeQuery = homeIndex === 0 ? forYouQuery : followingQuery;
 
   // Flatten all pages of tweets into a single array
-  // Only keep the last 50 tweets to prevent excessive memory usage
   const tweets = React.useMemo(() => {
     const allTweets = activeQuery.data?.pages.flatMap((page) => page.data) ?? [];
-    // Keep only the last 50 tweets visible to prevent OOM issues with large scrolled lists
-    return allTweets.length > 50 ? allTweets.slice(-50) : allTweets;
+    return allTweets;
   }, [activeQuery.data]);
 
   const onRefresh = React.useCallback(() => {
@@ -54,22 +52,14 @@ export default function HomeScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeQuery.hasNextPage, activeQuery.isFetchingNextPage, activeQuery.fetchNextPage]);
 
-  const refreshControl = (
-    <RefreshControl
-      refreshing={activeQuery.isRefetching}
-      onRefresh={onRefresh}
-      tintColor={theme.colors.text.primary}
-      colors={[theme.colors.text.primary]}
-    />
-  );
-
   // Render different content based on the selected tab
   const renderScene = () => {
     return (
       <View style={styles.tweetContainer}>
         <TweetList
           data={tweets}
-          refreshControl={refreshControl}
+          onRefresh={onRefresh}
+          refreshing={activeQuery.isRefetching}
           onEndReached={onEndReached}
           onEndReachedThreshold={0.5}
           isLoading={activeQuery.isLoading}
