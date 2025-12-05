@@ -1,14 +1,16 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { FlashList } from '@shopify/flash-list';
 import { useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, RefreshControlProps, StyleSheet, View, ViewToken } from 'react-native';
+import { ActivityIndicator, RefreshControl, StyleSheet, View, ViewToken } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TweetContainer from '../containers/TweetContainer';
 import { ITweet } from '../types';
 
 interface ITweetListProps {
   data: ITweet[];
-  refreshControl?: React.ReactElement<RefreshControlProps>;
+  onRefresh?: () => void;
+  refreshing?: boolean;
   onEndReached?: () => void;
   onEndReachedThreshold?: number;
   isLoading?: boolean;
@@ -19,7 +21,8 @@ interface ITweetListProps {
 const TweetList: React.FC<ITweetListProps> = (props) => {
   const {
     data,
-    refreshControl,
+    onRefresh,
+    refreshing,
     onEndReached,
     onEndReachedThreshold,
     isLoading,
@@ -45,10 +48,16 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
   }).current;
 
   const renderHeader = () => {
-    if (topSpacing > 0) {
-      return <View style={{ height: topSpacing }} />;
-    }
-    return null;
+    return (
+      <View>
+        {topSpacing > 0 && <View style={{ height: topSpacing }} />}
+        {refreshing && (
+          <View style={styles.customRefreshContainer}>
+            <ActivityIndicator color={theme.colors.text.primary} />
+          </View>
+        )}
+      </View>
+    );
   };
 
   const renderFooter = () => {
@@ -73,7 +82,7 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
   }
 
   return (
-    <FlatList
+    <FlashList
       style={{ flex: 1 }}
       data={data}
       renderItem={({ item }) => <TweetContainer tweet={item} isVisible={visibleTweetIds.has(item.tweetId)} />}
@@ -85,7 +94,15 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
         }
       }}
       scrollIndicatorInsets={{ top: topSpacing - insets.top, bottom: bottomSpacing - insets.bottom }}
-      refreshControl={refreshControl}
+      refreshControl={
+        <RefreshControl
+          key={'refresh-' + topSpacing}
+          refreshing={refreshing ?? false}
+          onRefresh={onRefresh}
+          tintColor={theme.colors.text.primary}
+          colors={[theme.colors.text.primary]}
+        />
+      }
       ItemSeparatorComponent={() => <View style={styles.separator} />}
       accessibilityLabel="tweet_list_feed"
       testID="tweet_list_feed"
@@ -93,15 +110,7 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
       ListFooterComponent={renderFooter}
       onEndReached={onEndReached}
       onEndReachedThreshold={onEndReachedThreshold ?? 0.5}
-      maintainVisibleContentPosition={{
-        minIndexForVisible: 0,
-        autoscrollToTopThreshold: 10,
-      }}
       removeClippedSubviews={true}
-      windowSize={5}
-      maxToRenderPerBatch={5}
-      initialNumToRender={8}
-      updateCellsBatchingPeriod={50}
       onViewableItemsChanged={onViewableItemsChanged}
       viewabilityConfig={viewabilityConfig}
       // persistentScrollbar={true}
@@ -125,5 +134,12 @@ const createStyles = (theme: Theme) =>
     loadingFooter: {
       paddingVertical: 20,
       alignItems: 'center',
+    },
+    customRefreshContainer: {
+      marginTop: -35,
+      paddingBottom: 10,
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '100%',
     },
   });
