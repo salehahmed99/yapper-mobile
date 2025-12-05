@@ -53,9 +53,14 @@ export const useTweetActions = (tweetId: string) => {
   };
 
   const toggleBookmark = (tweet: ITweet) => {
+    let newBookmarksCount = undefined;
+    if (tweet.bookmarksCount !== undefined) {
+      newBookmarksCount = tweet.isBookmarked ? tweet.bookmarksCount - 1 : tweet.bookmarksCount + 1;
+    }
     return {
       ...tweet,
       isBookmarked: !tweet.isBookmarked,
+      bookmarksCount: newBookmarksCount,
     };
   };
 
