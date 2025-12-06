@@ -1,5 +1,4 @@
-import { getToken, saveToken } from '../utils/secureStorage';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getRefreshToken, getToken, saveRefreshToken, saveToken } from '../utils/secureStorage';
 import api from './apiClient';
 
 class TokenRefreshService {
@@ -48,8 +47,8 @@ class TokenRefreshService {
     try {
       const { useAuthStore } = await import('../store/useAuthStore');
 
-      // Get the refresh token from AsyncStorage (mobile approach)
-      const refreshToken = await AsyncStorage.getItem('refreshToken');
+      // Get the refresh token from secure storage
+      const refreshToken = await getRefreshToken();
       if (!refreshToken) {
         return null;
       }
@@ -68,7 +67,7 @@ class TokenRefreshService {
 
         // Update the refresh token if a new one was provided (token rotation)
         if (newRefreshToken) {
-          await AsyncStorage.setItem('refreshToken', newRefreshToken);
+          await saveRefreshToken(newRefreshToken);
         }
 
         this.lastRefreshTime = Date.now();
