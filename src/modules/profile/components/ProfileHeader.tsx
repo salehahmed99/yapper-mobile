@@ -31,7 +31,6 @@ import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 
 import { Theme } from '@/src/constants/theme';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const blockedButtonStyles = (theme: Theme, headerStyles: any) =>
   StyleSheet.create<{ button: ViewStyle; text: TextStyle }>({
     button: {
@@ -276,6 +275,23 @@ export default function ProfileHeader({
             onPress={() => setEditModalOpen(true)}
           >
             <Text style={headerStyles.editText}>{t('profile.editProfile')}</Text>
+          </TouchableOpacity>
+        ) : isBlocked ? (
+          <TouchableOpacity
+            style={blockedButtonStyles(theme, headerStyles).button}
+            onPress={handleBlock}
+            activeOpacity={0.7}
+            disabled={blockLoading}
+            testID="profile_header_block_button"
+            accessibilityLabel={`unblock_${displayUser?.username || displayUser?.name}`}
+            accessibilityRole="button"
+            accessibilityState={{ disabled: blockLoading }}
+          >
+            {blockLoading ? (
+              <ActivityIndicator size="small" color={theme.colors.error} />
+            ) : (
+              <Text style={blockedButtonStyles(theme, headerStyles).text}>{t('profile.blocked')}</Text>
+            )}
           </TouchableOpacity>
         ) : (
           <View style={headerStyles.buttonsContainer}>

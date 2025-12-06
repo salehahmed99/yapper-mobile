@@ -78,6 +78,23 @@ export const createHeaderStyles = (theme: Theme) =>
       fontSize: theme.typography.sizes.md,
       width: '100%',
     },
+    viewPostsButton: {
+      backgroundColor: theme.colors.background.primary,
+      borderWidth: 1,
+      borderColor: theme.colors.text.link,
+      borderRadius: theme.spacing.xl,
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: theme.spacing.sm,
+      marginTop: theme.spacing.md,
+      textAlign: 'center',
+      width: '100%',
+    },
+    viewPostsText: {
+      color: theme.colors.text.link,
+      fontWeight: theme.typography.weights.semiBold,
+      textAlign: 'center',
+      width: '100%',
+    },
     followingButton: {
       backgroundColor: theme.colors.text.link,
       borderColor: theme.colors.text.link,

@@ -19,13 +19,12 @@ export const passwordSchema = z.object({
 });
 
 export const PASSWORD_RULES = [
-  { key: 'minLength', test: (pwd: string) => pwd.length >= 8, text: 'At least 8 characters' },
-  { key: 'hasUppercase', test: (pwd: string) => /[A-Z]/.test(pwd), text: 'At least one uppercase letter (A-Z)' },
-  { key: 'hasLowercase', test: (pwd: string) => /[a-z]/.test(pwd), text: 'At least one lowercase letter (a-z)' },
-  { key: 'hasNumber', test: (pwd: string) => /[0-9]/.test(pwd), text: 'At least one number (0-9)' },
+  { key: 'minLength', test: (pwd: string) => pwd.length >= 8 },
+  { key: 'hasUppercase', test: (pwd: string) => /[A-Z]/.test(pwd) },
+  { key: 'hasLowercase', test: (pwd: string) => /[a-z]/.test(pwd) },
+  { key: 'hasNumber', test: (pwd: string) => /[0-9]/.test(pwd) },
   {
     key: 'hasSpecialChar',
     test: (pwd: string) => /[!@#$%^&*()_+\-=\\[\]{};':"\\|,.<>\\/?]/.test(pwd),
-    text: 'At least one special character (!@#$%^&*)',
   },
 ] as const;

@@ -1,6 +1,7 @@
 import { ChevronRight } from 'lucide-react-native';
 import React, { useMemo } from 'react';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../../context/ThemeContext';
 import { createMuteAndBlockStyles } from '../styles/mute-and-block-styles';
 
@@ -20,6 +21,7 @@ const MuteAndBlockScreen: React.FC<IMuteAndBlockScreenProps> = ({
   onBlockedAccountsPress,
   onMutedAccountsPress,
 }) => {
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createMuteAndBlockStyles(theme), [theme]);
 
@@ -28,15 +30,13 @@ const MuteAndBlockScreen: React.FC<IMuteAndBlockScreenProps> = ({
       <ScrollView>
         {/* Description */}
         <View style={styles.descriptionContainer}>
-          <Text style={styles.description}>
-            Manage the accounts, words and notifications that you&apos;ve muted or blocked.
-          </Text>
+          <Text style={styles.description}>{t('settings.mute_block.description')}</Text>
         </View>
 
         {/* Blocked accounts */}
         <TouchableOpacity style={styles.menuItem} onPress={onBlockedAccountsPress} activeOpacity={0.7}>
           <View style={styles.menuItemContent}>
-            <Text style={styles.menuItemTitle}>Blocked accounts</Text>
+            <Text style={styles.menuItemTitle}>{t('settings.mute_block.blocked_accounts')}</Text>
           </View>
           <View style={styles.menuItemRight}>
             {isLoading ? (
@@ -51,7 +51,7 @@ const MuteAndBlockScreen: React.FC<IMuteAndBlockScreenProps> = ({
         {/* Muted accounts */}
         <TouchableOpacity style={styles.menuItem} onPress={onMutedAccountsPress} activeOpacity={0.7}>
           <View style={styles.menuItemContent}>
-            <Text style={styles.menuItemTitle}>Muted accounts</Text>
+            <Text style={styles.menuItemTitle}>{t('settings.mute_block.muted_accounts')}</Text>
           </View>
           <View style={styles.menuItemRight}>
             {isLoading ? (

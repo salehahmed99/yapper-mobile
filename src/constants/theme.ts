@@ -110,6 +110,8 @@ export const spacing = {
   xxll: 32,
   xxxl: 40,
   xxxxl: 48,
+  xxxxxl: 60,
+  xxxxxxl: 100,
 };
 
 export const shadows = {

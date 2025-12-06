@@ -312,6 +312,7 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
           onSelect={handleCountrySelect}
           onBack={() => setCountryPickerVisible(false)}
           showBackButton={true}
+          initialCountry={updatedUser.country ? { name: updatedUser.country } : null}
         />
       </Modal>
 

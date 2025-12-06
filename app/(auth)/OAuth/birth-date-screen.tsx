@@ -51,7 +51,7 @@ const BirthDateScreen = () => {
         username: res.data.usernames[0],
       });
 
-      await loginUser(secResponse.data.user, secResponse.data.accessToken);
+      await loginUser(secResponse.data.user, secResponse.data.accessToken, secResponse.data.refreshToken);
 
       Toast.show({
         type: 'success',

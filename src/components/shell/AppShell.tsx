@@ -1,6 +1,6 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import { Stack, usePathname } from 'expo-router';
+import { Stack, usePathname, useSegments } from 'expo-router';
 import React from 'react';
 import type { PanResponderGestureState } from 'react-native';
 import { Animated, PanResponder, Pressable, StyleSheet, useWindowDimensions, View, ViewStyle } from 'react-native';
@@ -12,10 +12,10 @@ const AppShell: React.FC = () => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const [anim] = React.useState(() => new Animated.Value(0));
-  const pathname = usePathname();
+  const segments = useSegments();
 
-  const settingsRoutes = ['/settingsScreen', '/yourAccount', '/search', '/changePassword', '/MuteAndBlock'];
-  const shouldShowBottomNav = !settingsRoutes.some((route) => pathname.includes(route));
+  const isInSettings = (segments as string[]).includes('(settings)');
+  const shouldShowBottomNav = !isInSettings;
 
   return (
     <UiShellProvider>

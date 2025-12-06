@@ -6,7 +6,7 @@ import { I18nManager } from 'react-native';
 import ar from './locales/ar.json';
 import en from './locales/en.json';
 
-const STORED_LANGUAGE_KEY = 'appLanguage';
+const STORED_LANGUAGE_KEY = 'app-language';
 
 const getDeviceLanguage = () => getLocales()?.at(0)?.languageCode || 'en';
 
@@ -22,14 +22,17 @@ const loadStoredLanguage = async () => {
 
 export const changeLanguage = async (language: string) => {
   try {
+    const isRTL = language === 'ar';
+
+    // Allow RTL to be set on the fly without requiring restart
+    I18nManager.allowRTL(isRTL);
+    I18nManager.forceRTL(isRTL);
+
     await i18n.changeLanguage(language);
     await AsyncStorage.setItem(STORED_LANGUAGE_KEY, language);
-    const isRTL = language === 'ar';
-    if (I18nManager.isRTL !== isRTL) {
-      I18nManager.forceRTL(isRTL);
-    }
   } catch (error) {
     console.error('Error changing language:', error);
+    throw error;
   }
 };
 
@@ -50,7 +53,8 @@ loadStoredLanguage()
   .then((language) => {
     const isRTL = language === 'ar';
 
-    // Set RTL on app initialization
+    // Allow and set RTL on app initialization
+    I18nManager.allowRTL(true);
     if (I18nManager.isRTL !== isRTL) {
       I18nManager.forceRTL(isRTL);
     }

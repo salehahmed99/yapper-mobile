@@ -5,8 +5,7 @@ import MediaViewerModal from '@/src/modules/tweets/components/MediaViewerModal';
 import TweetContainer from '@/src/modules/tweets/containers/TweetContainer';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, View } from 'react-native';
 
 const TweetDetailsScreen = () => {
   const { tweetId } = useLocalSearchParams<{ tweetId: string }>();
@@ -14,10 +13,10 @@ const TweetDetailsScreen = () => {
   const styles = createStyles(theme);
   return (
     <MediaViewerProvider>
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
         <TweetContainer tweetId={tweetId} />
         <MediaViewerModal />
-      </SafeAreaView>
+      </View>
     </MediaViewerProvider>
   );
 };

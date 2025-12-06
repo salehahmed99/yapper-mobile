@@ -1,65 +1,63 @@
 import { ISettingsItem } from '../types/types';
+import { TFunction } from 'i18next';
 
-export const SETTINGS_DATA: ISettingsItem[] = [
+// Function to get localized settings data - accepts t function from component
+export const getSettingsData = (t: TFunction): ISettingsItem[] => [
   {
     id: 'your-account',
-    title: 'Your account',
+    title: t('settings.your_account.title'),
     icon: 'account-outline',
     iconFamily: 'MaterialCommunityIcons',
-    description:
-      'See information about your account, download an archive of your data, or learn about your account deactivation options.',
+    description: t('settings.your_account.description'),
     route: 'yourAccount',
-  },
-  {
-    id: 'security-access',
-    title: 'Security and account access',
-    icon: 'lock-outline',
-    iconFamily: 'MaterialCommunityIcons',
-    description:
-      "Manage your account's security and keep track of your account's usage including apps that you have connected to your account.",
-    route: 'SecuritySettings',
+    prefix: '',
   },
   {
     id: 'privacy-safety',
-    title: 'Privacy and safety',
+    title: t('settings.privacy_safety.title'),
     icon: 'shield-checkmark-outline',
     iconFamily: 'Ionicons',
-    description: 'Manage what information you see and share on X.',
+    description: t('settings.privacy_safety.description'),
     route: 'MuteAndBlock/MuteAndBlockScreen',
+    prefix: '',
   },
   {
     id: 'accessibility',
-    title: 'Accessibility, display and languages',
+    title: t('settings.accessibility.title'),
     icon: 'planet-outline',
     iconFamily: 'Ionicons',
-    description: 'Manage how X content is displayed to you.',
-    route: 'AccessibilitySettings',
+    description: t('settings.accessibility.description'),
+    route: 'accessibility-display-languages',
+    prefix: '',
   },
 ];
 
-export const YOUR_ACCOUNT_DATA: ISettingsItem[] = [
+export const getYourAccountData = (t: TFunction): ISettingsItem[] => [
   {
     id: 'account-information',
-    title: 'Account information',
+    title: t('settings.account_info.title'),
     icon: 'person-outline',
     iconFamily: 'Ionicons',
-    description: 'See your account information like your phone number and email address.',
+    description: t('settings.account_info.description'),
     route: 'AccountInformation',
+    prefix: 'your-account/',
   },
   {
     id: 'change-password',
-    title: 'Change your password',
+    title: t('settings.password.title'),
     icon: 'lock-outline',
     iconFamily: 'MaterialCommunityIcons',
-    description: 'Change your password at any time.',
+    description: t('settings.password.description'),
     route: 'changePassword',
+    prefix: 'your-account/',
   },
   {
     id: 'deactivate-account',
-    title: 'Deactivate Account',
+    title: t('settings.deactivate.title'),
     icon: 'heart-dislike-outline',
     iconFamily: 'Ionicons',
-    description: 'Find out how you can deactivate your account.',
-    route: 'DeactivateAccount',
+    description: t('settings.deactivate.description'),
+    route: 'deactivateAccount',
+    prefix: 'your-account/',
   },
 ];

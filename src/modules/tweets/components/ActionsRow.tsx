@@ -15,13 +15,12 @@ interface IActionsRowProps {
   onReplyPress: () => void;
   onRepostPress: () => void;
   onLikePress: (isLiked: boolean) => void;
-  onBookmarkPress: () => void;
-  isBookmarked: boolean;
+  onBookmarkPress: (isBookmarked: boolean) => void;
   onSharePress: () => void;
   size: 'small' | 'large';
 }
 const ActionsRow: React.FC<IActionsRowProps> = (props) => {
-  const { tweet, onReplyPress, onRepostPress, onLikePress, onBookmarkPress, onSharePress, isBookmarked, size } = props;
+  const { tweet, onReplyPress, onRepostPress, onLikePress, onBookmarkPress, onSharePress, size } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -67,9 +66,10 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
 
       <TweetActionButton
         icon={BookmarkIcon}
-        onPress={onBookmarkPress}
-        color={isBookmarked ? theme.colors.accent.bookmark : theme.colors.text.secondary}
-        filled={isBookmarked}
+        count={tweet.bookmarksCount}
+        onPress={() => onBookmarkPress(tweet.isBookmarked)}
+        color={tweet.isBookmarked ? theme.colors.accent.bookmark : theme.colors.text.secondary}
+        filled={tweet.isBookmarked}
         accessibilityLabel="tweet_button_bookmark"
         testID="tweet_button_bookmark"
         size={size}

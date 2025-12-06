@@ -9,7 +9,7 @@ export const usernameSchema = z
   .string({ required_error: 'Username is required' })
   .trim()
   .min(3, 'Username must be at least 3 characters long')
-  .max(30, 'Username must be at most 20 characters long')
+  .max(20, 'Username must be at most 20 characters long')
   .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores');
 
 export const userBirthDateSchema = z.string({ required_error: 'Birth date is required' }).refine((date) => {

@@ -1,16 +1,19 @@
 import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
+import { router, usePathname } from 'expo-router';
 import {
+  bookmarkTweet,
   createTweet,
   deleteTweet,
   likeTweet,
   quoteTweet,
   replyToTweet,
   repostTweet,
+  unbookmarkTweet,
   undoRepostTweet,
   unlikeTweet,
 } from '../services/tweetService';
 import { ITweet, ITweets } from '../types';
-import { updateTweetsInInfiniteCache } from '../utils/cacheUtils';
+import { removeTweetFromInfiniteCache, updateTweetsInInfiniteCache } from '../utils/cacheUtils';
 
 interface ILikeMutationVariables {
   tweetId: string;
@@ -21,11 +24,17 @@ interface IRepostMutationVariables {
   tweetId: string;
   isReposted: boolean;
 }
+interface IBookmarkMutationVariables {
+  tweetId: string;
+  isBookmarked: boolean;
+}
 export const useTweetActions = (tweetId: string) => {
+  const pathname = usePathname();
   const queryClient = useQueryClient();
 
   const tweetsQueryKey = ['tweets'];
   const tweetDetailsQueryKey = ['tweet', { tweetId }];
+  const profileTweetsQueryKey = ['profile'];
 
   const toggleLike = (tweet: ITweet) => {
     return {
@@ -43,34 +52,37 @@ export const useTweetActions = (tweetId: string) => {
     };
   };
 
+  const toggleBookmark = (tweet: ITweet) => {
+    return {
+      ...tweet,
+      isBookmarked: !tweet.isBookmarked,
+    };
+  };
+
   const likeMutation = useMutation({
     mutationFn: async (variables: ILikeMutationVariables) => {
       return variables.isLiked ? unlikeTweet(tweetId) : likeTweet(tweetId);
     },
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: tweetsQueryKey });
-      await queryClient.cancelQueries({ queryKey: ['profile'] });
+      await queryClient.cancelQueries({ queryKey: profileTweetsQueryKey });
       await queryClient.cancelQueries({ queryKey: tweetDetailsQueryKey });
 
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
         updateTweetsInInfiniteCache(oldData, tweetId, toggleLike),
       );
 
-      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: ['profile'] }, (oldData) =>
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: profileTweetsQueryKey }, (oldData) =>
         updateTweetsInInfiniteCache(oldData, tweetId, toggleLike),
       );
 
       queryClient.setQueryData<ITweet>(tweetDetailsQueryKey, (oldData) => (oldData ? toggleLike(oldData) : oldData));
     },
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
-    },
-
     onError: (error) => {
       console.log('Error updating like status:', error);
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
     },
   });
@@ -81,7 +93,7 @@ export const useTweetActions = (tweetId: string) => {
     },
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: tweetsQueryKey });
-      await queryClient.cancelQueries({ queryKey: ['profile'] });
+      await queryClient.cancelQueries({ queryKey: profileTweetsQueryKey });
       await queryClient.cancelQueries({ queryKey: tweetDetailsQueryKey });
 
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
@@ -95,15 +107,42 @@ export const useTweetActions = (tweetId: string) => {
       queryClient.setQueryData<ITweet>(tweetDetailsQueryKey, (oldData) => (oldData ? toggleRepost(oldData) : oldData));
     },
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
-    },
-
     onError: (error) => {
       console.log('Error updating repost status:', error);
 
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
+      queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
+    },
+  });
+
+  const bookmarkMutation = useMutation({
+    mutationFn: async (variables: IBookmarkMutationVariables) => {
+      return variables.isBookmarked ? unbookmarkTweet(tweetId) : bookmarkTweet(tweetId);
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: tweetsQueryKey });
+      await queryClient.cancelQueries({ queryKey: profileTweetsQueryKey });
+      await queryClient.cancelQueries({ queryKey: tweetDetailsQueryKey });
+
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
+        updateTweetsInInfiniteCache(oldData, tweetId, toggleBookmark),
+      );
+
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: ['profile'] }, (oldData) =>
+        updateTweetsInInfiniteCache(oldData, tweetId, toggleBookmark),
+      );
+
+      queryClient.setQueryData<ITweet>(tweetDetailsQueryKey, (oldData) =>
+        oldData ? toggleBookmark(oldData) : oldData,
+      );
+    },
+
+    onError: (error) => {
+      console.log('Error updating bookmark status:', error);
+
+      queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
+      queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
     },
   });
@@ -112,14 +151,9 @@ export const useTweetActions = (tweetId: string) => {
     mutationFn: async ({ content, mediaUris }: { content: string; mediaUris?: string[] }) => {
       return createTweet(content, mediaUris);
     },
-    onSuccess: () => {
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
-    },
-    onError: () => {
-      // Error creating tweet
-      queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
     },
   });
 
@@ -127,14 +161,9 @@ export const useTweetActions = (tweetId: string) => {
     mutationFn: async ({ content, mediaUris }: { content: string; mediaUris?: string[] }) => {
       return replyToTweet(tweetId, content, mediaUris);
     },
-    onSuccess: () => {
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
-    },
-    onError: () => {
-      // Error replying to tweet
-      queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
     },
   });
 
@@ -142,14 +171,9 @@ export const useTweetActions = (tweetId: string) => {
     mutationFn: async ({ content, mediaUris }: { content: string; mediaUris?: string[] }) => {
       return quoteTweet(tweetId, content, mediaUris);
     },
-    onSuccess: () => {
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
-    },
-    onError: () => {
-      // Error quoting tweet
-      queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
     },
   });
 
@@ -158,16 +182,46 @@ export const useTweetActions = (tweetId: string) => {
       // Implement delete tweet functionality here
       return deleteTweet(tweetId);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
+    onMutate: async () => {
+      // Cancel any pending queries
+      await queryClient.cancelQueries({ queryKey: tweetsQueryKey });
+      await queryClient.cancelQueries({ queryKey: profileTweetsQueryKey });
+      await queryClient.cancelQueries({ queryKey: tweetDetailsQueryKey });
+
+      // Optimistically update the cache
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
+        removeTweetFromInfiniteCache(oldData, tweetId),
+      );
+
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: profileTweetsQueryKey }, (oldData) =>
+        removeTweetFromInfiniteCache(oldData, tweetId),
+      );
+
+      // Navigate back if the current screen is the tweet details screen
+      if (pathname.includes(tweetId)) {
+        if (router.canGoBack()) router.back();
+      }
     },
-    onError: () => {
+    onError: (error) => {
       // Error deleting tweet
+      console.log('Error deleting tweet:', error);
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
+      queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
     },
   });
 
-  return { likeMutation, repostMutation, addPostMutation, replyToPostMutation, quotePostMutation, deletePostMutation };
+  return {
+    likeMutation,
+    repostMutation,
+    bookmarkMutation,
+    addPostMutation,
+    replyToPostMutation,
+    quotePostMutation,
+    deletePostMutation,
+  };
 };

@@ -29,7 +29,7 @@ const LandingScreen: React.FC = () => {
       });
       return;
     } else {
-      await loginUser(userData.data.user, userData.data.accessToken);
+      await loginUser(userData.data.user, userData.data.accessToken, userData.data.refreshToken);
       setSkipRedirect(false);
       router.replace('/(protected)');
     }

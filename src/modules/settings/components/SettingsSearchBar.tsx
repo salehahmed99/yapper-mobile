@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
 
@@ -9,9 +10,11 @@ interface ISettingsSearchBarProps {
   placeholder?: string;
 }
 
-export const SettingsSearchBar: React.FC<ISettingsSearchBarProps> = ({ placeholder = 'Search settings' }) => {
+export const SettingsSearchBar: React.FC<ISettingsSearchBarProps> = ({ placeholder }) => {
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const searchPlaceholder = placeholder || t('settings.search.placeholder');
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -22,7 +25,7 @@ export const SettingsSearchBar: React.FC<ISettingsSearchBarProps> = ({ placehold
         testID="Search_settings"
       >
         <Ionicons name="search" style={styles.searchIcon} />
-        <Text style={styles.placeholderText}>{placeholder}</Text>
+        <Text style={styles.placeholderText}>{searchPlaceholder}</Text>
       </TouchableOpacity>
     </View>
   );
