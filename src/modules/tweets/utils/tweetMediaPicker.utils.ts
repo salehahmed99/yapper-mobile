@@ -1,3 +1,4 @@
+import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 // eslint-disable-next-line react-native/split-platform-components
 import { ActionSheetIOS, Alert, Platform } from 'react-native';
@@ -27,6 +28,21 @@ const validateMediaSize = (asset: ImagePicker.ImagePickerAsset): boolean => {
     return false;
   }
   return true;
+};
+
+const convertImageToJpeg = async (uri: string): Promise<string> => {
+  try {
+    const context = ImageManipulator.ImageManipulator.manipulate(uri);
+    const imageRef = await context.renderAsync();
+    const result = await imageRef.saveAsync({
+      compress: 0.8,
+      format: ImageManipulator.SaveFormat.JPEG,
+    });
+    return result.uri;
+  } catch (error) {
+    console.warn('Image conversion failed, using original:', error);
+    return uri;
+  }
 };
 
 const compressVideo = async (uri: string): Promise<string> => {
@@ -81,7 +97,7 @@ export const pickMediaFromLibrary = async (maxItems: number = 4): Promise<MediaA
     // Filter assets by size
     const validAssets = result.assets.filter(validateMediaSize);
 
-    // Convert assets to MediaAsset format with video compression
+    // Convert assets to MediaAsset format with media processing
     const mediaAssets: MediaAsset[] = await Promise.all(
       validAssets.map(async (asset) => {
         // Determine type from type or mimeType
@@ -90,17 +106,19 @@ export const pickMediaFromLibrary = async (maxItems: number = 4): Promise<MediaA
           type = 'video';
         }
 
-        // Compress videos to H.264 MP4
+        // Process media: convert images to JPEG, compress videos to H.264 MP4
         let uri = asset.uri;
         if (type === 'video') {
           uri = await compressVideo(asset.uri);
+        } else {
+          uri = await convertImageToJpeg(asset.uri);
         }
 
         return {
           uri,
           type,
-          mimeType: type === 'video' ? 'video/mp4' : asset.mimeType || 'image/jpeg',
-          duration: asset.duration ?? undefined, // Videos have duration in milliseconds
+          mimeType: type === 'video' ? 'video/mp4' : 'image/jpeg',
+          duration: asset.duration ?? undefined,
         };
       }),
     );
@@ -154,15 +172,18 @@ export const captureMedia = async (mediaType: 'photo' | 'video' = 'photo'): Prom
 
     const type = mediaType === 'video' ? 'video' : 'image';
 
+    // Process media: convert images to JPEG, compress videos to H.264 MP4
     let uri = asset.uri;
     if (type === 'video') {
       uri = await compressVideo(asset.uri);
+    } else {
+      uri = await convertImageToJpeg(asset.uri);
     }
 
     return {
       uri,
       type,
-      mimeType: type === 'video' ? 'video/mp4' : asset.mimeType || 'image/jpeg',
+      mimeType: type === 'video' ? 'video/mp4' : 'image/jpeg',
       duration: asset.duration ?? undefined,
     };
   } catch (error) {
