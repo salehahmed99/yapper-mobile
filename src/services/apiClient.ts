@@ -60,6 +60,7 @@ api.interceptors.response.use(
         const newToken = await tokenRefreshService.refreshToken();
 
         if (newToken) {
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
           return api(originalRequest);
         } else {
           await _handleLogout();

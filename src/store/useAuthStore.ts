@@ -12,8 +12,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { logout, logOutAll } from '../modules/auth/services/authService';
 import { getMyUser } from '../modules/profile/services/profileService';
-import { tokenRefreshService } from '../services/tokenRefreshService';
 import { IGetMyUserResponse } from '../modules/profile/types';
+import { tokenRefreshService } from '../services/tokenRefreshService';
 
 interface IAuthState {
   user: IUser | null;
@@ -57,10 +57,13 @@ export const useAuthStore = create<IAuthState>((set) => ({
           if (refreshToken) {
             tokenRefreshService.start();
           }
-        } catch {
-          await deleteToken();
-          await deleteRefreshToken();
-          set({ user: null, token: null });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          if (error?.response?.status === 401 || error?.response?.status === 403) {
+            await deleteToken();
+            await deleteRefreshToken();
+            set({ user: null, token: null });
+          }
         }
       } else if (refreshToken) {
         try {
