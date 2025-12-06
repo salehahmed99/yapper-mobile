@@ -1,7 +1,7 @@
 import { ThemeProvider } from '@/src/context/ThemeContext';
 import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
-import Tweet from '../../components/Tweet';
+import TweetThread from '../../components/TweetThread';
 import { ITweet } from '../../types';
 
 // Mock child components
@@ -50,27 +50,30 @@ describe('Tweet', () => {
     onTweetPress: jest.fn(),
     onAvatarPress: jest.fn(),
     onDeletePress: jest.fn(),
+    onReply: jest.fn(),
+    onQuote: jest.fn(),
+    onRepost: jest.fn(),
   };
 
   it('should render tweet content', () => {
-    const { getByText } = renderWithTheme(<Tweet {...defaultProps} />);
+    const { getByText } = renderWithTheme(<TweetThread {...defaultProps} />);
     expect(getByText('test content')).toBeTruthy();
   });
 
   it('should handle tweet press', () => {
-    const { getByTestId } = renderWithTheme(<Tweet {...defaultProps} />);
+    const { getByTestId } = renderWithTheme(<TweetThread {...defaultProps} />);
     fireEvent.press(getByTestId('tweet_container_main'));
     expect(defaultProps.onTweetPress).toHaveBeenCalledWith('1');
   });
 
   it('should handle avatar press', () => {
-    const { getByTestId } = renderWithTheme(<Tweet {...defaultProps} />);
+    const { getByTestId } = renderWithTheme(<TweetThread {...defaultProps} />);
     fireEvent.press(getByTestId('tweet_avatar'));
     expect(defaultProps.onAvatarPress).toHaveBeenCalledWith('1');
   });
 
   it('should handle more button press', () => {
-    const { getByTestId } = renderWithTheme(<Tweet {...defaultProps} />);
+    const { getByTestId } = renderWithTheme(<TweetThread {...defaultProps} />);
     fireEvent.press(getByTestId('tweet_button_more'));
     // Just verifying it doesn't crash, as menu logic involves measurements which are hard to mock perfectly in unit tests without extensive setup
   });

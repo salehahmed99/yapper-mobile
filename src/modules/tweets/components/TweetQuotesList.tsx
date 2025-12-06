@@ -71,13 +71,7 @@ const TweetQuotesList: React.FC<ITweetQuotesListProps> = ({ tweetId }) => {
           <FlatList
             style={{ flex: 1 }}
             data={flattenedData}
-            renderItem={({ item }) => (
-              <TweetContainer
-                tweet={item}
-                quotedTweet={item.parentTweet}
-                isVisible={visibleTweetIds.has(item.tweetId)}
-              />
-            )}
+            renderItem={({ item }) => <TweetContainer tweet={item} isVisible={visibleTweetIds.has(item.tweetId)} />}
             keyExtractor={(item, index) => `${item.tweetId}-${index}`}
             onEndReached={handleEndReached}
             onEndReachedThreshold={0.5}
