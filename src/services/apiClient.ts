@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { router } from 'expo-router';
 import humps from 'humps';
-import { deleteToken, getToken } from '../utils/secureStorage';
+import { getToken } from '../utils/secureStorage';
 
 const api = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL,
@@ -74,7 +74,6 @@ api.interceptors.response.use(
 );
 
 async function _handleLogout() {
-  await deleteToken();
   const { useAuthStore } = await import('../store/useAuthStore');
   useAuthStore.getState().logout(false);
   router.replace('/(auth)/landing-screen');

@@ -1,11 +1,19 @@
+import i18n, { changeLanguage } from '@/src/i18n';
 import { IUser } from '@/src/types/user';
-import { deleteToken, getToken, saveToken, saveRefreshToken, deleteRefreshToken } from '@/src/utils/secureStorage';
+import {
+  deleteRefreshToken,
+  deleteToken,
+  getRefreshToken,
+  getToken,
+  saveRefreshToken,
+  saveToken,
+} from '@/src/utils/secureStorage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
-import { getMyUser } from '../modules/profile/services/profileService';
 import { logout, logOutAll } from '../modules/auth/services/authService';
+import { getMyUser } from '../modules/profile/services/profileService';
 import { tokenRefreshService } from '../services/tokenRefreshService';
-import i18n, { changeLanguage } from '@/src/i18n';
+import { IGetMyUserResponse } from '../modules/profile/types';
 
 interface IAuthState {
   user: IUser | null;
@@ -33,46 +41,56 @@ export const useAuthStore = create<IAuthState>((set) => ({
   initializeAuth: async () => {
     try {
       const token = await getToken();
+      const refreshToken = await getRefreshToken();
       if (token) {
-        // Validate token by fetching user data
         try {
           set({ token });
           const data = await getMyUser();
-          set({
-            user: {
-              id: data.userId,
-              email: data.email,
-              name: data.name,
-              username: data.username,
-              bio: data.bio,
-              avatarUrl: data.avatarUrl,
-              coverUrl: data.coverUrl,
-              country: data.country || undefined,
-              createdAt: data.createdAt,
-              followers: data.followersCount,
-              following: data.followingCount,
-              birthDate: data.birthDate || undefined,
-              language: data.language,
-            },
-          });
+          set({ user: mapUser(data) });
 
-          // Sync language from backend with local i18n
+          // Sync language
           if (data.language && data.language !== i18n.language) {
             await changeLanguage(data.language);
             await AsyncStorage.setItem('app-language', data.language);
           }
 
-          tokenRefreshService.start();
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (validationErr) {
-          // Token is invalid, clear it
+          if (refreshToken) {
+            tokenRefreshService.start();
+          }
+        } catch {
           await deleteToken();
+          await deleteRefreshToken();
+          set({ user: null, token: null });
+        }
+      } else if (refreshToken) {
+        try {
+          const newToken = await tokenRefreshService.refreshToken();
+
+          if (!newToken) {
+            await deleteRefreshToken();
+            set({ user: null, token: null });
+          } else {
+            await saveToken(newToken);
+            set({ token: newToken });
+
+            const data = await getMyUser();
+            set({ user: mapUser(data) });
+
+            if (data.language && data.language !== i18n.language) {
+              await changeLanguage(data.language);
+              await AsyncStorage.setItem('app-language', data.language);
+            }
+
+            tokenRefreshService.start();
+          }
+        } catch {
+          await deleteRefreshToken();
           set({ user: null, token: null });
         }
       }
-    } catch (err) {
-      console.error('Auth initialization failed:', err);
+    } catch {
       await deleteToken();
+      await deleteRefreshToken();
       set({ user: null, token: null });
     } finally {
       set({ isInitialized: true });
@@ -164,3 +182,19 @@ export const useAuthStore = create<IAuthState>((set) => ({
     }
   },
 }));
+
+const mapUser = (data: IGetMyUserResponse) => ({
+  id: data.userId,
+  email: data.email,
+  name: data.name,
+  username: data.username,
+  bio: data.bio,
+  avatarUrl: data.avatarUrl,
+  coverUrl: data.coverUrl,
+  country: data.country,
+  createdAt: data.createdAt,
+  followers: data.followersCount,
+  following: data.followingCount,
+  birthDate: data.birthDate,
+  language: data.language,
+});
