@@ -33,6 +33,7 @@ describe('Tweet', () => {
     viewsCount: 0,
     isLiked: false,
     isReposted: false,
+    isBookmarked: false,
     images: [],
     videos: [],
     type: 'tweet',
@@ -48,6 +49,7 @@ describe('Tweet', () => {
     openSheet: jest.fn(),
     onTweetPress: jest.fn(),
     onAvatarPress: jest.fn(),
+    onDeletePress: jest.fn(),
   };
 
   it('should render tweet content', () => {

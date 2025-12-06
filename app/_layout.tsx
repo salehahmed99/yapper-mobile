@@ -10,6 +10,7 @@ import React, { useEffect } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface IAuthInitializerProps {
   children: React.ReactNode;
@@ -35,6 +36,8 @@ export default function RootLayout() {
     'PublicSans-SemiBold': require('../assets/fonts/PublicSans-SemiBold.ttf'),
     'PublicSans-Bold': require('../assets/fonts/PublicSans-Bold.ttf'),
     'PublicSans-ExtraBold': require('../assets/fonts/PublicSans-ExtraBold.ttf'),
+    ...Ionicons.font,
+    ...MaterialCommunityIcons.font,
   });
 
   useEffect(() => {

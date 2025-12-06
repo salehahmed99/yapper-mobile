@@ -3,6 +3,7 @@ import { useAuthStore } from '@/src/store/useAuthStore';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { router, useLocalSearchParams, useSegments } from 'expo-router';
 import React, { useState } from 'react';
+import { Alert } from 'react-native';
 import CreatePostModal from '../components/CreatePostModal';
 import FullTweet from '../components/FullTweet';
 import RepostOptionsModal from '../components/RepostOptionsModal';
@@ -26,43 +27,50 @@ type TweetContainerProps =
     };
 
 const TweetContainer: React.FC<TweetContainerProps> = (props) => {
-  const tweetQuery = useTweet(props.tweetId);
+  const tweetId = props.tweetId ?? props.tweet.tweetId;
+  const tweetQuery = useTweet(tweetId);
   const currentUser = useAuthStore((state) => state.user);
   const segments = useSegments();
   const params = useLocalSearchParams();
   const currentProfileId = (segments as string[]).includes('(profile)') ? params.id : null;
 
-  const { likeMutation, repostMutation, replyToPostMutation, quotePostMutation } = useTweetActions(
-    props.tweetId ?? props.tweet.tweetId,
-  );
+  const { likeMutation, repostMutation, replyToPostMutation, quotePostMutation, bookmarkMutation, deletePostMutation } =
+    useTweetActions(tweetId);
 
   const handleReply = async (content: string, mediaUris?: string[]) => {
-    // TODO: Implement reply functionality
     replyToPostMutation.mutate({ content, mediaUris });
   };
 
   const handleLike = (isLiked: boolean) => {
-    const id = props.tweetId ?? props.tweet?.tweetId;
-    if (id) {
-      likeMutation.mutate({ tweetId: id, isLiked: isLiked });
-    }
+    likeMutation.mutate({ tweetId: tweetId, isLiked: isLiked });
   };
   const handleRepost = (isReposted: boolean) => {
-    const id = props.tweetId ?? props.tweet?.tweetId;
-    if (id) {
-      repostMutation.mutate({ tweetId: id, isReposted: isReposted });
-    }
+    repostMutation.mutate({ tweetId: tweetId, isReposted: isReposted });
+  };
+  const handleBookmark = (isBookmarked: boolean) => {
+    bookmarkMutation.mutate({ tweetId: tweetId, isBookmarked: isBookmarked });
   };
 
   const handleQuote = (content: string, mediaUris?: string[]) => {
-    // TODO: Implement quote functionality
     quotePostMutation.mutate({ content, mediaUris });
   };
-  // const handleDeletePost = () => {
-  //   // TODO: Implement delete post functionality
-  //   deletePostMutation.mutate();
-  // };
+  const handleDelete = () => {
+    deletePostMutation.mutate();
+  };
 
+  const handleDeletePress = () => {
+    Alert.alert('Delete post', 'Are you sure you want to delete this post?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: handleDelete,
+      },
+    ]);
+  };
   const handleTweetPress = (tweetId: string) => {
     router.push({
       pathname: '/(protected)/tweets/[tweetId]',
@@ -102,10 +110,6 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
     });
   };
 
-  const handleBookmark = () => {
-    // TODO: Implement bookmark functionality
-  };
-
   const handleShare = () => {
     // TODO: Implement share functionality
   };
@@ -132,6 +136,7 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
               onViewPostInteractions={handleViewPostInteractions}
               onBookmark={handleBookmark}
               onShare={handleShare}
+              onDeletePress={handleDeletePress}
               openSheet={openSheet}
               onAvatarPress={handleAvatarPress}
             />
@@ -168,6 +173,7 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
           onViewPostInteractions={handleViewPostInteractions}
           onBookmark={handleBookmark}
           onShare={handleShare}
+          onDeletePress={handleDeletePress}
           openSheet={openSheet}
           isVisible={props.isVisible}
           onTweetPress={handleTweetPress}

@@ -1,7 +1,12 @@
 import api from '@/src/services/apiClient';
 import { IUser, mapUserDTOToUser } from '@/src/types/user';
 import { t } from 'i18next';
-import { getFollowersList, getFollowingList } from '../../profile/services/profileService';
+import {
+  getBlockedList,
+  getFollowersList,
+  getFollowingList,
+  getMutedList,
+} from '../../profile/services/profileService';
 import { IFollowerUser } from '../../profile/types';
 import { FetchUserListParams, IUserListResponse, IUserListResponseBackend } from '../types';
 const mapFollowerUserToUser = (follower: IFollowerUser): IUser => ({
@@ -38,6 +43,34 @@ export const getUserList = async (params: FetchUserListParams): Promise<IUserLis
   if (type === 'following' && 'userId' in params) {
     const response = await getFollowingList({
       userId: params.userId,
+      cursor: params.cursor || '',
+      limit: 20,
+    });
+
+    return {
+      users: response.data.data.map(mapFollowerUserToUser),
+      nextCursor: response.data.pagination.nextCursor,
+      hasMore: response.data.pagination.hasMore,
+    };
+  }
+
+  if (type === 'muted') {
+    const response = await getMutedList({
+      userId: '', // not used for muted list
+      cursor: params.cursor || '',
+      limit: 20,
+    });
+
+    return {
+      users: response.data.data.map(mapFollowerUserToUser),
+      nextCursor: response.data.pagination.nextCursor,
+      hasMore: response.data.pagination.hasMore,
+    };
+  }
+
+  if (type === 'blocked') {
+    const response = await getBlockedList({
+      userId: '', // not used for blocked list
       cursor: params.cursor || '',
       limit: 20,
     });

@@ -9,16 +9,14 @@ export const createDropdownMenuStyles = (theme: Theme, isDark: boolean) =>
     },
     menuContainer: {
       position: 'absolute',
-      backgroundColor: isDark
-        ? `rgba(40, 40, 42, ${theme.opacity.translucent})`
-        : `rgba(255, 255, 255, ${theme.opacity.translucent})`,
-      borderRadius: theme.borderRadius.xxl,
+      backgroundColor: isDark ? `rgba(40, 40, 42)` : `rgba(255, 255, 255)`,
+      borderRadius: theme.borderRadius.xl,
       shadowColor: theme.shadows.lg.shadowColor,
       shadowOffset: theme.shadows.lg.shadowOffset,
       shadowOpacity: isDark ? 0.5 : theme.shadows.lg.shadowOpacity,
       shadowRadius: theme.shadows.lg.shadowRadius,
       elevation: theme.shadows.lg.elevation,
-      minWidth: 220,
+      minWidth: '60%',
       overflow: 'hidden',
       borderWidth: Platform.OS === 'ios' ? 0.5 : 0,
       borderColor: `rgba(0, 0, 0, ${theme.opacity.border})`,
@@ -27,7 +25,8 @@ export const createDropdownMenuStyles = (theme: Theme, isDark: boolean) =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingHorizontal: theme.spacing.lg,
+      paddingStart: theme.spacing.xxl,
+      paddingEnd: theme.spacing.lg,
       paddingVertical: theme.spacing.sm + theme.spacing.xs / 2,
     },
     menuItemText: {

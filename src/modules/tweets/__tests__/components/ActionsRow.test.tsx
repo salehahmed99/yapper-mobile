@@ -33,6 +33,7 @@ describe('ActionsRow', () => {
     viewsCount: 100,
     isLiked: false,
     isReposted: false,
+    isBookmarked: false,
     images: [],
     videos: [],
     type: 'tweet',

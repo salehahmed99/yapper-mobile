@@ -18,6 +18,7 @@ const SuccessResetPasswordScreen = () => {
   const styles = React.useMemo(() => createStyles(theme), [theme]);
   const { identifier, textType, newPassword, reset } = useForgotPasswordStore();
   const loginUser = useAuthStore((state) => state.loginUser);
+  const setSkipRedirect = useAuthStore((state) => state.setSkipRedirect);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleContinue = async () => {
@@ -41,7 +42,8 @@ const SuccessResetPasswordScreen = () => {
       });
 
       if (response.data?.user && response.data?.accessToken) {
-        await loginUser(response.data.user, response.data.accessToken);
+        await loginUser(response.data.user, response.data.accessToken, response.data.refreshToken);
+        setSkipRedirect(false);
         reset();
         router.replace('/(protected)');
       }
@@ -60,7 +62,13 @@ const SuccessResetPasswordScreen = () => {
   };
 
   const handleTopBarBackPress = () => {
-    router.replace('/(auth)/landing-screen');
+    const returnRoute = useForgotPasswordStore.getState().returnRoute;
+    if (returnRoute) {
+      useForgotPasswordStore.getState().setReturnRoute(null);
+      router.back();
+    } else {
+      router.replace('/(auth)/landing-screen');
+    }
   };
 
   return (

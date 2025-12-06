@@ -2,7 +2,8 @@ import { DEFAULT_BANNER_URL } from '@/src/constants/defaults';
 import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
 import MediaViewerModal from '@/src/modules/tweets/components/MediaViewerModal';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, LogBox, RefreshControl, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { Animated, Easing, LogBox, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useTheme } from '../../../context/ThemeContext';
 import { useAuthStore } from '../../../store/useAuthStore';
@@ -12,6 +13,7 @@ import ProfileTabs from '../components/ProfileTabs';
 import { ProfilePostsProvider, useProfilePosts } from '../context/ProfilePostsContext';
 import { getUserById } from '../services/profileService';
 import { createContainerStyles } from '../styles/container-style';
+import { createHeaderStyles } from '../styles/profile-header-styles';
 import { IUserProfile } from '../types';
 
 // Suppress VirtualizedList warning for nested ScrollView in profile tabs
@@ -28,17 +30,47 @@ const PROFILE_HEADER_HEIGHT = 420;
 function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainerProps) {
   const { theme } = useTheme();
   const containerStyles = useMemo(() => createContainerStyles(theme), [theme]);
+  const headerStyles = useMemo(() => createHeaderStyles(theme), [theme]);
+  const blockedStyles = useMemo(
+    () =>
+      StyleSheet.create({
+        blockedContainer: {
+          marginTop: theme.spacing.xl * 2,
+          paddingHorizontal: theme.spacing.lg,
+        },
+        blockedTitle: {
+          color: theme.colors.text.primary,
+          fontSize: theme.typography.sizes.xl,
+          fontWeight: theme.typography.weights.bold,
+          marginBottom: theme.spacing.md,
+        },
+        blockedDesc: {
+          color: theme.colors.text.secondary,
+          fontSize: theme.typography.sizes.md,
+          marginBottom: theme.spacing.lg,
+        },
+        animatedHeader: {
+          // No hardcoded values, use theme if needed
+        },
+      }),
+    [theme],
+  );
   const scrollY = useRef(new Animated.Value(0)).current;
   const { triggerRefresh } = useProfilePosts();
 
   const currentUser = useAuthStore((state) => state.user);
   const fetchAndUpdateUser = useAuthStore((state) => state.fetchAndUpdateUser);
   const [profileUser, setProfileUser] = useState<IUserProfile | null>(null);
+  // Instantly update block state in UI when block/unblock is toggled in ProfileHeader
+  function handleBlockStateChange(blocked: boolean) {
+    setProfileUser((prev) => (prev ? { ...prev, isBlocked: blocked } : prev));
+  }
   const [bannerUri, setBannerUri] = useState(
     isOwnProfile ? currentUser?.coverUrl || DEFAULT_BANNER_URL : DEFAULT_BANNER_URL,
   );
   const [refreshing, setRefreshing] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  // Refetch profile data when userId, isOwnProfile, or block state changes
   useEffect(() => {
     if (!isOwnProfile && userId) {
       getUserById(userId)
@@ -72,7 +104,7 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
           console.error('Error fetching user for animated header:', error);
         });
     }
-  }, [userId, isOwnProfile]);
+  }, [userId, isOwnProfile, profileUser?.isBlocked]);
 
   useEffect(() => {
     if (isOwnProfile) {
@@ -82,6 +114,47 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
 
   const displayUser = isOwnProfile ? currentUser : profileUser;
   const username = displayUser?.name || 'User';
+  const isLoading = (!isOwnProfile && !profileUser) || (isOwnProfile && !currentUser);
+  const isBlocked = !!displayUser?.isBlocked;
+  const [showTabs, setShowTabs] = useState(false);
+  // Animation values for blocked message and tabs
+  const blockedAnim = useRef(new Animated.Value(0)).current;
+  const tabsAnim = useRef(new Animated.Value(0)).current;
+  // Only reset showTabs to false if the user becomes blocked (not on every render)
+  useEffect(() => {
+    // When blocked, always hide tabs (show view posts prompt)
+    // When unblocked, always show tabs
+    if (isBlocked) {
+      setShowTabs(false);
+      Animated.timing(blockedAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+        easing: Easing.out(Easing.ease),
+      }).start();
+      Animated.timing(tabsAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+        easing: Easing.in(Easing.ease),
+      }).start();
+    } else {
+      setShowTabs(true);
+      Animated.timing(blockedAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+        easing: Easing.in(Easing.ease),
+      }).start();
+      Animated.timing(tabsAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+        easing: Easing.out(Easing.ease),
+      }).start();
+    }
+  }, [isBlocked]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     scrollY.setValue(0);
@@ -168,17 +241,68 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
         }
       >
         <Animated.View
-          style={{
-            transform: [{ translateY: profileHeaderTranslateY }],
-            opacity: profileHeaderOpacity,
-          }}
+          style={[
+            blockedStyles.animatedHeader,
+            {
+              transform: [{ translateY: profileHeaderTranslateY }],
+              opacity: profileHeaderOpacity,
+            },
+          ]}
         >
-          <ProfileHeader key={refreshKey} userId={userId} isOwnProfile={isOwnProfile} />
+          <ProfileHeader
+            key={refreshKey}
+            userId={userId}
+            isOwnProfile={isOwnProfile}
+            onBlockStateChange={handleBlockStateChange}
+          />
         </Animated.View>
+        {!isLoading && isBlocked && !showTabs && (
+          <Animated.View
+            style={[
+              blockedStyles.blockedContainer,
+              {
+                opacity: blockedAnim,
+                transform: [
+                  {
+                    translateY: blockedAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [theme.spacing.xl, 0],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          >
+            <Text style={blockedStyles.blockedTitle}>@{displayUser?.username} is blocked</Text>
+            <Text style={blockedStyles.blockedDesc}>
+              Are you sure you want to view these posts? Viewing posts won’t unblock @{displayUser?.username}.
+            </Text>
+            <TouchableOpacity style={headerStyles.viewPostsButton} onPress={() => setShowTabs(true)}>
+              <Text style={headerStyles.viewPostsText}>{t('profile.viewPosts')}</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
       </ScrollView>
-      <View style={containerStyles.tabsContainer}>
-        <ProfileTabs userId={userId} />
-      </View>
+      {!isLoading && (!isBlocked || showTabs) && (
+        <Animated.View
+          style={[
+            containerStyles.tabsContainer,
+            {
+              opacity: tabsAnim,
+              transform: [
+                {
+                  translateY: tabsAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [theme.spacing.xl, 0],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <ProfileTabs userId={userId} />
+        </Animated.View>
+      )}
     </View>
   );
 }

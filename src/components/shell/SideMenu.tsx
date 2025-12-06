@@ -6,7 +6,17 @@ import { useAuthStore } from '@/src/store/useAuthStore';
 import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
 import { usePathname, useRouter } from 'expo-router';
-import { Bell, HelpCircle, Home, LogOut, MessageCircle, MoonStar, Search, Settings, User } from 'lucide-react-native';
+import {
+  Bell,
+  Bookmark,
+  HelpCircle,
+  LogOut,
+  MessageCircle,
+  MoonStar,
+  Search,
+  Settings,
+  User,
+} from 'lucide-react-native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -43,7 +53,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
 
   const handleLogout = () => {
     closeSideMenu();
-    logout();
+    logout(false);
     router.replace('/(auth)/landing-screen');
   };
 
@@ -147,15 +157,6 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             {/* Menu tiles */}
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(protected)')}
-              accessibilityLabel="sidemenu_home_button"
-              testID="sidemenu_home_button"
-            >
-              <Home color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
-              <Text style={styles.menuTileText}>{t('menu.home')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.tile}
               onPress={() => navigate('/(protected)/search')}
               accessibilityLabel="sidemenu_search_button"
               testID="sidemenu_search_button"
@@ -192,7 +193,25 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(protected)/settings')}
+              onPress={() => navigate('/(protected)/bookmarks')}
+              accessibilityLabel="sidemenu_bookmarks_button"
+              testID="sidemenu_bookmarks_button"
+            >
+              <Bookmark color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
+              <Text style={styles.menuTileText}>{t('menu.bookmarks')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.tile}
+              onPress={() => navigate('/(protected)/bookmarks')}
+              accessibilityLabel="sidemenu_bookmarks_button"
+              testID="sidemenu_bookmarks_button"
+            >
+              <Bookmark color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
+              <Text style={styles.menuTileText}>{t('menu.bookmarks')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.tile}
+              onPress={() => navigate('/(protected)/(settings)/settingsScreen')}
               accessibilityLabel="sidemenu_settings_button"
               testID="sidemenu_settings_button"
             >

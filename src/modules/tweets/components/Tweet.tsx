@@ -1,14 +1,17 @@
 import DropdownMenu, { DropdownMenuItem } from '@/src/components/DropdownMenu';
 import GrokLogo from '@/src/components/icons/GrokLogo';
+import ViewsIcon from '@/src/components/icons/ViewsIcon';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useAuthStore } from '@/src/store/useAuthStore';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { MoreHorizontal } from 'lucide-react-native';
 import React, { useMemo, useRef, useState } from 'react';
+import { MoreHorizontal, Trash2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { DEFAULT_AVATAR_URI } from '../../profile/utils/edit-profile.utils';
+import useTweetDropDownMenu from '../hooks/useTweetDropDownMenu';
 import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
 import ParentTweet from './ParentTweet';
@@ -21,10 +24,10 @@ interface ITweetProps {
   onReplyPress: () => void;
   onLike: (isLiked: boolean) => void;
   onViewPostInteractions: (tweetId: string, ownerId: string) => void;
-  onBookmark: () => void;
+  onBookmark: (isBookmarked: boolean) => void;
   onShare: () => void;
+  onDeletePress: () => void;
   openSheet: () => void;
-
   isVisible?: boolean;
   onTweetPress: (tweetId: string) => void;
   onAvatarPress: (userId: string) => void;
@@ -36,8 +39,9 @@ const Tweet: React.FC<ITweetProps> = (props) => {
     onReplyPress,
     onLike,
     onViewPostInteractions,
-    // onBookmark,
+    onBookmark,
     onShare,
+    onDeletePress,
     openSheet,
     isVisible = true,
     onTweetPress,
@@ -48,22 +52,9 @@ const Tweet: React.FC<ITweetProps> = (props) => {
   const { t } = useTranslation();
   const router = useRouter();
 
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [menuVisible, setMenuVisible] = useState(false);
-  const [menuPosition, setMenuPosition] = useState({ top: 100, right: 16 });
-  const moreButtonRef = useRef<View>(null);
+  const user = useAuthStore((state) => state.user);
 
-  const handleMorePress = () => {
-    moreButtonRef.current?.measure(
-      (_x: number, _y: number, _width: number, height: number, _pageX: number, pageY: number) => {
-        setMenuPosition({
-          top: pageY + height,
-          right: 16,
-        });
-        setMenuVisible(true);
-      },
-    );
-  };
+  const { menuVisible, menuPosition, moreButtonRef, handleMorePress, setMenuVisible } = useTweetDropDownMenu();
 
   const handleGrokPress = () => {
     router.push({
@@ -78,8 +69,17 @@ const Tweet: React.FC<ITweetProps> = (props) => {
       onPress: () => {
         onViewPostInteractions(tweet.tweetId, tweet.user.id);
       },
+      icon: <ViewsIcon size={theme.iconSizes.md} stroke={theme.colors.text.primary} strokeWidth={0} />,
     },
   ];
+
+  if (tweet.user.id === user?.id) {
+    menuItems.push({
+      label: 'Delete post',
+      onPress: onDeletePress,
+      icon: <Trash2 size={theme.iconSizes.md} stroke={theme.colors.text.primary} />,
+    });
+  }
 
   return (
     <Pressable
@@ -88,7 +88,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
       testID="tweet_container_main"
       onPress={() => onTweetPress(tweet.tweetId)}
     >
-      {tweet.type === 'repost' && (
+      {tweet.repostedBy && (
         <RepostIndicator repostById={tweet.repostedBy?.id} repostedByName={tweet.repostedBy?.name} />
       )}
       <View style={styles.tweetContainer}>
@@ -113,16 +113,18 @@ const Tweet: React.FC<ITweetProps> = (props) => {
               <TouchableOpacity onPress={handleGrokPress} hitSlop={8}>
                 <GrokLogo size={16} color={theme.colors.text.secondary} />
               </TouchableOpacity>
-              <View ref={moreButtonRef} collapsable={false}>
-                <TouchableOpacity
-                  onPress={handleMorePress}
-                  hitSlop={8}
-                  accessibilityLabel="tweet_button_more"
-                  testID="tweet_button_more"
-                >
-                  <MoreHorizontal size={16} color={theme.colors.text.secondary} />
-                </TouchableOpacity>
-              </View>
+              <Pressable
+                onPress={handleMorePress}
+                hitSlop={8}
+                ref={moreButtonRef}
+                accessibilityLabel="tweet_button_more"
+                testID="tweet_button_more"
+              >
+                <MoreHorizontal
+                  size={16}
+                  color={menuVisible ? theme.colors.accent.bookmark : theme.colors.text.secondary}
+                />
+              </Pressable>
             </View>
           </View>
           <View style={styles.tweetContent}>
@@ -150,8 +152,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
             onReplyPress={onReplyPress}
             onRepostPress={openSheet}
             onLikePress={onLike}
-            onBookmarkPress={() => setIsBookmarked(!isBookmarked)}
-            isBookmarked={isBookmarked}
+            onBookmarkPress={onBookmark}
             onSharePress={onShare}
           />
 
