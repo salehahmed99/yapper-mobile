@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { router } from 'expo-router';
 import humps from 'humps';
-import { getToken } from '../utils/secureStorage';
 
 const api = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL,
@@ -18,7 +17,10 @@ api.interceptors.request.use(
       config.data = humps.decamelizeKeys(config.data);
     }
     config.params = humps.decamelizeKeys(config.params);
-    const token = await getToken();
+
+    const { useAuthStore } = await import('../store/useAuthStore');
+    const token = useAuthStore.getState().token;
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
