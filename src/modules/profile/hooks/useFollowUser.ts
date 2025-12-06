@@ -1,7 +1,6 @@
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import Toast from 'react-native-toast-message';
 import { ITweet, ITweets } from '../../tweets/types';
 import { followUser, unfollowUser } from '../services/profileService';
 import { updateUserStateInTweetsCache } from '../utils/profileCacheUtils';
@@ -21,7 +20,7 @@ interface FollowMutationVariables {
 export const useFollowUser = (initialFollowState: boolean = false): UseFollowUserReturn => {
   const [isFollowing, setIsFollowing] = useState(initialFollowState);
   const queryClient = useQueryClient();
-  const fetchAndUpdateUser = useAuthStore((state) => state.fetchAndUpdateUser);
+  const updateFollowCounts = useAuthStore((state) => state.updateFollowCounts);
 
   const toggleFollowState = (tweet: ITweet) => {
     return {
@@ -41,6 +40,8 @@ export const useFollowUser = (initialFollowState: boolean = false): UseFollowUse
       await queryClient.cancelQueries({ queryKey: ['profile'] });
       await queryClient.cancelQueries({ queryKey: ['user', variables.userId] });
       await queryClient.cancelQueries({ queryKey: ['tweets'] });
+      await queryClient.cancelQueries({ queryKey: ['followers'] });
+      await queryClient.cancelQueries({ queryKey: ['following'] });
 
       setIsFollowing(!variables.isFollowing);
 
@@ -53,32 +54,23 @@ export const useFollowUser = (initialFollowState: boolean = false): UseFollowUse
       );
     },
     onSuccess: async (data, variables) => {
-      await queryClient.invalidateQueries({ queryKey: ['user', variables.userId] });
-      await fetchAndUpdateUser();
+      // Update own following count optimistically
+      updateFollowCounts(!variables.isFollowing);
 
-      Toast.show({
-        type: 'success',
-        text1: variables.isFollowing ? 'Unfollowed' : 'Following',
-        text2: variables.isFollowing ? 'You have unfollowed this user' : 'You are now following this user',
-        position: 'bottom',
-        visibilityTime: 2000,
-      });
+      await queryClient.invalidateQueries({ queryKey: ['user', variables.userId] });
+      await queryClient.invalidateQueries({ queryKey: ['followers'] });
+      await queryClient.invalidateQueries({ queryKey: ['following'] });
+      await queryClient.invalidateQueries({ queryKey: ['userList'] });
     },
     onError: (error, variables) => {
       setIsFollowing(variables.isFollowing);
 
-      const errorMessage = error instanceof Error ? error.message : 'Failed to update follow status';
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: errorMessage,
-        position: 'bottom',
-        visibilityTime: 3000,
-      });
-
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['user', variables.userId] });
       queryClient.invalidateQueries({ queryKey: ['tweets'] });
+      queryClient.invalidateQueries({ queryKey: ['followers'] });
+      queryClient.invalidateQueries({ queryKey: ['following'] });
+      queryClient.invalidateQueries({ queryKey: ['userList'] });
     },
   });
 

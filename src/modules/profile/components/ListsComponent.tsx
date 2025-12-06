@@ -75,7 +75,6 @@ export default function ListsComponent({ initialTab, userId }: ListsComponentPro
     { key: 'Followers', title: t('profile.lists.followers'), component: () => <FollowersRoute userId={userId} /> },
   ];
 
-  // Only show "Followers You Know" tab for other users' profiles
   if (!isOwnProfile) {
     tabs.push({
       key: 'MutualFollowers',

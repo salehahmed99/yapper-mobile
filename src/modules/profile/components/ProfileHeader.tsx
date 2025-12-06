@@ -31,6 +31,7 @@ import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 
 import { Theme } from '@/src/constants/theme';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const blockedButtonStyles = (theme: Theme, headerStyles: any) =>
   StyleSheet.create<{ button: ViewStyle; text: TextStyle }>({
     button: {
@@ -68,7 +69,7 @@ export default function ProfileHeader({
 
   const router = useRouter();
 
-  const { isFollowing, isLoading: followLoading, toggleFollow, setIsFollowing } = useFollowUser(false);
+  const { isFollowing, toggleFollow, setIsFollowing } = useFollowUser(false);
 
   const { isBlocked, isLoading: blockLoading, toggleBlock, setIsBlocked } = useBlockUser(false);
 
@@ -152,7 +153,7 @@ export default function ProfileHeader({
   };
 
   const handleFollowToggle = async () => {
-    if (!userId || followLoading) return;
+    if (!userId) return;
     await toggleFollow(userId);
     // Refetch user data to update follower count
     if (!isOwnProfile && userId) {
@@ -331,19 +332,14 @@ export default function ProfileHeader({
                 testID="profile_header_follow_button"
                 style={[headerStyles.editButton, isFollowing && headerStyles.followingButton]}
                 onPress={handleFollowToggle}
-                disabled={followLoading}
               >
-                {followLoading ? (
-                  <ActivityIndicator size="small" color={theme.colors.text.primary} />
-                ) : (
-                  <Text style={[headerStyles.editText, isFollowing && headerStyles.followingText]}>
-                    {isFollowing
-                      ? t('profile.following')
-                      : profileUser?.isFollower
-                        ? t('profile.followBack')
-                        : t('profile.follow')}
-                  </Text>
-                )}
+                <Text style={[headerStyles.editText, isFollowing && headerStyles.followingText]}>
+                  {isFollowing
+                    ? t('profile.following')
+                    : profileUser?.isFollower
+                      ? t('profile.followBack')
+                      : t('profile.follow')}
+                </Text>
               </TouchableOpacity>
             )}
           </View>

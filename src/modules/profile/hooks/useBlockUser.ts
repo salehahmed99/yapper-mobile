@@ -1,6 +1,5 @@
 import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import Toast from 'react-native-toast-message';
 import { ITweet, ITweets } from '../../tweets/types';
 import { blockUser, unblockUser } from '../services/profileService';
 import { updateUserStateInTweetsCache } from '../utils/profileCacheUtils';
@@ -45,29 +44,15 @@ export const useBlockUser = (initialBlockState: boolean = false) => {
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['user', variables.userId] });
-
-      Toast.show({
-        type: 'success',
-        text1: variables.isBlocked ? 'Unblocked' : 'Blocked',
-        text2: variables.isBlocked ? 'You have unblocked this user' : 'You have blocked this user',
-        position: 'bottom',
-        visibilityTime: 2000,
-      });
+      queryClient.invalidateQueries({ queryKey: ['userList'] });
     },
     onError: (error, variables) => {
       setIsBlocked(variables.isBlocked);
 
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: error instanceof Error ? error.message : 'An error occurred',
-        position: 'bottom',
-        visibilityTime: 3000,
-      });
-
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['user', variables.userId] });
       queryClient.invalidateQueries({ queryKey: ['tweets'] });
+      queryClient.invalidateQueries({ queryKey: ['userList'] });
     },
   });
 

@@ -1,11 +1,11 @@
+import i18n, { changeLanguage } from '@/src/i18n';
 import { IUser } from '@/src/types/user';
 import { deleteToken, getToken, saveToken } from '@/src/utils/secureStorage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
+import { logout } from '../modules/auth/services/authService';
 import { getMyUser } from '../modules/profile/services/profileService';
-import { logout, logOutAll } from '../modules/auth/services/authService';
 import { tokenRefreshService } from '../services/tokenRefreshService';
-import i18n, { changeLanguage } from '@/src/i18n';
 
 interface IAuthState {
   user: IUser | null;
@@ -19,6 +19,7 @@ interface IAuthState {
   setEmail: (newEmail: string) => void;
   setCountry: (newCountry: string) => void;
   setLanguage: (newLanguage: string) => void;
+  updateFollowCounts: (isFollowing: boolean) => void;
   fetchAndUpdateUser: () => Promise<void>;
   logout: (all: boolean) => Promise<void>;
 }
@@ -146,14 +147,22 @@ export const useAuthStore = create<IAuthState>((set) => ({
       user: state.user ? { ...state.user, language: newLanguage } : null,
     })),
 
+  /** Update follower/following counts optimistically */
+  updateFollowCounts: (isFollowing: boolean) =>
+    set((state) => {
+      if (!state.user) return state;
+      return {
+        user: {
+          ...state.user,
+          following: isFollowing ? (state.user.following || 0) + 1 : Math.max((state.user.following || 0) - 1, 0),
+        },
+      };
+    }),
+
   /** Logout & cleanup */
-  logout: async (all: boolean = false) => {
+  logout: async (_all: boolean = false) => {
     try {
-      if (all) {
-        await logOutAll();
-      } else {
-        await logout();
-      }
+      await logout();
       tokenRefreshService.stop();
       await deleteToken();
       await AsyncStorage.removeItem('refreshToken');

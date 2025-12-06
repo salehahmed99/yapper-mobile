@@ -1,5 +1,6 @@
 import { IUser } from '@/src/types/user';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { getUserList } from '../services/userListService';
 import { UserListQuery } from '../types';
 
@@ -17,82 +18,62 @@ interface IUseUserListResult {
   loadMore: () => void;
 }
 
+// Generate query keys based on the query type
+const getUserListQueryKey = (query: UserListQuery) => {
+  if ('tweetId' in query) {
+    return ['userList', 'tweet', query.tweetId, query.type];
+  } else if ('userId' in query && query.type === 'followers') {
+    return ['followers', 'list', { userId: query.userId, following: false }];
+  } else if ('userId' in query && query.type === 'following') {
+    return ['following', 'list', { userId: query.userId }];
+  } else if ('userId' in query && query.type === 'mutualFollowers') {
+    return ['followers', 'list', { userId: query.userId, following: true }];
+  } else if (query.type === 'muted') {
+    return ['userList', 'muted'];
+  } else if (query.type === 'blocked') {
+    return ['userList', 'blocked'];
+  }
+  return ['userList', query.type];
+};
+
 export const useUserList = (options: UseUserListOptions): IUseUserListResult => {
-  const { autoLoad = true } = options;
+  const { autoLoad = true, ...query } = options;
 
-  const [users, setUsers] = useState<IUser[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [hasNextPage, setHasNextPage] = useState(true);
+  const queryKey = getUserListQueryKey(query);
 
-  const loadingRef = useRef(false);
-  const currentPageRef = useRef(0);
-  const currentCursorRef = useRef<string | null>(null);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isRefetching, error, refetch } =
+    useInfiniteQuery({
+      queryKey,
+      queryFn: ({ pageParam }) => getUserList({ ...query, cursor: pageParam || '' }),
+      getNextPageParam: (lastPage) => {
+        return lastPage.hasMore ? lastPage.nextCursor : undefined;
+      },
+      initialPageParam: '',
+      enabled: autoLoad,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 30, // 30 minutes
+    });
 
-  const fetchPage = useCallback(
-    async (isRefresh = false) => {
-      if (loadingRef.current) return;
+  const users = useMemo(() => {
+    return data?.pages.flatMap((page) => page.users) ?? [];
+  }, [data]);
 
-      loadingRef.current = true;
-      setError(null);
-      setLoading(!isRefresh);
-      setRefreshing(isRefresh);
+  const refresh = () => {
+    refetch();
+  };
 
-      try {
-        const cursor = isRefresh ? '' : currentCursorRef.current || '';
-        const data = await getUserList({ ...options, cursor });
-
-        setUsers((prev) => {
-          if (isRefresh) {
-            return data.users;
-          }
-
-          const existingIds = new Set(prev.map((u) => u.id));
-          const newUsers = data.users.filter((u) => !existingIds.has(u.id));
-
-          return [...prev, ...newUsers];
-        });
-        currentCursorRef.current = data.nextCursor || null;
-        setHasNextPage(data.hasMore ?? false);
-      } catch (err: unknown) {
-        const error = err as { response?: { data?: { message?: string } }; message?: string };
-        const message = error?.response?.data?.message || error?.message || 'Failed to load users';
-        setError(message);
-        setHasNextPage(false);
-        if (isRefresh) {
-          setUsers([]);
-          currentPageRef.current = 1;
-          currentCursorRef.current = null;
-        }
-      } finally {
-        setLoading(false);
-        setRefreshing(false);
-        loadingRef.current = false;
-      }
-    },
-    [options],
-  );
-
-  const refresh = useCallback(() => fetchPage(true), [fetchPage]);
-
-  const loadMore = useCallback(() => {
-    if (hasNextPage && !loadingRef.current) {
-      fetchPage(false);
+  const loadMore = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
     }
-  }, [hasNextPage, fetchPage]);
-
-  useEffect(() => {
-    if (autoLoad) fetchPage(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoLoad]);
+  };
 
   return {
     users,
-    loading,
-    refreshing,
-    error,
-    hasNextPage,
+    loading: isLoading,
+    refreshing: isRefetching && !isFetchingNextPage,
+    error: error?.message ?? null,
+    hasNextPage: hasNextPage ?? false,
     refresh,
     loadMore,
   };

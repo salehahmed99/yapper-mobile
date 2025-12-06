@@ -1,6 +1,5 @@
 import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import Toast from 'react-native-toast-message';
 import { ITweet, ITweets } from '../../tweets/types';
 import { muteUser, unmuteUser } from '../services/profileService';
 import { updateUserStateInTweetsCache } from '../utils/profileCacheUtils';
@@ -45,29 +44,15 @@ export const useMuteUser = (initialMuteState: boolean = false) => {
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['user', variables.userId] });
-
-      Toast.show({
-        type: 'success',
-        text1: variables.isMuted ? 'Unmuted' : 'Muted',
-        text2: variables.isMuted ? 'You have unmuted this user' : 'You have muted this user',
-        position: 'bottom',
-        visibilityTime: 2000,
-      });
+      queryClient.invalidateQueries({ queryKey: ['userList'] });
     },
     onError: (error, variables) => {
       setIsMuted(variables.isMuted);
 
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: error instanceof Error ? error.message : 'Failed to update mute status',
-        position: 'bottom',
-        visibilityTime: 3000,
-      });
-
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['user', variables.userId] });
       queryClient.invalidateQueries({ queryKey: ['tweets'] });
+      queryClient.invalidateQueries({ queryKey: ['userList'] });
     },
   });
 

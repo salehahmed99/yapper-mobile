@@ -1,29 +1,19 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, StatusBar, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { View, Text, TouchableOpacity, StyleSheet, StatusBar, ScrollView, I18nManager } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
-import { AnimatedTextInput } from '@/src/modules/settings/components/AnimatedTextInput';
-import { useAuthStore } from '@/src/store/useAuthStore';
-import { useTheme } from '@/src/context/ThemeContext';
-import { Theme } from '@/src/constants/theme';
-import { confirmCurrentPassword, changePassword } from '@/src/modules/settings/services/yourAccountService';
-import Toast from 'react-native-toast-message';
 import ActivityLoader from '@/src/components/ActivityLoader';
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
+import { AnimatedTextInput } from '@/src/modules/settings/components/AnimatedTextInput';
+import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
+import ValidationItem from '@/src/modules/settings/components/ValidationItem';
+import { changePassword, confirmCurrentPassword } from '@/src/modules/settings/services/yourAccountService';
 import { passwordSchema } from '@/src/modules/settings/types/schemas';
-import { PASSWORD_RULES } from '@/src/modules/settings/types/schemas';
-import ValidationItem from '@/src/modules/settings/components/ValidationItem';
-
-export const ChangePasswordScreen: React.FC = () => {
-  const user = useAuthStore((state) => state.user);
-  const { theme, isDark } = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
-import ValidationItem from '@/src/modules/settings/components/ValidationItem';
-import { validatePassword, isPasswordValid } from '@/src/modules/settings/utils/passwordValidation';
+import { isPasswordValid, validatePassword } from '@/src/modules/settings/utils/passwordValidation';
+import { useAuthStore } from '@/src/store/useAuthStore';
+import { router } from 'expo-router';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { I18nManager, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 export const ChangePasswordScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -36,14 +26,6 @@ export const ChangePasswordScreen: React.FC = () => {
   const [showValidation, setShowValidation] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const passwordValidation = useMemo(
-    () => PASSWORD_RULES.map((rule) => ({ ...rule, isValid: rule.test(passwords.new) })),
-    [passwords.new],
-  );
-
-  const isPasswordValid = passwordValidation.every((rule) => rule.isValid);
-  const passwordsMatch = !passwords.confirm || passwords.new === passwords.confirm;
-  const isFormValid = passwords.current && isPasswordValid && passwordsMatch && passwords.confirm;
   const passwordValidation = useMemo(() => validatePassword(passwords.new), [passwords.new]);
 
   const passwordIsValid = isPasswordValid(passwords.new);
@@ -55,11 +37,6 @@ export const ChangePasswordScreen: React.FC = () => {
   };
 
   const handleUpdatePassword = async () => {
-    if (!isPasswordValid || !passwordsMatch) {
-      showToast(
-        'error',
-        'Invalid Password',
-        !isPasswordValid ? 'Please meet all password requirements' : 'Passwords do not match',
     if (!isPasswordValid(passwords.new) || !passwordsMatch) {
       showToast(
         'error',
@@ -73,8 +50,6 @@ export const ChangePasswordScreen: React.FC = () => {
     if (!schemaValidation.success) {
       showToast(
         'error',
-        'Invalid Password',
-        schemaValidation.error.errors[0]?.message || 'Please meet all password requirements',
         t('settings.password.error_invalid_title'),
         schemaValidation.error.errors[0]?.message || t('settings.password.error_requirements'),
       );
@@ -85,11 +60,7 @@ export const ChangePasswordScreen: React.FC = () => {
       setIsLoading(true);
       await confirmCurrentPassword({ password: passwords.current });
       await changePassword({ oldPassword: passwords.current, newPassword: passwords.new });
-      showToast('success', 'Success', 'Your password has been updated');
-      setPasswords({ current: '', new: '', confirm: '' });
-      setShowValidation(false);
-    } catch (error) {
-      showToast('error', 'Error', error instanceof Error ? error.message : 'An unexpected error occurred');
+
       showToast('success', t('settings.common.success'), t('settings.password.success_message'));
       setPasswords({ current: '', new: '', confirm: '' });
       setShowValidation(false);
@@ -113,7 +84,6 @@ export const ChangePasswordScreen: React.FC = () => {
 
   return (
     <>
-      <ActivityLoader visible={isLoading} message="Changing your password..." />
       <ActivityLoader visible={isLoading} message={t('settings.password.loading')} />
       <SafeAreaView style={styles.safeArea}>
         <StatusBar
@@ -122,7 +92,6 @@ export const ChangePasswordScreen: React.FC = () => {
         />
         <View style={styles.container}>
           <SettingsTopBar
-            title="Change your password"
             title={t('settings.password.title')}
             subtitle={`@${user?.username}`}
             onBackPress={() => router.back()}
@@ -136,7 +105,6 @@ export const ChangePasswordScreen: React.FC = () => {
           >
             {/* Current Password */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Current password</Text>
               <Text style={styles.label}>{t('settings.password.current_password')}</Text>
               <AnimatedTextInput
                 value={passwords.current}
@@ -154,7 +122,6 @@ export const ChangePasswordScreen: React.FC = () => {
 
             {/* New Password */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>New password</Text>
               <Text style={styles.label}>{t('settings.password.new_password')}</Text>
               <AnimatedTextInput
                 value={passwords.new}
@@ -162,7 +129,6 @@ export const ChangePasswordScreen: React.FC = () => {
                   setPasswords((prev) => ({ ...prev, new: text }));
                   if (text.length > 0) setShowValidation(true);
                 }}
-                placeholder="Enter new password"
                 placeholder={t('settings.password.new_password_placeholder')}
                 placeholderTextColor={theme.colors.text.tertiary}
                 secureTextEntry
@@ -175,7 +141,6 @@ export const ChangePasswordScreen: React.FC = () => {
 
               {showValidation && (
                 <View style={styles.validationContainer}>
-                  <Text style={styles.validationTitle}>Password must contain:</Text>
                   <Text style={styles.validationTitle}>{t('settings.password.validation_title')}</Text>
                   {passwordValidation.map((rule) => (
                     <ValidationItem key={rule.key} isValid={rule.isValid} text={rule.text} theme={theme} />
@@ -186,11 +151,6 @@ export const ChangePasswordScreen: React.FC = () => {
 
             {/* Confirm Password */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Confirm password</Text>
-              <AnimatedTextInput
-                value={passwords.confirm}
-                onChangeText={(text) => setPasswords((prev) => ({ ...prev, confirm: text }))}
-                placeholder="Re-enter new password"
               <Text style={styles.label}>{t('settings.password.confirm_password')}</Text>
               <AnimatedTextInput
                 value={passwords.confirm}
@@ -200,10 +160,6 @@ export const ChangePasswordScreen: React.FC = () => {
                 secureTextEntry
                 autoCapitalize="none"
                 autoCorrect={false}
-              />
-              {!passwordsMatch && passwords.confirm && <Text style={styles.errorText}>Passwords do not match</Text>}
-              {passwordsMatch && passwords.confirm && isPasswordValid && (
-                <Text style={styles.successText}>Passwords match ✓</Text>
                 accessibilityLabel="Confirm password input"
                 testID="confirm-password-input"
                 showPasswordToggle
@@ -221,9 +177,6 @@ export const ChangePasswordScreen: React.FC = () => {
               style={[styles.updateButton, !isFormValid && styles.updateButtonDisabled]}
               onPress={handleUpdatePassword}
               disabled={!isFormValid}
-            >
-              <Text style={[styles.updateButtonText, !isFormValid && styles.updateButtonTextDisabled]}>
-                Update password
               accessibilityLabel="Update password button"
               testID="update-password-button"
             >
@@ -233,8 +186,6 @@ export const ChangePasswordScreen: React.FC = () => {
             </TouchableOpacity>
 
             {/* Forgot Password Link */}
-            <TouchableOpacity onPress={handleForgotPassword} style={styles.forgotPasswordContainer}>
-              <Text style={styles.forgotPasswordText}>Forgot password?</Text>
             <TouchableOpacity
               onPress={handleForgotPassword}
               style={styles.forgotPasswordContainer}
@@ -249,6 +200,7 @@ export const ChangePasswordScreen: React.FC = () => {
     </>
   );
 };
+
 const createStyles = (theme: Theme, isRTL: boolean = false) =>
   StyleSheet.create({
     safeArea: { flex: 1, backgroundColor: theme.colors.background.primary },
@@ -260,7 +212,6 @@ const createStyles = (theme: Theme, isRTL: boolean = false) =>
       paddingBottom: theme.spacing.xxl,
     },
     inputGroup: { marginBottom: theme.spacing.xl },
-    label: { fontSize: theme.typography.sizes.sm, color: theme.colors.text.secondary, marginBottom: theme.spacing.sm },
     label: {
       fontSize: theme.typography.sizes.sm,
       color: theme.colors.text.secondary,
@@ -291,8 +242,6 @@ const createStyles = (theme: Theme, isRTL: boolean = false) =>
     updateButtonTextDisabled: { color: theme.colors.text.primary },
     forgotPasswordContainer: { alignItems: 'center', paddingVertical: theme.spacing.md },
     forgotPasswordText: { fontSize: theme.typography.sizes.sm, color: theme.colors.text.secondary },
-    errorText: { fontSize: theme.typography.sizes.sm, color: theme.colors.error, marginTop: theme.spacing.xs },
-    successText: { fontSize: theme.typography.sizes.sm, color: theme.colors.success, marginTop: theme.spacing.xs },
     errorText: {
       fontSize: theme.typography.sizes.sm,
       color: theme.colors.error,
