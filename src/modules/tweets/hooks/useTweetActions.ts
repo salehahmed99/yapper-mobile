@@ -80,7 +80,7 @@ export const useTweetActions = (tweetId: string) => {
     },
 
     onError: (error) => {
-      console.log('Error updating like status:', error);
+      console.error('Error liking tweet:', error);
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
@@ -108,8 +108,7 @@ export const useTweetActions = (tweetId: string) => {
     },
 
     onError: (error) => {
-      console.log('Error updating repost status:', error);
-
+      console.error('Error reposting tweet:', error);
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
@@ -139,8 +138,7 @@ export const useTweetActions = (tweetId: string) => {
     },
 
     onError: (error) => {
-      console.log('Error updating bookmark status:', error);
-
+      console.error('Error bookmarking tweet:', error);
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
@@ -203,8 +201,7 @@ export const useTweetActions = (tweetId: string) => {
       }
     },
     onError: (error) => {
-      // Error deleting tweet
-      console.log('Error deleting tweet:', error);
+      console.error('Error deleting tweet:', error);
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
