@@ -1,10 +1,11 @@
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
-import { ChevronLeft } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Theme } from '../../../constants/theme';
 import { useTheme } from '../../../context/ThemeContext';
+import { useRTL } from '../../../hooks/useRTL';
 
 type AnimatedProfileHeaderProps = {
   username: string;
@@ -16,7 +17,7 @@ type AnimatedProfileHeaderProps = {
 const WHITE = '#ffffff';
 const TEXT_SHADOW_COLOR = 'rgba(0, 0, 0, 0.75)';
 
-const createStyles = (theme: Theme) =>
+const createStyles = (theme: Theme, isRTL: boolean = false) =>
   StyleSheet.create({
     headerContainer: {
       position: 'absolute',
@@ -27,7 +28,7 @@ const createStyles = (theme: Theme) =>
       overflow: 'hidden',
     },
     blurContainer: {
-      flexDirection: 'row',
+      flexDirection: isRTL ? 'row-reverse' : 'row',
       alignItems: 'center',
       paddingHorizontal: theme.spacing.md,
       paddingTop: theme.spacing.xxxl + 5,
@@ -38,7 +39,7 @@ const createStyles = (theme: Theme) =>
       width: theme.sizes.icon.lg + theme.spacing.xs * 1.5,
       height: theme.sizes.icon.lg + theme.spacing.xs * 1.5,
       borderRadius: (theme.sizes.icon.lg + theme.spacing.xs * 1.5) / 2,
-      marginRight: theme.spacing.md,
+      ...(isRTL ? { marginLeft: theme.spacing.md } : { marginRight: theme.spacing.md }),
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -63,7 +64,8 @@ export default function AnimatedProfileHeader({
   headerHeight,
 }: AnimatedProfileHeaderProps) {
   const { theme, isDark } = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const isRTL = useRTL();
+  const styles = useMemo(() => createStyles(theme, isRTL), [theme, isRTL]);
   const router = useRouter();
 
   const headerOpacity = scrollY.interpolate({
@@ -107,7 +109,7 @@ export default function AnimatedProfileHeader({
             }}
             testID="animated_profile_header_back_button"
           >
-            <ChevronLeft color="#fff" size={25} />
+            {isRTL ? <ChevronRight color="#fff" size={25} /> : <ChevronLeft color="#fff" size={25} />}
           </TouchableOpacity>
           <Text style={styles.username} numberOfLines={1} testID="animated_profile_header_username">
             {username}

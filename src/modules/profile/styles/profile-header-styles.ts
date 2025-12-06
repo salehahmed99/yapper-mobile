@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '../../../constants/theme';
 
-export const createHeaderStyles = (theme: Theme) =>
+export const createHeaderStyles = (theme: Theme, isRTL: boolean = false) =>
   StyleSheet.create({
     container: {
       marginBottom: theme.spacing.xl,
@@ -22,7 +22,7 @@ export const createHeaderStyles = (theme: Theme) =>
       zIndex: 5,
     },
     imageContainer: {
-      flexDirection: 'row',
+      flexDirection: isRTL ? 'row-reverse' : 'row',
       width: '100%',
       justifyContent: 'space-between',
       paddingHorizontal: theme.spacing.lg,
@@ -48,13 +48,13 @@ export const createHeaderStyles = (theme: Theme) =>
       paddingHorizontal: theme.spacing.md,
       paddingVertical: theme.spacing.sm,
       marginTop: theme.spacing.md,
-      marginRight: theme.spacing.sm,
+      ...(isRTL ? { marginLeft: theme.spacing.sm } : { marginRight: theme.spacing.sm }),
       justifyContent: 'center',
       alignItems: 'center',
       minWidth: 40,
     },
     buttonsContainer: {
-      flexDirection: 'row',
+      flexDirection: isRTL ? 'row-reverse' : 'row',
       marginTop: theme.spacing.md,
     },
     viewPostsButton: {
@@ -90,7 +90,7 @@ export const createHeaderStyles = (theme: Theme) =>
       alignItems: 'center',
       position: 'absolute',
       top: theme.spacing.xxxl + 5,
-      left: theme.spacing.xl,
+      ...(isRTL ? { right: theme.spacing.xl } : { left: theme.spacing.xl }),
     },
     actionsButton: {
       backgroundColor: `rgba(0, 0, 0, ${theme.opacity.translucent - 0.2})`,
@@ -101,7 +101,7 @@ export const createHeaderStyles = (theme: Theme) =>
       alignItems: 'center',
       position: 'absolute',
       top: theme.spacing.xxxl + 5,
-      right: theme.spacing.xl,
+      ...(isRTL ? { left: theme.spacing.xl } : { right: theme.spacing.xl }),
     },
     editText: {
       color: theme.colors.text.link,
@@ -123,13 +123,15 @@ export const createHeaderStyles = (theme: Theme) =>
       fontSize: theme.typography.sizes.xs,
     },
     nameContainer: {
-      flexDirection: 'row',
+      flexDirection: isRTL ? 'row-reverse' : 'row',
       alignItems: 'center',
       gap: theme.spacing.md,
+      alignSelf: isRTL ? 'flex-end' : 'flex-start',
     },
     info: {
       paddingHorizontal: theme.spacing.lg,
       marginTop: theme.spacing.md - 4,
+      alignItems: isRTL ? 'flex-end' : 'flex-start',
     },
     loadingContainer: {
       marginTop: theme.spacing.lg,
@@ -139,23 +141,28 @@ export const createHeaderStyles = (theme: Theme) =>
       fontSize: theme.typography.sizes.lg,
       fontWeight: theme.typography.weights.bold,
       color: theme.colors.text.primary,
+      textAlign: isRTL ? 'right' : 'left',
+      alignSelf: isRTL ? 'flex-end' : 'flex-start',
     },
     handle: {
       color: theme.colors.text.secondary,
       marginBottom: theme.spacing.sm,
+      textAlign: isRTL ? 'right' : 'left',
     },
     bio: {
       fontSize: theme.typography.sizes.sm - 1,
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.xs,
+      textAlign: isRTL ? 'right' : 'left',
     },
     link: {
       fontSize: theme.typography.sizes.xs - 1,
       color: theme.colors.text.link,
       marginBottom: theme.spacing.sm,
+      textAlign: isRTL ? 'right' : 'left',
     },
     stats: {
-      flexDirection: 'row',
+      flexDirection: isRTL ? 'row-reverse' : 'row',
     },
     stat: {
       fontSize: theme.typography.sizes.sm - 1,
@@ -164,7 +171,7 @@ export const createHeaderStyles = (theme: Theme) =>
     statWithMargin: {
       fontSize: theme.typography.sizes.sm - 1,
       color: theme.colors.text.primary,
-      marginLeft: theme.spacing.md - 2,
+      ...(isRTL ? { marginRight: theme.spacing.md - 2 } : { marginLeft: theme.spacing.md - 2 }),
     },
     bold: {
       fontWeight: theme.typography.weights.bold,

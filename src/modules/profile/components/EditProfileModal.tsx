@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Alert, Modal, Text, TouchableOpacity, View } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useTheme } from '../../../context/ThemeContext';
+import { useRTL } from '../../../hooks/useRTL';
 import { deleteAvatar, deleteCover, updateUserProfile, uploadAvatar, uploadCover } from '../services/profileService';
 import { createEditModalStyles } from '../styles/edit-modal-styles';
 import Input from '../ui/Input';
@@ -53,7 +54,8 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
   const [localBannerUri, setLocalBannerUri] = useState(bannerUri);
 
   const { theme } = useTheme();
-  const editModalStyles = useMemo(() => createEditModalStyles(theme), [theme]);
+  const isRTL = useRTL();
+  const editModalStyles = useMemo(() => createEditModalStyles(theme, isRTL), [theme, isRTL]);
 
   React.useEffect(() => {
     if (visible) {

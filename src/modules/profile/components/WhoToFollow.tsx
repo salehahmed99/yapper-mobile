@@ -1,9 +1,10 @@
-import { ChevronRight } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { spacing, typography } from '../../../constants/theme';
 import { useTheme } from '../../../context/ThemeContext';
+import { useRTL } from '../../../hooks/useRTL';
 import ProfileCard, { ProfileCardData } from './ProfileCard';
 
 type WhoToFollowProps = {
@@ -54,6 +55,7 @@ const defaultProfiles: ProfileCardData[] = [
 export default function WhoToFollow({ profiles = defaultProfiles, onShowMore }: WhoToFollowProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const isRTL = useRTL();
   const [followingStatus, setFollowingStatus] = useState<Record<string, boolean>>({});
 
   const handleFollow = (userId: string) => {
@@ -77,7 +79,7 @@ export default function WhoToFollow({ profiles = defaultProfiles, onShowMore }: 
       paddingVertical: spacing.lg,
     },
     headerContainer: {
-      flexDirection: 'row',
+      flexDirection: isRTL ? 'row-reverse' : 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingHorizontal: spacing.lg,
@@ -90,7 +92,7 @@ export default function WhoToFollow({ profiles = defaultProfiles, onShowMore }: 
       lineHeight: 24,
     },
     showMoreButton: {
-      flexDirection: 'row',
+      flexDirection: isRTL ? 'row-reverse' : 'row',
       alignItems: 'center',
     },
     showMoreText: {
@@ -98,7 +100,7 @@ export default function WhoToFollow({ profiles = defaultProfiles, onShowMore }: 
       fontFamily: typography.fonts.regular,
       color: theme.colors.text.link,
       lineHeight: 20,
-      marginRight: 4,
+      ...(isRTL ? { marginLeft: 4 } : { marginRight: 4 }),
     },
     scrollContainer: {
       paddingHorizontal: spacing.lg,
@@ -120,7 +122,11 @@ export default function WhoToFollow({ profiles = defaultProfiles, onShowMore }: 
           testID="who_to_follow_show_more_button"
         >
           <Text style={styles.showMoreText}>{t('profile.whoToFollow.showMore')}</Text>
-          <ChevronRight size={20} color={theme.colors.text.link} />
+          {isRTL ? (
+            <ChevronLeft size={20} color={theme.colors.text.link} />
+          ) : (
+            <ChevronRight size={20} color={theme.colors.text.link} />
+          )}
         </TouchableOpacity>
       </View>
 

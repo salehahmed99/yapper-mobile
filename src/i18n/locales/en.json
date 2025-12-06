@@ -585,6 +585,10 @@
       "dark_mode": "Dark",
       "device_settings": "Use device settings",
       "device_settings_description": "Set Dark mode to use the Light or Dark selection located in your device Display & Brightness settings."
+    },
+    "countryPicker": {
+      "title": "Select a country",
+      "searchPlaceholder": "Search"
     }
   }
 }

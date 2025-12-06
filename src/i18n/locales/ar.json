@@ -140,6 +140,7 @@
       "location": "الموقع",
       "website": "الموقع الإلكتروني",
       "birthday": "تاريخ الميلاد",
+      "country": "البلد",
       "namePlaceholder": "أضف اسمك",
       "bioPlaceholder": "أضف سيرة ذاتية لملفك الشخصي",
       "locationPlaceholder": "أضف موقعك",
@@ -357,6 +358,10 @@
       "dark_mode": "داكن",
       "device_settings": "استخدام إعدادات الجهاز",
       "device_settings_description": "اضبط الوضع الداكن لاستخدام تحديد الفاتح أو الداكن الموجود في إعدادات العرض والسطوع بجهازك."
+    },
+    "countryPicker": {
+      "title": "اختر بلدا",
+      "searchPlaceholder": "بحث"
     }
   }
 }
