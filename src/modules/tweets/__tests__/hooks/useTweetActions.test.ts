@@ -38,7 +38,7 @@ describe('useTweetActions', () => {
   });
 
   it('should handle like mutation', async () => {
-    const { result } = renderHook(() => useTweetActions(tweetId));
+    const { result } = renderHook(() => useTweetActions());
 
     await waitFor(async () => {
       await result.current.likeMutation.mutate({ tweetId, isLiked: false });
@@ -52,7 +52,7 @@ describe('useTweetActions', () => {
   });
 
   it('should handle unlike mutation', async () => {
-    const { result } = renderHook(() => useTweetActions(tweetId));
+    const { result } = renderHook(() => useTweetActions());
 
     await waitFor(async () => {
       await result.current.likeMutation.mutate({ tweetId, isLiked: true });
@@ -62,7 +62,7 @@ describe('useTweetActions', () => {
   });
 
   it('should handle repost mutation', async () => {
-    const { result } = renderHook(() => useTweetActions(tweetId));
+    const { result } = renderHook(() => useTweetActions());
 
     await waitFor(async () => {
       await result.current.repostMutation.mutate({ tweetId, isReposted: false });
@@ -72,7 +72,7 @@ describe('useTweetActions', () => {
   });
 
   it('should handle undo repost mutation', async () => {
-    const { result } = renderHook(() => useTweetActions(tweetId));
+    const { result } = renderHook(() => useTweetActions());
 
     await waitFor(async () => {
       await result.current.repostMutation.mutate({ tweetId, isReposted: true });
@@ -82,7 +82,7 @@ describe('useTweetActions', () => {
   });
 
   it('should handle add post mutation', async () => {
-    const { result } = renderHook(() => useTweetActions(tweetId));
+    const { result } = renderHook(() => useTweetActions());
 
     await waitFor(async () => {
       await result.current.addPostMutation.mutate({ content: 'test' });
@@ -93,30 +93,30 @@ describe('useTweetActions', () => {
   });
 
   it('should handle reply mutation', async () => {
-    const { result } = renderHook(() => useTweetActions(tweetId));
+    const { result } = renderHook(() => useTweetActions());
 
     await waitFor(async () => {
-      await result.current.replyToPostMutation.mutate({ content: 'reply' });
+      await result.current.replyToPostMutation.mutate({ tweetId, content: 'reply' });
     });
 
     expect(tweetService.replyToTweet).toHaveBeenCalledWith(tweetId, 'reply', undefined);
   });
 
   it('should handle quote mutation', async () => {
-    const { result } = renderHook(() => useTweetActions(tweetId));
+    const { result } = renderHook(() => useTweetActions());
 
     await waitFor(async () => {
-      await result.current.quotePostMutation.mutate({ content: 'quote' });
+      await result.current.quotePostMutation.mutate({ tweetId, content: 'quote' });
     });
 
     expect(tweetService.quoteTweet).toHaveBeenCalledWith(tweetId, 'quote', undefined);
   });
 
   it('should handle delete mutation', async () => {
-    const { result } = renderHook(() => useTweetActions(tweetId));
+    const { result } = renderHook(() => useTweetActions());
 
     await waitFor(async () => {
-      await result.current.deletePostMutation.mutate(undefined);
+      await result.current.deletePostMutation.mutate({ tweetId });
     });
 
     expect(tweetService.deleteTweet).toHaveBeenCalledWith(tweetId);

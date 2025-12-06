@@ -2,6 +2,7 @@ import { Theme } from '@/src/constants/theme';
 import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
 import MediaViewerModal from '@/src/modules/tweets/components/MediaViewerModal';
+import RepliesContainer from '@/src/modules/tweets/containers/RepliesContainer';
 import TweetContainer from '@/src/modules/tweets/containers/TweetContainer';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
@@ -15,6 +16,7 @@ const TweetDetailsScreen = () => {
     <MediaViewerProvider>
       <View style={styles.container}>
         <TweetContainer tweetId={tweetId} />
+        <RepliesContainer tweetId={tweetId} />
         <MediaViewerModal />
       </View>
     </MediaViewerProvider>

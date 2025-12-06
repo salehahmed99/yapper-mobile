@@ -23,12 +23,13 @@ interface ICreatePostModalProps {
   visible: boolean;
   onClose: () => void;
   type: 'tweet' | 'quote' | 'reply';
-  tweet?: ITweet | null;
-  onPost: (content: string, mediaUris?: string[]) => void;
-  onRepost?: () => void;
+  tweet?: ITweet;
+  onPost?: (content: string, mediaUris?: string[]) => void;
+  onPostReply?: (tweetId: string, content: string, mediaUris?: string[]) => void;
+  onPostQuote?: (tweetId: string, content: string, mediaUris?: string[]) => void;
 }
 const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
-  const { visible, onClose, type, tweet, onPost, onRepost } = props;
+  const { visible, onClose, type, tweet, onPost, onPostReply, onPostQuote } = props;
 
   const { theme } = useTheme();
   const styles = createStyles(theme);
@@ -63,14 +64,14 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
   };
 
   const handlePost = async () => {
-    if (type === 'quote' && characterCount === 0 && onRepost) {
-      onRepost();
-      resetTweetState();
-      onClose();
-      return;
-    }
     const mediaUris = media.map((m) => m.uri);
-    onPost(tweetText, mediaUris);
+    if (type === 'tweet' && onPost) {
+      onPost(tweetText, mediaUris);
+    } else if (type === 'quote' && onPostQuote) {
+      onPostQuote(tweet!.tweetId, tweetText, mediaUris);
+    } else if (type === 'reply' && onPostReply) {
+      onPostReply(tweet!.tweetId, tweetText, mediaUris);
+    }
     resetTweetState();
     onClose();
   };

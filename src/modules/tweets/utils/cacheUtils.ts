@@ -37,6 +37,20 @@ export const updateTweetsInInfiniteCache = (
         return {
           ...page,
           data: page.data.map((tweet: ITweet) => {
+            if (tweet.replies && Array.isArray(tweet.replies)) {
+              tweet.replies = tweet.replies.map((reply: ITweet) => {
+                if (reply.tweetId === tweetId) {
+                  return updater(reply);
+                }
+                return reply;
+              });
+            }
+            if (tweet.conversationTweet && tweet.conversationTweet.tweetId === tweetId) {
+              tweet.conversationTweet = updater(tweet.conversationTweet);
+            }
+            if (tweet.parentTweet && tweet.parentTweet.tweetId === tweetId) {
+              tweet.parentTweet = updater(tweet.parentTweet);
+            }
             if (tweet.tweetId === tweetId) {
               return updater(tweet);
             }
@@ -75,7 +89,18 @@ export const removeTweetFromInfiniteCache = (oldData: InfiniteData<ITweets> | un
       if (Array.isArray(page.data)) {
         return {
           ...page,
-          data: page.data.filter((tweet: ITweet) => tweet.tweetId !== tweetId),
+          data: page.data.filter((tweet: ITweet) => {
+            if (tweet.replies && Array.isArray(tweet.replies)) {
+              tweet.replies = tweet.replies.filter((reply: ITweet) => reply.tweetId !== tweetId);
+            }
+            if (tweet.conversationTweet && tweet.conversationTweet.tweetId === tweetId) {
+              tweet.conversationTweet = undefined;
+            }
+            if (tweet.parentTweet && tweet.parentTweet.tweetId === tweetId) {
+              tweet.parentTweet = undefined;
+            }
+            return tweet.tweetId !== tweetId;
+          }),
         };
       }
       return page;

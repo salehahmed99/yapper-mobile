@@ -14,8 +14,8 @@ interface IActionsRowProps {
   tweet: ITweet;
   onReplyPress: () => void;
   onRepostPress: () => void;
-  onLikePress: (isLiked: boolean) => void;
-  onBookmarkPress: (isBookmarked: boolean) => void;
+  onLikePress: () => void;
+  onBookmarkPress: () => void;
   onSharePress: () => void;
   size: 'small' | 'large';
 }
@@ -36,7 +36,7 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
       />
       <TweetActionButton
         icon={RepostIcon}
-        count={tweet.repostsCount}
+        count={tweet.repostsCount + tweet.quotesCount}
         onPress={onRepostPress}
         color={tweet.isReposted ? theme.colors.accent.repost : theme.colors.text.secondary}
         accessibilityLabel="tweet_button_repost"
@@ -47,7 +47,7 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
       <TweetActionButton
         icon={LikeIcon}
         count={tweet.likesCount}
-        onPress={() => onLikePress(tweet.isLiked)}
+        onPress={onLikePress}
         color={tweet.isLiked ? theme.colors.accent.like : theme.colors.text.secondary}
         filled={tweet.isLiked}
         accessibilityLabel="tweet_button_like"
@@ -66,8 +66,8 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
 
       <TweetActionButton
         icon={BookmarkIcon}
-        count={tweet.bookmarksCount}
-        onPress={() => onBookmarkPress(tweet.isBookmarked)}
+        count={size === 'large' ? tweet.bookmarksCount : undefined}
+        onPress={onBookmarkPress}
         color={tweet.isBookmarked ? theme.colors.accent.bookmark : theme.colors.text.secondary}
         filled={tweet.isBookmarked}
         accessibilityLabel="tweet_button_bookmark"

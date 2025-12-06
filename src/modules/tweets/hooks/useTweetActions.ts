@@ -28,13 +28,35 @@ interface IBookmarkMutationVariables {
   tweetId: string;
   isBookmarked: boolean;
 }
-export const useTweetActions = (tweetId: string) => {
+
+interface IReplyMutationVariables {
+  tweetId: string;
+  content: string;
+  mediaUris?: string[];
+}
+
+interface IQuoteMutationVariables {
+  tweetId: string;
+  content: string;
+  mediaUris?: string[];
+}
+
+interface ICreatePostMutationVariables {
+  content: string;
+  mediaUris?: string[];
+}
+
+interface IDeleteMutationVariables {
+  tweetId: string;
+}
+
+export const useTweetActions = () => {
   const pathname = usePathname();
   const queryClient = useQueryClient();
 
   const tweetsQueryKey = ['tweets'];
-  const tweetDetailsQueryKey = ['tweet', { tweetId }];
   const profileTweetsQueryKey = ['profile'];
+  const repliesQueryKey = ['replies'];
 
   const toggleLike = (tweet: ITweet) => {
     return {
@@ -53,102 +75,143 @@ export const useTweetActions = (tweetId: string) => {
   };
 
   const toggleBookmark = (tweet: ITweet) => {
+    let newBookmarksCount = undefined;
+    if (tweet.bookmarksCount !== undefined) {
+      newBookmarksCount = tweet.isBookmarked ? tweet.bookmarksCount - 1 : tweet.bookmarksCount + 1;
+    }
     return {
       ...tweet,
       isBookmarked: !tweet.isBookmarked,
+      bookmarksCount: newBookmarksCount,
+    };
+  };
+
+  const incrementRepliesCount = (tweet: ITweet) => {
+    return {
+      ...tweet,
+      repliesCount: tweet.repliesCount + 1,
+    };
+  };
+
+  const incrementQuotesCount = (tweet: ITweet) => {
+    return {
+      ...tweet,
+      quotesCount: tweet.quotesCount + 1,
     };
   };
 
   const likeMutation = useMutation({
     mutationFn: async (variables: ILikeMutationVariables) => {
-      return variables.isLiked ? unlikeTweet(tweetId) : likeTweet(tweetId);
+      return variables.isLiked ? unlikeTweet(variables.tweetId) : likeTweet(variables.tweetId);
     },
-    onMutate: async () => {
+    onMutate: async (variables: ILikeMutationVariables) => {
       await queryClient.cancelQueries({ queryKey: tweetsQueryKey });
       await queryClient.cancelQueries({ queryKey: profileTweetsQueryKey });
-      await queryClient.cancelQueries({ queryKey: tweetDetailsQueryKey });
+      await queryClient.cancelQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
+      await queryClient.cancelQueries({ queryKey: repliesQueryKey });
 
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
-        updateTweetsInInfiniteCache(oldData, tweetId, toggleLike),
+        updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleLike),
       );
 
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: profileTweetsQueryKey }, (oldData) =>
-        updateTweetsInInfiniteCache(oldData, tweetId, toggleLike),
+        updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleLike),
       );
 
-      queryClient.setQueryData<ITweet>(tweetDetailsQueryKey, (oldData) => (oldData ? toggleLike(oldData) : oldData));
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: repliesQueryKey }, (oldData) =>
+        updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleLike),
+      );
+
+      queryClient.setQueryData<ITweet>(['tweet', { tweetId: variables.tweetId }], (oldData) =>
+        oldData ? toggleLike(oldData) : oldData,
+      );
     },
 
-    onError: (error) => {
+    onError: (error, variables) => {
       console.log('Error updating like status:', error);
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
-      queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
+      queryClient.invalidateQueries({ queryKey: repliesQueryKey });
     },
   });
 
   const repostMutation = useMutation({
     mutationFn: async (variables: IRepostMutationVariables) => {
-      return variables.isReposted ? undoRepostTweet(tweetId) : repostTweet(tweetId);
+      return variables.isReposted ? undoRepostTweet(variables.tweetId) : repostTweet(variables.tweetId);
     },
-    onMutate: async () => {
+    onMutate: async (variables: IRepostMutationVariables) => {
       await queryClient.cancelQueries({ queryKey: tweetsQueryKey });
       await queryClient.cancelQueries({ queryKey: profileTweetsQueryKey });
-      await queryClient.cancelQueries({ queryKey: tweetDetailsQueryKey });
+      await queryClient.cancelQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
+      await queryClient.cancelQueries({ queryKey: repliesQueryKey });
 
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
-        updateTweetsInInfiniteCache(oldData, tweetId, toggleRepost),
+        updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleRepost),
       );
 
-      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: ['profile'] }, (oldData) =>
-        updateTweetsInInfiniteCache(oldData, tweetId, toggleRepost),
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: profileTweetsQueryKey }, (oldData) =>
+        updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleRepost),
       );
 
-      queryClient.setQueryData<ITweet>(tweetDetailsQueryKey, (oldData) => (oldData ? toggleRepost(oldData) : oldData));
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: repliesQueryKey }, (oldData) =>
+        updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleRepost),
+      );
+
+      queryClient.setQueryData<ITweet>(['tweet', { tweetId: variables.tweetId }], (oldData) =>
+        oldData ? toggleRepost(oldData) : oldData,
+      );
     },
 
-    onError: (error) => {
+    onError: (error, variables) => {
       console.log('Error updating repost status:', error);
 
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
-      queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
+      queryClient.invalidateQueries({ queryKey: repliesQueryKey });
     },
   });
 
   const bookmarkMutation = useMutation({
     mutationFn: async (variables: IBookmarkMutationVariables) => {
-      return variables.isBookmarked ? unbookmarkTweet(tweetId) : bookmarkTweet(tweetId);
+      return variables.isBookmarked ? unbookmarkTweet(variables.tweetId) : bookmarkTweet(variables.tweetId);
     },
-    onMutate: async () => {
+    onMutate: async (variables: IBookmarkMutationVariables) => {
       await queryClient.cancelQueries({ queryKey: tweetsQueryKey });
       await queryClient.cancelQueries({ queryKey: profileTweetsQueryKey });
-      await queryClient.cancelQueries({ queryKey: tweetDetailsQueryKey });
+      await queryClient.cancelQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
+      await queryClient.cancelQueries({ queryKey: repliesQueryKey });
 
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
-        updateTweetsInInfiniteCache(oldData, tweetId, toggleBookmark),
+        updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleBookmark),
       );
 
-      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: ['profile'] }, (oldData) =>
-        updateTweetsInInfiniteCache(oldData, tweetId, toggleBookmark),
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: profileTweetsQueryKey }, (oldData) =>
+        updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleBookmark),
       );
 
-      queryClient.setQueryData<ITweet>(tweetDetailsQueryKey, (oldData) =>
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: repliesQueryKey }, (oldData) =>
+        updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleBookmark),
+      );
+
+      queryClient.setQueryData<ITweet>(['tweet', { tweetId: variables.tweetId }], (oldData) =>
         oldData ? toggleBookmark(oldData) : oldData,
       );
     },
 
-    onError: (error) => {
+    onError: (error, variables) => {
       console.log('Error updating bookmark status:', error);
 
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
-      queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
+      queryClient.invalidateQueries({ queryKey: repliesQueryKey });
     },
   });
 
   const addPostMutation = useMutation({
-    mutationFn: async ({ content, mediaUris }: { content: string; mediaUris?: string[] }) => {
+    mutationFn: async ({ content, mediaUris }: ICreatePostMutationVariables) => {
       return createTweet(content, mediaUris);
     },
     onSettled: () => {
@@ -158,60 +221,113 @@ export const useTweetActions = (tweetId: string) => {
   });
 
   const replyToPostMutation = useMutation({
-    mutationFn: async ({ content, mediaUris }: { content: string; mediaUris?: string[] }) => {
-      return replyToTweet(tweetId, content, mediaUris);
+    mutationFn: async (variables: IReplyMutationVariables) => {
+      return replyToTweet(variables.tweetId, variables.content, variables.mediaUris);
     },
-    onSettled: () => {
+    onMutate: async (variables: IReplyMutationVariables) => {
+      await queryClient.cancelQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
+      await queryClient.cancelQueries({ queryKey: repliesQueryKey });
+
+      // update tweet details query replies count
+      queryClient.setQueryData<ITweet>(['tweet', { tweetId: variables.tweetId }], (oldData) =>
+        oldData ? incrementRepliesCount(oldData) : oldData,
+      );
+
+      // go through all replies queries and update replies count of the reply i replied to
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: repliesQueryKey }, (oldData) =>
+        updateTweetsInInfiniteCache(oldData, variables.tweetId, incrementRepliesCount),
+      );
+    },
+
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
+
+      // only invalidate queries for the replies of the tweet i replied to (not all replies)
+      queryClient.invalidateQueries({ queryKey: repliesQueryKey });
+    },
+    onError: (error, variables) => {
+      console.log('Error replying to tweet:', error);
+      queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
+      queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
+
+      // if error, invalidate all replies queries since i don't have access to the tweet id of the reply that failed
+      queryClient.invalidateQueries({ queryKey: repliesQueryKey });
     },
   });
 
   const quotePostMutation = useMutation({
-    mutationFn: async ({ content, mediaUris }: { content: string; mediaUris?: string[] }) => {
-      return quoteTweet(tweetId, content, mediaUris);
+    mutationFn: async (variables: IQuoteMutationVariables) => {
+      return quoteTweet(variables.tweetId, variables.content, variables.mediaUris);
     },
-    onSettled: () => {
+    onMutate: async (variables: IQuoteMutationVariables) => {
+      await queryClient.cancelQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
+      await queryClient.cancelQueries({ queryKey: repliesQueryKey });
+
+      queryClient.setQueryData<ITweet>(['tweet', { tweetId: variables.tweetId }], (oldData) =>
+        oldData ? incrementQuotesCount(oldData) : oldData,
+      );
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: repliesQueryKey }, (oldData) =>
+        updateTweetsInInfiniteCache(oldData, variables.tweetId, incrementQuotesCount),
+      );
+    },
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
+    },
+    onError: (error, variables) => {
+      console.log('Error quoting tweet:', error);
+      queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
+      queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
+
+      // if error, invalidate all replies queries since i don't have access to the tweet id of the reply that failed
+      queryClient.invalidateQueries({ queryKey: repliesQueryKey });
     },
   });
 
   const deletePostMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (variables: IDeleteMutationVariables) => {
       // Implement delete tweet functionality here
-      return deleteTweet(tweetId);
+      return deleteTweet(variables.tweetId);
     },
-    onMutate: async () => {
+    onMutate: async (variables: IDeleteMutationVariables) => {
       // Cancel any pending queries
       await queryClient.cancelQueries({ queryKey: tweetsQueryKey });
       await queryClient.cancelQueries({ queryKey: profileTweetsQueryKey });
-      await queryClient.cancelQueries({ queryKey: tweetDetailsQueryKey });
+      await queryClient.cancelQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
+      await queryClient.cancelQueries({ queryKey: repliesQueryKey });
 
       // Optimistically update the cache
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
-        removeTweetFromInfiniteCache(oldData, tweetId),
+        removeTweetFromInfiniteCache(oldData, variables.tweetId),
       );
 
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: profileTweetsQueryKey }, (oldData) =>
-        removeTweetFromInfiniteCache(oldData, tweetId),
+        removeTweetFromInfiniteCache(oldData, variables.tweetId),
+      );
+
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: repliesQueryKey }, (oldData) =>
+        removeTweetFromInfiniteCache(oldData, variables.tweetId),
       );
 
       // Navigate back if the current screen is the tweet details screen
-      if (pathname.includes(tweetId)) {
+      if (pathname.includes(variables.tweetId)) {
         if (router.canGoBack()) router.back();
       }
     },
-    onError: (error) => {
+    onError: (error, variables) => {
       // Error deleting tweet
       console.log('Error deleting tweet:', error);
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
-      queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
+      queryClient.invalidateQueries({ queryKey: repliesQueryKey });
     },
 
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: tweetDetailsQueryKey });
+    onSuccess: (_, variables) => {
+      queryClient.removeQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
     },
   });
 
