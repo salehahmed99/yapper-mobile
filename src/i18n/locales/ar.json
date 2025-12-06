@@ -97,6 +97,11 @@
       "likers": "الإعجابات"
     }
   },
+  "tweetSummary": {
+    "title": "جروك",
+    "noTweetId": "خطأ: لم يتم توفير معرف التغريدة",
+    "failedToLoad": "فشل تحميل التغريدة"
+  },
   "profile": {
     "editProfile": "تعديل الملف الشخصي",
     "follow": "متابعة",

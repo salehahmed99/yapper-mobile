@@ -68,7 +68,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
   const handleGrokPress = () => {
     router.push({
       pathname: '/(protected)/tweet-summary',
-      params: { tweet: JSON.stringify(tweet) },
+      params: { tweetId: tweet.tweetId },
     });
   };
 

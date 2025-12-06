@@ -314,6 +314,11 @@
       "likers": "Likers"
     }
   },
+  "tweetSummary": {
+    "title": "Grok",
+    "noTweetId": "Error: No tweet ID provided",
+    "failedToLoad": "Failed to load tweet"
+  },
   "profile": {
     "editProfile": "Edit profile",
     "follow": "Follow",

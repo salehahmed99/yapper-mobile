@@ -1,21 +1,58 @@
+import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Image } from 'expo-image';
 import { ArrowLeft } from 'lucide-react-native';
 import React, { useMemo } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ITweet } from '../types';
-import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
+import { useTweet } from '../hooks/useTweet';
 
 interface TweetSummaryProps {
-  tweet: ITweet;
+  tweetId: string;
   onBack: () => void;
 }
 
-export default function TweetSummary({ tweet, onBack }: TweetSummaryProps) {
+export default function TweetSummary({ tweetId, onBack }: TweetSummaryProps) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const { data: tweet, isLoading, isError } = useTweet(tweetId);
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Pressable onPress={onBack} style={styles.backButton}>
+            <ArrowLeft size={theme.iconSizes.lg} color={theme.colors.text.primary} />
+          </Pressable>
+          <Text style={styles.headerTitle}>{t('tweetSummary.title')}</Text>
+          <View style={styles.placeholderRight} />
+        </View>
+        <View style={styles.centerContent}>
+          <ActivityIndicator size="large" color={theme.colors.text.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (isError || !tweet) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Pressable onPress={onBack} style={styles.backButton}>
+            <ArrowLeft size={theme.iconSizes.lg} color={theme.colors.text.primary} />
+          </Pressable>
+          <Text style={styles.headerTitle}>{t('tweetSummary.title')}</Text>
+          <View style={styles.placeholderRight} />
+        </View>
+        <View style={styles.centerContent}>
+          <Text style={styles.errorText}>{t('tweetSummary.failedToLoad')}</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -24,7 +61,7 @@ export default function TweetSummary({ tweet, onBack }: TweetSummaryProps) {
         <Pressable onPress={onBack} style={styles.backButton}>
           <ArrowLeft size={theme.iconSizes.lg} color={theme.colors.text.primary} />
         </Pressable>
-        <Text style={styles.headerTitle}>Grok</Text>
+        <Text style={styles.headerTitle}>{t('tweetSummary.title')}</Text>
         <View style={styles.placeholderRight} />
       </View>
 
@@ -104,6 +141,16 @@ const createStyles = (theme: Theme) =>
     },
     placeholderRight: {
       width: theme.spacing.xxxl,
+    },
+    centerContent: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    errorText: {
+      fontSize: theme.typography.sizes.md,
+      fontFamily: theme.typography.fonts.regular,
+      color: theme.colors.text.secondary,
     },
     content: {
       flex: 1,
