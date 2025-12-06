@@ -1,5 +1,5 @@
 import { IUser } from '@/src/types/user';
-import { deleteToken, getToken, saveToken } from '@/src/utils/secureStorage';
+import { deleteToken, getToken, saveToken, saveRefreshToken, deleteRefreshToken } from '@/src/utils/secureStorage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { getMyUser } from '../modules/profile/services/profileService';
@@ -84,7 +84,7 @@ export const useAuthStore = create<IAuthState>((set) => ({
     try {
       await saveToken(token);
       if (refreshToken) {
-        await AsyncStorage.setItem('refreshToken', refreshToken);
+        await saveRefreshToken(refreshToken);
       }
       set({ user, token });
       tokenRefreshService.start();
@@ -156,7 +156,7 @@ export const useAuthStore = create<IAuthState>((set) => ({
       }
       tokenRefreshService.stop();
       await deleteToken();
-      await AsyncStorage.removeItem('refreshToken');
+      await deleteRefreshToken();
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
