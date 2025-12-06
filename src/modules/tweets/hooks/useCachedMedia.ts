@@ -1,12 +1,12 @@
 import { cleanOldCache, ensureCacheDirectory, getCachedFilePath } from '@/src/utils/mediaCache';
 import { File } from 'expo-file-system';
-import * as LegacyFileSystem from 'expo-file-system/legacy';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 let hasCleanedCache = false;
 
 export const useCachedMedia = (url: string, type: 'video' | 'image') => {
   const [cachedSource, setCachedSource] = useState<string>(url);
+  const isDownloading = useRef(false);
 
   useEffect(() => {
     if (!hasCleanedCache) {
@@ -19,6 +19,7 @@ export const useCachedMedia = (url: string, type: 'video' | 'image') => {
     const cacheMedia = async () => {
       if (type !== 'video') return;
       if (!url) return;
+      if (isDownloading.current) return;
 
       try {
         await ensureCacheDirectory();
@@ -30,10 +31,17 @@ export const useCachedMedia = (url: string, type: 'video' | 'image') => {
         if (file.exists) {
           setCachedSource(fileUri);
         } else {
-          await LegacyFileSystem.downloadAsync(url, fileUri);
+          isDownloading.current = true;
+          try {
+            await File.downloadFileAsync(url, file);
+            setCachedSource(fileUri);
+          } finally {
+            isDownloading.current = false;
+          }
         }
       } catch (error) {
         console.warn('Error caching media:', error);
+        isDownloading.current = false;
       }
     };
 

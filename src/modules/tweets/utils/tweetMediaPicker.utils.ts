@@ -1,6 +1,7 @@
 import * as ImagePicker from 'expo-image-picker';
 // eslint-disable-next-line react-native/split-platform-components
 import { ActionSheetIOS, Alert, Platform } from 'react-native';
+import { Video } from 'react-native-compressor';
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
 const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50 MB
@@ -26,6 +27,18 @@ const validateMediaSize = (asset: ImagePicker.ImagePickerAsset): boolean => {
     return false;
   }
   return true;
+};
+
+const compressVideo = async (uri: string): Promise<string> => {
+  try {
+    const compressedUri = await Video.compress(uri, {
+      compressionMethod: 'auto',
+    });
+    return compressedUri;
+  } catch (error) {
+    console.warn('Video compression failed, using original:', error);
+    return uri;
+  }
 };
 
 /**
@@ -58,6 +71,7 @@ export const pickMediaFromLibrary = async (maxItems: number = 4): Promise<MediaA
       allowsMultipleSelection: true,
       selectionLimit: maxItems,
       quality: 0.8,
+      exif: false, // Forces HEIC to JPEG conversion
     });
 
     if (result.canceled || !result.assets || result.assets.length === 0) {
@@ -67,21 +81,29 @@ export const pickMediaFromLibrary = async (maxItems: number = 4): Promise<MediaA
     // Filter assets by size
     const validAssets = result.assets.filter(validateMediaSize);
 
-    // Convert assets to MediaAsset format
-    const mediaAssets: MediaAsset[] = validAssets.map((asset) => {
-      // Determine type from type or mimeType
-      let type: 'image' | 'video' = 'image';
-      if (asset.type === 'video' || asset.mimeType?.startsWith('video/')) {
-        type = 'video';
-      }
+    // Convert assets to MediaAsset format with video compression
+    const mediaAssets: MediaAsset[] = await Promise.all(
+      validAssets.map(async (asset) => {
+        // Determine type from type or mimeType
+        let type: 'image' | 'video' = 'image';
+        if (asset.type === 'video' || asset.mimeType?.startsWith('video/')) {
+          type = 'video';
+        }
 
-      return {
-        uri: asset.uri,
-        type,
-        mimeType: asset.mimeType || (type === 'video' ? 'video/mp4' : 'image/jpeg'),
-        duration: asset.duration ?? undefined, // Videos have duration in milliseconds
-      };
-    });
+        // Compress videos to H.264 MP4
+        let uri = asset.uri;
+        if (type === 'video') {
+          uri = await compressVideo(asset.uri);
+        }
+
+        return {
+          uri,
+          type,
+          mimeType: type === 'video' ? 'video/mp4' : asset.mimeType || 'image/jpeg',
+          duration: asset.duration ?? undefined, // Videos have duration in milliseconds
+        };
+      }),
+    );
 
     return mediaAssets;
   } catch (error) {
@@ -117,6 +139,7 @@ export const captureMedia = async (mediaType: 'photo' | 'video' = 'photo'): Prom
       mediaTypes: mediaType === 'video' ? ['videos'] : ['images'],
       quality: 0.8,
       videoMaxDuration: 300, // 5 minutes max video
+      exif: false, // Forces HEIC to JPEG conversion
     });
 
     if (result.canceled || !result.assets || result.assets.length === 0) {
@@ -131,10 +154,15 @@ export const captureMedia = async (mediaType: 'photo' | 'video' = 'photo'): Prom
 
     const type = mediaType === 'video' ? 'video' : 'image';
 
+    let uri = asset.uri;
+    if (type === 'video') {
+      uri = await compressVideo(asset.uri);
+    }
+
     return {
-      uri: asset.uri,
+      uri,
       type,
-      mimeType: asset.mimeType || (type === 'video' ? 'video/mp4' : 'image/jpeg'),
+      mimeType: type === 'video' ? 'video/mp4' : asset.mimeType || 'image/jpeg',
       duration: asset.duration ?? undefined,
     };
   } catch (error) {

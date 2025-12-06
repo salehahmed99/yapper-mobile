@@ -43,10 +43,13 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({
 
   const shouldRenderVideos = isVisible;
 
-  // Prefetch images
+  const prefetchedImagesRef = React.useRef<Set<string>>(new Set());
   useEffect(() => {
     images.forEach((url) => {
-      Image.prefetch(url);
+      if (!prefetchedImagesRef.current.has(url)) {
+        Image.prefetch(url);
+        prefetchedImagesRef.current.add(url);
+      }
     });
   }, [images]);
 
