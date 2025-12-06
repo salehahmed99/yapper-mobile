@@ -74,8 +74,7 @@
       ],
       "expo-font",
       "expo-localization",
-      "expo-video",
-      "react-native-compressor"
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": true,

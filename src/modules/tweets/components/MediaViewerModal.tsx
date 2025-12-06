@@ -70,7 +70,7 @@ function MediaViewerContent({
   const styles = useMemo(() => createStyles(theme, insets), [theme, insets]);
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { likeMutation, repostMutation, replyToPostMutation } = useTweetActions(tweetId);
+  const { likeMutation, repostMutation, replyToPostMutation, bookmarkMutation } = useTweetActions(tweetId);
 
   const allMedia = useMemo((): MediaItem[] => {
     const items: MediaItem[] = [];
@@ -90,7 +90,7 @@ function MediaViewerContent({
   const [showUI, setShowUI] = useState(true);
   const [isLiked, setIsLiked] = useState(tweet?.isLiked ?? false);
   const [isReposted, setIsReposted] = useState(tweet?.isReposted ?? false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(tweet?.isBookmarked ?? false);
   const [likesCount, setLikesCount] = useState(tweet?.likesCount ?? 0);
   const [repostsCount, setRepostsCount] = useState(tweet?.repostsCount ?? 0);
   const [isCreatePostModalVisible, setIsCreatePostModalVisible] = useState(false);
@@ -140,6 +140,7 @@ function MediaViewerContent({
     if (tweet) {
       setIsLiked(tweet.isLiked);
       setIsReposted(tweet.isReposted);
+      setIsBookmarked(tweet.isBookmarked);
       setLikesCount(tweet.likesCount);
       setRepostsCount(tweet.repostsCount);
     }
@@ -214,7 +215,9 @@ function MediaViewerContent({
   };
 
   const handleBookmarkPress = () => {
+    if (!tweet) return;
     setIsBookmarked(!isBookmarked);
+    bookmarkMutation.mutate({ tweetId, isBookmarked: isBookmarked });
   };
 
   const handleUserProfilePress = () => {

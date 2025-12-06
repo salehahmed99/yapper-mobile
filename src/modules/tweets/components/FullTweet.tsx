@@ -57,6 +57,13 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
 
   const { menuVisible, menuPosition, moreButtonRef, handleMorePress, setMenuVisible } = useTweetDropDownMenu();
 
+  const handleGrokPress = () => {
+    router.push({
+      pathname: '/(protected)/tweet-summary',
+      params: { tweetId: tweet.tweetId },
+    });
+  };
+
   const menuItems: DropdownMenuItem[] = [
     {
       label: t('tweetActivity.viewPostInteractions'),
@@ -97,7 +104,12 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
 
           {/* Right Actions */}
           <View style={styles.headerRightActions}>
-            <Pressable style={styles.headerButton} accessibilityLabel="Grok" accessibilityRole="button">
+            <Pressable
+              onPress={handleGrokPress}
+              style={styles.headerButton}
+              accessibilityLabel="Grok"
+              accessibilityRole="button"
+            >
               <GrokLogo size={theme.iconSizesAlt.xl} color={theme.colors.text.primary} />
             </Pressable>
             <Pressable
@@ -158,15 +170,15 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
           </Text>
         </View>
 
-      {(tweet.images.length > 0 || tweet.videos.length > 0) && (
-        <TweetMedia
-          images={tweet.images}
-          videos={tweet.videos}
-          tweetId={tweet.tweetId}
-          tweet={tweet}
-          isVisible={true}
-        />
-      )}
+        {(tweet.images.length > 0 || tweet.videos.length > 0) && (
+          <TweetMedia
+            images={tweet.images}
+            videos={tweet.videos}
+            tweetId={tweet.tweetId}
+            tweet={tweet}
+            isVisible={true}
+          />
+        )}
         {tweet.parentTweet && (
           <View style={{ marginTop: theme.spacing.xs }}>
             <ParentTweet tweet={tweet.parentTweet} />
