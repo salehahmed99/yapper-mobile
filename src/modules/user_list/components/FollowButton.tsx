@@ -23,7 +23,7 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       justifyContent: 'center',
     },
-    // eslint-disable-next-line react-native/no-color-literals
+
     followingButton: {
       backgroundColor: 'transparent',
       borderWidth: theme.borderWidth.thin,

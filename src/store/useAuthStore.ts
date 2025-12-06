@@ -1,8 +1,11 @@
 import { IUser } from '@/src/types/user';
 import { deleteToken, getToken, saveToken } from '@/src/utils/secureStorage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { getMyUser } from '../modules/profile/services/profileService';
+import { logout, logOutAll } from '../modules/auth/services/authService';
 import { tokenRefreshService } from '../services/tokenRefreshService';
+import i18n, { changeLanguage } from '@/src/i18n';
 
 interface IAuthState {
   user: IUser | null;
@@ -10,10 +13,14 @@ interface IAuthState {
   isInitialized: boolean;
   skipRedirectAfterLogin?: boolean;
   initializeAuth: () => Promise<void>;
-  loginUser: (user: IUser, token: string) => Promise<void>;
+  loginUser: (user: IUser, token: string, refreshToken?: string) => Promise<void>;
   setSkipRedirect: (val: boolean) => void;
+  setUserName: (newUsername: string) => void;
+  setEmail: (newEmail: string) => void;
+  setCountry: (newCountry: string) => void;
+  setLanguage: (newLanguage: string) => void;
   fetchAndUpdateUser: () => Promise<void>;
-  logout: () => Promise<void>;
+  logout: (all: boolean) => Promise<void>;
 }
 
 export const useAuthStore = create<IAuthState>((set) => ({
@@ -34,7 +41,7 @@ export const useAuthStore = create<IAuthState>((set) => ({
           set({
             user: {
               id: data.userId,
-              email: '',
+              email: data.email,
               name: data.name,
               username: data.username,
               bio: data.bio,
@@ -44,9 +51,17 @@ export const useAuthStore = create<IAuthState>((set) => ({
               createdAt: data.createdAt,
               followers: data.followersCount,
               following: data.followingCount,
-              birthDate: '',
+              birthDate: data.birthDate || undefined,
+              language: data.language,
             },
           });
+
+          // Sync language from backend with local i18n
+          if (data.language && data.language !== i18n.language) {
+            await changeLanguage(data.language);
+            await AsyncStorage.setItem('app-language', data.language);
+          }
+
           tokenRefreshService.start();
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (validationErr) {
@@ -65,9 +80,12 @@ export const useAuthStore = create<IAuthState>((set) => ({
   },
 
   /** After successful login */
-  loginUser: async (user: IUser, token: string) => {
+  loginUser: async (user: IUser, token: string, refreshToken?: string) => {
     try {
       await saveToken(token);
+      if (refreshToken) {
+        await AsyncStorage.setItem('refreshToken', refreshToken);
+      }
       set({ user, token });
       tokenRefreshService.start();
     } catch (err) {
@@ -87,7 +105,7 @@ export const useAuthStore = create<IAuthState>((set) => ({
       set({
         user: {
           id: data.userId,
-          email: '', // Not provided
+          email: data.email,
           name: data.name,
           username: data.username,
           bio: data.bio,
@@ -98,18 +116,47 @@ export const useAuthStore = create<IAuthState>((set) => ({
           followers: data.followersCount,
           following: data.followingCount,
           birthDate: data.birthDate || undefined,
+          language: data.language || undefined,
         },
       });
+
+      // Sync language from backend with local i18n
+      if (data.language && data.language !== i18n.language) {
+        await changeLanguage(data.language);
+        await AsyncStorage.setItem('app-language', data.language);
+      }
     } catch (err) {
       console.error('Failed to fetch user:', err);
     }
   },
+  setUserName: (newUsername: string) =>
+    set((state) => ({
+      user: state.user ? { ...state.user, username: newUsername } : null,
+    })),
+  setEmail: (newEmail: string) =>
+    set((state) => ({
+      user: state.user ? { ...state.user, email: newEmail } : null,
+    })),
+  setCountry: (newCountry: string) =>
+    set((state) => ({
+      user: state.user ? { ...state.user, country: newCountry } : null,
+    })),
+  setLanguage: (newLanguage: string) =>
+    set((state) => ({
+      user: state.user ? { ...state.user, language: newLanguage } : null,
+    })),
 
   /** Logout & cleanup */
-  logout: async () => {
+  logout: async (all: boolean = false) => {
     try {
+      if (all) {
+        await logOutAll();
+      } else {
+        await logout();
+      }
       tokenRefreshService.stop();
       await deleteToken();
+      await AsyncStorage.removeItem('refreshToken');
     } catch (err) {
       console.error('Logout error:', err);
     } finally {

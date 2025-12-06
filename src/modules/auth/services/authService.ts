@@ -55,7 +55,44 @@ export const logout = async (): Promise<void> => {
       await googleSignOut();
     }
 
-    await api.post('/auth/logout');
+    // Get refresh token and send it in the body for mobile
+    const refreshToken = await AsyncStorage.getItem('refreshToken');
+    if (refreshToken) {
+      try {
+        await api.post('/auth/logout', { refresh_token: refreshToken });
+      } catch (error) {
+        console.warn('Logout API call failed:', extractErrorMessage(error));
+      }
+    }
+
+    await setAuthProvider(null);
+  } catch (error) {
+    throw new Error(extractErrorMessage(error));
+  }
+};
+
+export const logOutAll = async (): Promise<void> => {
+  try {
+    const provider = await getAuthProvider();
+
+    if (provider === 'google') {
+      await googleSignOut();
+    }
+
+    // Get refresh token and send it in the body for mobile
+    const refreshToken = await AsyncStorage.getItem('refreshToken');
+
+    // Only make logout-all request if we have a refresh token
+    if (refreshToken) {
+      try {
+        await api.post('/auth/logout-all', { refresh_token: refreshToken });
+      } catch (error) {
+        // Log the error but don't fail the logout process
+        // Token might be already expired or invalid
+        console.warn('LogoutAll API call failed:', extractErrorMessage(error));
+      }
+    }
+
     await setAuthProvider(null);
   } catch (error) {
     throw new Error(extractErrorMessage(error));

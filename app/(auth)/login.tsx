@@ -191,7 +191,7 @@ const LoginScreen = () => {
         text2: t('auth.login.success.welcomeBack'),
       });
       setSkipRedirect(false);
-      await loginUser(data.data.user, data.data.accessToken);
+      await loginUser(data.data.user, data.data.accessToken, data.data.refreshToken);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

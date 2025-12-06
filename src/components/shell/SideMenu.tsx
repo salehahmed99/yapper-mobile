@@ -53,7 +53,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
 
   const handleLogout = () => {
     closeSideMenu();
-    logout();
+    logout(false);
     router.replace('/(auth)/landing-screen');
   };
 
@@ -202,7 +202,16 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(protected)/settings')}
+              onPress={() => navigate('/(protected)/bookmarks')}
+              accessibilityLabel="sidemenu_bookmarks_button"
+              testID="sidemenu_bookmarks_button"
+            >
+              <Bookmark color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
+              <Text style={styles.menuTileText}>{t('menu.bookmarks')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.tile}
+              onPress={() => navigate('/(protected)/(settings)/settingsScreen')}
               accessibilityLabel="sidemenu_settings_button"
               testID="sidemenu_settings_button"
             >

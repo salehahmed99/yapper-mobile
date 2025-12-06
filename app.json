@@ -8,8 +8,22 @@
     "scheme": "yappermobile",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/yapper.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff",
+      "dark": {
+        "image": "./assets/images/yapper.png",
+        "backgroundColor": "#000000"
+      }
+    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.salehahmed99.yappermobile",
+      "icon": "./assets/images/yapper.png",
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": ["googlechrome", "itms-apps"]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -20,18 +34,29 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.salehahmed99.yappermobile"
+      "package": "com.salehahmed99.yappermobile",
+      "icon": "./assets/images/yapper.png",
+      "splash": {
+        "image": "./assets/images/yapper.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff",
+        "dark": {
+          "image": "./assets/images/yapper.png",
+          "backgroundColor": "#000000"
+        }
+      }
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "icon": "./assets/images/yapper.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/yapper.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
@@ -43,7 +68,8 @@
       [
         "@react-native-google-signin/google-signin",
         {
-          "iosUrlScheme": "com.googleusercontent.apps._some_id_here_"
+          "iosUrlScheme": "com.googleusercontent.apps._some_id_here_",
+          "iosClientId": "587502979903-15m8sptr06c5n901o0u5nuumegkdoddk.apps.googleusercontent.com"
         }
       ],
       "expo-font",

@@ -83,7 +83,13 @@ const VerifyCodeScreen = () => {
   };
 
   const handleTopBarBackPress = () => {
-    router.replace('/(auth)/landing-screen');
+    const returnRoute = useForgotPasswordStore.getState().returnRoute;
+    if (returnRoute) {
+      useForgotPasswordStore.getState().setReturnRoute(null);
+      router.back();
+    } else {
+      router.replace('/(auth)/landing-screen');
+    }
   };
   return (
     <View style={styles.container}>

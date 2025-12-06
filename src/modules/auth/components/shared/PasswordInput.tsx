@@ -1,7 +1,17 @@
 import React, { useMemo, useState } from 'react';
-import { Animated, TextInput, TouchableOpacity, View, StyleSheet, Text, useWindowDimensions } from 'react-native';
+import {
+  Animated,
+  TextInput,
+  TouchableOpacity,
+  View,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  I18nManager,
+} from 'react-native';
 import { Eye, EyeOff, Check, AlertCircle } from 'lucide-react-native';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import { Theme } from '@/src/constants/theme';
 
 interface IPasswordInputProps {
@@ -28,15 +38,17 @@ const PasswordInput: React.FC<IPasswordInputProps> = ({
   const [focused, setFocused] = useState(false);
   const anim = useState(new Animated.Value(value ? 1 : 0))[0];
   const { theme } = useTheme();
+  const { i18n } = useTranslation();
   const { width, height } = useWindowDimensions();
+  const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
 
   const scaleWidth = Math.min(Math.max(width / 390, 0.85), 1.1);
   const scaleHeight = Math.min(Math.max(height / 844, 0.85), 1.1);
   const scaleFonts = Math.min(scaleWidth, scaleHeight);
 
   const styles = useMemo(
-    () => createStyles(theme, scaleWidth, scaleHeight, scaleFonts),
-    [theme, scaleWidth, scaleHeight, scaleFonts],
+    () => createStyles(theme, scaleWidth, scaleHeight, scaleFonts, isRTL),
+    [theme, scaleWidth, scaleHeight, scaleFonts, isRTL],
   );
 
   const animateLabel = (toValue: number) => {
@@ -117,7 +129,13 @@ const PasswordInput: React.FC<IPasswordInputProps> = ({
   );
 };
 
-const createStyles = (theme: Theme, scaleWidth: number = 1, scaleHeight: number = 1, scaleFonts: number = 1) =>
+const createStyles = (
+  theme: Theme,
+  scaleWidth: number = 1,
+  scaleHeight: number = 1,
+  scaleFonts: number = 1,
+  isRTL: boolean = false,
+) =>
   StyleSheet.create({
     inputContainer: {
       position: 'relative',
@@ -144,21 +162,24 @@ const createStyles = (theme: Theme, scaleWidth: number = 1, scaleHeight: number 
     },
     floatingLabel: {
       position: 'absolute',
-      left: theme.spacing.md * scaleWidth,
+      left: isRTL ? undefined : theme.spacing.md * scaleWidth,
+      right: isRTL ? theme.spacing.md * scaleWidth : undefined,
       backgroundColor: theme.colors.background.primary,
       paddingHorizontal: theme.spacing.xs * scaleWidth,
       zIndex: 1,
     },
     eyeIcon: {
       position: 'absolute',
-      right: theme.spacing.xxxl * scaleWidth,
+      right: isRTL ? undefined : theme.spacing.xxxl * scaleWidth,
+      left: isRTL ? theme.spacing.xxxl * scaleWidth : undefined,
       top: theme.spacing.lg * scaleHeight,
       paddingHorizontal: theme.spacing.xs * scaleWidth,
       paddingVertical: theme.spacing.xs * scaleHeight,
     },
     successIcon: {
       position: 'absolute',
-      right: theme.spacing.md * scaleWidth,
+      right: isRTL ? undefined : theme.spacing.md * scaleWidth,
+      left: isRTL ? theme.spacing.md * scaleWidth : undefined,
       top: theme.spacing.xl * scaleHeight,
       width: 20 * scaleWidth,
       height: 20 * scaleHeight,
@@ -169,7 +190,8 @@ const createStyles = (theme: Theme, scaleWidth: number = 1, scaleHeight: number 
     },
     errorIconContainer: {
       position: 'absolute',
-      right: theme.spacing.md * scaleWidth,
+      right: isRTL ? undefined : theme.spacing.md * scaleWidth,
+      left: isRTL ? theme.spacing.md * scaleWidth : undefined,
       top: theme.spacing.lg * scaleHeight,
       paddingHorizontal: theme.spacing.xs * scaleWidth,
       paddingVertical: theme.spacing.xs * scaleHeight,

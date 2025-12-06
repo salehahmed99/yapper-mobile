@@ -301,7 +301,11 @@
     "errorRetry": "Try again",
     "followsYou": "Follows you",
     "follow": "Follow",
-    "following": "Following"
+    "following": "Following",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "block": "Block",
+    "unblock": "Unblock"
   },
   "tweetActivity": {
     "title": "Post activity",
@@ -317,6 +321,8 @@
   },
   "profile": {
     "editProfile": "Edit profile",
+    "blocked": "Blocked",
+    "viewPosts": "View posts",
     "follow": "Follow",
     "following": "Following",
     "followers": "Followers",
@@ -381,6 +387,196 @@
       "sendingCode": "Sending code...",
       "verifyingCode": "Verifying code...",
       "resettingPassword": "Resetting your password..."
+    }
+  },
+  "settings": {
+    "main": {
+      "title": "Settings"
+    },
+    "search": {
+      "placeholder": "Search settings",
+      "empty_hint": "Try searching for account, privacy, notifications, or security",
+      "no_results": "No results for \"{{query}}\"",
+      "no_results_hint": "The term you entered did not bring up any results. Try a different search term."
+    },
+    "common": {
+      "success": "Success",
+      "error": "Error",
+      "unexpected_error": "An unexpected error occurred",
+      "cancel": "Cancel",
+      "next": "Next",
+      "save": "Save",
+      "done": "Done",
+      "skip": "Skip for now",
+      "change": "Change",
+      "verify": "Verify",
+      "add": "Add",
+      "delete": "Delete",
+      "updating": "Updating...",
+      "verifying": "Verifying...",
+      "resending": "Resending..."
+    },
+    "your_account": {
+      "title": "Your account",
+      "description": "See information about your account, download an archive of your data, or learn about your account deactivation options."
+    },
+    "privacy_safety": {
+      "title": "Privacy and safety",
+      "description": "Manage what information you see and share on X."
+    },
+    "accessibility": {
+      "title": "Accessibility, display and languages",
+      "description": "Manage how X content is displayed to you.",
+      "languages_title": "Languages",
+      "languages_description": "Manage which languages are used to personalize your X experience."
+    },
+    "account_info": {
+      "title": "Account information",
+      "description": "See your account information like your phone number and email address.",
+      "username_label": "Username",
+      "email_label": "Email",
+      "country_label": "Country",
+      "add_label": "Add",
+      "country_helper": "Select the country you live in.",
+      "logout_title": "Log out",
+      "logout_button": "Log out",
+      "logout_message": "Logging out will remove all yapper data from this device",
+      "logout_all_button": "Log out All",
+      "logout_all_message": "Logging out will remove all yapper data from all connected devices"
+    },
+    "password": {
+      "title": "Change your password",
+      "description": "Change your password at any time.",
+      "current_password": "Current password",
+      "new_password": "New password",
+      "new_password_placeholder": "Enter new password",
+      "confirm_password": "Confirm password",
+      "confirm_password_placeholder": "Re-enter new password",
+      "validation_title": "Password must contain:",
+      "validation_minLength": "At least 8 characters",
+      "validation_hasUppercase": "At least one uppercase letter (A-Z)",
+      "validation_hasLowercase": "At least one lowercase letter (a-z)",
+      "validation_hasNumber": "At least one number (0-9)",
+      "validation_hasSpecialChar": "At least one special character (!@#$%^&*)",
+      "passwords_match": "Passwords match ✓",
+      "passwords_mismatch": "Passwords do not match",
+      "update_button": "Update password",
+      "forgot_password": "Forgot password?",
+      "loading": "Changing your password...",
+      "success_message": "Your password has been updated",
+      "error_invalid_title": "Invalid Password",
+      "error_requirements": "Please meet all password requirements",
+      "error_mismatch": "Passwords do not match"
+    },
+    "verify_password": {
+      "title": "Verify your password",
+      "description": "Re-enter your X password to continue.",
+      "label": "Password",
+      "required_error": "Password Required",
+      "required_message": "Please enter your password",
+      "verified": "Password Verified",
+      "verified_message": "Password verification successful",
+      "invalid_title": "Invalid Password",
+      "invalid_message": "The password you entered is incorrect",
+      "failed_title": "Verification Failed",
+      "failed_message": "Failed to verify password. Please try again."
+    },
+    "email": {
+      "title": "Change email",
+      "description": "Your current email is {{email}}. What would you like to update it to? Your email is not displayed in your public profile on X.",
+      "warning": "If you change your email address, any existing Google SSO connections will be removed. Review Connected accounts",
+      "warning_link": "here",
+      "label": "Email address",
+      "invalid_error": "Please enter a valid email address",
+      "invalid_title": "Invalid Email",
+      "updated": "Email Updated",
+      "updated_message": "Your email has been updated successfully",
+      "update_failed": "Update Failed",
+      "update_failed_message": "Failed to update email. Please try again."
+    },
+    "email_verify": {
+      "title": "We sent you a code",
+      "description": "Enter it below to verify {{email}}",
+      "label": "Verification code",
+      "sent_to": "Sent to {{email}}",
+      "resend_link": "Didn't receive email?",
+      "invalid_code_title": "Invalid Code",
+      "invalid_code_message": "Please enter a 6-digit verification code",
+      "verified": "Email Verified",
+      "verified_message": "Your email has been successfully updated",
+      "incorrect_title": "Invalid Code",
+      "incorrect_message": "The verification code you entered is incorrect",
+      "failed_title": "Verification Failed",
+      "code_resent": "Code Resent",
+      "code_resent_message": "A new verification code has been sent to your email"
+    },
+    "country": {
+      "title": "Change country?",
+      "message": "This will customize your X experience based on the country you live in.",
+      "updated": "Country Updated",
+      "updated_message": "Your country has been updated successfully",
+      "update_failed": "Update Failed",
+      "update_failed_message": "Failed to update country. Please try again later."
+    },
+    "username": {
+      "title": "Change username",
+      "current": "Current",
+      "new": "New",
+      "placeholder": "new_username",
+      "done": "Done",
+      "error_same": "New username must be different from current username",
+      "error_invalid": "Invalid username",
+      "empty_error": "Please enter a new username",
+      "error_failed": "Failed to change username",
+      "success": "Username changed successfully"
+    },
+    "deactivate": {
+      "title": "Deactivate your account",
+      "description": "Find out how you can deactivate your account.",
+      "warning_title": "This will deactivate your account",
+      "warning_message": "You're about to start the process of deactivating your Y account. Your display name, @username, and public profile will no longer be viewable on Y.com, Y for iOS, or Y for Android.",
+      "else_title": "What else you should know",
+      "else_message_1": "If you just want to change your @username, you don't need to deactivate your account — edit it in your",
+      "else_link_1": "settings",
+      "else_message_2": "To use your current @username or email address with a different Y account,",
+      "else_link_2": "change them",
+      "else_message_3": "before you deactivate this account.",
+      "button": "Deactivate"
+    },
+    "confirm_deactivate": {
+      "title": "Confirm your password",
+      "description": "Complete your deactivation request by entering the password associated with your account.",
+      "password_required": "Password Required",
+      "password_required_message": "Please enter your password to continue",
+      "incorrect_password": "Incorrect Password",
+      "incorrect_password_message": "The password you entered is incorrect. Please try again.",
+      "deactivated_title": "Account Deactivated",
+      "deactivated_message": "Your account has been deactivated successfully",
+      "failed_title": "Deactivation Failed",
+      "failed_message": "Failed to deactivate account. Please try again."
+    },
+    "languages": {
+      "title": "Select language",
+      "description": "Choose the language(s) you want to use to personalize your X experience.",
+      "updated_title": "Language Updated",
+      "updated_message": "Your language preference has been saved",
+      "update_failed": "Update Failed",
+      "update_failed_message": "Failed to update language. Please try again."
+    },
+    "mute_block": {
+      "description": "Manage the accounts, words and notifications that you've muted or blocked.",
+      "blocked_accounts": "Blocked accounts",
+      "muted_accounts": "Muted accounts",
+      "blocked_accounts_title": "Block unwanted accounts",
+      "blocked_accounts_description": "They will be able to see your public posts, but will no longer be able to engage with them. They will also not be able to follow or message you, and you will not see notifications from them.",
+      "muted_accounts_title": "Muted accounts",
+      "muted_accounts_description": "Posts from muted accounts won't show up in your Home timeline. Mute accounts directly from their profile or posts."
+    },
+    "theme": {
+      "title": "Dark Mode",
+      "dark_mode": "Dark",
+      "device_settings": "Use device settings",
+      "device_settings_description": "Set Dark mode to use the Light or Dark selection located in your device Display & Brightness settings."
     }
   }
 }

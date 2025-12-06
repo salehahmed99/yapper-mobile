@@ -12,6 +12,8 @@ interface IGetMyUserResponse {
   createdAt: string;
   followersCount: number;
   followingCount: number;
+  email: string;
+  language?: string;
 }
 
 export { IGetMyUserResponse };
