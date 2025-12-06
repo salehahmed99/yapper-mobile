@@ -8,8 +8,8 @@ import { useForgotPasswordStore } from '@/src/modules/auth/store/useForgetPasswo
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 const SuccessResetPasswordScreen = () => {
@@ -42,7 +42,6 @@ const SuccessResetPasswordScreen = () => {
       });
 
       if (response.data?.user && response.data?.accessToken) {
-        await loginUser(response.data.user, response.data.accessToken);
         await loginUser(response.data.user, response.data.accessToken, response.data.refreshToken);
         setSkipRedirect(false);
         reset();
