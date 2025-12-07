@@ -71,7 +71,7 @@ export default function HomeScreen() {
     );
   };
 
-  const { addPostMutation } = useTweetActions('dummyId');
+  const { addPostMutation } = useTweetActions();
   return (
     <View style={styles.container}>
       <MediaViewerProvider>

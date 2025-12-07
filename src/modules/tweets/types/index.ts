@@ -7,7 +7,8 @@ interface ITweet {
   tweetId: string;
   type: TweetType;
   parentTweet?: ITweet;
-  conversationId?: string;
+  conversationTweet?: ITweet;
+  replies?: ITweet[];
   content: string;
   images: string[];
   videos: string[];
@@ -39,6 +40,7 @@ interface ITweetFilters {
 
 type ISingleTweetResponse = IApiResponse<ITweet>;
 type ITweetsResponse = IApiResponse<ITweets>;
+type IRepliesResponse = IApiResponse<IReplies>;
 
 interface ITweets {
   data: ITweet[];
@@ -46,6 +48,13 @@ interface ITweets {
     nextCursor: string;
     hasMore: boolean;
   };
+}
+
+interface IReplies {
+  data: ITweet[];
+  count: number;
+  nextCursor: string;
+  hasMore: boolean;
 }
 interface IQuotesResponse {
   data: ITweet[];
@@ -75,6 +84,8 @@ type ReplyRestrictionOptions = 'Everyone' | 'Verified accounts' | 'Accounts you 
 
 export {
   IQuotesResponse,
+  IReplies,
+  IRepliesResponse,
   ISingleTweetResponse,
   ITweet,
   ITweetFilters,

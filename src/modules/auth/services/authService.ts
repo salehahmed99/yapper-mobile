@@ -1,5 +1,6 @@
 import { extractErrorMessage } from '@/src/utils/errorExtraction';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getRefreshToken } from '@/src/utils/secureStorage';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
@@ -56,7 +57,7 @@ export const logout = async (): Promise<void> => {
     }
 
     // Get refresh token and send it in the body for mobile
-    const refreshToken = await AsyncStorage.getItem('refreshToken');
+    const refreshToken = await getRefreshToken();
     if (refreshToken) {
       try {
         await api.post('/auth/logout', { refresh_token: refreshToken });
@@ -79,8 +80,8 @@ export const logOutAll = async (): Promise<void> => {
       await googleSignOut();
     }
 
-    // Get refresh token and send it in the body for mobile
-    const refreshToken = await AsyncStorage.getItem('refreshToken');
+    // Get refresh token and send it in the body
+    const refreshToken = await getRefreshToken();
 
     // Only make logout-all request if we have a refresh token
     if (refreshToken) {
