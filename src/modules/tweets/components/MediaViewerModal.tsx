@@ -70,7 +70,7 @@ function MediaViewerContent({
   const styles = useMemo(() => createStyles(theme, insets), [theme, insets]);
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { likeMutation, repostMutation, replyToPostMutation, bookmarkMutation } = useTweetActions(tweetId);
+  const { likeMutation, repostMutation, replyToPostMutation, bookmarkMutation } = useTweetActions();
 
   const allMedia = useMemo((): MediaItem[] => {
     const items: MediaItem[] = [];
@@ -211,7 +211,7 @@ function MediaViewerContent({
   };
 
   const handleReply = (content: string, mediaUris?: string[]) => {
-    replyToPostMutation.mutate({ content, mediaUris });
+    replyToPostMutation.mutate({ tweetId, content, mediaUris });
   };
 
   const handleBookmarkPress = () => {
@@ -615,7 +615,6 @@ function MediaViewerContent({
         type={createPostType}
         tweet={tweet || undefined}
         onPost={createPostType === 'reply' ? handleReply : () => {}}
-        onRepost={() => {}}
       />
     </>
   );

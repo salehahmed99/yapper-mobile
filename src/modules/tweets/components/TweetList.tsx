@@ -53,11 +53,11 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
     return (
       <View>
         {topSpacing > 0 && <View style={{ height: topSpacing }} />}
-        {refreshing && (
+        {/* {refreshing && (
           <View style={styles.customRefreshContainer}>
             <ActivityIndicator color={theme.colors.text.primary} />
           </View>
-        )}
+        )} */}
       </View>
     );
   };
@@ -105,6 +105,7 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
           onRefresh={onRefresh}
           tintColor={theme.colors.text.primary}
           colors={[theme.colors.text.primary]}
+          progressViewOffset={topSpacing}
         />
       }
       ItemSeparatorComponent={() => <View style={styles.separator} />}

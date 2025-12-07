@@ -4,45 +4,50 @@ import ViewsIcon from '@/src/components/icons/ViewsIcon';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { useAuthStore } from '@/src/store/useAuthStore';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { MoreHorizontal, Trash2 } from 'lucide-react-native';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DEFAULT_AVATAR_URI } from '../../profile/utils/edit-profile.utils';
 import useTweetDropDownMenu from '../hooks/useTweetDropDownMenu';
 import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
+import CreatePostModal from './CreatePostModal';
 import ParentTweet from './ParentTweet';
 import RepostIndicator from './RepostIndicator';
+import RepostOptionsModal from './RepostOptionsModal';
 import TweetMedia from './TweetMedia';
 import UserInfoRow from './UserInfoRow';
 
 interface ITweetProps {
   tweet: ITweet;
-  onReplyPress: () => void;
-  onLike: (isLiked: boolean) => void;
-  onViewPostInteractions: (tweetId: string, ownerId: string) => void;
-  onBookmark: (isBookmarked: boolean) => void;
-  onShare: () => void;
-  onDeletePress: () => void;
-  openSheet: () => void;
-  isVisible?: boolean;
+  onDeletePress: (tweetId: string) => void;
   onTweetPress: (tweetId: string) => void;
   onAvatarPress: (userId: string) => void;
+  onReply: (tweetId: string, content: string) => void;
+  onQuote: (tweetId: string, content: string) => void;
+  onRepost: (tweetId: string, isReposted: boolean) => void;
+  onLike: (tweetId: string, isLiked: boolean) => void;
+  onBookmark: (tweetId: string, isBookmarked: boolean) => void;
+  onViewPostInteractions: (tweetId: string, ownerId: string) => void;
+  onShare: () => void;
+  isVisible?: boolean;
 }
 
-const Tweet: React.FC<ITweetProps> = (props) => {
+const SingleTweet: React.FC<ITweetProps> = (props) => {
   const {
     tweet,
-    onReplyPress,
+    onReply,
+    onQuote,
     onLike,
+    onRepost,
     onViewPostInteractions,
     onBookmark,
     onShare,
     onDeletePress,
-    openSheet,
     isVisible = true,
     onTweetPress,
     onAvatarPress,
@@ -53,7 +58,6 @@ const Tweet: React.FC<ITweetProps> = (props) => {
   const router = useRouter();
 
   const user = useAuthStore((state) => state.user);
-
   const { menuVisible, menuPosition, moreButtonRef, handleMorePress, setMenuVisible } = useTweetDropDownMenu();
 
   const handleGrokPress = () => {
@@ -61,6 +65,24 @@ const Tweet: React.FC<ITweetProps> = (props) => {
       pathname: '/(protected)/tweet-summary',
       params: { tweetId: tweet.tweetId },
     });
+  };
+  const handleReplyPress = () => {
+    setCreatePostType('reply');
+    setIsCreatePostModalVisible(true);
+  };
+
+  const handleQuotePress = () => {
+    setCreatePostType('quote');
+    setIsCreatePostModalVisible(true);
+  };
+
+  const [isCreatePostModalVisible, setIsCreatePostModalVisible] = useState(false);
+
+  const [createPostType, setCreatePostType] = useState<'tweet' | 'quote' | 'reply'>('tweet');
+  const bottomSheetModalRef = React.useRef<BottomSheetModal>(null);
+
+  const handleRepostPress = () => {
+    bottomSheetModalRef.current?.present();
   };
 
   const menuItems: DropdownMenuItem[] = [
@@ -76,14 +98,12 @@ const Tweet: React.FC<ITweetProps> = (props) => {
   if (tweet.user.id === user?.id) {
     menuItems.push({
       label: 'Delete post',
-      onPress: onDeletePress,
+      onPress: () => onDeletePress(tweet.tweetId),
       icon: <Trash2 size={theme.iconSizes.md} stroke={theme.colors.text.primary} />,
     });
   }
-
   return (
     <Pressable
-      style={styles.container}
       accessibilityLabel="tweet_container_main"
       testID="tweet_container_main"
       onPress={() => onTweetPress(tweet.tweetId)}
@@ -140,7 +160,7 @@ const Tweet: React.FC<ITweetProps> = (props) => {
             isVisible={isVisible}
           />
 
-          {tweet.parentTweet && (
+          {tweet.parentTweet && !tweet.conversationTweet && (
             <View style={{ marginTop: theme.spacing.xs }}>
               <ParentTweet tweet={tweet.parentTweet} isVisible={isVisible} />
             </View>
@@ -149,10 +169,10 @@ const Tweet: React.FC<ITweetProps> = (props) => {
           <ActionsRow
             tweet={tweet}
             size="small"
-            onReplyPress={onReplyPress}
-            onRepostPress={openSheet}
-            onLikePress={onLike}
-            onBookmarkPress={onBookmark}
+            onReplyPress={handleReplyPress}
+            onRepostPress={handleRepostPress}
+            onLikePress={() => onLike(tweet.tweetId, tweet.isLiked)}
+            onBookmarkPress={() => onBookmark(tweet.tweetId, tweet.isBookmarked)}
             onSharePress={onShare}
           />
 
@@ -162,22 +182,80 @@ const Tweet: React.FC<ITweetProps> = (props) => {
             items={menuItems}
             position={menuPosition}
           />
+
+          <CreatePostModal
+            visible={isCreatePostModalVisible}
+            onClose={() => setIsCreatePostModalVisible(false)}
+            type={createPostType}
+            tweet={tweet}
+            onPostReply={onReply}
+            onPostQuote={onQuote}
+          />
+
+          <RepostOptionsModal
+            isReposted={tweet.isReposted}
+            onRepostPress={() => onRepost(tweet.tweetId, tweet.isReposted)}
+            onQuotePress={handleQuotePress}
+            onViewInteractionsPress={() => onViewPostInteractions(tweet.tweetId, tweet.user.id)}
+            bottomSheetModalRef={bottomSheetModalRef}
+          />
         </View>
       </View>
     </Pressable>
   );
 };
+const TweetThread: React.FC<ITweetProps> = (props) => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
-export default Tweet;
+  if (props.tweet.replies) {
+    return (
+      <View style={styles.conversationContainer}>
+        <View style={{ position: 'relative', paddingBottom: theme.spacing.lg }}>
+          <SingleTweet {...props} />
+          <View style={styles.conversationSeparator} />
+        </View>
+        {props.tweet.replies.map((reply) => (
+          <SingleTweet {...props} tweet={reply} key={reply.tweetId} />
+        ))}
+      </View>
+    );
+  }
+
+  if (props.tweet.parentTweet && props.tweet.conversationTweet) {
+    return (
+      <View style={styles.conversationContainer}>
+        <View style={{ position: 'relative', paddingBottom: theme.spacing.lg, gap: theme.spacing.lg }}>
+          {props.tweet.conversationTweet.tweetId === props.tweet.parentTweet.tweetId ? (
+            <SingleTweet {...props} tweet={props.tweet.conversationTweet} />
+          ) : (
+            <>
+              <SingleTweet {...props} tweet={props.tweet.conversationTweet} />
+              <SingleTweet {...props} tweet={props.tweet.parentTweet} />
+            </>
+          )}
+          <View style={styles.conversationSeparator} />
+        </View>
+        <SingleTweet {...props} />
+      </View>
+    );
+  }
+  return (
+    <View style={styles.conversationContainer}>
+      <SingleTweet {...props} />
+    </View>
+  );
+};
+
+export default TweetThread;
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
-    container: {
-      padding: theme.spacing.md,
-    },
     tweetContainer: {
       flexDirection: 'row',
       gap: theme.spacing.md,
+      // borderWidth: 1,
+      // borderColor: 'red',
     },
     imageColumn: {
       flexDirection: 'column',
@@ -207,5 +285,17 @@ const createStyles = (theme: Theme) =>
     tweetText: {
       color: theme.colors.text.primary,
       fontFamily: theme.typography.fonts.regular,
+    },
+    conversationContainer: {
+      padding: theme.spacing.md,
+    },
+    conversationSeparator: {
+      position: 'absolute',
+      backgroundColor: theme.colors.border,
+      start: theme.avatarSizes.md / 2,
+      top: theme.avatarSizes.md + theme.spacing.xs,
+      bottom: theme.spacing.xs,
+      zIndex: -1,
+      width: 2,
     },
   });

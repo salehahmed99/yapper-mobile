@@ -4,57 +4,79 @@ import ViewsIcon from '@/src/components/icons/ViewsIcon';
 import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import useMargins from '@/src/hooks/useSpacing';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { formatDateDDMMYYYY, formatShortTime } from '@/src/utils/dateUtils';
 import { formatCount } from '@/src/utils/formatCount';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { BlurView } from 'expo-blur';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { ArrowLeft, MoreHorizontal, Trash2 } from 'lucide-react-native';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useTweetDropDownMenu from '../hooks/useTweetDropDownMenu';
 import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
+import CreatePostModal from './CreatePostModal';
 import ParentTweet from './ParentTweet';
 import RepostIndicator from './RepostIndicator';
+import RepostOptionsModal from './RepostOptionsModal';
 import TweetMedia from './TweetMedia';
 
 interface IFullTweetProps {
   tweet: ITweet;
-  onReplyPress: () => void;
-  onLike: (isLiked: boolean) => void;
-  onViewPostInteractions: (tweetId: string, ownerId: string) => void;
-  onBookmark: (isBookmarked: boolean) => void;
-  onShare: () => void;
-  onDeletePress: () => void;
-  openSheet: () => void;
+  onDeletePress: (tweetId: string) => void;
   onAvatarPress: (userId: string) => void;
+  onReply: (tweetId: string, content: string) => void;
+  onQuote: (tweetId: string, content: string) => void;
+  onRepost: (tweetId: string, isReposted: boolean) => void;
+  onLike: (tweetId: string, isLiked: boolean) => void;
+  onBookmark: (tweetId: string, isBookmarked: boolean) => void;
+  onViewPostInteractions: (tweetId: string, ownerId: string) => void;
+  onShare: () => void;
 }
 
 const FullTweet: React.FC<IFullTweetProps> = (props) => {
   const {
     tweet,
-    onReplyPress,
+    onDeletePress,
+    onAvatarPress,
+    onReply,
+    onQuote,
+    onRepost,
     onLike,
     onBookmark,
-    onShare,
-    onDeletePress,
-    openSheet,
-    onAvatarPress,
     onViewPostInteractions,
+    onShare,
   } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { bottom } = useMargins();
 
   const user = useAuthStore((state) => state.user);
 
+  const handleReplyPress = () => {
+    setCreatePostType('reply');
+    setIsCreatePostModalVisible(true);
+  };
+
+  const handleQuotePress = () => {
+    setCreatePostType('quote');
+    setIsCreatePostModalVisible(true);
+  };
+
+  const [isCreatePostModalVisible, setIsCreatePostModalVisible] = useState(false);
+
+  const [createPostType, setCreatePostType] = useState<'tweet' | 'quote' | 'reply'>('tweet');
+
+  const bottomSheetModalRef = React.useRef<BottomSheetModal>(null);
+
+  const handleRepostPress = () => {
+    bottomSheetModalRef.current?.present();
+  };
   const { menuVisible, menuPosition, moreButtonRef, handleMorePress, setMenuVisible } = useTweetDropDownMenu();
 
   const handleGrokPress = () => {
@@ -77,7 +99,7 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
   if (tweet.user.id === user?.id) {
     menuItems.push({
       label: 'Delete post',
-      onPress: onDeletePress,
+      onPress: () => onDeletePress(tweet.tweetId),
       icon: <Trash2 size={theme.iconSizes.md} stroke={theme.colors.text.primary} />,
     });
   }
@@ -128,7 +150,7 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
 
       {/* Content */}
       <ScrollView
-        style={[styles.container, { marginBottom: bottom, paddingTop: insets.top + theme.ui.appBarHeight }]}
+        style={[styles.container, { marginTop: insets.top + theme.ui.appBarHeight }]}
         accessibilityLabel="full_tweet_container_main"
         testID="full_tweet_container_main"
       >
@@ -179,7 +201,8 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
             isVisible={true}
           />
         )}
-        {tweet.parentTweet && (
+
+        {tweet.type === 'quote' && tweet.parentTweet && (
           <View style={{ marginTop: theme.spacing.xs }}>
             <ParentTweet tweet={tweet.parentTweet} />
           </View>
@@ -208,10 +231,10 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
           <ActionsRow
             tweet={tweet}
             size="large"
-            onReplyPress={onReplyPress}
-            onRepostPress={openSheet}
-            onLikePress={onLike}
-            onBookmarkPress={onBookmark}
+            onReplyPress={handleReplyPress}
+            onRepostPress={handleRepostPress}
+            onLikePress={() => onLike(tweet.tweetId, tweet.isLiked)}
+            onBookmarkPress={() => onBookmark(tweet.tweetId, tweet.isBookmarked)}
             onSharePress={onShare}
           />
         </View>
@@ -220,6 +243,22 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
           onClose={() => setMenuVisible(false)}
           items={menuItems}
           position={menuPosition}
+        />
+        <CreatePostModal
+          visible={isCreatePostModalVisible}
+          onClose={() => setIsCreatePostModalVisible(false)}
+          type={createPostType}
+          tweet={tweet}
+          onPostReply={onReply}
+          onPostQuote={onQuote}
+        />
+
+        <RepostOptionsModal
+          isReposted={tweet.isReposted}
+          onRepostPress={() => onRepost(tweet.tweetId, tweet.isReposted)}
+          onQuotePress={handleQuotePress}
+          onViewInteractionsPress={() => onViewPostInteractions(tweet.tweetId, tweet.user.id)}
+          bottomSheetModalRef={bottomSheetModalRef}
         />
       </ScrollView>
     </View>
@@ -231,7 +270,6 @@ export default FullTweet;
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
     wrapper: {
-      flex: 1,
       backgroundColor: theme.colors.background.primary,
     },
     headerBlur: {
@@ -274,8 +312,10 @@ const createStyles = (theme: Theme) =>
     container: {
       marginTop: theme.spacing.md,
       padding: theme.spacing.md,
-      paddingBottom: theme.spacing.xxxl,
       backgroundColor: theme.colors.background.primary,
+      paddingBottom: theme.spacing.xxl,
+      borderBottomWidth: 1,
+      borderColor: theme.colors.border,
     },
     header: {
       flexDirection: 'row',
