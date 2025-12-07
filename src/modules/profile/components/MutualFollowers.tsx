@@ -41,8 +41,9 @@ const MutualFollowers: React.FC<MutualFollowersProps> = ({ mutualFollowers, tota
         text: {
           fontSize: theme.typography.sizes.xs,
           color: theme.colors.text.secondary,
-          flex: 1,
+          flexShrink: 1,
           textAlign: isRTL ? 'right' : 'left',
+          includeFontPadding: false,
         },
       }),
     [theme, isRTL],
@@ -67,7 +68,7 @@ const MutualFollowers: React.FC<MutualFollowersProps> = ({ mutualFollowers, tota
         ))}
       </View>
       <Text style={styles.text} numberOfLines={1}>
-        {displayText}
+        {displayText || 'Followed by mutual connections'}
       </Text>
     </View>
   );

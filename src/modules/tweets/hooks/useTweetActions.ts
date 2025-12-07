@@ -114,9 +114,27 @@ export const useTweetActions = () => {
         updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleLike),
       );
 
-      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: profileTweetsQueryKey }, (oldData) =>
-        updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleLike),
+      queryClient.setQueriesData<InfiniteData<ITweets>>(
+        {
+          queryKey: profileTweetsQueryKey,
+          predicate: (query) => !query.queryKey.includes('likes'),
+        },
+        (oldData) => updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleLike),
       );
+      if (variables.isLiked) {
+        queryClient.setQueriesData<InfiniteData<ITweets>>(
+          {
+            queryKey: profileTweetsQueryKey,
+            predicate: (query) => query.queryKey.includes('likes'),
+          },
+          (oldData) => removeTweetFromInfiniteCache(oldData, variables.tweetId),
+        );
+      } else {
+        queryClient.invalidateQueries({
+          queryKey: profileTweetsQueryKey,
+          predicate: (query) => query.queryKey.includes('likes'),
+        });
+      }
 
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: repliesQueryKey }, (oldData) =>
         updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleLike),

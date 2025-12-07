@@ -20,6 +20,7 @@ export const useUserLikesData = (userId: string, enabled: boolean = true) => {
       return undefined;
     },
     initialPageParam: '',
+    maxPages: PROFILE_QUERY_CONFIG.pagination.maxPages,
     enabled: !!userId && enabled,
     staleTime: PROFILE_QUERY_CONFIG.tweets.staleTime,
     gcTime: PROFILE_QUERY_CONFIG.tweets.gcTime,

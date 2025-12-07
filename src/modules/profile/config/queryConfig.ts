@@ -22,6 +22,7 @@ export const PROFILE_QUERY_CONFIG = {
     defaultLimit: 20,
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
+    maxPages: 5, // Limit cached pages to prevent memory issues
   },
 } as const;
 

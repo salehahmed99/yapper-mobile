@@ -18,6 +18,7 @@ export const useUserPosts = (userId: string, enabled: boolean = true) => {
     getNextPageParam: (lastPage) => {
       return lastPage.pagination.hasMore ? lastPage.pagination.nextCursor : undefined;
     },
+    maxPages: PROFILE_QUERY_CONFIG.pagination.maxPages,
     enabled: !!userId && enabled,
     staleTime: PROFILE_QUERY_CONFIG.tweets.staleTime,
     gcTime: PROFILE_QUERY_CONFIG.tweets.gcTime,
