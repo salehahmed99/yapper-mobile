@@ -7,6 +7,7 @@ import { useTheme } from '@/src/context/ThemeContext';
 import { ISvgIconProps } from '@/src/types/svg';
 import { BottomSheetModal, useBottomSheet } from '@gorhom/bottom-sheet';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface IRepostOptionsItemProps {
@@ -60,13 +61,14 @@ interface IRepostOptionsModalProps {
 const RepostOptionsModal: React.FC<IRepostOptionsModalProps> = (props) => {
   const { onRepostPress, onQuotePress, onViewInteractionsPress, isReposted, bottomSheetModalRef } = props;
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = createRepostOptionsModalStyles(theme);
   return (
     <CustomBottomSheet bottomSheetModalRef={bottomSheetModalRef}>
       <View style={styles.bottomSheetContainer}>
         <RepostOptionsItem
           icon={RepostIcon}
-          text={isReposted ? 'Undo repost' : 'Repost'}
+          text={isReposted ? t('tweets.repost.undoRepost') : t('tweets.repost.repost')}
           onPress={onRepostPress}
           color={isReposted ? theme.colors.error : undefined}
           testID="repost_option_repost"
@@ -74,14 +76,14 @@ const RepostOptionsModal: React.FC<IRepostOptionsModalProps> = (props) => {
         />
         <RepostOptionsItem
           icon={QuoteIcon}
-          text="Quote"
+          text={t('tweets.repost.quote')}
           onPress={onQuotePress}
           testID="repost_option_quote"
           accessibilityLabel="repost_option_quote"
         />
         <RepostOptionsItem
           icon={ViewsIcon}
-          text="View Post Interactions"
+          text={t('tweets.repost.viewPostInteractions')}
           onPress={onViewInteractionsPress}
           testID="repost_option_view_interactions"
           accessibilityLabel="repost_option_view_interactions"

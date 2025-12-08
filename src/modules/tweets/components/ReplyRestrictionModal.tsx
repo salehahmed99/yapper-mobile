@@ -8,71 +8,55 @@ import { useTheme } from '@/src/context/ThemeContext';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { Check } from 'lucide-react-native';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { ReplyRestrictionOptions } from '../types';
 
 interface IReplyRestrictionModalProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
-  selectedOption: ReplyRestrictionOptions;
-  onSelect: (option: ReplyRestrictionOptions) => void;
+  selectedOption: number;
+  onSelect: (option: number) => void;
 }
-
-const options = [
-  {
-    label: 'Everyone',
-    icon: GlobeIcon,
-  },
-  {
-    label: 'Verified accounts',
-    icon: VerifiedIcon,
-  },
-  {
-    label: 'Accounts you follow',
-    icon: AccountIcon,
-  },
-  {
-    label: 'Only accounts you mention',
-    icon: EmailIcon,
-  },
-];
 
 const ReplyRestrictionModal: React.FC<IReplyRestrictionModalProps> = (props) => {
   const { bottomSheetRef, selectedOption, onSelect } = props;
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = createStyles(theme);
 
-  const handleSelect = (optionLabel: ReplyRestrictionOptions) => {
-    onSelect(optionLabel);
+  const handleSelect = (option: number) => {
+    onSelect(option);
     bottomSheetRef.current?.dismiss();
   };
+  const options = [
+    { label: t('tweets.replyRestriction.options.everyone'), icon: GlobeIcon },
+    { label: t('tweets.replyRestriction.options.verifiedAccounts'), icon: VerifiedIcon },
+    { label: t('tweets.replyRestriction.options.accountsYouFollow'), icon: AccountIcon },
+    { label: t('tweets.replyRestriction.options.onlyAccountsYouMention'), icon: EmailIcon },
+  ];
 
   return (
     <CustomBottomSheet bottomSheetModalRef={bottomSheetRef}>
       <View style={styles.container}>
-        <Text style={styles.title}>Who can reply?</Text>
-        <Text style={styles.subtitle}>
-          Pick who can reply to this post. Keep in mind that anyone mentioned can always reply.
-        </Text>
+        <Text style={styles.title}>{t('tweets.replyRestriction.title')}</Text>
+        <Text style={styles.subtitle}>{t('tweets.replyRestriction.subtitle')}</Text>
 
         <View style={styles.optionsContainer}>
-          {options.map((option) => {
+          {options.map((option, index) => {
             const Icon = option.icon;
-            const label = option.label as ReplyRestrictionOptions;
-
             return (
               <Pressable
                 key={option.label}
                 style={styles.option}
-                onPress={() => handleSelect(label)}
-                accessibilityLabel={`reply_restriction_option_${label.toLowerCase().replace(/ /g, '_')}`}
-                testID={`reply_restriction_option_${label.toLowerCase().replace(/ /g, '_')}`}
+                onPress={() => handleSelect(index)}
+                accessibilityLabel={`reply_restriction_option_${option.label.toLowerCase().replace(/ /g, '_')}`}
+                testID={`reply_restriction_option_${option.label.toLowerCase().replace(/ /g, '_')}`}
               >
                 <View style={styles.optionLeft}>
                   <View style={styles.iconWrapper}>
                     <View style={styles.iconContainer}>
                       <Icon size={20} stroke={theme.colors.white} strokeWidth={0} filled={false} />
                     </View>
-                    {selectedOption === label && (
+                    {selectedOption === index && (
                       <View style={styles.checkmarkContainer}>
                         <Check size={theme.iconSizesAlt.xs} color={theme.colors.white} strokeWidth={4} />
                       </View>
@@ -101,12 +85,14 @@ const createStyles = (theme: Theme) =>
       fontSize: theme.typography.sizes.xml,
       fontFamily: theme.typography.fonts.extraBold,
       color: theme.colors.text.primary,
+      textAlign: 'left',
     },
     subtitle: {
       fontSize: theme.typography.sizes.sm,
       fontFamily: theme.typography.fonts.regular,
       color: theme.colors.text.secondary,
       marginTop: theme.spacing.xl,
+      textAlign: 'left',
     },
     optionsContainer: {
       gap: theme.spacing.xs,
@@ -162,6 +148,7 @@ const createStyles = (theme: Theme) =>
       fontFamily: theme.typography.fonts.regular,
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.xxs,
+      textAlign: 'left',
     },
   });
 

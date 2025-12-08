@@ -1,6 +1,7 @@
 import QueryWrapper from '@/src/components/QueryWrapper';
 import { router, useLocalSearchParams, useSegments } from 'expo-router';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert } from 'react-native';
 import FullTweet from '../components/FullTweet';
 import TweetThread from '../components/TweetThread';
@@ -26,6 +27,7 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
   const segments = useSegments();
   const params = useLocalSearchParams();
   const currentProfileId = (segments as string[]).includes('(profile)') ? params.id : null;
+  const { t } = useTranslation();
 
   const { likeMutation, repostMutation, replyToPostMutation, quotePostMutation, bookmarkMutation, deletePostMutation } =
     useTweetActions();
@@ -52,13 +54,13 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
   };
 
   const handleDeletePress = (tweetId: string) => {
-    Alert.alert('Delete post', 'Are you sure you want to delete this post?', [
+    Alert.alert(t('tweets.deleteConfirmation.title'), t('tweets.deleteConfirmation.message'), [
       {
-        text: 'Cancel',
+        text: t('tweets.deleteConfirmation.cancel'),
         style: 'cancel',
       },
       {
-        text: 'Delete',
+        text: t('tweets.deleteConfirmation.delete'),
         style: 'destructive',
         onPress: () => handleDelete(tweetId),
       },

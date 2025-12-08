@@ -5,7 +5,11 @@
   "home": {
     "title": "الشاشة الرئيسية",
     "item": "عنصر {{index}}",
-    "sampleContent": "هذا نص تجريبي لعرض التمرير وعتامة شريط التنقل السفلي."
+    "sampleContent": "هذا نص تجريبي لعرض التمرير وعتامة شريط التنقل السفلي.",
+    "tabs": {
+      "forYou": "لك",
+      "following": "المتابَعون"
+    }
   },
   "app": {
     "title": "يابر"
@@ -349,6 +353,48 @@
       "dark_mode": "داكن",
       "device_settings": "استخدام إعدادات الجهاز",
       "device_settings_description": "اضبط الوضع الداكن لاستخدام تحديد الفاتح أو الداكن الموجود في إعدادات العرض والسطوع بجهازك."
+    }
+  },
+  "tweets": {
+    "createPost": {
+      "cancel": "إلغاء",
+      "post": "نشر",
+      "placeholders": {
+        "whatsHappening": "ماذا يحدث؟",
+        "addComment": "أضف تعليقاً",
+        "postYourReply": "انشر ردك"
+      }
+    },
+    "deletePost": "حذف",
+    "replyRestriction": {
+      "title": "من يمكنه الرد؟",
+      "subtitle": "اختر من يمكنه الرد على هذا المنشور. ضع في اعتبارك أن أي شخص مذكور يمكنه دائمًا الرد.",
+      "canReply": "يمكنه الرد",
+      "options": {
+        "everyone": "الجميع",
+        "verifiedAccounts": "الحسابات الموثقة",
+        "accountsYouFollow": "الحسابات التي تتابعها",
+        "onlyAccountsYouMention": "الحسابات التي تذكرها فقط"
+      }
+    },
+    "repost": {
+      "reposted": "أعاد النشر",
+      "you": "أنت",
+      "undoRepost": "التراجع عن إعادة النشر",
+      "repost": "إعادة نشر",
+      "quote": "اقتباس",
+      "viewPostInteractions": "عرض تفاعلات المنشور"
+    },
+    "full_tweet": {
+      "title": "المنشور",
+      "views": "مرات مشاهدة"
+    },
+    "replyingTo": "الرد على",
+    "deleteConfirmation": {
+      "title": "حذف المنشور",
+      "message": "هل أنت متأكد أنك تريد حذف هذا المنشور؟",
+      "cancel": "إلغاء",
+      "delete": "حذف"
     }
   }
 }

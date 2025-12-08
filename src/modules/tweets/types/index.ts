@@ -80,8 +80,6 @@ interface IQuotesResponse {
   has_more: boolean;
 }
 
-type ReplyRestrictionOptions = 'Everyone' | 'Verified accounts' | 'Accounts you follow' | 'Only accounts you mention';
-
 export {
   IQuotesResponse,
   IReplies,
@@ -91,5 +89,4 @@ export {
   ITweetFilters,
   ITweets,
   ITweetsResponse,
-  ReplyRestrictionOptions,
 };
