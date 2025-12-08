@@ -1,23 +1,36 @@
-import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, StatusBar, Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { useTheme } from '@/src/context/ThemeContext';
-import { confirmCurrentPassword } from '@/src/modules/settings/services/yourAccountService';
+import ActivityLoader from '@/src/components/ActivityLoader';
 import { Theme } from '@/src/constants/theme';
-import Toast from 'react-native-toast-message';
-import TopBar from '@/src/modules/auth/components/shared/TopBar';
+import { useTheme } from '@/src/context/ThemeContext';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import PasswordInput from '@/src/modules/auth/components/shared/PasswordInput';
-import ActivityLoader from '@/src/components/ActivityLoader';
+import TopBar from '@/src/modules/auth/components/shared/TopBar';
+import { passwordSchema } from '@/src/modules/auth/schemas/schemas';
+import { confirmCurrentPassword } from '@/src/modules/settings/services/yourAccountService';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { StatusBar, StyleSheet, Text, View, I18nManager } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 export const VerifyPasswordScreen: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
+  const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
   const { returnTo } = useLocalSearchParams<{ returnTo?: string }>();
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const prevLang = React.useRef(i18n.language);
+
+  React.useEffect(() => {
+    if (prevLang.current !== i18n.language) {
+      prevLang.current = i18n.language;
+      forceUpdate();
+    }
+  }, [i18n.language]);
+
+  const isPasswordValid = passwordSchema.safeParse(password).success;
 
   const handleVerify = async () => {
     if (!password.trim()) {
@@ -71,7 +84,7 @@ export const VerifyPasswordScreen: React.FC = () => {
   };
 
   const { theme, isDark } = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const styles = useMemo(() => createStyles(theme, isRTL), [theme, isRTL]);
 
   const isFormValid = password.length > 0 && !isLoading;
 
@@ -100,7 +113,8 @@ export const VerifyPasswordScreen: React.FC = () => {
               onChangeText={setPassword}
               onToggleVisibility={() => setIsPasswordVisible(!isPasswordVisible)}
               isVisible={isPasswordVisible}
-              showCheck={false}
+              showCheck={true}
+              status={isPasswordValid ? 'success' : undefined}
             />
           </View>
         </View>
@@ -126,7 +140,7 @@ export const VerifyPasswordScreen: React.FC = () => {
   );
 };
 
-const createStyles = (theme: Theme) =>
+const createStyles = (theme: Theme, isRTL: boolean = false) =>
   StyleSheet.create({
     safeArea: {
       flex: 1,
@@ -145,12 +159,14 @@ const createStyles = (theme: Theme) =>
       fontWeight: '700',
       marginBottom: theme.spacing.md,
       fontFamily: theme.typography.fonts.bold,
+      textAlign: isRTL ? 'right' : 'left',
     },
     description: {
       fontSize: theme.typography.sizes.md,
       lineHeight: 20,
       marginBottom: theme.spacing.xl,
       fontFamily: theme.typography.fonts.regular,
+      textAlign: isRTL ? 'right' : 'left',
     },
     inputContainer: {
       marginTop: theme.spacing.md,

@@ -489,8 +489,8 @@
       "label": "Email address",
       "invalid_error": "Please enter a valid email address",
       "invalid_title": "Invalid Email",
-      "updated": "Email Updated",
-      "updated_message": "Your email has been updated successfully",
+      "updated": "otp has been sent to the new email address",
+      "updated_message": "An OTP has been sent to {{newEmail}}. Please enter the code to verify your new email address.",
       "update_failed": "Update Failed",
       "update_failed_message": "Failed to update email. Please try again."
     },

@@ -6,6 +6,7 @@ export default function AccountInformationLayout() {
       screenOptions={{
         headerShown: false,
         animation: 'slide_from_right',
+        contentStyle: { backgroundColor: '#000000' },
       }}
     />
   );

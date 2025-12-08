@@ -33,7 +33,6 @@ export const AnimatedTextInput: React.FC<AnimatedTextInputProps> = ({
   const styles = useMemo(() => createStyles(theme, isRTL), [theme, isRTL]);
   const borderAnim = useRef(new Animated.Value(0)).current;
   const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
-
   const animateBorder = (toValue: number) => {
     Animated.timing(borderAnim, {
       toValue,
@@ -74,7 +73,7 @@ export const AnimatedTextInput: React.FC<AnimatedTextInputProps> = ({
           onFocus={handleFocus}
           onBlur={handleBlur}
           secureTextEntry={showPasswordToggle ? !isPasswordVisible : props.secureTextEntry}
-          textAlign={isRTL ? 'right' : 'left'}
+          textAlign={isRTL ? 'left' : 'right'}
         />
 
         {showPasswordToggle && (
