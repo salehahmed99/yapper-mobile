@@ -1,18 +1,18 @@
-import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, StatusBar, Text, ScrollView, I18nManager } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { useTheme } from '@/src/context/ThemeContext';
-import { changeEmail } from '@/src/modules/settings/services/yourAccountService';
-import { Theme } from '@/src/constants/theme';
-import Toast from 'react-native-toast-message';
-import TopBar from '@/src/modules/auth/components/shared/TopBar';
-import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
-import AuthInput from '@/src/modules/auth/components/shared/AuthInput';
 import ActivityLoader from '@/src/components/ActivityLoader';
-import { useAuthStore } from '@/src/store/useAuthStore';
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
+import AuthInput from '@/src/modules/auth/components/shared/AuthInput';
+import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
+import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { emailSchema } from '@/src/modules/auth/schemas/schemas';
+import { changeEmail } from '@/src/modules/settings/services/yourAccountService';
+import { useAuthStore } from '@/src/store/useAuthStore';
+import { router } from 'expo-router';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { I18nManager, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 export const UpdateEmailScreen: React.FC = () => {
   const { t, i18n } = useTranslation();

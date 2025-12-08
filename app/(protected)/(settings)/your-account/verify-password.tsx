@@ -9,7 +9,7 @@ import { confirmCurrentPassword } from '@/src/modules/settings/services/yourAcco
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StatusBar, StyleSheet, Text, View, I18nManager } from 'react-native';
+import { I18nManager, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
