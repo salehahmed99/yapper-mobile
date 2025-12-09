@@ -59,7 +59,7 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
       }
     });
   }, [containerMeasures, textWidths, scrollable]);
-  const indicatorStart = React.useRef(new Animated.Value(0));
+  const indicatorLeft = React.useRef(new Animated.Value(0));
   const indicatorWidth = React.useRef(new Animated.Value(0));
   const scrollRef = React.useRef<ScrollView | null>(null);
 
@@ -70,7 +70,7 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
     if (m) {
       // Use measured dimensions when available (covers both scrollable and non-scrollable)
       Animated.parallel([
-        Animated.timing(indicatorStart.current, { toValue: m.x, duration: 200, useNativeDriver: false }),
+        Animated.timing(indicatorLeft.current, { toValue: m.x, duration: 200, useNativeDriver: false }),
         Animated.timing(indicatorWidth.current, { toValue: m.width, duration: 200, useNativeDriver: false }),
       ]).start();
 
@@ -88,7 +88,7 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
       // fallback: non-scrollable and no measures yet -> distribute equally
       const tabWidth = layout.width / routes.length;
       Animated.parallel([
-        Animated.timing(indicatorStart.current, { toValue: index * tabWidth, duration: 200, useNativeDriver: false }),
+        Animated.timing(indicatorLeft.current, { toValue: index * tabWidth, duration: 200, useNativeDriver: false }),
         Animated.timing(indicatorWidth.current, { toValue: tabWidth, duration: 200, useNativeDriver: false }),
       ]).start();
     }
@@ -142,7 +142,7 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
             })}
             <Animated.View
               pointerEvents="none"
-              style={[styles.indicator, { start: indicatorStart.current, width: indicatorWidth.current }]}
+              style={[styles.indicator, { left: indicatorLeft.current, width: indicatorWidth.current }]}
             />
           </ScrollView>
         </View>
@@ -193,7 +193,7 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
         })}
         <Animated.View
           pointerEvents="none"
-          style={[styles.indicator, { start: indicatorStart.current, width: indicatorWidth.current }]}
+          style={[styles.indicator, { left: indicatorLeft.current, width: indicatorWidth.current }]}
         />
       </View>
     );
