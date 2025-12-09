@@ -1,3 +1,4 @@
+import { ICategoryTweetsResponse, IExploreResponse } from '@/src/modules/explore/types';
 import { InfiniteData } from '@tanstack/react-query';
 import { ITweet, ITweets } from '../types';
 
@@ -104,6 +105,75 @@ export const removeTweetFromInfiniteCache = (oldData: InfiniteData<ITweets> | un
         };
       }
       return page;
+    }),
+  };
+};
+
+/**
+ * Update tweets in explore cache
+ * Explore data structure: { data: { forYou: [{ category, tweets/posts }] } }
+ */
+export const updateExploreCache = (
+  oldData: IExploreResponse | undefined,
+  tweetId: string,
+  updater: (tweet: ITweet) => ITweet,
+): IExploreResponse | undefined => {
+  if (!oldData?.data?.forYou) return oldData;
+
+  return {
+    ...oldData,
+    data: {
+      ...oldData.data,
+      forYou: oldData.data.forYou.map((category) => {
+        const tweets = category.tweets || category.posts || [];
+        const updatedTweets = tweets.map((tweet) => {
+          if (tweet.tweetId === tweetId) {
+            return updater(tweet);
+          }
+          return tweet;
+        });
+
+        // Return with the same key (tweets or posts) that was used originally
+        if (category.tweets) {
+          return { ...category, tweets: updatedTweets };
+        }
+        if (category.posts) {
+          return { ...category, posts: updatedTweets };
+        }
+        return category;
+      }),
+    },
+  };
+};
+
+/**
+ * Update tweets in category posts infinite cache
+ * CategoryPosts data structure: { pages: [{ data: { tweets: [], pagination: {} } }] }
+ */
+export const updateCategoryPostsCache = (
+  oldData: InfiniteData<ICategoryTweetsResponse> | undefined,
+  tweetId: string,
+  updater: (tweet: ITweet) => ITweet,
+): InfiniteData<ICategoryTweetsResponse> | undefined => {
+  if (!oldData?.pages) return oldData;
+
+  return {
+    ...oldData,
+    pages: oldData.pages.map((page) => {
+      if (!page?.data?.tweets) return page;
+
+      return {
+        ...page,
+        data: {
+          ...page.data,
+          tweets: page.data.tweets.map((tweet) => {
+            if (tweet.tweetId === tweetId) {
+              return updater(tweet);
+            }
+            return tweet;
+          }),
+        },
+      };
     }),
   };
 };
