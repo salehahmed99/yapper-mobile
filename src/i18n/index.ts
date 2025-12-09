@@ -8,7 +8,18 @@ import ar from './locales/ar.json';
 import en from './locales/en.json';
 
 const STORED_LANGUAGE_KEY = 'app-language';
+const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
 
+export const toLocalizedNumber = (value: string): string => {
+  const currentLang = i18n.language;
+
+  // 2. If Arabic, apply the digit mapping on top of the formatted string
+  if (currentLang.startsWith('ar')) {
+    return value.replace(/\d/g, (d) => arabicDigits[parseInt(d)]);
+  }
+
+  return value;
+};
 const getDeviceLanguage = () => getLocales()?.at(0)?.languageCode || 'en';
 
 const loadStoredLanguage = async () => {

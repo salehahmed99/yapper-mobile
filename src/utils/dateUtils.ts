@@ -1,3 +1,5 @@
+import i18n, { toLocalizedNumber } from '../i18n';
+
 /**
  * Formats a date string to display time in 12-hour format
  * @param dateString - ISO date string
@@ -5,7 +7,9 @@
  */
 export const formatShortTime = (dateString: string): string => {
   const date = new Date(dateString);
-  return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  const locale = i18n.language;
+  const formattedTime = date.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit', hour12: true });
+  return toLocalizedNumber(formattedTime);
 };
 
 /**
@@ -15,7 +19,9 @@ export const formatShortTime = (dateString: string): string => {
  */
 export const formatMediumDate = (dateString: string): string => {
   const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const locale = i18n.language;
+  const formattedDate = date.toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' });
+  return toLocalizedNumber(formattedDate);
 };
 /**
  * Formats a date string to display date in DD/MM/YYYY format
@@ -24,8 +30,13 @@ export const formatMediumDate = (dateString: string): string => {
  */
 export const formatDateDDMMYYYY = (dateString: string): string => {
   const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
+  const day = toLocalizedNumber(String(date.getDate()).padStart(2, '0'));
+  const month = toLocalizedNumber(String(date.getMonth() + 1).padStart(2, '0'));
+  const year = toLocalizedNumber(String(date.getFullYear()));
+
+  if (i18n.language === 'ar') {
+    return `${year}/${month}/${day}`;
+  }
+
   return `${day}/${month}/${year}`;
 };

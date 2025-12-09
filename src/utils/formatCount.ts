@@ -1,3 +1,5 @@
+import { toLocalizedNumber } from '../i18n';
+
 /**
  * Formats a count number to display like Twitter
  * - Less than 1000: display as is (e.g., "5", "99")
@@ -11,7 +13,7 @@ export const formatCount = (count: number): string => {
   const prefix = isNegative ? '-' : '';
 
   if (absCount < 1000) {
-    return count.toString();
+    return toLocalizedNumber(count.toString());
   }
 
   const formatNumber = (value: number, suffix: string): string => {
@@ -21,12 +23,12 @@ export const formatCount = (count: number): string => {
   };
 
   if (absCount < 1_000_000) {
-    return formatNumber(absCount / 1000, 'K');
+    return toLocalizedNumber(formatNumber(absCount / 1000, 'K'));
   }
 
   if (absCount < 1_000_000_000) {
-    return formatNumber(absCount / 1_000_000, 'M');
+    return toLocalizedNumber(formatNumber(absCount / 1_000_000, 'M'));
   }
 
-  return formatNumber(absCount / 1_000_000_000, 'B');
+  return toLocalizedNumber(formatNumber(absCount / 1_000_000_000, 'B'));
 };

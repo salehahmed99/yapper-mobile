@@ -395,6 +395,12 @@
       "message": "هل أنت متأكد أنك تريد حذف هذا المنشور؟",
       "cancel": "إلغاء",
       "delete": "حذف"
+    },
+    "date": {
+      "now": "الآن",
+      "minutesShort": "د",
+      "hoursShort": "س",
+      "daysShort": "ي"
     }
   }
 }

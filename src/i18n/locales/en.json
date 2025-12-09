@@ -619,6 +619,12 @@
       "message": "Are you sure you want to delete this post?",
       "cancel": "Cancel",
       "delete": "Delete"
+    },
+    "date": {
+      "now": "now",
+      "minutesShort": "m",
+      "hoursShort": "h",
+      "daysShort": "d"
     }
   }
 }
