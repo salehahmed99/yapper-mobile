@@ -54,7 +54,7 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
   const characterCount = tweetText.length;
   const remainingCharacters = MAX_TWEET_LENGTH - characterCount;
   const progressPercentage = (characterCount / MAX_TWEET_LENGTH) * 100;
-  const canPost = (characterCount > 0 || type === 'quote') && characterCount <= MAX_TWEET_LENGTH;
+  const canPost = characterCount > 0 && characterCount <= MAX_TWEET_LENGTH;
   const insets = useSafeAreaInsets();
 
   const resetTweetState = () => {
