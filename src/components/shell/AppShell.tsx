@@ -69,7 +69,7 @@ const SlidingShell: React.FC<ISlidingShellProps> = React.memo(function SlidingSh
   const { isSideMenuOpen, closeSideMenu, openSideMenu } = useUiShell();
   const { width: screenWidth } = useWindowDimensions();
   const pathname = usePathname();
-  const leftThreshold = screenWidth * 0.1; // Left 10% of screen
+  const startThreshold = screenWidth * 0.1; // start 10% of screen
   const touchStartXRef = React.useRef<number | null>(null);
 
   // Only allow sidebar gesture on bottom nav tabs
@@ -91,20 +91,20 @@ const SlidingShell: React.FC<ISlidingShellProps> = React.memo(function SlidingSh
         onStartShouldSetPanResponder: (evt, _gestureState) => {
           // Only handle gestures on bottom nav tabs
           if (!isOnBottomNavTab) return false;
-          // Start when touching the left edge when closed; allow any start when open
+          // Start when touching the start edge when closed; allow any start when open
           const startX = evt.nativeEvent.pageX ?? 0;
           touchStartXRef.current = startX;
           if (isSideMenuOpen) return true;
-          return startX <= leftThreshold;
+          return startX <= startThreshold;
         },
         onMoveShouldSetPanResponder: (_evt, gestureState: PanResponderGestureState) => {
           // Only handle gestures on bottom nav tabs
           if (!isOnBottomNavTab) return false;
           // Capture horizontal drags larger than vertical
-          // Only accept move if started in left region or menu is already open
+          // Only accept move if started in start region or menu is already open
           const { dx, dy } = gestureState;
           const startX = touchStartXRef.current ?? 0;
-          if (!isSideMenuOpen && startX > leftThreshold) return false;
+          if (!isSideMenuOpen && startX > startThreshold) return false;
           return Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 5;
         },
         onPanResponderMove: (_evt, gestureState: PanResponderGestureState) => {
@@ -118,7 +118,7 @@ const SlidingShell: React.FC<ISlidingShellProps> = React.memo(function SlidingSh
           const vx = gestureState.vx;
           const shouldOpen = (() => {
             if (isSideMenuOpen) {
-              // user dragged left to close -> dx will be negative
+              // user dragged start to close -> dx will be negative
               if (dx < -theme.ui.drawerWidth / 2 || vx < -0.5) return false;
               return true; // remain open
             }
@@ -136,7 +136,7 @@ const SlidingShell: React.FC<ISlidingShellProps> = React.memo(function SlidingSh
           });
         },
       }),
-    [isSideMenuOpen, anim, openSideMenu, closeSideMenu, theme.ui.drawerWidth, leftThreshold, isOnBottomNavTab],
+    [isSideMenuOpen, anim, openSideMenu, closeSideMenu, theme.ui.drawerWidth, startThreshold, isOnBottomNavTab],
   );
   // Animate overlay opacity and width with drawer
   const overlayOpacity = anim.interpolate({
