@@ -84,7 +84,8 @@
       "router": {},
       "eas": {
         "projectId": "a7bd163d-ddc7-4226-866c-747e41fcb93a"
-      }
+      },
+      "supportsRTL": true
     },
     "owner": "salehahmed99"
   }

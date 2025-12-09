@@ -2,6 +2,7 @@ import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Image } from 'expo-image';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 import { ITweet } from '../types';
 import UserInfoRow from './UserInfoRow';
@@ -12,6 +13,7 @@ interface IParentTweetV2Props {
 const ParentTweetV2: React.FC<IParentTweetV2Props> = (props) => {
   const { tweet } = props;
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
   return (
     <View style={styles.container} accessibilityLabel="tweet_container_parent">
@@ -34,7 +36,7 @@ const ParentTweetV2: React.FC<IParentTweetV2Props> = (props) => {
         </View>
         <View style={styles.replyingToContainer}>
           <Text style={styles.replyingToText}>
-            Replying to <Text style={styles.username}>@{tweet.user.username}</Text>
+            {t('tweets.replyingTo')} <Text style={styles.username}>@{tweet.user.username}</Text>
           </Text>
         </View>
       </View>
@@ -82,6 +84,7 @@ const createStyles = (theme: Theme) =>
     tweetText: {
       color: theme.colors.text.primary,
       fontFamily: theme.typography.fonts.regular,
+      textAlign: 'left',
     },
     replyingToContainer: {
       marginTop: theme.spacing.xxll,
@@ -90,6 +93,7 @@ const createStyles = (theme: Theme) =>
       fontFamily: theme.typography.fonts.light,
       fontSize: theme.typography.sizes.xs,
       color: theme.colors.text.secondary,
+      textAlign: 'left',
     },
     username: {
       color: theme.colors.accent.bookmark,
