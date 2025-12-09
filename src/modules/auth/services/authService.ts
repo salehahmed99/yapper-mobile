@@ -1,7 +1,6 @@
 import { extractErrorMessage } from '@/src/utils/errorExtraction';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getRefreshToken } from '@/src/utils/secureStorage';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import api from '../../../services/apiClient';
@@ -77,7 +76,7 @@ export const logOutAll = async (): Promise<void> => {
     const provider = await getAuthProvider();
 
     if (provider === 'google') {
-      await googleSignOut();
+      // await googleSignOut();
     }
 
     // Get refresh token and send it in the body
@@ -103,26 +102,57 @@ export const logOutAll = async (): Promise<void> => {
 /* -------------------------------------------------------------------------- */
 /*                               Google Sign-In                               */
 /* -------------------------------------------------------------------------- */
+const PROXY_URL = 'https://yapper-auth-proxy.vercel.app/api/callback';
 
-GoogleSignin.configure({
-  webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!,
-  iosClientId: process.env.EXPO_PUBLIC_IOS_ID,
-  offlineAccess: true,
-  forceCodeForRefreshToken: true,
-});
+const GOOGLE_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!;
+const GOOGLE_AUTH_ENDPOINT = 'https://accounts.google.com/o/oauth2/v2/auth';
 
 export const googleSignIn = async (): Promise<ILoginResponse | IOAuthResponse> => {
   try {
-    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-    await googleSignOut();
-    const userInfo = await GoogleSignin.signIn();
+    // Clear any existing browser session to force fresh login
+    await WebBrowser.coolDownAsync();
 
-    const { idToken } = userInfo.data || {};
-    if (!idToken) throw new Error('Failed to get idToken from Google');
-
-    const res = await api.post('/auth/mobile/google', {
-      access_token: idToken,
+    // Generate the Local Deep Link
+    const localDeepLink = AuthSession.makeRedirectUri({
+      scheme: 'yappermobile',
+      path: 'redirect',
     });
+
+    // Construct the Auth URL with account selection prompt
+    const authUrl =
+      `${GOOGLE_AUTH_ENDPOINT}?` +
+      `client_id=${GOOGLE_CLIENT_ID}` +
+      `&redirect_uri=${encodeURIComponent(PROXY_URL)}` +
+      `&state=${encodeURIComponent(localDeepLink)}` +
+      `&response_type=code` +
+      `&scope=${encodeURIComponent('openid profile email')}` +
+      `&prompt=select_account`;
+
+    // Open the Browser
+    const result = await WebBrowser.openAuthSessionAsync(authUrl, localDeepLink);
+    console.log('Google OAuth result:', result);
+
+    // Handle Cancellation
+    if (result.type !== 'success') {
+      throw new Error('Google sign-in cancelled');
+    }
+
+    // Parse the Code from the URL
+    const match = result.url.match(/[?&]code=([^&]+)/);
+    const code = match ? match[1] : null;
+
+    if (!code) {
+      throw new Error('No authorization code found in redirect');
+    }
+
+    // Send code to Backend - let backend handle token exchange with client_secret
+    console.log('Sending code to backend...');
+    const res = await api.post('/auth/mobile/google', {
+      code: code,
+      redirect_uri: PROXY_URL,
+    });
+    console.log('Backend response:', res.data);
+
     await setAuthProvider('google');
 
     if (res.data.data.needs_completion) {
@@ -136,7 +166,8 @@ export const googleSignIn = async (): Promise<ILoginResponse | IOAuthResponse> =
 
 export const googleSignOut = async (): Promise<void> => {
   try {
-    await GoogleSignin.signOut();
+    // Clear browser session
+    await WebBrowser.coolDownAsync();
   } catch (error) {
     throw new Error(extractErrorMessage(error));
   }
@@ -147,38 +178,57 @@ export const googleSignOut = async (): Promise<void> => {
 /* -------------------------------------------------------------------------- */
 
 const GITHUB_CLIENT_ID = process.env.EXPO_PUBLIC_GITHUB_CLIENT_ID!;
-
-const discovery = {
-  authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-  tokenEndpoint: 'https://github.com/login/oauth/access_token',
-};
+const GITHUB_AUTH_ENDPOINT = 'https://github.com/login/oauth/authorize';
 
 export const githubSignIn = async (): Promise<ILoginResponse | IOAuthResponse> => {
   try {
-    const redirectUri = AuthSession.makeRedirectUri({
+    // Clear any existing browser session to force fresh login
+    await WebBrowser.coolDownAsync();
+    const localDeepLink = AuthSession.makeRedirectUri({
       scheme: 'yappermobile',
       path: 'redirect',
     });
 
-    const request = new AuthSession.AuthRequest({
-      clientId: GITHUB_CLIENT_ID,
-      scopes: ['read:user', 'user:email'],
-      redirectUri,
-      usePKCE: true,
-    });
+    // Construct the Auth URL Manually
+    // Pass 'localDeepLink' as the 'state' so the Proxy knows where to return
+    const authUrl =
+      `${GITHUB_AUTH_ENDPOINT}?` +
+      `client_id=${GITHUB_CLIENT_ID}` +
+      `&redirect_uri=${encodeURIComponent(PROXY_URL)}` +
+      `&state=${encodeURIComponent(localDeepLink)}` +
+      `&scope=${encodeURIComponent('read:user user:email')}` +
+      `&prompt=select_account`;
 
-    const result = await request.promptAsync(discovery);
-    const codeVerifier = request.codeVerifier;
+    // Open the Browser
+    // The second argument tells the browser to watch for this specific URL and close when detected
+    const result = await WebBrowser.openAuthSessionAsync(authUrl, localDeepLink);
+    console.log('GitHub OAuth result:', result);
 
-    if (result.type !== 'success' || !result.params.code) {
-      throw new Error('GitHub sign-in failed or cancelled');
+    // Handle Cancellation
+    if (result.type !== 'success') {
+      throw new Error('GitHub sign-in cancelled');
+    }
+    console.log('GitHub OAuth success, processing...');
+
+    // Parse the Code from the URL
+    // result.url will be: exp://...?code=12345
+    const match = result.url.match(/[?&]code=([^&]+)/);
+    const code = match ? match[1] : null;
+    console.log('Extracted code:', code);
+
+    if (!code) {
+      throw new Error('No authorization code found in redirect');
     }
 
+    // Send to Backend
+    // 'redirect_uri' sent to backend must match the one sent to GitHub (the Proxy)
+
+    console.log('Sending code to backend for token exchange...');
     const res = await api.post('/auth/mobile/github', {
-      code: result.params.code,
-      redirect_uri: redirectUri,
-      code_verifier: codeVerifier,
+      code: code,
+      redirect_uri: PROXY_URL,
     });
+    console.log('Backend response:', res.data);
 
     await setAuthProvider('github');
     if (res.data.data.needs_completion) {
