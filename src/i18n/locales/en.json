@@ -27,6 +27,26 @@
     "settings": "Settings",
     "help": "Help Center"
   },
+  "search": {
+    "placeholder": "Search",
+    "searchUserPosts": "Search {{username}}'s posts",
+    "hint": "Search for topics, people, or keywords",
+    "noResults": "No results found",
+    "noPosts": "No posts found for this search",
+    "noMedia": "No media found for this search",
+    "noLatest": "No recent posts found for this search",
+    "noUsers": "No users found for this search",
+    "trending": "Trending",
+    "clear": "Clear",
+    "tabs": {
+      "posts": "Posts",
+      "media": "Media",
+      "latest": "Latest",
+      "users": "People"
+    },
+    "populateQuery": "Populate search with query",
+    "trendingAccessibility": ", Trending"
+  },
   "nav": {
     "home": "Home",
     "explore": "Explore",
@@ -34,6 +54,21 @@
     "notifications": "Notifications",
     "messages": "Messages",
     "profile": "Profile"
+  },
+  "explore": {
+    "title": "Explore",
+    "limitReached": "Limit reached",
+    "tabs": {
+      "forYou": "For You",
+      "trending": "Trending",
+      "news": "News",
+      "sports": "Sports",
+      "entertainment": "Entertainment"
+    },
+    "whoToFollow": "Who to follow",
+    "showMore": "Show more",
+    "noTrending": "No trending topics",
+    "category": "Category"
   },
   "welcome": {
     "title": "Welcome to Yapper",

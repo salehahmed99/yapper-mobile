@@ -23,6 +23,26 @@
     "settings": "الإعدادات",
     "help": "مركز المساعدة"
   },
+  "search": {
+    "placeholder": "البحث",
+    "searchUserPosts": "البحث في منشورات {{username}}",
+    "hint": "ابحث عن مواضيع أو أشخاص أو كلمات مفتاحية",
+    "noResults": "لا توجد نتائج",
+    "noPosts": "لا توجد منشورات لهذا البحث",
+    "noMedia": "لا توجد وسائط لهذا البحث",
+    "noLatest": "لا توجد منشورات حديثة لهذا البحث",
+    "noUsers": "لا يوجد مستخدمون لهذا البحث",
+    "trending": "رائج",
+    "clear": "مسح",
+    "tabs": {
+      "posts": "المنشورات",
+      "media": "الوسائط",
+      "latest": "الأحدث",
+      "users": "المستخدمون"
+    },
+    "populateQuery": "ملء البحث بالاستعلام",
+    "trendingAccessibility": "، رائج"
+  },
   "nav": {
     "home": "الرئيسية",
     "explore": "استكشف",
@@ -31,6 +51,21 @@
     "messages": "الرسائل",
     "profile": "الملف الشخصي",
     "title": "الشاشة الرئيسية"
+  },
+  "explore": {
+    "title": "استكشف",
+    "limitReached": "تم الوصول للحد",
+    "tabs": {
+      "forYou": "لك",
+      "trending": "المتداول",
+      "news": "الأخبار",
+      "sports": "الرياضة",
+      "entertainment": "الترفيه"
+    },
+    "whoToFollow": "اقتراحات للمتابعة",
+    "showMore": "عرض المزيد",
+    "noTrending": "لا توجد مواضيع رائجة",
+    "category": "فئة"
   },
   "auth": {
     "oauth": {
