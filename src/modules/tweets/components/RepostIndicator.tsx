@@ -21,7 +21,9 @@ const RepostIndicator: React.FC<IRepostIndicatorProps> = (props) => {
     <View style={styles.repostContainer}>
       <RepostIcon size={theme.iconSizes.xs} stroke={theme.colors.text.secondary} strokeWidth={0} />
       <Text style={styles.repostText}>
-        {user?.id === repostById ? t('tweets.repost.you') : repostedByName} {t('tweets.repost.reposted')}
+        {user?.id === repostById
+          ? t('tweets.repost.repostedByYou')
+          : t('tweets.repost.repostedBy', { name: repostedByName })}
       </Text>
     </View>
   );

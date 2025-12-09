@@ -4,7 +4,7 @@ import GlobeIcon from '@/src/components/icons/GlobeIcon';
 import VerifiedIcon from '@/src/components/icons/VerifiedIcon';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -19,12 +19,15 @@ const ReplyRestrictionSelector: React.FC<IReplyRestrictionSelectorProps> = (prop
   const { t } = useTranslation();
   const styles = createStyles(theme);
 
-  const options = [
-    { label: t('tweets.replyRestriction.options.everyone'), icon: GlobeIcon },
-    { label: t('tweets.replyRestriction.options.verifiedAccounts'), icon: VerifiedIcon },
-    { label: t('tweets.replyRestriction.options.accountsYouFollow'), icon: AccountIcon },
-    { label: t('tweets.replyRestriction.options.onlyAccountsYouMention'), icon: EmailIcon },
-  ];
+  const options = useMemo(
+    () => [
+      { label: t('tweets.replyRestriction.options.everyone'), icon: GlobeIcon },
+      { label: t('tweets.replyRestriction.options.verifiedAccounts'), icon: VerifiedIcon },
+      { label: t('tweets.replyRestriction.options.accountsYouFollow'), icon: AccountIcon },
+      { label: t('tweets.replyRestriction.options.onlyAccountsYouMention'), icon: EmailIcon },
+    ],
+    [t],
+  );
 
   const Icon = options[selectedOption].icon;
 
@@ -38,7 +41,7 @@ const ReplyRestrictionSelector: React.FC<IReplyRestrictionSelectorProps> = (prop
       >
         <Icon size={16} stroke={theme.colors.accent.bookmark} strokeWidth={0} filled={true} />
         <Text style={styles.text}>
-          {options[selectedOption].label} {t('tweets.replyRestriction.canReply')}
+          {t('tweets.replyRestriction.canReply', { selection: options[selectedOption].label })}
         </Text>
       </Pressable>
     </View>

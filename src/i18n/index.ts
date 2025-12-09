@@ -32,6 +32,7 @@ export const changeLanguage = async (language: string) => {
 
     // 2. Handle RTL toggle
     if (currentRTL !== isRTL) {
+      I18nManager.allowRTL(true);
       I18nManager.forceRTL(isRTL);
 
       // 3. Reload LAST
@@ -59,6 +60,7 @@ export const initLanguage = async () => {
   const language = await loadStoredLanguage();
   const isRTL = language === 'ar';
 
+  I18nManager.allowRTL(true);
   I18nManager.forceRTL(isRTL);
 
   await i18n.changeLanguage(language);

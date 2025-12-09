@@ -369,7 +369,7 @@
     "replyRestriction": {
       "title": "من يمكنه الرد؟",
       "subtitle": "اختر من يمكنه الرد على هذا المنشور. ضع في اعتبارك أن أي شخص مذكور يمكنه دائمًا الرد.",
-      "canReply": "يمكنه الرد",
+      "canReply": "{{selection}} يمكنه الرد",
       "options": {
         "everyone": "الجميع",
         "verifiedAccounts": "الحسابات الموثقة",
@@ -378,8 +378,8 @@
       }
     },
     "repost": {
-      "reposted": "أعاد النشر",
-      "you": "أنت",
+      "repostedBy": "أعاد {{name}} النشر",
+      "repostedByYou": "لقد أعدت النشر",
       "undoRepost": "التراجع عن إعادة النشر",
       "repost": "إعادة نشر",
       "quote": "اقتباس",

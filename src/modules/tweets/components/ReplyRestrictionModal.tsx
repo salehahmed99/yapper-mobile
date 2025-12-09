@@ -7,7 +7,7 @@ import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { Check } from 'lucide-react-native';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -27,12 +27,15 @@ const ReplyRestrictionModal: React.FC<IReplyRestrictionModalProps> = (props) => 
     onSelect(option);
     bottomSheetRef.current?.dismiss();
   };
-  const options = [
-    { label: t('tweets.replyRestriction.options.everyone'), icon: GlobeIcon },
-    { label: t('tweets.replyRestriction.options.verifiedAccounts'), icon: VerifiedIcon },
-    { label: t('tweets.replyRestriction.options.accountsYouFollow'), icon: AccountIcon },
-    { label: t('tweets.replyRestriction.options.onlyAccountsYouMention'), icon: EmailIcon },
-  ];
+  const options = useMemo(
+    () => [
+      { label: t('tweets.replyRestriction.options.everyone'), icon: GlobeIcon },
+      { label: t('tweets.replyRestriction.options.verifiedAccounts'), icon: VerifiedIcon },
+      { label: t('tweets.replyRestriction.options.accountsYouFollow'), icon: AccountIcon },
+      { label: t('tweets.replyRestriction.options.onlyAccountsYouMention'), icon: EmailIcon },
+    ],
+    [t],
+  );
 
   return (
     <CustomBottomSheet bottomSheetModalRef={bottomSheetRef}>
@@ -48,8 +51,8 @@ const ReplyRestrictionModal: React.FC<IReplyRestrictionModalProps> = (props) => 
                 key={option.label}
                 style={styles.option}
                 onPress={() => handleSelect(index)}
-                accessibilityLabel={`reply_restriction_option_${option.label.toLowerCase().replace(/ /g, '_')}`}
-                testID={`reply_restriction_option_${option.label.toLowerCase().replace(/ /g, '_')}`}
+                accessibilityLabel={`reply_restriction_option_${index}`}
+                testID={`reply_restriction_option_${index}`}
               >
                 <View style={styles.optionLeft}>
                   <View style={styles.iconWrapper}>

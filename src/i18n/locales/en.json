@@ -593,7 +593,7 @@
     "replyRestriction": {
       "title": "Who can reply?",
       "subtitle": "Pick who can reply to this post. Keep in mind that anyone mentioned can always reply.",
-      "canReply": "can reply",
+      "canReply": "{{selection}} can reply",
       "options": {
         "everyone": "Everyone",
         "verifiedAccounts": "Verified accounts",
@@ -602,8 +602,8 @@
       }
     },
     "repost": {
-      "reposted": "reposted",
-      "you": "You",
+      "repostedBy": "{{name}} reposted",
+      "repostedByYou": "You reposted",
       "undoRepost": "Undo repost",
       "repost": "Repost",
       "quote": "Quote",
