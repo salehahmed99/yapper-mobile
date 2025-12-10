@@ -7,7 +7,7 @@ import UserListItem from '@/src/modules/user_list/components/UserListItem';
 import { IUser } from '@/src/types/user';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { IExploreCategory, IExploreTrending, IExploreUser, ITrendItem } from '../types';
 import TrendingItem from './TrendingItem';
 import TweetCategorySection from './TweetCategorySection';
@@ -17,6 +17,8 @@ interface IForYouContentProps {
   whoToFollow: IExploreUser[];
   forYouPosts: IExploreCategory[];
   loading?: boolean;
+  refreshing?: boolean;
+  onRefresh?: () => void;
   onTrendingPress?: (trending: IExploreTrending | ITrendItem) => void;
   onUserPress?: (user: IUser) => void;
   onShowMoreUsers?: () => void;
@@ -80,6 +82,8 @@ const ForYouContent: React.FC<IForYouContentProps> = ({
   whoToFollow = [],
   forYouPosts = [],
   loading = false,
+  refreshing = false,
+  onRefresh,
   onTrendingPress,
   onUserPress,
   onShowMoreUsers,
@@ -99,7 +103,21 @@ const ForYouContent: React.FC<IForYouContentProps> = ({
 
   return (
     <MediaViewerProvider>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.container}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          onRefresh ? (
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={theme.colors.text.link}
+              colors={[theme.colors.text.link]}
+              progressBackgroundColor={theme.colors.background.primary}
+            />
+          ) : undefined
+        }
+      >
         {/* Trending Section */}
         {Array.isArray(trending) &&
           trending.map((item, index) => (

@@ -105,7 +105,8 @@ export default function WhoToFollowScreen() {
         setRefreshing(false);
       }
     },
-    [t],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
   );
 
   useEffect(() => {

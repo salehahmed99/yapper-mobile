@@ -28,6 +28,8 @@ const ForYouTab: React.FC<{ activeTabKey?: string }> = ({ activeTabKey }) => {
   const {
     exploreData,
     forYouLoading,
+    refetchForYou,
+    isRefetchingForYou,
     handleTrendingPress,
     handleUserPress,
     handleShowMoreUsers,
@@ -42,6 +44,8 @@ const ForYouTab: React.FC<{ activeTabKey?: string }> = ({ activeTabKey }) => {
       whoToFollow={exploreData?.data?.whoToFollow || []}
       forYouPosts={exploreData?.data?.forYou || []}
       loading={forYouLoading && isActive}
+      refreshing={isRefetchingForYou}
+      onRefresh={refetchForYou}
       onTrendingPress={handleTrendingPress}
       onUserPress={handleUserPress}
       onShowMoreUsers={handleShowMoreUsers}
@@ -56,7 +60,7 @@ const createTrendingTab = (tab: ExploreTab, emptyMessageKey: string, defaultMess
     const { handleTrendingPress } = useExploreContext();
     const { t } = useTranslation();
     const isActive = activeTabKey === tab;
-    const { data, isLoading } = useTrends(tab, isActive);
+    const { data, isLoading, refetch, isRefetching } = useTrends(tab, isActive);
 
     const trends = data?.data?.data || [];
 
@@ -64,6 +68,8 @@ const createTrendingTab = (tab: ExploreTab, emptyMessageKey: string, defaultMess
       <TrendingList
         trends={trends}
         loading={isLoading && isActive}
+        refreshing={isRefetching}
+        onRefresh={refetch}
         onTrendingPress={handleTrendingPress}
         emptyMessage={t(emptyMessageKey, defaultMessage)}
       />

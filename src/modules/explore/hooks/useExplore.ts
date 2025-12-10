@@ -11,6 +11,7 @@ export interface UseExploreReturn {
   forYouLoading: boolean;
   forYouError: Error | null;
   refetchForYou: () => void;
+  isRefetchingForYou: boolean;
 
   // Trending tabs state
   useTrendsHook: typeof useTrends;
@@ -70,6 +71,7 @@ const useExplore = (): UseExploreReturn => {
     forYouLoading: exploreQuery.isLoading,
     forYouError: exploreQuery.error,
     refetchForYou: exploreQuery.refetch,
+    isRefetchingForYou: exploreQuery.isRefetching,
 
     // Expose useTrends hook for tabs to use individually
     useTrendsHook: useTrends,

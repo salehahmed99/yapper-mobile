@@ -1,8 +1,8 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { IExploreTrending, ITrendItem } from '../types';
 import TrendingItem from './TrendingItem';
 
@@ -56,8 +56,6 @@ const createStyles = (theme: Theme) =>
     },
   });
 
-const MIN_LOADING_DURATION = 500; // Minimum loading time in ms to show complete animation
-
 const TrendingList: React.FC<ITrendingListProps> = ({
   trends,
   loading = false,
@@ -70,28 +68,6 @@ const TrendingList: React.FC<ITrendingListProps> = ({
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
-
-  // Track loading with minimum duration to ensure spinner animation completes
-  const [showLoading, setShowLoading] = useState(loading);
-  const loadingStartTimeRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    if (loading) {
-      loadingStartTimeRef.current = Date.now();
-      setShowLoading(true);
-    } else if (loadingStartTimeRef.current !== null) {
-      // Calculate remaining time to meet minimum duration
-      const elapsed = Date.now() - loadingStartTimeRef.current;
-      const remainingDelay = Math.max(0, MIN_LOADING_DURATION - elapsed);
-
-      const timer = setTimeout(() => {
-        setShowLoading(false);
-        loadingStartTimeRef.current = null;
-      }, remainingDelay);
-
-      return () => clearTimeout(timer);
-    }
-  }, [loading]);
 
   const renderItem = ({ item, index }: { item: IExploreTrending | ITrendItem; index: number }) => (
     <TrendingItem trending={item} rank={'trendRank' in item ? item.trendRank : index + 1} onPress={onTrendingPress} />
@@ -113,7 +89,7 @@ const TrendingList: React.FC<ITrendingListProps> = ({
     );
   };
 
-  if (showLoading && trends.length === 0) {
+  if (loading && trends.length === 0) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={theme.colors.text.secondary} />
@@ -128,8 +104,17 @@ const TrendingList: React.FC<ITrendingListProps> = ({
         renderItem={renderItem}
         keyExtractor={(item, index) => ('referenceId' in item ? item.referenceId : `trend-${index}`)}
         ListEmptyComponent={renderEmpty}
-        onRefresh={onRefresh}
-        refreshing={refreshing}
+        refreshControl={
+          onRefresh ? (
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={theme.colors.text.link}
+              colors={[theme.colors.text.link]}
+              progressBackgroundColor={theme.colors.background.primary}
+            />
+          ) : undefined
+        }
         showsVerticalScrollIndicator={false}
       />
     </View>
