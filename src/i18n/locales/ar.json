@@ -65,7 +65,12 @@
     "whoToFollow": "اقتراحات للمتابعة",
     "showMore": "عرض المزيد",
     "noTrending": "لا توجد مواضيع رائجة",
-    "category": "فئة"
+    "category": "فئة",
+    "trendingIn": {
+      "news": "رائج في الأخبار",
+      "sports": "رائج في الرياضة",
+      "entertainment": "رائج في الترفيه"
+    }
   },
   "auth": {
     "oauth": {
