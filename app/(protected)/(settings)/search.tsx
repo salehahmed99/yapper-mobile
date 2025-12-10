@@ -1,14 +1,14 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, StatusBar, TextInput, TouchableOpacity, I18nManager } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { useTranslation } from 'react-i18next';
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
 import { SettingsSection } from '@/src/modules/settings/components/SettingsSection';
 import { getSettingsData, getYourAccountData } from '@/src/modules/settings/components/settingsConfig';
 import { ISettingsItem } from '@/src/modules/settings/types/types';
-import { useTheme } from '@/src/context/ThemeContext';
-import { Theme } from '@/src/constants/theme';
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { I18nManager, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const SettingsSearchScreen: React.FC = () => {
   const { t } = useTranslation();

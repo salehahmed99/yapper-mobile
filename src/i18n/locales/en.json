@@ -324,8 +324,11 @@
     "blocked": "Blocked",
     "viewPosts": "View posts",
     "follow": "Follow",
+    "followBack": "Follow Back",
     "following": "Following",
     "followers": "Followers",
+    "followsYou": "Follows you",
+    "followedBy": "Followed by",
     "joined": "Joined",
     "noBio": "No bio available",
     "tabs": {
@@ -333,6 +336,11 @@
       "tweetsReplies": "Tweets & Replies",
       "media": "Media",
       "likes": "Likes"
+    },
+    "lists": {
+      "followers": "Followers",
+      "following": "Following",
+      "followersYouKnow": "Followers You Know"
     },
     "placeholders": {
       "tweets": "No tweets yet.",
@@ -578,6 +586,10 @@
       "dark_mode": "Dark",
       "device_settings": "Use device settings",
       "device_settings_description": "Set Dark mode to use the Light or Dark selection located in your device Display & Brightness settings."
+    },
+    "countryPicker": {
+      "title": "Select a country",
+      "searchPlaceholder": "Search"
     }
   },
   "tweets": {

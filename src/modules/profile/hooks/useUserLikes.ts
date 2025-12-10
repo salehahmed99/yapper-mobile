@@ -6,19 +6,21 @@ import { getUserLikes } from '../services/profileService';
 export const useUserLikesData = (userId: string, enabled: boolean = true) => {
   const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useInfiniteQuery({
     queryKey: profileQueryKeys.userLikes(userId),
-    queryFn: ({ pageParam }) =>
-      getUserLikes({
+    queryFn: async ({ pageParam }) => {
+      return await getUserLikes({
         userId,
         cursor: pageParam,
         limit: PROFILE_QUERY_CONFIG.pagination.defaultLimit,
-      }),
+      });
+    },
     getNextPageParam: (lastPage) => {
-      if (lastPage.data.pagination.hasMore) {
-        return lastPage.data.pagination.nextCursor;
+      if (lastPage.pagination.hasMore) {
+        return lastPage.pagination.nextCursor;
       }
       return undefined;
     },
     initialPageParam: '',
+    maxPages: PROFILE_QUERY_CONFIG.pagination.maxPages,
     enabled: !!userId && enabled,
     staleTime: PROFILE_QUERY_CONFIG.tweets.staleTime,
     gcTime: PROFILE_QUERY_CONFIG.tweets.gcTime,
@@ -26,7 +28,7 @@ export const useUserLikesData = (userId: string, enabled: boolean = true) => {
     refetchOnReconnect: PROFILE_QUERY_CONFIG.pagination.refetchOnReconnect,
   });
 
-  const likes = useMemo(() => data?.pages.flatMap((page) => page.data.data) ?? [], [data?.pages]);
+  const likes = useMemo(() => data?.pages.flatMap((page) => page.data) ?? [], [data?.pages]);
 
   return {
     likes,

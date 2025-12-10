@@ -1,19 +1,19 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, StatusBar, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
-import { AnimatedTextInput } from '@/src/modules/settings/components/AnimatedTextInput';
-import { useAuthStore } from '@/src/store/useAuthStore';
-import { useTheme } from '@/src/context/ThemeContext';
-import { Theme } from '@/src/constants/theme';
-import { confirmCurrentPassword, changePassword } from '@/src/modules/settings/services/yourAccountService';
-import Toast from 'react-native-toast-message';
 import ActivityLoader from '@/src/components/ActivityLoader';
-import { passwordSchema } from '@/src/modules/settings/types/schemas';
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
+import { AnimatedTextInput } from '@/src/modules/settings/components/AnimatedTextInput';
+import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
 import ValidationItem from '@/src/modules/settings/components/ValidationItem';
-import { validatePassword, isPasswordValid } from '@/src/modules/settings/utils/passwordValidation';
+import { changePassword, confirmCurrentPassword } from '@/src/modules/settings/services/yourAccountService';
+import { passwordSchema } from '@/src/modules/settings/types/schemas';
+import { isPasswordValid, validatePassword } from '@/src/modules/settings/utils/passwordValidation';
+import { useAuthStore } from '@/src/store/useAuthStore';
+import { router } from 'expo-router';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 export const ChangePasswordScreen: React.FC = () => {
   const { t } = useTranslation();

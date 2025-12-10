@@ -1,3 +1,4 @@
+import { ITweet } from '@/src/modules/tweets/types';
 import { IUser } from '@/src/types/user';
 
 interface IGetMyUserResponse {
@@ -18,12 +19,21 @@ interface IGetMyUserResponse {
 
 export { IGetMyUserResponse };
 
+interface IMutualFollower {
+  userId: string;
+  name: string;
+  username: string;
+  avatarUrl: string;
+}
+
+export { IMutualFollower };
+
 interface IUserProfile extends IUser {
   isFollower: boolean;
   isFollowing: boolean;
   isMuted: boolean;
   isBlocked: boolean;
-  topMutualFollowers: unknown[];
+  topMutualFollowers: IMutualFollower[];
   mutualFollowersCount: number;
   followersCount: number;
   followingCount: number;
@@ -44,7 +54,7 @@ interface IGetUserByIdResponse {
   isFollowing: boolean;
   isMuted: boolean;
   isBlocked: boolean;
-  topMutualFollowers: unknown[];
+  topMutualFollowers: IMutualFollower[];
   mutualFollowersCount: string;
 }
 
@@ -114,12 +124,8 @@ interface IUserPostsPagination {
 }
 
 interface IUserPostsResponse {
-  data: {
-    data: unknown[];
-    pagination: IUserPostsPagination;
-  };
-  count: number;
-  message: string;
+  data: ITweet[];
+  pagination: IUserPostsPagination;
 }
 
 export { IUserPostsPagination, IUserPostsParams, IUserPostsResponse };
@@ -131,12 +137,8 @@ interface IUserMediaParams {
 }
 
 interface IUserMediaResponse {
-  data: {
-    data: unknown[];
-    pagination: IUserPostsPagination;
-  };
-  count: number;
-  message: string;
+  data: ITweet[];
+  pagination: IUserPostsPagination;
 }
 
 export { IUserMediaParams, IUserMediaResponse };
@@ -148,12 +150,8 @@ interface IUserLikesParams {
 }
 
 interface IUserLikesResponse {
-  data: {
-    data: unknown[];
-    pagination: IUserPostsPagination;
-  };
-  count: number;
-  message: string;
+  data: ITweet[];
+  pagination: IUserPostsPagination;
 }
 
 export { IUserLikesParams, IUserLikesResponse };
@@ -165,12 +163,8 @@ interface IUserRepliesParams {
 }
 
 interface IUserRepliesResponse {
-  data: {
-    data: unknown[];
-    pagination: IUserPostsPagination;
-  };
-  count: number;
-  message: string;
+  data: ITweet[];
+  pagination: IUserPostsPagination;
 }
 
 export { IUserRepliesParams, IUserRepliesResponse };

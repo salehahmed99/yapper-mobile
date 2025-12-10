@@ -114,7 +114,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
               testID="sidemenu_following_button"
             >
               <Text style={styles.followCount}>
-                <Text style={styles.bold}>{user?.following || 0}</Text> Following
+                <Text style={styles.bold}>{user?.following || 0}</Text> {t('profile.following')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -126,7 +126,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
               testID="sidemenu_followers_button"
             >
               <Text style={styles.followCount}>
-                <Text style={styles.bold}>{user?.followers || 0}</Text> Followers
+                <Text style={styles.bold}>{user?.followers || 0}</Text> {t('profile.followers')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -175,6 +175,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tile}
+              // onPress={() => navigate('/(protected)/(settings)/settingsScreen')}
               onPress={() => navigate('/(protected)/bookmarks')}
               accessibilityLabel="sidemenu_bookmarks_button"
               testID="sidemenu_bookmarks_button"

@@ -34,9 +34,7 @@ const UserListRoute = ({ type, userId }: UserListRouteProps) => {
     router.push(`/(profile)/${user.id}` as any);
   };
 
-  const handleFollowPress = (_user: IUser) => {
-    // it's handled inside FollowButton this is just a placeholder
-  };
+  const handleFollowPress = (_user: IUser) => {};
 
   if (!targetUserId) {
     return <View style={styles.page} testID={`user_list_route_${type}_no_user`} />;
@@ -56,6 +54,9 @@ const UserListRoute = ({ type, userId }: UserListRouteProps) => {
 
 const FollowingRoute = ({ userId }: { userId?: string }) => <UserListRoute type="following" userId={userId} />;
 const FollowersRoute = ({ userId }: { userId?: string }) => <UserListRoute type="followers" userId={userId} />;
+const MutualFollowersRoute = ({ userId }: { userId?: string }) => (
+  <UserListRoute type="mutualFollowers" userId={userId} />
+);
 
 interface ListsComponentProps {
   initialTab?: string;
@@ -64,10 +65,21 @@ interface ListsComponentProps {
 
 export default function ListsComponent({ initialTab, userId }: ListsComponentProps) {
   const { t } = useTranslation();
+  const currentUser = useAuthStore((state) => state.user);
+  const isOwnProfile = !userId || userId === currentUser?.id;
+
   const tabs: TabConfig[] = [
-    { key: 'Following', title: t('profile.following'), component: () => <FollowingRoute userId={userId} /> },
-    { key: 'Followers', title: t('profile.followers'), component: () => <FollowersRoute userId={userId} /> },
+    { key: 'Following', title: t('profile.lists.following'), component: () => <FollowingRoute userId={userId} /> },
+    { key: 'Followers', title: t('profile.lists.followers'), component: () => <FollowersRoute userId={userId} /> },
   ];
 
-  return <CustomTabView tabs={tabs} initialTab={initialTab} />;
+  if (!isOwnProfile) {
+    tabs.push({
+      key: 'MutualFollowers',
+      title: t('profile.lists.followersYouKnow'),
+      component: () => <MutualFollowersRoute userId={userId} />,
+    });
+  }
+
+  return <CustomTabView tabs={tabs} initialTab={initialTab} scrollEnabled={!isOwnProfile} />;
 }

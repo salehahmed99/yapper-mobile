@@ -1,5 +1,6 @@
-import { ChevronLeft, Check } from 'lucide-react-native';
+import { Check, ChevronLeft } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FlatList, ListRenderItem, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 
@@ -21,9 +22,10 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
   onSelect,
   showBackButton = true,
   onBack,
-  placeholder = 'Search',
+  placeholder,
 }) => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
 
   const countries = useMemo<Country[]>(
@@ -313,13 +315,13 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
         ) : (
           <View style={styles.backPlaceholder} />
         )}
-        <Text style={[styles.title, { color: theme.colors.text.primary }]}>Select a country</Text>
+        <Text style={[styles.title, { color: theme.colors.text.primary }]}>{t('settings.countryPicker.title')}</Text>
         <View style={styles.backPlaceholder} />
       </View>
 
       <View style={styles.searchContainer}>
         <TextInput
-          placeholder={placeholder}
+          placeholder={placeholder || t('settings.countryPicker.searchPlaceholder')}
           placeholderTextColor={theme.colors.text.secondary}
           value={query}
           onChangeText={setQuery}

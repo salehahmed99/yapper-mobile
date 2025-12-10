@@ -111,8 +111,11 @@
     "blocked": "محظور",
     "viewPosts": "عرض المنشورات",
     "follow": "متابعة",
+    "followBack": "متابعة متبادلة",
     "following": "متابع",
     "followers": "متابعون",
+    "followsYou": "يتابعك",
+    "followedBy": "متابع بواسطة",
     "joined": "انضم",
     "noBio": "لا توجد سيرة ذاتية",
     "tabs": {
@@ -120,6 +123,11 @@
       "tweetsReplies": "التغريدات والردود",
       "media": "الوسائط",
       "likes": "الإعجابات"
+    },
+    "lists": {
+      "followers": "المتابعون",
+      "following": "المتابعة",
+      "followersYouKnow": "المتابعون الذين تعرفهم"
     },
     "placeholders": {
       "tweets": "لا توجد تغريدات بعد.",
@@ -136,6 +144,7 @@
       "location": "الموقع",
       "website": "الموقع الإلكتروني",
       "birthday": "تاريخ الميلاد",
+      "country": "البلد",
       "namePlaceholder": "أضف اسمك",
       "bioPlaceholder": "أضف سيرة ذاتية لملفك الشخصي",
       "locationPlaceholder": "أضف موقعك",
@@ -354,6 +363,10 @@
       "dark_mode": "داكن",
       "device_settings": "استخدام إعدادات الجهاز",
       "device_settings_description": "اضبط الوضع الداكن لاستخدام تحديد الفاتح أو الداكن الموجود في إعدادات العرض والسطوع بجهازك."
+    },
+    "countryPicker": {
+      "title": "اختر بلدا",
+      "searchPlaceholder": "بحث"
     }
   },
   "tweets": {
