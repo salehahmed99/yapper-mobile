@@ -206,7 +206,7 @@ const createStyles = (theme: Theme, scaleWidth = 1, scaleHeight = 1, scaleFonts 
     },
     successIcon: {
       position: 'absolute',
-      right: theme.spacing.md * scaleWidth,
+      left: theme.spacing.md * scaleWidth,
       top: theme.spacing.lg * scaleHeight,
       width: 20 * scaleWidth,
       height: 20 * scaleHeight,
@@ -217,7 +217,7 @@ const createStyles = (theme: Theme, scaleWidth = 1, scaleHeight = 1, scaleFonts 
     },
     errorIconContainer: {
       position: 'absolute',
-      right: theme.spacing.md * scaleWidth,
+      left: theme.spacing.md * scaleWidth,
       top: theme.spacing.md * scaleHeight,
       paddingHorizontal: theme.spacing.xs * scaleWidth,
       paddingVertical: theme.spacing.xs * scaleHeight,
