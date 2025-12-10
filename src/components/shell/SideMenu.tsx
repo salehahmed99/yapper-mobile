@@ -6,17 +6,7 @@ import { useAuthStore } from '@/src/store/useAuthStore';
 import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
 import { usePathname, useRouter } from 'expo-router';
-import {
-  Bell,
-  Bookmark,
-  HelpCircle,
-  LogOut,
-  MessageCircle,
-  MoonStar,
-  Search,
-  Settings,
-  User,
-} from 'lucide-react-native';
+import { Bell, Bookmark, HelpCircle, MessageCircle, MoonStar, Search, Settings, User } from 'lucide-react-native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -48,14 +38,6 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
   const [isThemeSheetVisible, setIsThemeSheetVisible] = React.useState(false);
-
-  const logout = useAuthStore((state) => state.logout);
-
-  const handleLogout = () => {
-    closeSideMenu();
-    logout(false);
-    router.replace('/(auth)/landing-screen');
-  };
 
   function navigate(path: string) {
     // If already on target path, just close menu
@@ -230,15 +212,6 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             >
               <HelpCircle color={theme.colors.text.primary} size={theme.iconSizes.icon} />
               <Text style={styles.tileText}>{t('menu.help')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.tile}
-              onPress={handleLogout}
-              accessibilityLabel="sidemenu_logout_button"
-              testID="sidemenu_logout_button"
-            >
-              <LogOut color={theme.colors.text.primary} size={theme.iconSizes.icon} />
-              <Text style={[styles.tileText]}>{'Logout'}</Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
