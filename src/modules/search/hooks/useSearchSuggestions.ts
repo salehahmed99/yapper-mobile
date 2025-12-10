@@ -14,7 +14,7 @@ export const useSearchSuggestions = (options: UseSearchSuggestionsOptions) => {
     queryKey: ['searchSuggestions', query, username],
     queryFn: () => getSearchSuggestions({ query, username }),
     enabled: enabled && query.length > 0,
-    staleTime: 30 * 1000, // Consider data stale after 30 seconds
-    gcTime: 5 * 60 * 1000, // Cache for 5 minutes
+    staleTime: 0,
+    gcTime: 0,
   });
 };

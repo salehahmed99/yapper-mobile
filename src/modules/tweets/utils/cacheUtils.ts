@@ -2,6 +2,42 @@ import { ICategoryTweetsResponse, IExploreResponse } from '@/src/modules/explore
 import { InfiniteData } from '@tanstack/react-query';
 import { ITweet, ITweets } from '../types';
 
+/**
+ * Helper to update a single tweet and all its nested tweets (parentTweet, conversationTweet, replies)
+ */
+const updateTweetDeep = (tweet: ITweet, tweetId: string, updater: (t: ITweet) => ITweet): ITweet => {
+  let updatedTweet = tweet;
+
+  // Update main tweet if it matches
+  if (tweet.tweetId === tweetId) {
+    updatedTweet = updater(tweet);
+  }
+
+  // Update nested replies
+  if (tweet.replies && Array.isArray(tweet.replies)) {
+    const updatedReplies = tweet.replies.map((reply: ITweet) => (reply.tweetId === tweetId ? updater(reply) : reply));
+    if (updatedReplies !== tweet.replies) {
+      updatedTweet = { ...updatedTweet, replies: updatedReplies };
+    }
+  }
+
+  // Update nested conversationTweet
+  if (tweet.conversationTweet && tweet.conversationTweet.tweetId === tweetId) {
+    updatedTweet = { ...updatedTweet, conversationTweet: updater(tweet.conversationTweet) };
+  }
+
+  // Update nested parentTweet
+  if (tweet.parentTweet && tweet.parentTweet.tweetId === tweetId) {
+    updatedTweet = { ...updatedTweet, parentTweet: updater(tweet.parentTweet) };
+  }
+
+  return updatedTweet;
+};
+
+/**
+ * Update tweets in infinite cache (timeline, profile, search results, etc.)
+ * Structure: InfiniteData<{ data: ITweet[], pagination: {...} }>
+ */
 export const updateTweetsInInfiniteCache = (
   oldData: InfiniteData<ITweets> | undefined,
   tweetId: string,
@@ -13,36 +49,14 @@ export const updateTweetsInInfiniteCache = (
     ...oldData,
     pages: oldData.pages.map((page: ITweets) => ({
       ...page,
-      data: page.data.map((tweet: ITweet) => {
-        let updatedTweet = tweet;
-
-        if (tweet.tweetId === tweetId) {
-          updatedTweet = updater(tweet);
-        }
-
-        if (tweet.replies && Array.isArray(tweet.replies)) {
-          const updatedReplies = tweet.replies.map((reply: ITweet) =>
-            reply.tweetId === tweetId ? updater(reply) : reply,
-          );
-          if (updatedReplies !== tweet.replies) {
-            updatedTweet = { ...updatedTweet, replies: updatedReplies };
-          }
-        }
-
-        if (tweet.conversationTweet && tweet.conversationTweet.tweetId === tweetId) {
-          updatedTweet = { ...updatedTweet, conversationTweet: updater(tweet.conversationTweet) };
-        }
-
-        if (tweet.parentTweet && tweet.parentTweet.tweetId === tweetId) {
-          updatedTweet = { ...updatedTweet, parentTweet: updater(tweet.parentTweet) };
-        }
-
-        return updatedTweet;
-      }),
+      data: page.data.map((tweet: ITweet) => updateTweetDeep(tweet, tweetId, updater)),
     })),
   };
 };
 
+/**
+ * Remove tweet from infinite cache
+ */
 export const removeTweetFromInfiniteCache = (oldData: InfiniteData<ITweets> | undefined, tweetId: string) => {
   if (!oldData?.pages) return oldData;
 
@@ -53,6 +67,8 @@ export const removeTweetFromInfiniteCache = (oldData: InfiniteData<ITweets> | un
       data: page.data
         .map((tweet: ITweet) => {
           let updatedTweet = tweet;
+
+          // Filter out matching replies
           if (tweet.replies && Array.isArray(tweet.replies)) {
             const filteredReplies = tweet.replies.filter((reply: ITweet) => reply.tweetId !== tweetId);
             if (filteredReplies.length !== tweet.replies.length) {
@@ -60,9 +76,12 @@ export const removeTweetFromInfiniteCache = (oldData: InfiniteData<ITweets> | un
             }
           }
 
+          // Remove nested conversationTweet if it matches
           if (tweet.conversationTweet && tweet.conversationTweet.tweetId === tweetId) {
             updatedTweet = { ...updatedTweet, conversationTweet: undefined };
           }
+
+          // Remove nested parentTweet if it matches
           if (tweet.parentTweet && tweet.parentTweet.tweetId === tweetId) {
             updatedTweet = { ...updatedTweet, parentTweet: undefined };
           }
@@ -76,7 +95,7 @@ export const removeTweetFromInfiniteCache = (oldData: InfiniteData<ITweets> | un
 
 /**
  * Update tweets in explore cache
- * Explore data structure: { data: { forYou: [{ category, tweets/posts }] } }
+ * Structure: { data: { forYou: [{ category, tweets/posts }] } }
  */
 export const updateExploreCache = (
   oldData: IExploreResponse | undefined,
@@ -91,12 +110,7 @@ export const updateExploreCache = (
       ...oldData.data,
       forYou: oldData.data.forYou.map((category) => {
         const tweets = category.tweets || category.posts || [];
-        const updatedTweets = tweets.map((tweet) => {
-          if (tweet.tweetId === tweetId) {
-            return updater(tweet);
-          }
-          return tweet;
-        });
+        const updatedTweets = tweets.map((tweet) => updateTweetDeep(tweet, tweetId, updater));
 
         // Return with the same key (tweets or posts) that was used originally
         if (category.tweets) {
@@ -113,7 +127,7 @@ export const updateExploreCache = (
 
 /**
  * Update tweets in category posts infinite cache
- * CategoryPosts data structure: { pages: [{ data: { tweets: [], pagination: {} } }] }
+ * Structure: InfiniteData<{ data: { tweets: [], pagination: {} } }>
  */
 export const updateCategoryPostsCache = (
   oldData: InfiniteData<ICategoryTweetsResponse> | undefined,
@@ -131,12 +145,7 @@ export const updateCategoryPostsCache = (
         ...page,
         data: {
           ...page.data,
-          tweets: page.data.tweets.map((tweet) => {
-            if (tweet.tweetId === tweetId) {
-              return updater(tweet);
-            }
-            return tweet;
-          }),
+          tweets: page.data.tweets.map((tweet) => updateTweetDeep(tweet, tweetId, updater)),
         },
       };
     }),
