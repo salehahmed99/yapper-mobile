@@ -1,5 +1,6 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { formatCount } from '@/src/utils/formatCount';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -63,15 +64,6 @@ const createStyles = (theme: Theme) =>
     },
   });
 
-const formatPostCount = (count: number): string => {
-  if (count >= 1000000) {
-    return `${(count / 1000000).toFixed(1)}M`;
-  } else if (count >= 1000) {
-    return `${(count / 1000).toFixed(1)}K`;
-  }
-  return count.toString();
-};
-
 const getTrendingText = (trending: IExploreTrending | ITrendItem): string => {
   if ('text' in trending) {
     return trending.text;
@@ -122,7 +114,7 @@ const TrendingItem: React.FC<ITrendingItemProps> = ({ trending, rank, onPress })
             {trendingText}
           </Text>
           <Text style={styles.postCount}>
-            {formatPostCount(postsCount)} {t('explore.posts', 'posts')}
+            {formatCount(postsCount)} {t('explore.posts', 'posts')}
           </Text>
         </View>
       </View>

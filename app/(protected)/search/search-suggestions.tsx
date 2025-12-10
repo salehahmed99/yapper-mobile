@@ -1,5 +1,6 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import useDebounce from '@/src/hooks/useDebounce';
 import SearchHistoryList from '@/src/modules/search/components/SearchHistoryList';
 import SearchInput from '@/src/modules/search/components/SearchInput';
 import SuggestedUserItem from '@/src/modules/search/components/SuggestedUserItem';
@@ -22,20 +23,19 @@ export default function SearchSuggestionsScreen() {
   const username = params.username || undefined;
   const isProfileSearch = username !== undefined;
 
-  // Custom placeholder for profile search
+  const debouncedQuery = useDebounce(query.trim(), 300);
+
   const placeholder = isProfileSearch ? t('search.searchUserPosts', { username: `@${username}` }) : undefined;
 
-  // Search history hook
   const { searchHistory, addToHistory, removeFromHistory, clearHistory } = useSearchHistory();
 
   const { data, isLoading } = useSearchSuggestions({
-    query,
+    query: debouncedQuery,
     username,
-    enabled: query.length > 0,
+    enabled: debouncedQuery.length > 0,
   });
 
   const suggestions = data?.data?.suggestedQueries ?? [];
-  // Hide user suggestions when searching within a profile
   const users = isProfileSearch ? [] : (data?.data?.suggestedUsers ?? []);
 
   const handleQueryPress = useCallback(
