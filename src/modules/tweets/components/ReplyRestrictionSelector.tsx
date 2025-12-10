@@ -1,4 +1,4 @@
-import AccountIcon from '@/src/components/icons/AccountIcon';
+import AccountCheckIcon from '@/src/components/icons/AccountCheckIcon';
 import EmailIcon from '@/src/components/icons/EmailIcon';
 import GlobeIcon from '@/src/components/icons/GlobeIcon';
 import VerifiedIcon from '@/src/components/icons/VerifiedIcon';
@@ -23,7 +23,7 @@ const ReplyRestrictionSelector: React.FC<IReplyRestrictionSelectorProps> = (prop
     () => [
       { label: t('tweets.replyRestriction.options.everyone'), icon: GlobeIcon },
       { label: t('tweets.replyRestriction.options.verifiedAccounts'), icon: VerifiedIcon },
-      { label: t('tweets.replyRestriction.options.accountsYouFollow'), icon: AccountIcon },
+      { label: t('tweets.replyRestriction.options.accountsYouFollow'), icon: AccountCheckIcon },
       { label: t('tweets.replyRestriction.options.onlyAccountsYouMention'), icon: EmailIcon },
     ],
     [t],

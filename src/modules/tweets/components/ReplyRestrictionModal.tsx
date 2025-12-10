@@ -1,5 +1,4 @@
 import CustomBottomSheet from '@/src/components/CustomBottomSheet';
-import AccountIcon from '@/src/components/icons/AccountIcon';
 import EmailIcon from '@/src/components/icons/EmailIcon';
 import GlobeIcon from '@/src/components/icons/GlobeIcon';
 import VerifiedIcon from '@/src/components/icons/VerifiedIcon';
@@ -10,6 +9,7 @@ import { Check } from 'lucide-react-native';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import AccountCheckIcon from '../../../components/icons/AccountCheckIcon';
 
 interface IReplyRestrictionModalProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
@@ -31,7 +31,7 @@ const ReplyRestrictionModal: React.FC<IReplyRestrictionModalProps> = (props) => 
     () => [
       { label: t('tweets.replyRestriction.options.everyone'), icon: GlobeIcon },
       { label: t('tweets.replyRestriction.options.verifiedAccounts'), icon: VerifiedIcon },
-      { label: t('tweets.replyRestriction.options.accountsYouFollow'), icon: AccountIcon },
+      { label: t('tweets.replyRestriction.options.accountsYouFollow'), icon: AccountCheckIcon },
       { label: t('tweets.replyRestriction.options.onlyAccountsYouMention'), icon: EmailIcon },
     ],
     [t],

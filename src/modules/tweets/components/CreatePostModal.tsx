@@ -11,12 +11,14 @@ import { MediaAsset, pickMediaFromLibrary, showCameraOptions } from '@/src/modul
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Image } from 'expo-image';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Keyboard, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { TriggersConfig, useMentions } from 'react-native-controlled-mentions';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ParentTweet from './ParentTweet';
 import ParentTweetV2 from './ParentTweetV2';
+import UserSuggestionsList from './UserSuggestionsList';
 
 const MAX_TWEET_LENGTH = 280;
 
@@ -29,6 +31,7 @@ interface ICreatePostModalProps {
   onPostReply?: (tweetId: string, content: string, mediaUris?: string[]) => void;
   onPostQuote?: (tweetId: string, content: string, mediaUris?: string[]) => void;
 }
+
 const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
   const { visible, onClose, type, tweet, onPost, onPostReply, onPostQuote } = props;
 
@@ -40,6 +43,23 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
 
   const [tweetText, setTweetText] = useState('');
   const [replyRestriction, setReplyRestriction] = useState<number>(0);
+  const triggersConfig: TriggersConfig<'mention'> = useMemo(() => {
+    return {
+      mention: {
+        // Symbol that will trigger keyword change
+        trigger: '@',
+
+        // Style which mention will be highlighted in the `TextInput`
+        textStyle: { color: theme.colors.accent.bookmark },
+      },
+    };
+  }, [theme]);
+
+  const { textInputProps, triggers } = useMentions({
+    value: tweetText,
+    onChange: setTweetText,
+    triggersConfig,
+  });
   const [media, setMedia] = useState<MediaAsset[]>([]);
   const replyRestrictionModalRef = useRef<BottomSheetModal>(null);
 
@@ -134,7 +154,7 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
             <CreatePostHeader canPost={canPost} handleCancel={handleClosePostModal} handlePost={handlePost} />
             <ScrollView
               style={{ flex: 1 }}
-              contentContainerStyle={{ flexGrow: 1 }}
+              contentContainerStyle={{ flexGrow: 1, gap: theme.spacing.xxll }}
               keyboardShouldPersistTaps="always"
               showsVerticalScrollIndicator={true}
             >
@@ -149,13 +169,12 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
                 />
                 <View style={styles.postContentContainer}>
                   <TextInput
+                    {...textInputProps}
                     ref={textInputRef}
                     style={styles.textInput}
                     placeholder={getPlaceholderText()}
                     placeholderTextColor={theme.colors.text.secondary}
                     multiline
-                    value={tweetText}
-                    onChangeText={setTweetText}
                     autoFocus
                     maxLength={MAX_TWEET_LENGTH + 100}
                     cursorColor={theme.colors.accent.bookmark}
@@ -168,6 +187,7 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
                   {media.length > 0 && <TweetMediaPicker media={media} onRemoveMedia={handleRemoveMedia} />}
                 </View>
               </View>
+              <UserSuggestionsList {...triggers.mention} />
             </ScrollView>
 
             <ReplyRestrictionSelector selectedOption={replyRestriction} onPress={handleOpenReplyModal} />
