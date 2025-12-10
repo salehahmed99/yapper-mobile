@@ -10,7 +10,8 @@ export const usernameSchema = z
   .trim()
   .min(3, 'Username must be at least 3 characters long')
   .max(20, 'Username must be at most 20 characters long')
-  .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores');
+  .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain English letters, numbers, and underscores')
+  .refine((val) => /^[a-zA-Z]/.test(val), 'Username must start with an English letter');
 
 export const userBirthDateSchema = z.string({ required_error: 'Birth date is required' }).refine((date) => {
   const parsedDate = new Date(date);
@@ -31,7 +32,8 @@ export const userBirthDateSchema = z.string({ required_error: 'Birth date is req
 export const passwordLogInSchema = z
   .string({ required_error: 'Password is required' })
   .min(8, 'Password must be at least 8 characters long')
-  .max(64, 'Password must be at most 64 characters long');
+  .max(64, 'Password must be at most 64 characters long')
+  .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain English letters, numbers, and underscores');
 
 export const passwordSchema = z
   .string({ required_error: 'Password is required' })

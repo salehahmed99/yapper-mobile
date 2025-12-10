@@ -1,15 +1,23 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, I18nManager, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { format } from 'date-fns';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import i18n, { toLocalizedNumber } from '@/src/i18n';
+import { format } from 'date-fns';
+import { ar, enUS } from 'date-fns/locale';
 import { AlertCircle, Check } from 'lucide-react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Animated, I18nManager, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const dateLocales: { [key: string]: any } = {
+  en: enUS,
+  ar: ar,
+};
 
 interface IAuthInputProps {
   description: string;
   label: string;
-  value: string; // ISO format for backend
+  value: string;
   status?: 'success' | 'error' | 'none';
   showCheck?: boolean;
   showDescription?: boolean;
@@ -34,8 +42,12 @@ const AuthInput: React.FC<IAuthInputProps> = ({
   const [displayDate, setDisplayDate] = useState<string>('');
 
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const { width, height } = useWindowDimensions();
   const isRTL = I18nManager.isRTL;
+  const currentLanguage = i18n?.language || 'en';
+  const languageCode = currentLanguage.split('-')[0];
+  const currentLocale = dateLocales[languageCode] || enUS;
 
   const scaleWidth = Math.min(Math.max(width / 390, 0.85), 1.1);
   const scaleHeight = Math.min(Math.max(height / 844, 0.85), 1.1);
@@ -62,12 +74,13 @@ const AuthInput: React.FC<IAuthInputProps> = ({
     if (value) {
       const dateObj = new Date(value);
       if (!isNaN(dateObj.getTime())) {
-        setDisplayDate(format(dateObj, 'MMMM dd, yyyy')); // Human-readable
+        const formattedDate = format(dateObj, 'MMMM dd, yyyy', { locale: currentLocale });
+        setDisplayDate(toLocalizedNumber(formattedDate));
       }
     } else {
       setDisplayDate('');
     }
-  }, [value]);
+  }, [value, currentLocale]);
 
   const labelStyle = {
     position: 'absolute' as const,
@@ -88,10 +101,9 @@ const AuthInput: React.FC<IAuthInputProps> = ({
 
   const onDateConfirm = (selectedDate: Date) => {
     setShowPicker(false);
-    // Backend ISO format
     onChange(selectedDate.toISOString().split('T')[0]);
-    // Display human-readable
-    setDisplayDate(format(selectedDate, 'MMMM dd, yyyy'));
+    const formattedDate = format(selectedDate, 'MMMM dd, yyyy', { locale: currentLocale });
+    setDisplayDate(toLocalizedNumber(formattedDate));
   };
 
   return (
@@ -119,7 +131,10 @@ const AuthInput: React.FC<IAuthInputProps> = ({
               onConfirm={onDateConfirm}
               onCancel={() => setShowPicker(false)}
               maximumDate={new Date()}
-              minimumDate={new Date(1900, 0, 1)} // Prevent weird 1970 fallback
+              minimumDate={new Date(1900, 0, 1)}
+              locale={currentLanguage}
+              confirmTextIOS={t('buttons.confirm')}
+              cancelTextIOS={t('buttons.cancel')}
             />
           </>
         ) : (
@@ -134,6 +149,7 @@ const AuthInput: React.FC<IAuthInputProps> = ({
             keyboardAppearance="dark"
             accessibilityLabel="Auth_input"
             textAlign={isRTL ? 'right' : 'left'}
+            keyboardType="ascii-capable"
           />
         )}
 

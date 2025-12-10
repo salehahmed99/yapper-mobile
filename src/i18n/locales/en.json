@@ -305,7 +305,20 @@
     "back": "Back",
     "continue": "Continue",
     "login": "Login",
-    "logout": "Logout"
+    "logout": "Logout",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  },
+  "recaptcha": {
+    "title": "Please verify you're human",
+    "loading": "Loading reCAPTCHA...",
+    "loadingVerification": "Loading verification...",
+    "cancel": "Cancel",
+    "expired": "Verification expired. Please try again.",
+    "failed": "Verification failed. Please try again.",
+    "failedToLoad": "Failed to load reCAPTCHA",
+    "failedToRender": "Failed to render verification",
+    "failedToLoadScript": "Failed to load reCAPTCHA script"
   },
   "activityLoader": {
     "sendingCode": "Sending code...",

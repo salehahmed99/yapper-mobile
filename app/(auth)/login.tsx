@@ -22,6 +22,7 @@ import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { ILoginResponse } from '@/src/modules/auth/types';
 import { useAuthStore } from '@/src/store/useAuthStore';
+import { ButtonOptions } from '@/src/modules/auth/utils/enums';
 
 // Types
 type InputType = 'email' | 'phone' | 'username' | null;
@@ -245,14 +246,14 @@ const LoginScreen = () => {
 
       <BottomBar
         rightButton={{
-          label: currentStep === 1 ? t('auth.login.buttons.next') : t('auth.login.buttons.login'),
+          label: currentStep === 1 ? ButtonOptions.NEXT : ButtonOptions.LOGIN,
           onPress: handleNext,
           enabled: nextState,
           visible: true,
           type: 'primary',
         }}
         leftButton={{
-          label: t('auth.login.buttons.forgotPassword'),
+          label: ButtonOptions.FORGOT_PASSWORD,
           onPress: handleForgotPassword,
           enabled: true,
           visible: true,

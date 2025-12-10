@@ -5,6 +5,7 @@ import type { Theme } from '../../../constants/theme';
 import { useTheme } from '../../../context/ThemeContext';
 import DisabledInput from './shared/DisabledInput';
 import PasswordInput from './shared/PasswordInput';
+import { passwordSchema } from '../schemas/schemas';
 
 interface IPasswordFormProps {
   userIdentifier: string;
@@ -24,6 +25,7 @@ const PasswordForm: React.FC<IPasswordFormProps> = ({
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const isPasswordValid = passwordSchema.safeParse(password).success;
 
   return (
     <View style={styles.container}>
@@ -39,8 +41,8 @@ const PasswordForm: React.FC<IPasswordFormProps> = ({
         onChangeText={onPasswordChange}
         onToggleVisibility={onTogglePasswordVisibility}
         isVisible={isPasswordVisible}
-        showCheck={true}
-        status="success"
+        showCheck={isPasswordValid}
+        status={'success'}
       />
     </View>
   );

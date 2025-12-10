@@ -1,12 +1,14 @@
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import i18n from '@/src/i18n';
 import AuthInput from '@/src/modules/auth/components/shared/AuthInput';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import AuthTitle from '@/src/modules/auth/components/shared/Title';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { userBirthDateSchema } from '@/src/modules/auth/schemas/schemas';
 import { OAuthStep1, OAuthStep2 } from '@/src/modules/auth/services/authService';
+import { changeUserLanguage } from '@/src/modules/auth/services/signUpService';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import React, { useMemo, useState } from 'react';
@@ -66,6 +68,7 @@ const BirthDateScreen = () => {
       });
 
       await loginUser(secResponse.data.user, secResponse.data.accessToken, secResponse.data.refreshToken);
+      await changeUserLanguage(i18n.language);
 
       Toast.show({
         type: 'success',

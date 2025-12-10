@@ -17,6 +17,11 @@
   "accessibility": {
     "openMenu": "افتح القائمة"
   },
+  "activityLoader": {
+    "sendingCode": "جاري إرسال الرمز...",
+    "verifyingCode": "جاري التحقق من الرمز...",
+    "resettingPassword": "جاري إعادة تعيين كلمة المرور الخاصة بك..."
+  },
   "menu": {
     "home": "الصفحة الرئيسية",
     "profile": "الملف الشخصي",
@@ -36,6 +41,11 @@
     "profile": "الملف الشخصي",
     "title": "الشاشة الرئيسية"
   },
+  "welcome": {
+    "title": "مرحباً بك في Yapper",
+    "subtitle": "تواصل وشارك واتصل",
+    "goToLogin": "الذهاب إلى تسجيل الدخول"
+  },
   "auth": {
     "login": {
       "emailTitle": "للبدء، أدخل رقم هاتفك أو بريدك الإلكتروني أو @username",
@@ -49,7 +59,6 @@
         "next": "التالي",
         "login": "تسجيل الدخول",
         "back": "رجوع",
-        "skip": "تخطي",
         "forgotPassword": "هل نسيت كلمة المرور؟"
       },
       "errors": {
@@ -296,6 +305,26 @@
       "resettingPassword": "جاري إعادة تعيين كلمة المرور الخاصة بك...",
       "loggingIn": "جاري تسجيل دخولك..."
     }
+  },
+  "buttons": {
+    "next": "التالي",
+    "back": "رجوع",
+    "continue": "متابعة",
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "confirm": "تأكيد",
+    "cancel": "إلغاء"
+  },
+  "recaptcha": {
+    "title": "يرجى التحقق من أنك لست روبوت",
+    "loading": "جاري تحميل التحقق...",
+    "loadingVerification": "جاري تحميل التحقق...",
+    "cancel": "إلغاء",
+    "expired": "انتهت صلاحية التحقق. يرجى المحاولة مرة أخرى.",
+    "failed": "فشل التحقق. يرجى المحاولة مرة أخرى.",
+    "failedToLoad": "فشل تحميل التحقق",
+    "failedToRender": "فشل عرض التحقق",
+    "failedToLoadScript": "فشل تحميل برنامج التحقق"
   },
   "userList": {
     "emptyState": "لا يوجد أحد حتى الآن.",

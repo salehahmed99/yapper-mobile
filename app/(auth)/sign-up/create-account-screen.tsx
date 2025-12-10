@@ -14,6 +14,8 @@ import React, { useMemo, useState, useRef } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
+import { filterAsciiOnly } from '@/src/modules/auth/utils/filterAsic';
+import i18n from '@/src/i18n';
 
 const CreateAccountScreen = () => {
   const { theme } = useTheme();
@@ -43,7 +45,7 @@ const CreateAccountScreen = () => {
   };
 
   const onchangeName = (text: string) => {
-    setName(text);
+    setName(filterAsciiOnly(text));
     setIsValidName(text.trim().length <= 50 ? true : false);
   };
 
@@ -190,7 +192,7 @@ const CreateAccountScreen = () => {
         onExpire={handleCaptchaExpire}
         size="normal"
         theme={theme.colors.background.primary === '#000000' ? 'dark' : 'light'}
-        lang="en"
+        lang={i18n.language}
         themeColors={theme}
       />
     </View>
