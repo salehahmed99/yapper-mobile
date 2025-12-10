@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, I18nManager } from 'react-native';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { ISettingsItem as SettingsItemType } from '../types/types';
 import { useTheme } from '@/src/context/ThemeContext';
@@ -21,6 +21,7 @@ export const SettingsItem: React.FC<ISettingsItemProps> = ({
   showIcons = true,
 }) => {
   const { theme } = useTheme();
+  const isRTL = I18nManager.isRTL;
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const getIconComponent = useCallback(() => {
@@ -55,7 +56,7 @@ export const SettingsItem: React.FC<ISettingsItemProps> = ({
       </View>
       {showChevron && (
         <View style={styles.chevronContainer}>
-          <Ionicons name="chevron-forward" size={20} color={theme.colors.text.tertiary} />
+          <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={20} color={theme.colors.text.tertiary} />
         </View>
       )}
     </Pressable>

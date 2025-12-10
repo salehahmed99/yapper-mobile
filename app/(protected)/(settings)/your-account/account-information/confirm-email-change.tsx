@@ -7,11 +7,10 @@ import AuthTitle from '@/src/modules/auth/components/shared/Title';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { resendVerificationCode } from '@/src/modules/auth/services/signUpService';
 import { verifyChangeEmail } from '@/src/modules/settings/services/yourAccountService';
 
 const ConfirmEmailChangeScreen = () => {
@@ -22,7 +21,6 @@ const ConfirmEmailChangeScreen = () => {
 
   const [code, setCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isResending, setIsResending] = useState(false);
   const [isVerifyEnabled, setIsVerifyEnabled] = useState(false);
 
   // Redirect if no email
@@ -76,24 +74,6 @@ const ConfirmEmailChangeScreen = () => {
     }
   };
 
-  const handleResendCode = async () => {
-    setIsResending(true);
-    try {
-      await resendVerificationCode({ email });
-
-      Toast.show({
-        type: 'success',
-        text1: t('settings.email_verify.code_resent'),
-        text2: t('settings.email_verify.code_resent_message'),
-      });
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to resend code';
-      Toast.show({ type: 'error', text1: t('settings.common.error'), text2: message });
-    } finally {
-      setIsResending(false);
-    }
-  };
-
   const handleBack = () => {
     router.back();
   };
@@ -105,7 +85,7 @@ const ConfirmEmailChangeScreen = () => {
         backgroundColor={theme.colors.background.primary}
       />
       <ActivityLoader
-        visible={isLoading || isResending}
+        visible={isLoading}
         message={isLoading ? t('settings.common.verifying') : t('settings.common.resending')}
       />
       <TopBar onBackPress={handleBack} showExitButton={false} />
@@ -118,15 +98,6 @@ const ConfirmEmailChangeScreen = () => {
           value={code}
           onChange={setCode}
         />
-        <Pressable
-          onPress={handleResendCode}
-          disabled={isResending}
-          style={styles.resendContainer}
-          accessibilityLabel="resend-code-button"
-          accessibilityRole="button"
-        >
-          <Text style={styles.resendText}>{t('settings.email_verify.resend_link')}</Text>
-        </Pressable>
       </View>
       <BottomBar
         rightButton={{
@@ -158,15 +129,6 @@ const createStyles = (theme: Theme) =>
       fontFamily: theme.typography.fonts.regular,
       lineHeight: 20,
       paddingHorizontal: theme.spacing.mdg,
-    },
-    resendContainer: {
-      paddingHorizontal: theme.spacing.mdg,
-      paddingTop: theme.spacing.md,
-    },
-    resendText: {
-      color: theme.colors.text.link,
-      fontSize: theme.typography.sizes.sm,
-      fontFamily: theme.typography.fonts.regular,
     },
   });
 
