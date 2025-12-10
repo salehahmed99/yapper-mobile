@@ -46,7 +46,7 @@ export default function BookmarksScreen() {
           <TouchableOpacity
             onPress={() => router.back()}
             style={styles.backButton}
-            accessibilityLabel="back_button"
+            accessibilityLabel={t('buttons.back')}
             testID="bookmarks_back_button"
           >
             <ArrowLeft
@@ -55,7 +55,7 @@ export default function BookmarksScreen() {
               style={isRTL ? { transform: [{ scaleX: -1 }] } : undefined}
             />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{t('bookmarks.title', 'Bookmarks')}</Text>
+          <Text style={[styles.headerTitle]}>{t('bookmarks.title', 'Bookmarks')}</Text>
           <View style={styles.headerSpacer} />
         </View>
 
@@ -101,6 +101,7 @@ const createStyles = (theme: Theme) =>
       fontSize: theme.typography.sizes.lg,
       fontFamily: theme.typography.fonts.bold,
       color: theme.colors.text.primary,
+      textAlign: 'center',
     },
     headerSpacer: {
       width: 40, // Balance the back button
