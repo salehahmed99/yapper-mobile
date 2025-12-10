@@ -121,6 +121,7 @@ jest.mock('@/src/store/useAuthStore', () => ({
 // Mock signUpService
 jest.mock('@/src/modules/auth/services/signUpService', () => ({
   signUpStep3: jest.fn(),
+  changeUserLanguage: jest.fn().mockResolvedValue(undefined),
 }));
 
 // Mock Toast
@@ -288,7 +289,7 @@ describe('EnterPasswordScreen', () => {
 
       await waitFor(() => {
         expect(mockSetSkipRedirect).toHaveBeenCalledWith(true);
-        expect(mockLoginUser).toHaveBeenCalledWith(mockUser, mockToken);
+        expect(mockLoginUser).toHaveBeenCalledWith(mockUser, mockToken, undefined);
         expect(Toast.show).toHaveBeenCalledWith({
           type: 'success',
           text1: 'Account created',
