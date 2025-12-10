@@ -16,7 +16,6 @@ const useSearchHistory = (): UseSearchHistoryReturn => {
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load history from AsyncStorage on mount
   useEffect(() => {
     const loadHistory = async () => {
       try {
@@ -43,37 +42,34 @@ const useSearchHistory = (): UseSearchHistoryReturn => {
     }
   }, []);
 
-  // Add a query to history (no duplicates, max items)
   const addToHistory = useCallback(
     async (query: string) => {
       const trimmedQuery = query.trim();
       if (!trimmedQuery) return;
 
+      let newHistory: string[] = [];
       setSearchHistory((prev) => {
-        // Remove if already exists to avoid duplicates
         const filtered = prev.filter((item) => item.toLowerCase() !== trimmedQuery.toLowerCase());
-        // Add to beginning and limit to max items
-        const newHistory = [trimmedQuery, ...filtered].slice(0, MAX_HISTORY_ITEMS);
-        saveHistory(newHistory);
+        newHistory = [trimmedQuery, ...filtered].slice(0, MAX_HISTORY_ITEMS);
         return newHistory;
       });
+      await saveHistory(newHistory);
     },
     [saveHistory],
   );
 
-  // Remove a specific query from history
   const removeFromHistory = useCallback(
     async (query: string) => {
+      let newHistory: string[] = [];
       setSearchHistory((prev) => {
-        const newHistory = prev.filter((item) => item !== query);
-        saveHistory(newHistory);
+        newHistory = prev.filter((item) => item !== query);
         return newHistory;
       });
+      await saveHistory(newHistory);
     },
     [saveHistory],
   );
 
-  // Clear all history
   const clearHistory = useCallback(async () => {
     try {
       await AsyncStorage.removeItem(SEARCH_HISTORY_KEY);
