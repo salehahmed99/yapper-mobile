@@ -17,13 +17,13 @@ export const formatMutualFollowersText = (names: string[], totalCount: number): 
 
   if (names.length === 1) {
     if (remaining > 0) {
-      return `Followed by ${names[0]} and ${totalCount - 1} other${remaining === 1 && 's'}`;
+      return `Followed by ${names[0]} and ${totalCount - 1} other${remaining === 1 ? '' : 's'}`;
     }
     return `Followed by ${names[0]}`;
   }
 
   if (remaining > 0) {
-    return `Followed by ${names[0]} and ${totalCount - 1} other${remaining === 1 && 's'}`;
+    return `Followed by ${names[0]} and ${totalCount - 1} other${remaining === 1 ? '' : 's'}`;
   }
 
   if (names.length === 2) {

@@ -7,7 +7,6 @@ import { Animated, Easing, LogBox, RefreshControl, StyleSheet, Text, TouchableOp
 import { ScrollView } from 'react-native-gesture-handler';
 import { useTheme } from '../../../context/ThemeContext';
 import { useAuthStore } from '../../../store/useAuthStore';
-import AnimatedProfileHeader from '../components/AnimatedProfileHeader';
 import ProfileHeader from '../components/ProfileHeader';
 import ProfileTabs from '../components/ProfileTabs';
 import { ProfilePostsProvider, useProfilePosts } from '../context/ProfilePostsContext';
@@ -22,8 +21,6 @@ type ProfileContainerProps = {
   userId?: string;
   isOwnProfile?: boolean;
 };
-
-const ANIMATED_HEADER_HEIGHT = 90;
 const PROFILE_HEADER_HEIGHT = 420;
 
 function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainerProps) {
@@ -62,6 +59,7 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
   function handleBlockStateChange(blocked: boolean) {
     setProfileUser((prev) => (prev ? { ...prev, isBlocked: blocked } : prev));
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [bannerUri, setBannerUri] = useState(
     isOwnProfile ? currentUser?.coverUrl || DEFAULT_BANNER_URL : DEFAULT_BANNER_URL,
   );
@@ -110,7 +108,6 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
   }, [isOwnProfile, currentUser?.coverUrl]);
 
   const displayUser = isOwnProfile ? currentUser : profileUser;
-  const username = displayUser?.name || 'User';
   const isLoading = (!isOwnProfile && !profileUser) || (isOwnProfile && !currentUser);
   const isBlocked = !!displayUser?.isBlocked;
   const [showTabs, setShowTabs] = useState(false);
@@ -147,7 +144,7 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
         easing: Easing.out(Easing.ease),
       }).start();
     }
-  }, [isBlocked]);
+  }, [isBlocked, blockedAnim, tabsAnim]);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -209,12 +206,6 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
 
   return (
     <View style={containerStyles.container}>
-      <AnimatedProfileHeader
-        username={username}
-        bannerUri={bannerUri}
-        scrollY={scrollY}
-        headerHeight={ANIMATED_HEADER_HEIGHT}
-      />
       <ScrollView
         scrollEventThrottle={16}
         onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
