@@ -103,7 +103,7 @@ export default function ExplorePage() {
     <ExploreContext.Provider value={contextValue}>
       <View style={styles.container}>
         <ExploreSearchBar />
-        <CustomTabView tabs={tabs} scrollEnabled={true} lazy={false} />
+        <CustomTabView tabs={tabs} scrollEnabled={true} lazy={true} />
         <View style={{ height: bottom }} />
       </View>
     </ExploreContext.Provider>
