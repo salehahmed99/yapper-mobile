@@ -578,5 +578,53 @@
       "device_settings": "Use device settings",
       "device_settings_description": "Set Dark mode to use the Light or Dark selection located in your device Display & Brightness settings."
     }
+  },
+  "tweets": {
+    "createPost": {
+      "cancel": "Cancel",
+      "post": "Post",
+      "placeholders": {
+        "whatsHappening": "What's happening?",
+        "addComment": "Add a comment",
+        "postYourReply": "Post your reply"
+      }
+    },
+    "deletePost": "Delete post",
+    "replyRestriction": {
+      "title": "Who can reply?",
+      "subtitle": "Pick who can reply to this post. Keep in mind that anyone mentioned can always reply.",
+      "canReply": "{{selection}} can reply",
+      "options": {
+        "everyone": "Everyone",
+        "verifiedAccounts": "Verified accounts",
+        "accountsYouFollow": "Accounts you follow",
+        "onlyAccountsYouMention": "Only accounts you mention"
+      }
+    },
+    "repost": {
+      "repostedBy": "{{name}} reposted",
+      "repostedByYou": "You reposted",
+      "undoRepost": "Undo repost",
+      "repost": "Repost",
+      "quote": "Quote",
+      "viewPostInteractions": "View Post Interactions"
+    },
+    "full_tweet": {
+      "title": "Post",
+      "views": "Views"
+    },
+    "replyingTo": "Replying to",
+    "deleteConfirmation": {
+      "title": "Delete post",
+      "message": "Are you sure you want to delete this post?",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
+    "date": {
+      "now": "now",
+      "minutesShort": "m",
+      "hoursShort": "h",
+      "daysShort": "d"
+    }
   }
 }

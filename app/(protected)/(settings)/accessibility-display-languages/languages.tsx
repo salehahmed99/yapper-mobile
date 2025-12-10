@@ -1,19 +1,18 @@
-import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, StatusBar, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { useTheme } from '@/src/context/ThemeContext';
+import ActivityLoader from '@/src/components/ActivityLoader';
 import { Theme } from '@/src/constants/theme';
-import Toast from 'react-native-toast-message';
-import TopBar from '@/src/modules/auth/components/shared/TopBar';
+import { useTheme } from '@/src/context/ThemeContext';
+import { changeLanguage } from '@/src/i18n';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
-import { Check } from 'lucide-react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTranslation } from 'react-i18next';
+import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { changeLanguage as changeLanguageBackend } from '@/src/modules/settings/services/languagesService';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import ActivityLoader from '@/src/components/ActivityLoader';
-import { changeLanguage } from '@/src/i18n';
+import { router } from 'expo-router';
+import { Check } from 'lucide-react-native';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 type Language = {
   code: string;
@@ -48,17 +47,14 @@ export const LanguagesScreen: React.FC = () => {
 
     setIsLoading(true);
     try {
-      // 1. Update local i18n immediately (instant UI change)
-      await changeLanguage(selectedLanguage);
+      // 1. Update auth store
+      setLanguage(selectedLanguage);
 
-      // 2. Persist to AsyncStorage (for next app restart)
-      await AsyncStorage.setItem('app-language', selectedLanguage);
-
-      // 3. Update backend (source of truth for logged-in users)
+      // 2. Update backend (source of truth for logged-in users)
       await changeLanguageBackend(selectedLanguage);
 
-      // 4. Update auth store
-      setLanguage(selectedLanguage);
+      // 3. Update local i18n at the end since this will trigger app reload
+      await changeLanguage(selectedLanguage);
 
       Toast.show({
         type: 'success',

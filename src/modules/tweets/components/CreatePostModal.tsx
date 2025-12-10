@@ -6,12 +6,13 @@ import CreatePostHeader from '@/src/modules/tweets/components/CreatePostHeader';
 import ReplyRestrictionModal from '@/src/modules/tweets/components/ReplyRestrictionModal';
 import ReplyRestrictionSelector from '@/src/modules/tweets/components/ReplyRestrictionSelector';
 import TweetMediaPicker from '@/src/modules/tweets/components/TweetMediaPicker';
-import { ITweet, ReplyRestrictionOptions } from '@/src/modules/tweets/types';
+import { ITweet } from '@/src/modules/tweets/types';
 import { MediaAsset, pickMediaFromLibrary, showCameraOptions } from '@/src/modules/tweets/utils/tweetMediaPicker.utils';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Image } from 'expo-image';
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Keyboard, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ParentTweet from './ParentTweet';
@@ -32,11 +33,13 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
   const { visible, onClose, type, tweet, onPost, onPostReply, onPostQuote } = props;
 
   const { theme } = useTheme();
+  const { t } = useTranslation();
+
   const styles = createStyles(theme);
   const { user } = useAuthStore();
 
   const [tweetText, setTweetText] = useState('');
-  const [replyRestriction, setReplyRestriction] = useState<ReplyRestrictionOptions>('Everyone');
+  const [replyRestriction, setReplyRestriction] = useState<number>(0);
   const [media, setMedia] = useState<MediaAsset[]>([]);
   const replyRestrictionModalRef = useRef<BottomSheetModal>(null);
 
@@ -47,20 +50,20 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
     if (!visible) {
       setTweetText('');
       setMedia([]);
-      setReplyRestriction('Everyone');
+      setReplyRestriction(0);
     }
   }, [visible]);
 
   const characterCount = tweetText.length;
   const remainingCharacters = MAX_TWEET_LENGTH - characterCount;
   const progressPercentage = (characterCount / MAX_TWEET_LENGTH) * 100;
-  const canPost = (characterCount > 0 || type === 'quote') && characterCount <= MAX_TWEET_LENGTH;
+  const canPost = characterCount > 0 && characterCount <= MAX_TWEET_LENGTH;
   const insets = useSafeAreaInsets();
 
   const resetTweetState = () => {
     setTweetText('');
     setMedia([]);
-    setReplyRestriction('Everyone');
+    setReplyRestriction(0);
   };
 
   const handlePost = async () => {
@@ -102,7 +105,7 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
     replyRestrictionModalRef.current?.present();
   };
 
-  const handleSelectReplyRestriction = (option: ReplyRestrictionOptions) => {
+  const handleSelectReplyRestriction = (option: number) => {
     setReplyRestriction(option);
     textInputRef.current?.focus();
   };
@@ -115,11 +118,11 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
   const getPlaceholderText = () => {
     switch (type) {
       case 'tweet':
-        return "What's happening?";
+        return t('tweets.createPost.placeholders.whatsHappening');
       case 'quote':
-        return 'Add a comment';
+        return t('tweets.createPost.placeholders.addComment');
       case 'reply':
-        return 'Post your reply';
+        return t('tweets.createPost.placeholders.postYourReply');
     }
   };
 
