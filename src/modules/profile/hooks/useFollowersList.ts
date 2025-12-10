@@ -16,6 +16,7 @@ interface UseFollowersListOptions
   following?: boolean;
   enabled?: boolean;
 }
+
 export const useFollowersList = ({
   userId,
   cursor = '',
