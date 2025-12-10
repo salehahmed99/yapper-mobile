@@ -10,25 +10,15 @@ import { useAuthStore } from '@/src/store/useAuthStore';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { I18nManager, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
 export const UpdateEmailScreen: React.FC = () => {
-  const { t, i18n } = useTranslation();
-  const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
-  const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const prevLang = React.useRef(i18n.language);
-
-  React.useEffect(() => {
-    if (prevLang.current !== i18n.language) {
-      prevLang.current = i18n.language;
-      forceUpdate();
-    }
-  }, [i18n.language]);
 
   const currentEmail = user?.email || '';
 
@@ -78,7 +68,7 @@ export const UpdateEmailScreen: React.FC = () => {
   };
 
   const { theme, isDark } = useTheme();
-  const styles = useMemo(() => createStyles(theme, isRTL), [theme, isRTL]);
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -139,7 +129,7 @@ export const UpdateEmailScreen: React.FC = () => {
   );
 };
 
-const createStyles = (theme: Theme, isRTL: boolean = false) =>
+const createStyles = (theme: Theme) =>
   StyleSheet.create({
     safeArea: {
       flex: 1,
@@ -161,27 +151,24 @@ const createStyles = (theme: Theme, isRTL: boolean = false) =>
       fontWeight: '700',
       marginBottom: theme.spacing.md,
       fontFamily: theme.typography.fonts.bold,
-      paddingLeft: isRTL ? 0 : theme.spacing.xl,
-      paddingRight: isRTL ? theme.spacing.xl : 0,
-      textAlign: isRTL ? 'right' : 'left',
+      paddingLeft: theme.spacing.xl,
+      textAlign: 'left',
     },
     description: {
       fontSize: theme.typography.sizes.md,
       lineHeight: 20,
       marginBottom: theme.spacing.lg,
       fontFamily: theme.typography.fonts.regular,
-      paddingLeft: isRTL ? 0 : theme.spacing.xl,
-      paddingRight: isRTL ? theme.spacing.xl : 0,
-      textAlign: isRTL ? 'right' : 'left',
+      paddingLeft: theme.spacing.xl,
+      textAlign: 'left',
     },
     warning: {
       fontSize: theme.typography.sizes.md,
       lineHeight: 20,
       marginBottom: theme.spacing.xl,
       fontFamily: theme.typography.fonts.regular,
-      paddingLeft: isRTL ? 0 : theme.spacing.xl,
-      paddingRight: isRTL ? theme.spacing.xl : 0,
-      textAlign: isRTL ? 'right' : 'left',
+      paddingLeft: theme.spacing.xl,
+      textAlign: 'left',
     },
     link: {
       fontFamily: theme.typography.fonts.regular,

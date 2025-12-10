@@ -242,7 +242,8 @@
       "success_message": "تم تحديث كلمة المرور الخاصة بك",
       "error_invalid_title": "كلمة مرور غير صالحة",
       "error_requirements": "يرجى استيفاء جميع متطلبات كلمة المرور",
-      "error_mismatch": "كلمتا المرور غير متطابقتين"
+      "error_mismatch": "كلمتا المرور غير متطابقتين",
+      "password_placeholder": "كلمة المرور"
     },
     "verify_password": {
       "title": "تحقق من كلمة المرور",

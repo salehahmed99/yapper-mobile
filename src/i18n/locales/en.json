@@ -466,7 +466,8 @@
       "success_message": "Your password has been updated",
       "error_invalid_title": "Invalid Password",
       "error_requirements": "Please meet all password requirements",
-      "error_mismatch": "Passwords do not match"
+      "error_mismatch": "Passwords do not match",
+      "password_placeholder": "Password"
     },
     "verify_password": {
       "title": "Verify your password",
