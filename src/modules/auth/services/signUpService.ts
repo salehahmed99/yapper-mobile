@@ -1,6 +1,7 @@
 import api from '../../../services/apiClient';
 import { extractErrorMessage } from '../../../utils/errorExtraction';
 import {
+  ICategoryResponse,
   IReSendVerificationCodeRequest,
   IReSendVerificationCodeResponse,
   ISignUpStep1Request,
@@ -70,7 +71,7 @@ export const resendVerificationCode = async (credentials: IReSendVerificationCod
  */
 export const getCategories = async (): Promise<string[]> => {
   try {
-    const res = await api.get<{ data: string[]; count: number; message: string }>('/category');
+    const res = await api.get<ICategoryResponse>('/category');
     return res.data.data;
   } catch (error: unknown) {
     const message = extractErrorMessage(error);

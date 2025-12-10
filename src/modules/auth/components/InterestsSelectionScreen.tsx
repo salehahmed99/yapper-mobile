@@ -9,6 +9,7 @@ import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
+import { ButtonOptions } from '../utils/enums';
 
 interface IInterestsSelectionScreenProps {
   categories: string[];
@@ -113,14 +114,14 @@ const InterestsSelectionScreen: React.FC<IInterestsSelectionScreenProps> = ({
 
       <BottomBar
         rightButton={{
-          label: t('buttons.next'),
+          label: ButtonOptions.NEXT,
           onPress: handleNext,
           enabled: !isSubmitting && selectedCategories.size > 0,
           visible: true,
           type: 'primary',
         }}
         leftButton={{
-          label: t('auth.signUp.userName.skipButton'),
+          label: ButtonOptions.SKIP_FOR_NOW,
           onPress: onSkip,
           enabled: !isSubmitting,
           visible: true,

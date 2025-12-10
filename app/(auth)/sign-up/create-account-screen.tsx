@@ -14,7 +14,7 @@ import React, { useMemo, useState, useRef } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
-import { filterAsciiOnly } from '@/src/modules/auth/utils/filterAsic';
+import { filterAsciiOnly } from '@/src/modules/auth/utils/filterAscii';
 import i18n from '@/src/i18n';
 
 const CreateAccountScreen = () => {

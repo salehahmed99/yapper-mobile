@@ -149,7 +149,6 @@ const AuthInput: React.FC<IAuthInputProps> = ({
             keyboardAppearance="dark"
             accessibilityLabel="Auth_input"
             textAlign={isRTL ? 'right' : 'left'}
-            keyboardType="ascii-capable"
           />
         )}
 
