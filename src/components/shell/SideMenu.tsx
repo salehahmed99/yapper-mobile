@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 import {
   Animated,
   GestureResponderHandlers,
+  I18nManager,
   Image,
   ScrollView,
   StyleSheet,
@@ -42,12 +43,13 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
   const user = useAuthStore((state) => state.user);
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const { isSideMenuOpen, closeSideMenu } = useUiShell();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
   const [isThemeSheetVisible, setIsThemeSheetVisible] = React.useState(false);
+  const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
 
   const logout = useAuthStore((state) => state.logout);
 
@@ -86,11 +88,18 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
 
   const overlayBg = `${theme.colors.background.primary}6F`;
 
+  // Calculate drawer position based on RTL
+  // In RTL: drawer comes from the right (end), so we use 'end' positioning
+  // In LTR: drawer comes from the left (start), so we use 'start' positioning
+  const drawerPosition = isRTL
+    ? { end: Animated.subtract(anim, theme.ui.drawerWidth) }
+    : { start: Animated.subtract(anim, theme.ui.drawerWidth) };
+
   return (
     <Animated.View style={styles.root} pointerEvents="box-none">
       <Animated.View
         {...(props.panHandlers ?? {})}
-        style={[styles.drawer, { start: Animated.subtract(anim, theme.ui.drawerWidth), opacity: drawerOpacity }]}
+        style={[styles.drawer, drawerPosition, { opacity: drawerOpacity }]}
         accessibilityElementsHidden={!isSideMenuOpen}
         importantForAccessibility={isSideMenuOpen ? 'yes' : 'no-hide-descendants'}
       >

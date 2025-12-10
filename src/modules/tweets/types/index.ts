@@ -41,11 +41,21 @@ interface ITweetFilters {
 type ISingleTweetResponse = IApiResponse<ITweet>;
 type ITweetsResponse = IApiResponse<ITweets>;
 type IRepliesResponse = IApiResponse<IReplies>;
+type IBookmarksResponse = IApiResponse<IBookmarks>;
 
 interface ITweets {
   data: ITweet[];
   pagination: {
     nextCursor: string;
+    hasMore: boolean;
+  };
+}
+
+interface IBookmarks {
+  data: ITweet[];
+  pagination: {
+    count: number;
+    nextCursor: string | null;
     hasMore: boolean;
   };
 }
@@ -81,6 +91,8 @@ interface IQuotesResponse {
 }
 
 export {
+  IBookmarks,
+  IBookmarksResponse,
   IQuotesResponse,
   IReplies,
   IRepliesResponse,
