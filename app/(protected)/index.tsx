@@ -66,7 +66,6 @@ export default function HomeScreen() {
           isFetchingNextPage={activeQuery.isFetchingNextPage}
           topSpacing={top}
           bottomSpacing={bottom}
-          isModalOpen={isCreatePostModalVisible}
         />
       </View>
     );

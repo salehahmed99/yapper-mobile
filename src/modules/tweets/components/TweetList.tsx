@@ -17,7 +17,6 @@ interface ITweetListProps {
   isFetchingNextPage?: boolean;
   topSpacing?: number;
   bottomSpacing?: number;
-  isModalOpen?: boolean;
 }
 const TweetList: React.FC<ITweetListProps> = (props) => {
   const {
@@ -30,7 +29,6 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
     isFetchingNextPage,
     topSpacing = 0,
     bottomSpacing = 0,
-    isModalOpen = false,
   } = props;
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
@@ -87,9 +85,7 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
     <FlashList
       style={{ flex: 1 }}
       data={data}
-      renderItem={({ item }) => (
-        <TweetContainer tweet={item} isVisible={visibleTweetIds.has(item.tweetId) && !isModalOpen} />
-      )}
+      renderItem={({ item }) => <TweetContainer tweet={item} isVisible={visibleTweetIds.has(item.tweetId)} />}
       keyExtractor={(item, index) => {
         if (item.type === 'repost') {
           return `${item.tweetId}-${item.repostedBy?.repostId}-${index}`;
