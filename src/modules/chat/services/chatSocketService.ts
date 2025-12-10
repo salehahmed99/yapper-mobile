@@ -89,6 +89,7 @@ export interface ILeftChatData {
 }
 
 export interface IMessageSentData {
+  chat_id?: string;
   id: string;
   content: string;
   sender_id: string;

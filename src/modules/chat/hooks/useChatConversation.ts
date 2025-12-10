@@ -150,6 +150,11 @@ export function useChatConversation({ chatId }: UseChatConversationOptions): Use
   // Handle message sent confirmation
   const handleMessageSent = useCallback(
     (data: IMessageSentData) => {
+      // Validate that this message belongs to the current chat
+      if (data.chat_id && data.chat_id !== chatId) {
+        return;
+      }
+
       const replyToData = data.reply_to as { id: string; content: string; sender_id: string } | null;
       const replyToMessage = replyToData
         ? {
