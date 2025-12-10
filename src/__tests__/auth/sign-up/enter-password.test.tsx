@@ -2,7 +2,7 @@
 import EnterPasswordScreen from '@/app/(auth)/sign-up/enter-password';
 import { Theme } from '@/src/constants/theme';
 import { signUpStep3 } from '@/src/modules/auth/services/signUpService';
-import { render, waitFor, fireEvent } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { router } from 'expo-router';
 import React from 'react';
 import Toast from 'react-native-toast-message';
