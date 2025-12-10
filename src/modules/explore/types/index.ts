@@ -41,7 +41,7 @@ export interface IExploreUser {
 
 export interface IExploreCategory {
   category: {
-    id: number;
+    id: string;
     name: string;
   };
   tweets?: ITweet[]; // Some categories use "tweets"
