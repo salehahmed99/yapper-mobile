@@ -103,6 +103,17 @@ export const createHeaderStyles = (theme: Theme) =>
       top: theme.spacing.xxxl + 5,
       right: theme.spacing.xl,
     },
+    searchButton: {
+      backgroundColor: `rgba(0, 0, 0, ${theme.opacity.translucent - 0.2})`,
+      width: theme.sizes.button.height,
+      height: theme.sizes.button.height,
+      borderRadius: theme.sizes.button.borderRadius,
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'absolute',
+      top: theme.spacing.xxxl + 5,
+      right: theme.spacing.xl + theme.sizes.button.height + theme.spacing.sm,
+    },
     editText: {
       color: theme.colors.text.link,
       fontWeight: theme.typography.weights.semiBold,

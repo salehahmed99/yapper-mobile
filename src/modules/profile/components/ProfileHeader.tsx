@@ -2,7 +2,7 @@ import { DEFAULT_AVATAR_URL, DEFAULT_BANNER_URL } from '@/src/constants/defaults
 import { formatCount } from '@/src/utils/formatCount';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, Ellipsis, Mail } from 'lucide-react-native';
+import { ChevronLeft, Ellipsis, Search, Mail } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Image as RNImage, Text, TouchableOpacity, View } from 'react-native';
@@ -229,6 +229,20 @@ export default function ProfileHeader({
           }}
         >
           <ChevronLeft color="#fff" size={25} />
+        </TouchableOpacity>
+
+        {/* Search Button */}
+        <TouchableOpacity
+          testID="profile_header_search_button"
+          style={isOwnProfile ? headerStyles.actionsButton : headerStyles.searchButton}
+          onPress={() => {
+            router.push({
+              pathname: '/(protected)/search/search-suggestions',
+              params: { username: displayUser?.username || '' },
+            });
+          }}
+        >
+          <Search color="#fff" size={22} />
         </TouchableOpacity>
 
         {/* Profile Actions */}
