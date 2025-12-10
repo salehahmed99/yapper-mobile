@@ -168,14 +168,14 @@ export const useAuthStore = create<IAuthState>((set) => ({
   /** Logout & cleanup */
   logout: async (all: boolean = false) => {
     try {
+      tokenRefreshService.stop();
+      await deleteToken();
+      await deleteRefreshToken();
       if (all) {
         await logOutAll();
       } else {
         await logout();
       }
-      tokenRefreshService.stop();
-      await deleteToken();
-      await deleteRefreshToken();
     } catch (err) {
       console.error('Logout error:', err);
     } finally {

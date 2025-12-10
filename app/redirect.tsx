@@ -10,13 +10,11 @@ export default function RedirectScreen() {
   const hasNavigated = useRef(false);
 
   useEffect(() => {
-    // Timeout to prevent infinite loading
     const timeout = setTimeout(() => {
-      // Only redirect if we're still on the redirect screen
       if (pathname === '/redirect' && !hasNavigated.current) {
         router.replace('/(auth)/landing-screen');
       }
-    }, 10000); // 10 seconds timeout
+    }, 15000); // 15 seconds timeout
 
     return () => {
       clearTimeout(timeout);
