@@ -52,7 +52,8 @@
       "buttons": {
         "next": "Next",
         "login": "Login",
-        "back": "Back"
+        "back": "Back",
+        "forgotPassword": "Forgot Password?"
       },
       "errors": {
         "invalidInput": "Invalid Input",
@@ -170,6 +171,21 @@
         "success": {
           "title": "Success",
           "uploaded": "Profile picture uploaded successfully."
+        }
+      },
+      "interests": {
+        "title": "What do you want to see on Yapper?",
+        "description": "Choose what you like, and we'll customize your Yapper experience with more of what you're interested in.",
+        "errors": {
+          "minSelection": "Select at least 1 category",
+          "selectAtLeast1": "Please select at least 1 category to continue.",
+          "loadFailed": "Failed to load categories",
+          "error": "Error",
+          "generic": "An error occurred"
+        },
+        "success": {
+          "title": "Great work 🎉",
+          "saved": "Your interests have been saved successfully."
         }
       },
       "userName": {

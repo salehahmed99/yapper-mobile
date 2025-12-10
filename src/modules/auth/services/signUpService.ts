@@ -1,14 +1,14 @@
 import api from '../../../services/apiClient';
 import { extractErrorMessage } from '../../../utils/errorExtraction';
 import {
-  ISignUpStep1Request,
-  ISignUpStep1Response,
   IReSendVerificationCodeRequest,
   IReSendVerificationCodeResponse,
+  ISignUpStep1Request,
+  ISignUpStep1Response,
+  ISignUpStep3Request,
+  ISignUpStep3Response,
   IVerifySignUpOTPRequest,
   IVerifySignUpOTPResponse,
-  ISignUpStep3Response,
-  ISignUpStep3Request,
 } from '../types';
 
 /**
@@ -59,6 +59,31 @@ export const resendVerificationCode = async (credentials: IReSendVerificationCod
   try {
     const res = await api.post<IReSendVerificationCodeResponse>('/auth/resend-otp', credentials);
     return res.data.data.isEmailSent;
+  } catch (error: unknown) {
+    const message = extractErrorMessage(error);
+    throw new Error(message);
+  }
+};
+
+/**
+ * Get all available categories for interests selection
+ */
+export const getCategories = async (): Promise<string[]> => {
+  try {
+    const res = await api.get<{ data: string[]; count: number; message: string }>('/category');
+    return res.data.data;
+  } catch (error: unknown) {
+    const message = extractErrorMessage(error);
+    throw new Error(message);
+  }
+};
+
+/**
+ * Submit user's selected interests
+ */
+export const submitInterests = async (categoryIds: number[]): Promise<void> => {
+  try {
+    await api.post('/users/me/interests', { category_ids: categoryIds });
   } catch (error: unknown) {
     const message = extractErrorMessage(error);
     throw new Error(message);

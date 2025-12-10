@@ -21,7 +21,6 @@ import TopBar from '@/src/modules/auth/components/shared/TopBar';
 // Utils
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { ILoginResponse } from '@/src/modules/auth/types';
-import { ButtonOptions } from '@/src/modules/auth/utils/enums';
 import { useAuthStore } from '@/src/store/useAuthStore';
 
 // Types
@@ -246,14 +245,14 @@ const LoginScreen = () => {
 
       <BottomBar
         rightButton={{
-          label: currentStep === 1 ? ButtonOptions.NEXT : ButtonOptions.LOGIN,
+          label: currentStep === 1 ? t('auth.login.buttons.next') : t('auth.login.buttons.login'),
           onPress: handleNext,
           enabled: nextState,
           visible: true,
           type: 'primary',
         }}
         leftButton={{
-          label: ButtonOptions.FORGOT_PASSWORD,
+          label: t('auth.login.buttons.forgotPassword'),
           onPress: handleForgotPassword,
           enabled: true,
           visible: true,
