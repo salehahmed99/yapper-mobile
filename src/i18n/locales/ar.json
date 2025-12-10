@@ -105,7 +105,11 @@
   "tweetSummary": {
     "title": "جروك",
     "noTweetId": "خطأ: لم يتم توفير معرف التغريدة",
-    "failedToLoad": "فشل تحميل التغريدة"
+    "failedToLoad": "فشل تحميل التغريدة",
+    "summaryTitle": "ملخص الذكاء الاصطناعي",
+    "loadingSummary": "جارٍ إنشاء الملخص...",
+    "tweetTooShort": "هذه التغريدة قصيرة جدًا لإنشاء ملخص.",
+    "summaryFailed": "فشل إنشاء الملخص. يرجى المحاولة مرة أخرى لاحقًا."
   },
   "profile": {
     "editProfile": "تعديل الملف الشخصي",
