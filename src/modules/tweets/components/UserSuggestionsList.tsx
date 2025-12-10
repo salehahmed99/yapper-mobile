@@ -3,48 +3,50 @@ import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { IUser } from '@/src/types/user';
+import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
+import { router } from 'expo-router';
+import { Search } from 'lucide-react-native';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SuggestionsProvidedProps } from 'react-native-controlled-mentions';
 
-const UserSuggestionsList: React.FC<SuggestionsProvidedProps> = (props) => {
-  const { keyword, onSelect } = props;
-  const dummyUsers: IUser[] = [
-    {
-      id: '1',
-      name: 'David Tabaka',
-      username: 'daviddtabaka',
-      avatarUrl: 'https://i.pravatar.cc/150?u=1',
-      email: 'daviddtabaka@gmail.com',
-      isFollowing: true,
-      isFollower: true,
-    },
-    {
-      id: '2',
-      name: 'Mary',
-      username: 'mary',
-      avatarUrl: 'https://i.pravatar.cc/150?u=2',
-      email: 'mary@gmail.com',
-      isFollowing: true,
-      isFollower: false,
-    },
-  ];
-
+interface IUserSuggestionsListProps extends SuggestionsProvidedProps {
+  users: IUser[];
+  onCloseModal: () => void;
+}
+const UserSuggestionsList: React.FC<IUserSuggestionsListProps> = (props) => {
+  const { onSelect, users, onCloseModal, keyword } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createListStyles(theme), [theme]);
-  if (keyword == null) {
-    return null;
+
+  const navigateToSearch = () => {
+    onCloseModal();
+    console.log(keyword);
+    router.push({ pathname: '/(protected)/search/search-suggestions', params: { query: keyword } });
+  };
+  if (users.length === 0) {
+    return (
+      <Pressable style={styles.emptyContainer} onPress={navigateToSearch}>
+        <View style={styles.searchIconContainer}>
+          <Search size={theme.iconSizes.md} stroke={theme.colors.white} />
+        </View>
+        <View style={styles.emptyTextContainer}>
+          <Text style={styles.title}>Find who you're looking for</Text>
+          <Text style={styles.subtitle}>Search for the person you want to mention</Text>
+        </View>
+      </Pressable>
+    );
   }
   return (
-    <View style={styles.container}>
-      {dummyUsers
-        .filter((one) => one.name.toLocaleLowerCase().includes(keyword.toLocaleLowerCase()))
-        .map((one) => (
-          <UserSuggestionItem key={one.id} user={one} onSelect={() => onSelect(one)} />
-        ))}
-    </View>
+    <FlashList
+      style={styles.container}
+      data={users}
+      renderItem={({ item }) => <UserSuggestionItem user={item} onSelect={() => onSelect(item)} />}
+      keyboardShouldPersistTaps="handled"
+      ItemSeparatorComponent={() => <View style={styles.separator} />}
+    />
   );
 };
 
@@ -101,10 +103,41 @@ const UserSuggestionItem: React.FC<IUserSuggestionItemProps> = (props) => {
 const createListStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
-      gap: theme.spacing.xl,
       borderTopWidth: 1,
       borderTopColor: theme.colors.border,
       padding: theme.spacing.md,
+    },
+    separator: {
+      height: theme.spacing.xxll,
+    },
+    emptyContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.md,
+      padding: theme.spacing.md,
+      borderTopWidth: 1,
+      borderTopColor: theme.colors.border,
+    },
+    emptyTextContainer: {
+      // gap: theme.spacing.md,
+    },
+    title: {
+      fontFamily: theme.typography.fonts.semiBold,
+      fontSize: theme.typography.sizes.md,
+      color: theme.colors.text.primary,
+    },
+    subtitle: {
+      fontFamily: theme.typography.fonts.regular,
+      fontSize: theme.typography.sizes.sm,
+      color: theme.colors.text.secondary,
+    },
+    searchIconContainer: {
+      width: theme.avatarSizes.sm,
+      height: theme.avatarSizes.sm,
+      borderRadius: theme.borderRadius.full,
+      backgroundColor: theme.colors.accent.bookmark,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
   });
 

@@ -16,9 +16,9 @@ import { useTranslation } from 'react-i18next';
 import { Keyboard, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { TriggersConfig, useMentions } from 'react-native-controlled-mentions';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import UserSuggestionsListContainer from '../containers/UserSuggestionsListContainer';
 import ParentTweet from './ParentTweet';
 import ParentTweetV2 from './ParentTweetV2';
-import UserSuggestionsList from './UserSuggestionsList';
 
 const MAX_TWEET_LENGTH = 280;
 
@@ -154,8 +154,8 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
             <CreatePostHeader canPost={canPost} handleCancel={handleClosePostModal} handlePost={handlePost} />
             <ScrollView
               style={{ flex: 1 }}
-              contentContainerStyle={{ flexGrow: 1, gap: theme.spacing.xxll }}
-              keyboardShouldPersistTaps="always"
+              contentContainerStyle={{ flexGrow: 1, gap: theme.spacing.xxl }}
+              keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={true}
             >
               {tweet && type === 'reply' && <ParentTweetV2 tweet={tweet} />}
@@ -187,7 +187,7 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
                   {media.length > 0 && <TweetMediaPicker media={media} onRemoveMedia={handleRemoveMedia} />}
                 </View>
               </View>
-              <UserSuggestionsList {...triggers.mention} />
+              <UserSuggestionsListContainer {...triggers.mention} onCloseModal={onClose} />
             </ScrollView>
 
             <ReplyRestrictionSelector selectedOption={replyRestriction} onPress={handleOpenReplyModal} />
