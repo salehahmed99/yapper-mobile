@@ -1,5 +1,14 @@
 import React, { useMemo, useState } from 'react';
-import { Animated, TextInput, TouchableOpacity, View, StyleSheet, Text, useWindowDimensions } from 'react-native';
+import {
+  Animated,
+  TextInput,
+  TouchableOpacity,
+  View,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  I18nManager,
+} from 'react-native';
 import { Eye, EyeOff, Check, AlertCircle } from 'lucide-react-native';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
@@ -29,6 +38,7 @@ const PasswordInput: React.FC<IPasswordInputProps> = ({
   const anim = useState(new Animated.Value(value ? 1 : 0))[0];
   const { theme } = useTheme();
   const { width, height } = useWindowDimensions();
+  const isRTL = I18nManager.isRTL;
 
   const scaleWidth = Math.min(Math.max(width / 390, 0.85), 1.1);
   const scaleHeight = Math.min(Math.max(height / 844, 0.85), 1.1);
@@ -80,6 +90,7 @@ const PasswordInput: React.FC<IPasswordInputProps> = ({
         placeholderTextColor={theme.colors.text.secondary}
         allowFontScaling={true}
         accessibilityLabel="password_input"
+        textAlign={isRTL ? 'right' : 'left'}
       />
 
       {value.length > 0 && (
@@ -133,6 +144,7 @@ const createStyles = (theme: Theme, scaleWidth: number = 1, scaleHeight: number 
       color: theme.colors.text.primary,
       backgroundColor: theme.colors.background.primary,
       fontFamily: theme.typography.fonts.regular,
+      textAlign: 'auto',
     },
     inputFocused: {
       borderColor: theme.colors.text.link,

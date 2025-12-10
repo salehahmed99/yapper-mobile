@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { Animated, I18nManager, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { format } from 'date-fns';
 import { Theme } from '@/src/constants/theme';
@@ -35,6 +35,7 @@ const AuthInput: React.FC<IAuthInputProps> = ({
 
   const { theme } = useTheme();
   const { width, height } = useWindowDimensions();
+  const isRTL = I18nManager.isRTL;
 
   const scaleWidth = Math.min(Math.max(width / 390, 0.85), 1.1);
   const scaleHeight = Math.min(Math.max(height / 844, 0.85), 1.1);
@@ -132,6 +133,7 @@ const AuthInput: React.FC<IAuthInputProps> = ({
             autoCorrect={false}
             keyboardAppearance="dark"
             accessibilityLabel="Auth_input"
+            textAlign={isRTL ? 'right' : 'left'}
           />
         )}
 
