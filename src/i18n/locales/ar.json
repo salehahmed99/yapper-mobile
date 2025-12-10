@@ -66,10 +66,14 @@
     "showMore": "عرض المزيد",
     "noTrending": "لا توجد مواضيع رائجة",
     "category": "فئة",
+    "connect": "تواصل",
     "trendingIn": {
       "news": "رائج في الأخبار",
       "sports": "رائج في الرياضة",
       "entertainment": "رائج في الترفيه"
+    },
+    "errors": {
+      "fetchFailed": "فشل تحميل الاقتراحات"
     }
   },
   "auth": {

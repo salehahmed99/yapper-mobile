@@ -68,7 +68,16 @@
     "whoToFollow": "Who to follow",
     "showMore": "Show more",
     "noTrending": "No trending topics",
-    "category": "Category"
+    "category": "Category",
+    "connect": "Connect",
+    "trendingIn": {
+      "news": "Trending in News",
+      "sports": "Trending in Sports",
+      "entertainment": "Trending in Entertainment"
+    },
+    "errors": {
+      "fetchFailed": "Failed to load suggestions"
+    }
   },
   "welcome": {
     "title": "Welcome to Yapper",

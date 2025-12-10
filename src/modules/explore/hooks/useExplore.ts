@@ -19,7 +19,7 @@ export interface UseExploreReturn {
   handleTrendingPress: (trending: IExploreTrending | ITrendItem) => void;
   handleUserPress: (user: IUser) => void;
   handleShowMoreUsers: () => void;
-  handleCategoryShowMore: (categoryId: number, categoryName: string) => void;
+  handleCategoryShowMore: (categoryId: string, categoryName: string) => void;
 }
 
 const useExplore = (): UseExploreReturn => {
@@ -55,10 +55,10 @@ const useExplore = (): UseExploreReturn => {
   }, [router]);
 
   const handleCategoryShowMore = useCallback(
-    (categoryId: number, categoryName: string) => {
+    (categoryId: string, categoryName: string) => {
       router.push({
         pathname: '/(protected)/(explore)/category-posts' as any,
-        params: { categoryId: String(categoryId), categoryName },
+        params: { categoryId, categoryName },
       });
     },
     [router],

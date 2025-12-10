@@ -20,7 +20,7 @@ interface IForYouContentProps {
   onTrendingPress?: (trending: IExploreTrending | ITrendItem) => void;
   onUserPress?: (user: IUser) => void;
   onShowMoreUsers?: () => void;
-  onCategoryShowMore?: (categoryId: number, categoryName: string) => void;
+  onCategoryShowMore?: (categoryId: string, categoryName: string) => void;
 }
 
 const createStyles = (theme: Theme) =>

@@ -116,7 +116,7 @@ export const useTweetActions = () => {
       await queryClient.cancelQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
       await queryClient.cancelQueries({ queryKey: repliesQueryKey });
       await queryClient.cancelQueries({ queryKey: ['searchPosts'] });
-      await queryClient.cancelQueries({ queryKey: ['explore'] });
+      await queryClient.cancelQueries({ queryKey: ['explore', 'forYou'] });
       await queryClient.cancelQueries({ queryKey: ['categoryPosts'] });
 
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
@@ -135,7 +135,7 @@ export const useTweetActions = () => {
         updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleLike),
       );
 
-      queryClient.setQueriesData<IExploreResponse>({ queryKey: ['explore'] }, (oldData) =>
+      queryClient.setQueriesData<IExploreResponse>({ queryKey: ['explore', 'forYou'] }, (oldData) =>
         updateExploreCache(oldData, variables.tweetId, toggleLike),
       );
 
@@ -156,7 +156,7 @@ export const useTweetActions = () => {
       queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
       queryClient.invalidateQueries({ queryKey: repliesQueryKey });
       queryClient.invalidateQueries({ queryKey: ['searchPosts'] });
-      queryClient.invalidateQueries({ queryKey: ['explore'] });
+      queryClient.invalidateQueries({ queryKey: ['explore', 'forYou'] });
       queryClient.invalidateQueries({ queryKey: ['categoryPosts'] });
     },
   });
@@ -171,7 +171,7 @@ export const useTweetActions = () => {
       await queryClient.cancelQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
       await queryClient.cancelQueries({ queryKey: repliesQueryKey });
       await queryClient.cancelQueries({ queryKey: ['searchPosts'] });
-      await queryClient.cancelQueries({ queryKey: ['explore'] });
+      await queryClient.cancelQueries({ queryKey: ['explore', 'forYou'] });
       await queryClient.cancelQueries({ queryKey: ['categoryPosts'] });
 
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
@@ -190,7 +190,7 @@ export const useTweetActions = () => {
         updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleRepost),
       );
 
-      queryClient.setQueriesData<IExploreResponse>({ queryKey: ['explore'] }, (oldData) =>
+      queryClient.setQueriesData<IExploreResponse>({ queryKey: ['explore', 'forYou'] }, (oldData) =>
         updateExploreCache(oldData, variables.tweetId, toggleRepost),
       );
 
@@ -211,7 +211,7 @@ export const useTweetActions = () => {
       queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
       queryClient.invalidateQueries({ queryKey: repliesQueryKey });
       queryClient.invalidateQueries({ queryKey: ['searchPosts'] });
-      queryClient.invalidateQueries({ queryKey: ['explore'] });
+      queryClient.invalidateQueries({ queryKey: ['explore', 'forYou'] });
       queryClient.invalidateQueries({ queryKey: ['categoryPosts'] });
     },
   });
@@ -226,7 +226,7 @@ export const useTweetActions = () => {
       await queryClient.cancelQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
       await queryClient.cancelQueries({ queryKey: repliesQueryKey });
       await queryClient.cancelQueries({ queryKey: ['searchPosts'] });
-      await queryClient.cancelQueries({ queryKey: ['explore'] });
+      await queryClient.cancelQueries({ queryKey: ['explore', 'forYou'] });
       await queryClient.cancelQueries({ queryKey: ['categoryPosts'] });
 
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
@@ -245,7 +245,7 @@ export const useTweetActions = () => {
         updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleBookmark),
       );
 
-      queryClient.setQueriesData<IExploreResponse>({ queryKey: ['explore'] }, (oldData) =>
+      queryClient.setQueriesData<IExploreResponse>({ queryKey: ['explore', 'forYou'] }, (oldData) =>
         updateExploreCache(oldData, variables.tweetId, toggleBookmark),
       );
 
@@ -266,7 +266,7 @@ export const useTweetActions = () => {
       queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
       queryClient.invalidateQueries({ queryKey: repliesQueryKey });
       queryClient.invalidateQueries({ queryKey: ['searchPosts'] });
-      queryClient.invalidateQueries({ queryKey: ['explore'] });
+      queryClient.invalidateQueries({ queryKey: ['explore', 'forYou'] });
       queryClient.invalidateQueries({ queryKey: ['categoryPosts'] });
     },
   });
