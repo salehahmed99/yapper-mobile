@@ -10,10 +10,7 @@ export const createContainerStyles = (theme: Theme) =>
     scrollView: {
       flex: 1,
     },
-    scrollContent: {
-      // flexGrow: 1,
-      // paddingBottom: 100,
-    },
+    scrollContent: {},
     tabsContainer: {
       flex: 99999999,
     },

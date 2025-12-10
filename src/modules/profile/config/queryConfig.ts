@@ -1,28 +1,24 @@
 export const PROFILE_QUERY_CONFIG = {
-  // Cache user profile data for 5 minutes
   userProfile: {
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   },
 
-  // Cache tweets/posts data for 2 minutes (more dynamic content)
   tweets: {
     staleTime: 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
   },
 
-  // Cache follower/following lists for 3 minutes
   socialLists: {
     staleTime: 3 * 60 * 1000,
     gcTime: 7 * 60 * 1000,
   },
 
-  // Pagination settings
   pagination: {
     defaultLimit: 20,
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
-    maxPages: 5, // Limit cached pages to prevent memory issues
+    maxPages: 5,
   },
 } as const;
 

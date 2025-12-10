@@ -12,7 +12,6 @@ type WhoToFollowProps = {
   onShowMore?: () => void;
 };
 
-// Mock data - replace with actual data from your API
 const defaultProfiles: ProfileCardData[] = [
   {
     id: '1',
@@ -63,14 +62,12 @@ export default function WhoToFollow({ profiles = defaultProfiles, onShowMore }: 
       ...prev,
       [userId]: !prev[userId],
     }));
-    // TODO: Implement actual follow/unfollow API call
   };
 
   const handleShowMore = () => {
     if (onShowMore) {
       onShowMore();
     }
-    // TODO: Navigate to full "Who to follow" page or load more profiles
   };
 
   const styles = StyleSheet.create({

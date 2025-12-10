@@ -16,7 +16,6 @@ import { createContainerStyles } from '../styles/container-style';
 import { createHeaderStyles } from '../styles/profile-header-styles';
 import { IUserProfile } from '../types';
 
-// Suppress VirtualizedList warning for nested ScrollView in profile tabs
 LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
 
 type ProfileContainerProps = {
@@ -49,9 +48,7 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
           fontSize: theme.typography.sizes.md,
           marginBottom: theme.spacing.lg,
         },
-        animatedHeader: {
-          // No hardcoded values, use theme if needed
-        },
+        animatedHeader: {},
       }),
     [theme],
   );
@@ -61,7 +58,7 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
   const currentUser = useAuthStore((state) => state.user);
   const fetchAndUpdateUser = useAuthStore((state) => state.fetchAndUpdateUser);
   const [profileUser, setProfileUser] = useState<IUserProfile | null>(null);
-  // Instantly update block state in UI when block/unblock is toggled in ProfileHeader
+
   function handleBlockStateChange(blocked: boolean) {
     setProfileUser((prev) => (prev ? { ...prev, isBlocked: blocked } : prev));
   }
@@ -70,7 +67,7 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
   );
   const [refreshing, setRefreshing] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  // Refetch profile data when userId, isOwnProfile, or block state changes
+
   useEffect(() => {
     if (!isOwnProfile && userId) {
       getUserById(userId)
@@ -117,13 +114,10 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
   const isLoading = (!isOwnProfile && !profileUser) || (isOwnProfile && !currentUser);
   const isBlocked = !!displayUser?.isBlocked;
   const [showTabs, setShowTabs] = useState(false);
-  // Animation values for blocked message and tabs
   const blockedAnim = useRef(new Animated.Value(0)).current;
   const tabsAnim = useRef(new Animated.Value(0)).current;
-  // Only reset showTabs to false if the user becomes blocked (not on every render)
+
   useEffect(() => {
-    // When blocked, always hide tabs (show view posts prompt)
-    // When unblocked, always show tabs
     if (isBlocked) {
       setShowTabs(false);
       Animated.timing(blockedAnim, {

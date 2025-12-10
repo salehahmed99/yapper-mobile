@@ -303,7 +303,6 @@ export default function ProfileHeader({
               testID="profile_header_message_button"
               style={headerStyles.messageButton}
               onPress={() => {
-                // Navigate to messages with this user
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 router.push('/(protected)/messages' as any);
               }}
@@ -417,7 +416,7 @@ export default function ProfileHeader({
                 </Text>
               </TouchableOpacity>
             </View>
-            {/* Mutual Followers - Only show for other profiles */}
+            {/* Mutual Followers */}
             {!isOwnProfile && profileUser && (
               <TouchableOpacity
                 testID="profile_header_mutual_followers_button"

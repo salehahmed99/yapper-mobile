@@ -1,3 +1,4 @@
+import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import React, { useMemo } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../../context/ThemeContext';
@@ -22,9 +23,11 @@ const MutualFollowers: React.FC<MutualFollowersProps> = ({ mutualFollowers, tota
           alignItems: 'center',
           marginTop: theme.spacing.sm,
           marginBottom: -theme.spacing.md,
+          maxWidth: '100%',
         },
         avatarsContainer: {
           flexDirection: isRTL ? 'row-reverse' : 'row',
+          flexShrink: 0,
           ...(isRTL ? { marginLeft: theme.spacing.sm } : { marginRight: theme.spacing.sm }),
         },
         avatar: {
@@ -41,9 +44,9 @@ const MutualFollowers: React.FC<MutualFollowersProps> = ({ mutualFollowers, tota
         text: {
           fontSize: theme.typography.sizes.xs,
           color: theme.colors.text.secondary,
-          flexShrink: 1,
           textAlign: isRTL ? 'right' : 'left',
           includeFontPadding: false,
+          maxWidth: '90%',
         },
       }),
     [theme, isRTL],
@@ -53,7 +56,15 @@ const MutualFollowers: React.FC<MutualFollowersProps> = ({ mutualFollowers, tota
     return null;
   }
 
-  const displayNames = mutualFollowers.slice(0, 3).map((follower) => follower.name);
+  const displayNames = mutualFollowers
+    .slice(0, 3)
+    .map((follower) => follower.name)
+    .filter(Boolean);
+
+  if (displayNames.length === 0) {
+    return null;
+  }
+
   const displayText = formatMutualFollowersText(displayNames, totalCount);
 
   return (
@@ -62,12 +73,12 @@ const MutualFollowers: React.FC<MutualFollowersProps> = ({ mutualFollowers, tota
         {mutualFollowers.slice(0, 3).map((follower, index) => (
           <Image
             key={`mutual-follower-${follower.userId}-${index}`}
-            source={{ uri: follower.avatarUrl }}
+            source={{ uri: follower.avatarUrl || DEFAULT_AVATAR_URL }}
             style={[styles.avatar, index === 0 && styles.firstAvatar]}
           />
         ))}
       </View>
-      <Text style={styles.text} numberOfLines={1}>
+      <Text style={styles.text} numberOfLines={2}>
         {displayText || 'Followed by mutual connections'}
       </Text>
     </View>

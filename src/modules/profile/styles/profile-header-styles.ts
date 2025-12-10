@@ -72,7 +72,7 @@ export const createHeaderStyles = (theme: Theme, isRTL: boolean = false) =>
       height: '22%',
     },
     viewPostsText: {
-      color: theme.colors.text.link,
+      color: theme.colors.text.inverse,
       fontWeight: theme.typography.weights.semiBold,
       textAlign: 'center',
       width: '100%',

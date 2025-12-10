@@ -34,9 +34,7 @@ const UserListRoute = ({ type, userId }: UserListRouteProps) => {
     router.push(`/(profile)/${user.id}` as any);
   };
 
-  const handleFollowPress = (_user: IUser) => {
-    // it's handled inside FollowButton this is just a placeholder
-  };
+  const handleFollowPress = (_user: IUser) => {};
 
   if (!targetUserId) {
     return <View style={styles.page} testID={`user_list_route_${type}_no_user`} />;
