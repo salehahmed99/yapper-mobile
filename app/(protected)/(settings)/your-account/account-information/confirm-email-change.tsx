@@ -76,24 +76,6 @@ const ConfirmEmailChangeScreen = () => {
     }
   };
 
-  // const handleResendCode = async () => {
-  //   setIsResending(true);
-  //   try {
-  //     await resendVerificationCode({ email });
-
-  //     Toast.show({
-  //       type: 'success',
-  //       text1: t('settings.email_verify.code_resent'),
-  //       text2: t('settings.email_verify.code_resent_message'),
-  //     });
-  //   } catch (error: unknown) {
-  //     const message = error instanceof Error ? error.message : 'Failed to resend code';
-  //     Toast.show({ type: 'error', text1: t('settings.common.error'), text2: message });
-  //   } finally {
-  //     setIsResending(false);
-  //   }
-  // };
-
   const handleBack = () => {
     router.back();
   };
@@ -118,15 +100,6 @@ const ConfirmEmailChangeScreen = () => {
           value={code}
           onChange={setCode}
         />
-        {/* <Pressable
-          onPress={handleResendCode}
-          disabled={isResending}
-          style={styles.resendContainer}
-          accessibilityLabel="resend-code-button"
-          accessibilityRole="button"
-        >
-          <Text style={styles.resendText}>{t('settings.email_verify.resend_link')}</Text>
-        </Pressable> */}
       </View>
       <BottomBar
         rightButton={{
