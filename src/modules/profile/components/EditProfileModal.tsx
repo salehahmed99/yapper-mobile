@@ -2,10 +2,11 @@ import CountryPicker, { Country } from '@/src/components/CountryPicker';
 import { DEFAULT_AVATAR_URL, DEFAULT_BANNER_URL } from '@/src/constants/defaults';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { StatusBar } from 'expo-status-bar';
 import React, { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Alert, Image, Modal, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Modal, Text, TouchableOpacity, View } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useTheme } from '../../../context/ThemeContext';
 import { deleteAvatar, deleteCover, updateUserProfile, uploadAvatar, uploadCover } from '../services/profileService';
@@ -208,6 +209,8 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
             source={{ uri: localBannerUri }}
             style={editModalStyles.banner}
             testID="profile_edit_modal_banner_image"
+            cachePolicy="memory-disk"
+            priority="high"
           />
         </TouchableOpacity>
 
@@ -221,6 +224,8 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
                 }}
                 style={editModalStyles.avatar}
                 testID="profile_edit_modal_avatar_image"
+                cachePolicy="memory-disk"
+                priority="high"
               />
 
               {/* Dark overlay + camera icon */}

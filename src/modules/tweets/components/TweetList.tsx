@@ -17,6 +17,7 @@ interface ITweetListProps {
   isFetchingNextPage?: boolean;
   topSpacing?: number;
   bottomSpacing?: number;
+  isTabActive?: boolean;
   useCustomRefreshIndicator?: boolean;
 }
 const TweetList: React.FC<ITweetListProps> = (props) => {
@@ -30,6 +31,7 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
     isFetchingNextPage,
     topSpacing = 0,
     bottomSpacing = 0,
+    isTabActive = true,
     useCustomRefreshIndicator = false,
   } = props;
   const { theme } = useTheme();
@@ -87,7 +89,9 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
     <FlashList
       style={{ flex: 1 }}
       data={data}
-      renderItem={({ item }) => <TweetContainer tweet={item} isVisible={visibleTweetIds.has(item.tweetId)} />}
+      renderItem={({ item }) => (
+        <TweetContainer tweet={item} isVisible={isTabActive && visibleTweetIds.has(item.tweetId)} />
+      )}
       keyExtractor={(item, index) => {
         if (item.type === 'repost') {
           return `${item.tweetId}-${item.repostedBy?.repostId}-${index}`;
@@ -113,7 +117,7 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
       ListFooterComponent={renderFooter}
       onEndReached={onEndReached}
       onEndReachedThreshold={onEndReachedThreshold ?? 0.5}
-      removeClippedSubviews={true}
+      removeClippedSubviews={false}
       onViewableItemsChanged={onViewableItemsChanged}
       viewabilityConfig={viewabilityConfig}
     />

@@ -42,13 +42,17 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({
   const allMedia = useMemo<MediaItem[]>(() => {
     const mediaItems: MediaItem[] = [];
 
-    images.forEach((url, idx) => {
-      mediaItems.push({ type: 'image', url, index: idx });
-    });
+    if (images) {
+      images.forEach((url, idx) => {
+        mediaItems.push({ type: 'image', url, index: idx });
+      });
+    }
 
-    videos.forEach((url, idx) => {
-      mediaItems.push({ type: 'video', url, index: images.length + idx });
-    });
+    if (videos) {
+      videos.forEach((url, idx) => {
+        mediaItems.push({ type: 'video', url, index: (images?.length || 0) + idx });
+      });
+    }
 
     return mediaItems.slice(0, MAX_MEDIA_ITEMS);
   }, [images, videos]);

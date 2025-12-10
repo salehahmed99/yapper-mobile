@@ -1,7 +1,7 @@
 import { IUser, IUserDTO } from '@/src/types/user';
 
 export type TweetUserListType = 'likes' | 'reposts';
-export type ProfileUserListType = 'followers' | 'following';
+export type ProfileUserListType = 'followers' | 'following' | 'mutualFollowers';
 export type SettingsUserListType = 'muted' | 'blocked';
 export type UserListType = TweetUserListType | ProfileUserListType | SettingsUserListType;
 

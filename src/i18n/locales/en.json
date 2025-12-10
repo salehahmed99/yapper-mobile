@@ -21,11 +21,32 @@
     "home": "Home",
     "profile": "Profile",
     "search": "Search",
+    "explore": "Explore",
     "notifications": "Notifications",
     "messages": "Messages",
     "bookmarks": "Bookmarks",
     "settings": "Settings",
     "help": "Help Center"
+  },
+  "search": {
+    "placeholder": "Search",
+    "searchUserPosts": "Search {{username}}'s posts",
+    "hint": "Search for topics, people, or keywords",
+    "noResults": "No results found",
+    "noPosts": "No posts found for this search",
+    "noMedia": "No media found for this search",
+    "noLatest": "No recent posts found for this search",
+    "noUsers": "No users found for this search",
+    "trending": "Trending",
+    "clear": "Clear",
+    "tabs": {
+      "posts": "Posts",
+      "media": "Media",
+      "latest": "Latest",
+      "users": "People"
+    },
+    "populateQuery": "Populate search with query",
+    "trendingAccessibility": ", Trending"
   },
   "nav": {
     "home": "Home",
@@ -34,6 +55,30 @@
     "notifications": "Notifications",
     "messages": "Messages",
     "profile": "Profile"
+  },
+  "explore": {
+    "title": "Explore",
+    "limitReached": "Limit reached",
+    "tabs": {
+      "forYou": "For You",
+      "trending": "Trending",
+      "news": "News",
+      "sports": "Sports",
+      "entertainment": "Entertainment"
+    },
+    "whoToFollow": "Who to follow",
+    "showMore": "Show more",
+    "noTrending": "No trending topics",
+    "category": "Category",
+    "connect": "Connect",
+    "trendingIn": {
+      "news": "Trending in News",
+      "sports": "Trending in Sports",
+      "entertainment": "Trending in Entertainment"
+    },
+    "errors": {
+      "fetchFailed": "Failed to load suggestions"
+    }
   },
   "welcome": {
     "title": "Welcome to Yapper",
@@ -324,8 +369,11 @@
     "blocked": "Blocked",
     "viewPosts": "View posts",
     "follow": "Follow",
+    "followBack": "Follow Back",
     "following": "Following",
     "followers": "Followers",
+    "followsYou": "Follows you",
+    "followedBy": "Followed by",
     "joined": "Joined",
     "noBio": "No bio available",
     "tabs": {
@@ -333,6 +381,11 @@
       "tweetsReplies": "Tweets & Replies",
       "media": "Media",
       "likes": "Likes"
+    },
+    "lists": {
+      "followers": "Followers",
+      "following": "Following",
+      "followersYouKnow": "Followers You Know"
     },
     "placeholders": {
       "tweets": "No tweets yet.",
@@ -466,7 +519,8 @@
       "success_message": "Your password has been updated",
       "error_invalid_title": "Invalid Password",
       "error_requirements": "Please meet all password requirements",
-      "error_mismatch": "Passwords do not match"
+      "error_mismatch": "Passwords do not match",
+      "password_placeholder": "Password"
     },
     "verify_password": {
       "title": "Verify your password",
@@ -489,8 +543,8 @@
       "label": "Email address",
       "invalid_error": "Please enter a valid email address",
       "invalid_title": "Invalid Email",
-      "updated": "Email Updated",
-      "updated_message": "Your email has been updated successfully",
+      "updated": "otp has been sent to the new email address",
+      "updated_message": "An OTP has been sent to {{newEmail}}. Please enter the code to verify your new email address.",
       "update_failed": "Update Failed",
       "update_failed_message": "Failed to update email. Please try again."
     },
@@ -531,17 +585,17 @@
       "success": "Username changed successfully"
     },
     "deactivate": {
-      "title": "Deactivate your account",
-      "description": "Find out how you can deactivate your account.",
-      "warning_title": "This will deactivate your account",
-      "warning_message": "You're about to start the process of deactivating your Y account. Your display name, @username, and public profile will no longer be viewable on Y.com, Y for iOS, or Y for Android.",
+      "title": "Delete your account",
+      "description": "Find out how you can permanently delete your account.",
+      "warning_title": "This will permanently delete your account",
+      "warning_message": "You're about to start the process of deleting your Y account. Your display name, @username, and public profile will no longer be viewable on Y.com, Y for iOS, or Y for Android.",
       "else_title": "What else you should know",
-      "else_message_1": "If you just want to change your @username, you don't need to deactivate your account — edit it in your",
+      "else_message_1": "If you just want to change your @username, you don't need to delete your account — edit it in your",
       "else_link_1": "settings",
       "else_message_2": "To use your current @username or email address with a different Y account,",
       "else_link_2": "change them",
-      "else_message_3": "before you deactivate this account.",
-      "button": "Deactivate"
+      "else_message_3": "before you delete this account.",
+      "button": "Delete Account"
     },
     "confirm_deactivate": {
       "title": "Confirm your password",
@@ -577,6 +631,10 @@
       "dark_mode": "Dark",
       "device_settings": "Use device settings",
       "device_settings_description": "Set Dark mode to use the Light or Dark selection located in your device Display & Brightness settings."
+    },
+    "countryPicker": {
+      "title": "Select a country",
+      "searchPlaceholder": "Search"
     }
   },
   "tweets": {

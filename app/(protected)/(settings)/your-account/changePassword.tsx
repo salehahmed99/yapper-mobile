@@ -1,26 +1,25 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, StatusBar, ScrollView, I18nManager } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
-import { AnimatedTextInput } from '@/src/modules/settings/components/AnimatedTextInput';
-import { useAuthStore } from '@/src/store/useAuthStore';
-import { useTheme } from '@/src/context/ThemeContext';
-import { Theme } from '@/src/constants/theme';
-import { confirmCurrentPassword, changePassword } from '@/src/modules/settings/services/yourAccountService';
-import Toast from 'react-native-toast-message';
 import ActivityLoader from '@/src/components/ActivityLoader';
-import { passwordSchema } from '@/src/modules/settings/types/schemas';
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
+import { AnimatedTextInput } from '@/src/modules/settings/components/AnimatedTextInput';
+import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
 import ValidationItem from '@/src/modules/settings/components/ValidationItem';
-import { validatePassword, isPasswordValid } from '@/src/modules/settings/utils/passwordValidation';
+import { changePassword, confirmCurrentPassword } from '@/src/modules/settings/services/yourAccountService';
+import { passwordSchema } from '@/src/modules/settings/types/schemas';
+import { isPasswordValid, validatePassword } from '@/src/modules/settings/utils/passwordValidation';
+import { useAuthStore } from '@/src/store/useAuthStore';
+import { router } from 'expo-router';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 export const ChangePasswordScreen: React.FC = () => {
-  const { t, i18n } = useTranslation();
-  const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const { theme, isDark } = useTheme();
-  const styles = useMemo(() => createStyles(theme, isRTL), [theme, isRTL]);
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [passwords, setPasswords] = useState({ current: '', new: '', confirm: '' });
   const [showValidation, setShowValidation] = useState(false);
@@ -201,7 +200,7 @@ export const ChangePasswordScreen: React.FC = () => {
   );
 };
 
-const createStyles = (theme: Theme, isRTL: boolean = false) =>
+const createStyles = (theme: Theme) =>
   StyleSheet.create({
     safeArea: { flex: 1, backgroundColor: theme.colors.background.primary },
     container: { flex: 1, backgroundColor: theme.colors.background.primary },
@@ -216,7 +215,7 @@ const createStyles = (theme: Theme, isRTL: boolean = false) =>
       fontSize: theme.typography.sizes.sm,
       color: theme.colors.text.secondary,
       marginBottom: theme.spacing.sm,
-      textAlign: isRTL ? 'left' : 'right',
+      textAlign: 'left',
     },
     validationContainer: { marginTop: theme.spacing.md, paddingVertical: theme.spacing.sm },
     validationTitle: {
@@ -224,7 +223,7 @@ const createStyles = (theme: Theme, isRTL: boolean = false) =>
       color: theme.colors.text.secondary,
       marginBottom: theme.spacing.xs,
       fontFamily: theme.typography.fonts.medium,
-      textAlign: isRTL ? 'left' : 'right',
+      textAlign: 'left',
     },
     updateButton: {
       backgroundColor: theme.colors.text.link,
@@ -246,13 +245,13 @@ const createStyles = (theme: Theme, isRTL: boolean = false) =>
       fontSize: theme.typography.sizes.sm,
       color: theme.colors.error,
       marginTop: theme.spacing.xs,
-      textAlign: isRTL ? 'left' : 'right',
+      textAlign: 'left',
     },
     successText: {
       fontSize: theme.typography.sizes.sm,
       color: theme.colors.success,
       marginTop: theme.spacing.xs,
-      textAlign: isRTL ? 'left' : 'right',
+      textAlign: 'left',
     },
   });
 

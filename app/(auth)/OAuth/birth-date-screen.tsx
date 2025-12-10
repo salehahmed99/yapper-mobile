@@ -1,18 +1,18 @@
-import { View, StyleSheet } from 'react-native';
-import React, { useMemo, useState } from 'react';
-import { router, useLocalSearchParams } from 'expo-router';
-import TopBar from '@/src/modules/auth/components/shared/TopBar';
-import AuthInput from '@/src/modules/auth/components/shared/AuthInput';
-import { useTheme } from '@/src/context/ThemeContext';
-import { Theme } from '@/src/constants/theme';
-import { useTranslation } from 'react-i18next';
-import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
-import { OAuthStep1, OAuthStep2 } from '@/src/modules/auth/services/authService';
-import Toast from 'react-native-toast-message';
 import ActivityLoader from '@/src/components/ActivityLoader';
-import { useAuthStore } from '@/src/store/useAuthStore';
-import { userBirthDateSchema } from '@/src/modules/auth/schemas/schemas';
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
+import AuthInput from '@/src/modules/auth/components/shared/AuthInput';
+import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import AuthTitle from '@/src/modules/auth/components/shared/Title';
+import TopBar from '@/src/modules/auth/components/shared/TopBar';
+import { userBirthDateSchema } from '@/src/modules/auth/schemas/schemas';
+import { OAuthStep1, OAuthStep2 } from '@/src/modules/auth/services/authService';
+import { useAuthStore } from '@/src/store/useAuthStore';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { BackHandler, StyleSheet, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 const BirthDateScreen = () => {
   const [birthDate, setBirthDate] = useState('');
@@ -25,6 +25,20 @@ const BirthDateScreen = () => {
 
   const loginUser = useAuthStore((state) => state.loginUser);
   const setSkipRedirect = useAuthStore((state) => state.setSkipRedirect);
+
+  // Handle hardware back button
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        router.replace('/(auth)/landing-screen');
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => subscription.remove();
+    }, []),
+  );
 
   const onNextPress = async () => {
     setLoading(true);

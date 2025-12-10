@@ -1,4 +1,6 @@
 import ActivityLoader from '@/src/components/ActivityLoader';
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
 import AuthInputScreen from '@/src/modules/auth/components/shared/AuthInput';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import AuthTitle from '@/src/modules/auth/components/shared/Title';
@@ -9,10 +11,8 @@ import { ButtonOptions } from '@/src/modules/auth/utils/enums';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { View, StyleSheet } from 'react-native';
-import { Theme } from '@/src/constants/theme';
-import { useTheme } from '@/src/context/ThemeContext';
 
 const FindAccountScreen = () => {
   const { t } = useTranslation();
@@ -86,7 +86,6 @@ const FindAccountScreen = () => {
 
   const handleTopBarBackPress = () => {
     const returnRoute = useForgotPasswordStore.getState().returnRoute;
-    console.log('Return route:', returnRoute);
     if (returnRoute) {
       useForgotPasswordStore.getState().setReturnRoute(null);
       router.back();

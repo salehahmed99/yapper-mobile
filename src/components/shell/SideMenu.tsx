@@ -6,17 +6,7 @@ import { useAuthStore } from '@/src/store/useAuthStore';
 import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
 import { usePathname, useRouter } from 'expo-router';
-import {
-  Bell,
-  Bookmark,
-  HelpCircle,
-  LogOut,
-  MessageCircle,
-  MoonStar,
-  Search,
-  Settings,
-  User,
-} from 'lucide-react-native';
+import { Bell, Bookmark, HelpCircle, MessageCircle, MoonStar, Search, Settings, User } from 'lucide-react-native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -50,14 +40,6 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
   const insets = useSafeAreaInsets();
   const [isThemeSheetVisible, setIsThemeSheetVisible] = React.useState(false);
   const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
-
-  const logout = useAuthStore((state) => state.logout);
-
-  const handleLogout = () => {
-    closeSideMenu();
-    logout(false);
-    router.replace('/(auth)/landing-screen');
-  };
 
   function navigate(path: string) {
     // If already on target path, just close menu
@@ -141,7 +123,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
               testID="sidemenu_following_button"
             >
               <Text style={styles.followCount}>
-                <Text style={styles.bold}>{user?.following || 0}</Text> Following
+                <Text style={styles.bold}>{user?.following || 0}</Text> {t('profile.following')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -153,7 +135,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
               testID="sidemenu_followers_button"
             >
               <Text style={styles.followCount}>
-                <Text style={styles.bold}>{user?.followers || 0}</Text> Followers
+                <Text style={styles.bold}>{user?.followers || 0}</Text> {t('profile.followers')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -166,12 +148,12 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             {/* Menu tiles */}
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(protected)/search')}
-              accessibilityLabel="sidemenu_search_button"
-              testID="sidemenu_search_button"
+              onPress={() => navigate('/(protected)/explore')}
+              accessibilityLabel="sidemenu_explore_button"
+              testID="sidemenu_explore_button"
             >
               <Search color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
-              <Text style={styles.menuTileText}>{t('menu.search')}</Text>
+              <Text style={styles.menuTileText}>{t('menu.explore')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tile}
@@ -202,6 +184,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tile}
+              // onPress={() => navigate('/(protected)/(settings)/settingsScreen')}
               onPress={() => navigate('/(protected)/bookmarks')}
               accessibilityLabel="sidemenu_bookmarks_button"
               testID="sidemenu_bookmarks_button"
@@ -230,15 +213,6 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             >
               <HelpCircle color={theme.colors.text.primary} size={theme.iconSizes.icon} />
               <Text style={styles.tileText}>{t('menu.help')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.tile}
-              onPress={handleLogout}
-              accessibilityLabel="sidemenu_logout_button"
-              testID="sidemenu_logout_button"
-            >
-              <LogOut color={theme.colors.text.primary} size={theme.iconSizes.icon} />
-              <Text style={[styles.tileText]}>{'Logout'}</Text>
             </TouchableOpacity>
           </ScrollView>
         </View>

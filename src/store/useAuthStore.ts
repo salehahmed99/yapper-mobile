@@ -27,6 +27,7 @@ interface IAuthState {
   setEmail: (newEmail: string) => void;
   setCountry: (newCountry: string) => void;
   setLanguage: (newLanguage: string) => void;
+  updateFollowCounts: (isFollowing: boolean) => void;
   fetchAndUpdateUser: () => Promise<void>;
   logout: (all: boolean) => Promise<void>;
 }
@@ -165,17 +166,29 @@ export const useAuthStore = create<IAuthState>((set) => ({
       user: state.user ? { ...state.user, language: newLanguage } : null,
     })),
 
+  /** Update follower/following counts optimistically */
+  updateFollowCounts: (isFollowing: boolean) =>
+    set((state) => {
+      if (!state.user) return state;
+      return {
+        user: {
+          ...state.user,
+          following: isFollowing ? (state.user.following || 0) + 1 : Math.max((state.user.following || 0) - 1, 0),
+        },
+      };
+    }),
+
   /** Logout & cleanup */
   logout: async (all: boolean = false) => {
     try {
+      tokenRefreshService.stop();
+      await deleteToken();
+      await deleteRefreshToken();
       if (all) {
         await logOutAll();
       } else {
         await logout();
       }
-      tokenRefreshService.stop();
-      await deleteToken();
-      await deleteRefreshToken();
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
