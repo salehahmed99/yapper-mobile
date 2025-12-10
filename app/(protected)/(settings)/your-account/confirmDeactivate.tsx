@@ -104,7 +104,7 @@ export const ConfirmDeactivateScreen: React.FC = () => {
             secureTextEntry
             autoCapitalize="none"
             autoCorrect={false}
-            placeholder="Password"
+            placeholder={t('settings.password.password_placeholder')}
             showPasswordToggle
             accessibilityLabel="Password input"
             testID="password-input"
@@ -126,7 +126,7 @@ export const ConfirmDeactivateScreen: React.FC = () => {
           testID="deactivate-button"
         >
           <ActivityLoader visible={isLoading} />
-          <Text style={styles.deactivateButtonText}>Deactivate</Text>
+          <Text style={styles.deactivateButtonText}>{t('settings.deactivate.button')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

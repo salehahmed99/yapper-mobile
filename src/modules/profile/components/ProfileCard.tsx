@@ -103,6 +103,7 @@ export default function ProfileCard({ profile, onFollow, isFollowing = false }: 
       color: theme.colors.text.secondary,
       lineHeight: 16,
       flex: 1,
+      textAlign: 'left',
     },
     followButton: {
       backgroundColor: theme.colors.text.primary,

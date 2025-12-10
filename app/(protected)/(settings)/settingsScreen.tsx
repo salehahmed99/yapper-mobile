@@ -1,16 +1,16 @@
-import React, { useMemo } from 'react';
-import { View, ScrollView, StyleSheet, StatusBar } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
 import { SettingsSearchBar } from '@/src/modules/settings/components/SettingsSearchBar';
 import { SettingsSection } from '@/src/modules/settings/components/SettingsSection';
+import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
 import { getSettingsData } from '@/src/modules/settings/components/settingsConfig';
 import { ISettingsItem } from '@/src/modules/settings/types/types';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { useTheme } from '@/src/context/ThemeContext';
-import { Theme } from '@/src/constants/theme';
+import { router } from 'expo-router';
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ScrollView, StatusBar, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const SettingsScreen: React.FC = () => {
   const { t } = useTranslation();

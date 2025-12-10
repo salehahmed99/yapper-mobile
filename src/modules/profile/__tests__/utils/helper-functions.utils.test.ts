@@ -1,4 +1,8 @@
-import { formatDateToDisplay, formatLongDateToDisplay } from '../../utils/helper-functions.utils';
+import {
+  formatDateToDisplay,
+  formatLongDateToDisplay,
+  formatMutualFollowersText,
+} from '../../utils/helper-functions.utils';
 
 describe('helper-functions.utils', () => {
   describe('formatDateToDisplay', () => {
@@ -93,6 +97,80 @@ describe('helper-functions.utils', () => {
       const result = formatLongDateToDisplay(dateString);
 
       expect(result).toBe('June 10, 1995');
+    });
+  });
+
+  describe('formatMutualFollowersText', () => {
+    it('should return empty string for no followers', () => {
+      const result = formatMutualFollowersText([], 0);
+      expect(result).toBe('');
+    });
+
+    it('should format single follower without others', () => {
+      const result = formatMutualFollowersText(['John'], 1);
+      expect(result).toBe('Followed by John');
+    });
+
+    it('should format single follower with one other', () => {
+      const result = formatMutualFollowersText(['John'], 2);
+      expect(result).toBe('Followed by John and 1 other');
+    });
+
+    it('should format single follower with multiple others', () => {
+      const result = formatMutualFollowersText(['John'], 5);
+      expect(result).toBe('Followed by John and 4 others');
+    });
+
+    it('should format two followers without others', () => {
+      const result = formatMutualFollowersText(['John', 'Jane'], 2);
+      expect(result).toBe('Followed by John and Jane');
+    });
+
+    it('should format two followers with one other', () => {
+      const result = formatMutualFollowersText(['John', 'Jane'], 3);
+      expect(result).toBe('Followed by John and 2 other');
+    });
+
+    it('should format two followers with multiple others', () => {
+      const result = formatMutualFollowersText(['John', 'Jane'], 10);
+      expect(result).toBe('Followed by John and 9 others');
+    });
+
+    it('should format three followers without others', () => {
+      const result = formatMutualFollowersText(['John', 'Jane', 'Bob'], 3);
+      expect(result).toBe('Followed by John, Jane, Bob');
+    });
+
+    it('should format three followers with others', () => {
+      const result = formatMutualFollowersText(['John', 'Jane', 'Bob'], 5);
+      expect(result).toBe('Followed by John and 4 others');
+    });
+
+    it('should format more than three followers and show first three', () => {
+      const result = formatMutualFollowersText(['John', 'Jane', 'Bob', 'Alice'], 4);
+      expect(result).toBe('Followed by John, Jane, Bob');
+    });
+
+    it('should handle edge case with exactly one remaining follower', () => {
+      const result = formatMutualFollowersText(['John'], 2);
+      expect(result).toBe('Followed by John and 1 other');
+    });
+
+    it('should handle names array longer than total count gracefully', () => {
+      // This shouldn't happen in practice but test defensive behavior
+      const result = formatMutualFollowersText(['John', 'Jane', 'Bob'], 2);
+      expect(result).toBe('Followed by John, Jane, Bob');
+    });
+
+    it('should format with special characters in names', () => {
+      const result = formatMutualFollowersText(["O'Brien", 'José', 'François'], 3);
+      expect(result).toBe("Followed by O'Brien, José, François");
+    });
+
+    it('should format with very long names', () => {
+      const longName = 'VeryLongUserNameThatExceedsNormalLength';
+      const result = formatMutualFollowersText([longName], 1);
+      expect(result).toBe(`Followed by ${longName}`);
     });
   });
 });

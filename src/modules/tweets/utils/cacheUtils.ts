@@ -11,56 +11,35 @@ export const updateTweetsInInfiniteCache = (
 
   return {
     ...oldData,
-    pages: oldData.pages.map((page: ITweets) => {
-      // Handle profile endpoints structure: { data: { data: [], pagination: {} }, count, message }
-      if (
-        'data' in page &&
-        page.data &&
-        typeof page.data === 'object' &&
-        'data' in page.data &&
-        Array.isArray(page.data.data)
-      ) {
-        return {
-          ...page,
-          data: {
-            ...page.data,
-            data: page.data.data.map((tweet: ITweet) => {
-              if (tweet.tweetId === tweetId) {
-                return updater(tweet);
-              }
-              return tweet;
-            }),
-          },
-        };
-      }
-      // Handle home feed structure: { data: [], pagination: {} }
-      if (Array.isArray(page.data)) {
-        return {
-          ...page,
-          data: page.data.map((tweet: ITweet) => {
-            if (tweet.replies && Array.isArray(tweet.replies)) {
-              tweet.replies = tweet.replies.map((reply: ITweet) => {
-                if (reply.tweetId === tweetId) {
-                  return updater(reply);
-                }
-                return reply;
-              });
-            }
-            if (tweet.conversationTweet && tweet.conversationTweet.tweetId === tweetId) {
-              tweet.conversationTweet = updater(tweet.conversationTweet);
-            }
-            if (tweet.parentTweet && tweet.parentTweet.tweetId === tweetId) {
-              tweet.parentTweet = updater(tweet.parentTweet);
-            }
-            if (tweet.tweetId === tweetId) {
-              return updater(tweet);
-            }
-            return tweet;
-          }),
-        };
-      }
-      return page;
-    }),
+    pages: oldData.pages.map((page: ITweets) => ({
+      ...page,
+      data: page.data.map((tweet: ITweet) => {
+        let updatedTweet = tweet;
+
+        if (tweet.tweetId === tweetId) {
+          updatedTweet = updater(tweet);
+        }
+
+        if (tweet.replies && Array.isArray(tweet.replies)) {
+          const updatedReplies = tweet.replies.map((reply: ITweet) =>
+            reply.tweetId === tweetId ? updater(reply) : reply,
+          );
+          if (updatedReplies !== tweet.replies) {
+            updatedTweet = { ...updatedTweet, replies: updatedReplies };
+          }
+        }
+
+        if (tweet.conversationTweet && tweet.conversationTweet.tweetId === tweetId) {
+          updatedTweet = { ...updatedTweet, conversationTweet: updater(tweet.conversationTweet) };
+        }
+
+        if (tweet.parentTweet && tweet.parentTweet.tweetId === tweetId) {
+          updatedTweet = { ...updatedTweet, parentTweet: updater(tweet.parentTweet) };
+        }
+
+        return updatedTweet;
+      }),
+    })),
   };
 };
 
@@ -69,43 +48,29 @@ export const removeTweetFromInfiniteCache = (oldData: InfiniteData<ITweets> | un
 
   return {
     ...oldData,
-    pages: oldData.pages.map((page: ITweets) => {
-      // Handle profile endpoints structure: { data: { data: [], pagination: {} }, count, message }
-      if (
-        'data' in page &&
-        page.data &&
-        typeof page.data === 'object' &&
-        'data' in page.data &&
-        Array.isArray(page.data.data)
-      ) {
-        return {
-          ...page,
-          data: {
-            ...page.data,
-            data: page.data.data.filter((tweet: ITweet) => tweet.tweetId !== tweetId),
-          },
-        };
-      }
-      // Handle home feed structure: { data: [], pagination: {} }
-      if (Array.isArray(page.data)) {
-        return {
-          ...page,
-          data: page.data.filter((tweet: ITweet) => {
-            if (tweet.replies && Array.isArray(tweet.replies)) {
-              tweet.replies = tweet.replies.filter((reply: ITweet) => reply.tweetId !== tweetId);
+    pages: oldData.pages.map((page: ITweets) => ({
+      ...page,
+      data: page.data
+        .map((tweet: ITweet) => {
+          let updatedTweet = tweet;
+          if (tweet.replies && Array.isArray(tweet.replies)) {
+            const filteredReplies = tweet.replies.filter((reply: ITweet) => reply.tweetId !== tweetId);
+            if (filteredReplies.length !== tweet.replies.length) {
+              updatedTweet = { ...updatedTweet, replies: filteredReplies };
             }
-            if (tweet.conversationTweet && tweet.conversationTweet.tweetId === tweetId) {
-              tweet.conversationTweet = undefined;
-            }
-            if (tweet.parentTweet && tweet.parentTweet.tweetId === tweetId) {
-              tweet.parentTweet = undefined;
-            }
-            return tweet.tweetId !== tweetId;
-          }),
-        };
-      }
-      return page;
-    }),
+          }
+
+          if (tweet.conversationTweet && tweet.conversationTweet.tweetId === tweetId) {
+            updatedTweet = { ...updatedTweet, conversationTweet: undefined };
+          }
+          if (tweet.parentTweet && tweet.parentTweet.tweetId === tweetId) {
+            updatedTweet = { ...updatedTweet, parentTweet: undefined };
+          }
+
+          return updatedTweet;
+        })
+        .filter((tweet: ITweet) => tweet.tweetId !== tweetId),
+    })),
   };
 };
 

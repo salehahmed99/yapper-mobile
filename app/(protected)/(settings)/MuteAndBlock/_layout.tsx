@@ -25,6 +25,7 @@ export default function MuteAndBlockLayout() {
       },
       headerShadowVisible: false,
       headerBackTitleVisible: false,
+      animation: 'slide_from_right' as const,
     }),
     [theme],
   );

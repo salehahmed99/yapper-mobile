@@ -82,5 +82,6 @@ const createStyles = (theme: Theme) =>
     tweetText: {
       color: theme.colors.text.primary,
       fontFamily: theme.typography.fonts.regular,
+      textAlign: 'left',
     },
   });

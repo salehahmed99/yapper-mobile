@@ -33,6 +33,7 @@ const createStyles = (theme: Theme) =>
       shadowOpacity: 0,
       backgroundColor: theme.colors.background.primary,
       borderBottomColor: theme.colors.border,
+      flexDirection: 'row',
     },
     tab: {},
     activeUnderline: {
@@ -44,6 +45,7 @@ const createStyles = (theme: Theme) =>
       fontWeight: 'bold',
       fontSize: 15,
       textTransform: 'none',
+      writingDirection: 'ltr',
     },
     scene: {
       flex: 1,
@@ -53,7 +55,7 @@ const createStyles = (theme: Theme) =>
 const CustomTabView: React.FC<ICustomTabViewProps> = ({
   tabs,
   initialTab,
-  scrollEnabled = false,
+  scrollEnabled = true,
   lazy = true,
   userId,
 }) => {

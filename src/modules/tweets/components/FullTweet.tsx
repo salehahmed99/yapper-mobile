@@ -4,6 +4,7 @@ import ViewsIcon from '@/src/components/icons/ViewsIcon';
 import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import i18n from '@/src/i18n';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { formatDateDDMMYYYY, formatShortTime } from '@/src/utils/dateUtils';
 import { formatCount } from '@/src/utils/formatCount';
@@ -11,10 +12,10 @@ import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { BlurView } from 'expo-blur';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { ArrowLeft, MoreHorizontal, Trash2 } from 'lucide-react-native';
+import { ArrowLeft, ArrowRight, MoreHorizontal, Trash2 } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { I18nManager, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useTweetDropDownMenu from '../hooks/useTweetDropDownMenu';
 import { ITweet } from '../types';
@@ -55,7 +56,7 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-
+  const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
   const user = useAuthStore((state) => state.user);
 
   const handleReplyPress = () => {
@@ -91,7 +92,7 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
 
   if (tweet.user.id === user?.id) {
     menuItems.push({
-      label: 'Delete post',
+      label: t('tweets.deletePost'),
       onPress: () => onDeletePress(tweet.tweetId),
       icon: <Trash2 size={theme.iconSizes.md} stroke={theme.colors.text.primary} />,
     });
@@ -109,12 +110,16 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
             accessibilityLabel="Go back"
             accessibilityRole="button"
           >
-            <ArrowLeft size={theme.iconSizesAlt.xl} color={theme.colors.text.primary} />
+            {isRTL ? (
+              <ArrowRight size={theme.iconSizesAlt.xl} color={theme.colors.text.primary} />
+            ) : (
+              <ArrowLeft size={theme.iconSizesAlt.xl} color={theme.colors.text.primary} />
+            )}
           </Pressable>
 
           {/* Title */}
           <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle}>Post</Text>
+            <Text style={styles.headerTitle}>{t('tweets.full_tweet.title')}</Text>
           </View>
 
           {/* Right Actions */}
@@ -205,7 +210,7 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
           <View style={styles.dot}></View>
           <Text style={styles.viewsCount} accessibilityLabel="full_tweet_views_count" testID="full_tweet_views_count">
             {formatCount(tweet.viewsCount)}
-            <Text style={styles.timestampText}> Views</Text>{' '}
+            <Text style={styles.timestampText}> {t('tweets.full_tweet.views')}</Text>{' '}
           </Text>
         </View>
 
@@ -318,6 +323,7 @@ const createStyles = (theme: Theme) =>
     },
     userDetails: {
       gap: 2,
+      alignItems: 'flex-start',
     },
     name: {
       fontFamily: theme.typography.fonts.bold,
@@ -340,6 +346,7 @@ const createStyles = (theme: Theme) =>
       fontFamily: theme.typography.fonts.regular,
       fontSize: theme.typography.sizes.md,
       lineHeight: theme.typography.sizes.md * 1.3,
+      textAlign: 'left',
     },
     timestampViewsSection: {
       paddingTop: theme.spacing.xl,

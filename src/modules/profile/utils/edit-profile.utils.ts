@@ -1,6 +1,7 @@
 import * as ImagePicker from 'expo-image-picker';
 
 import { DEFAULT_AVATAR_URL, DEFAULT_BANNER_URL } from '@/src/constants/defaults';
+// eslint-disable-next-line react-native/split-platform-components
 import { ActionSheetIOS, Alert, Platform } from 'react-native';
 
 export const DEFAULT_AVATAR_URI = DEFAULT_AVATAR_URL;
@@ -28,7 +29,10 @@ export const pickImageFromLibrary = async (isAvatar: boolean): Promise<string | 
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: isAvatar ? [1, 1] : [3, 1],
-      quality: 1,
+      quality: 0.8,
+      allowsMultipleSelection: false,
+      base64: false,
+      exif: false,
     });
 
     if (!result.canceled && result.assets[0]) {

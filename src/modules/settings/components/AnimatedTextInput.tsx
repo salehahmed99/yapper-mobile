@@ -12,7 +12,6 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
-import { useTranslation } from 'react-i18next';
 
 interface AnimatedTextInputProps extends TextInputProps {
   onFocusChange?: (isFocused: boolean) => void;
@@ -28,12 +27,10 @@ export const AnimatedTextInput: React.FC<AnimatedTextInputProps> = ({
   ...props
 }) => {
   const { theme } = useTheme();
-  const { i18n } = useTranslation();
-  const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
-  const styles = useMemo(() => createStyles(theme, isRTL), [theme, isRTL]);
+  const isRTL = I18nManager.isRTL;
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const borderAnim = useRef(new Animated.Value(0)).current;
   const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
-
   const animateBorder = (toValue: number) => {
     Animated.timing(borderAnim, {
       toValue,
@@ -95,7 +92,7 @@ export const AnimatedTextInput: React.FC<AnimatedTextInputProps> = ({
   );
 };
 
-const createStyles = (theme: Theme, isRTL: boolean) =>
+const createStyles = (theme: Theme) =>
   StyleSheet.create({
     animatedView: {
       borderBottomWidth: 1,
@@ -120,13 +117,11 @@ const createStyles = (theme: Theme, isRTL: boolean) =>
       color: theme.colors.text.primary,
     },
     inputWithIcon: {
-      paddingRight: isRTL ? 32 : 0,
-      paddingLeft: isRTL ? 0 : 32,
+      paddingRight: 32,
     },
     eyeIcon: {
       position: 'absolute',
-      right: isRTL ? 0 : undefined,
-      left: isRTL ? undefined : 0,
+      right: 0,
       padding: 4,
     },
   });

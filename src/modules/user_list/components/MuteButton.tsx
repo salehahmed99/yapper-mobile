@@ -4,7 +4,7 @@ import { useMuteUser } from '@/src/modules/profile/hooks/useMuteUser';
 import { IUser } from '@/src/types/user';
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 interface IMuteButtonProps {
   user: IUser;
@@ -49,7 +49,7 @@ const MuteButton: React.FC<IMuteButtonProps> = ({ user, onPress }) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   // Use the mute hook
-  const { isMuted, isLoading, toggleMute, setIsMuted } = useMuteUser(user.isMuted || false);
+  const { isMuted, toggleMute, setIsMuted } = useMuteUser(user.isMuted || false);
 
   // Sync with user prop changes
   useEffect(() => {
@@ -75,22 +75,13 @@ const MuteButton: React.FC<IMuteButtonProps> = ({ user, onPress }) => {
       style={[styles.muteButton, isUnmute && styles.mutedButton]}
       onPress={handlePress}
       activeOpacity={0.7}
-      disabled={isLoading}
       testID={`mute_button_${user.id}`}
       accessibilityLabel={isUnmute ? `unmute_${user.username || user.name}` : `mute_${user.username || user.name}`}
       accessibilityRole="button"
-      accessibilityState={{ disabled: isLoading }}
     >
-      {isLoading ? (
-        <ActivityIndicator size="small" color={theme.colors.warning} testID={`mute_button_loader_${user.id}`} />
-      ) : (
-        <Text
-          style={[styles.muteButtonText, isUnmute && styles.mutedButtonText]}
-          testID={`mute_button_text_${user.id}`}
-        >
-          {isUnmute ? t('userList.unmute') : t('userList.mute')}
-        </Text>
-      )}
+      <Text style={[styles.muteButtonText, isUnmute && styles.mutedButtonText]} testID={`mute_button_text_${user.id}`}>
+        {isUnmute ? t('userList.unmute') : t('userList.mute')}
+      </Text>
     </TouchableOpacity>
   );
 };

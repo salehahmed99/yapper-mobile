@@ -89,7 +89,7 @@ const SingleTweet: React.FC<ITweetProps> = (props) => {
 
   if (tweet.user.id === user?.id) {
     menuItems.push({
-      label: 'Delete post',
+      label: t('tweets.deletePost'),
       onPress: () => onDeletePress(tweet.tweetId),
       icon: <Trash2 size={theme.iconSizes.md} stroke={theme.colors.text.primary} />,
     });
@@ -259,7 +259,9 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       gap: theme.spacing.xs,
     },
-    tweetContent: {},
+    tweetContent: {
+      flexDirection: 'row',
+    },
     avatar: {
       width: theme.avatarSizes.md,
       height: theme.avatarSizes.md,

@@ -1,7 +1,9 @@
 import { useAuthStore } from '@/src/store/useAuthStore';
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import Toast from 'react-native-toast-message';
+import { ITweet, ITweets } from '../../tweets/types';
 import { followUser, unfollowUser } from '../services/profileService';
+import { updateUserStateInTweetsCache } from '../utils/profileCacheUtils';
 
 interface UseFollowUserReturn {
   isFollowing: boolean;
@@ -9,60 +11,77 @@ interface UseFollowUserReturn {
   toggleFollow: (userId: string) => Promise<void>;
   setIsFollowing: (value: boolean) => void;
 }
+
+interface FollowMutationVariables {
+  userId: string;
+  isFollowing: boolean;
+}
+
 export const useFollowUser = (initialFollowState: boolean = false): UseFollowUserReturn => {
   const [isFollowing, setIsFollowing] = useState(initialFollowState);
-  const [isLoading, setIsLoading] = useState(false);
-  const fetchAndUpdateUser = useAuthStore((state) => state.fetchAndUpdateUser);
+  const queryClient = useQueryClient();
+  const updateFollowCounts = useAuthStore((state) => state.updateFollowCounts);
+
+  const toggleFollowState = (tweet: ITweet) => {
+    return {
+      ...tweet,
+      user: {
+        ...tweet.user,
+        isFollowing: !tweet.user.isFollowing,
+      },
+    };
+  };
+
+  const followMutation = useMutation({
+    mutationFn: async (variables: FollowMutationVariables) => {
+      return variables.isFollowing ? unfollowUser(variables.userId) : followUser(variables.userId);
+    },
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey: ['profile'] });
+      await queryClient.cancelQueries({ queryKey: ['user', variables.userId] });
+      await queryClient.cancelQueries({ queryKey: ['tweets'] });
+      await queryClient.cancelQueries({ queryKey: ['followers'] });
+      await queryClient.cancelQueries({ queryKey: ['following'] });
+
+      setIsFollowing(!variables.isFollowing);
+
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: ['tweets'] }, (oldData) =>
+        updateUserStateInTweetsCache(oldData, variables.userId, toggleFollowState),
+      );
+
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: ['profile'] }, (oldData) =>
+        updateUserStateInTweetsCache(oldData, variables.userId, toggleFollowState),
+      );
+    },
+    onSuccess: async (data, variables) => {
+      // Update own following count optimistically
+      updateFollowCounts(!variables.isFollowing);
+
+      await queryClient.invalidateQueries({ queryKey: ['user', variables.userId] });
+      await queryClient.invalidateQueries({ queryKey: ['followers'] });
+      await queryClient.invalidateQueries({ queryKey: ['following'] });
+      await queryClient.invalidateQueries({ queryKey: ['userList'] });
+    },
+    onError: (error, variables) => {
+      setIsFollowing(variables.isFollowing);
+
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['user', variables.userId] });
+      queryClient.invalidateQueries({ queryKey: ['tweets'] });
+      queryClient.invalidateQueries({ queryKey: ['followers'] });
+      queryClient.invalidateQueries({ queryKey: ['following'] });
+      queryClient.invalidateQueries({ queryKey: ['userList'] });
+    },
+  });
 
   const toggleFollow = async (userId: string) => {
-    if (isLoading || !userId) return;
-
-    setIsLoading(true);
-    const previousState = isFollowing;
-
-    try {
-      // Optimistically update UI
-      setIsFollowing(!isFollowing);
-
-      if (isFollowing) {
-        await unfollowUser(userId);
-        Toast.show({
-          type: 'success',
-          text1: 'Unfollowed',
-          text2: 'You have unfollowed this user',
-          position: 'bottom',
-          visibilityTime: 2000,
-        });
-        await fetchAndUpdateUser();
-      } else {
-        await followUser(userId);
-        Toast.show({
-          type: 'success',
-          text1: 'Following',
-          text2: 'You are now following this user',
-          position: 'bottom',
-          visibilityTime: 2000,
-        });
-        await fetchAndUpdateUser();
-      }
-    } catch (error) {
-      setIsFollowing(previousState);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to update follow status';
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: errorMessage,
-        position: 'bottom',
-        visibilityTime: 3000,
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    if (followMutation.isPending || !userId) return;
+    await followMutation.mutateAsync({ userId, isFollowing });
   };
 
   return {
     isFollowing,
-    isLoading,
+    isLoading: followMutation.isPending,
     toggleFollow,
     setIsFollowing,
   };
