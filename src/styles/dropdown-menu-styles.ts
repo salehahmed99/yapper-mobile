@@ -33,7 +33,6 @@ export const createDropdownMenuStyles = (theme: Theme, isDark: boolean) =>
       fontSize: theme.typography.sizes.md,
       fontWeight: theme.typography.weights.regular,
       color: theme.colors.text.primary,
-      flex: 1,
       letterSpacing: theme.typography.letterSpacing.tight,
     },
     separator: {
