@@ -11,7 +11,6 @@ import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
 import { SafeAreaView } from 'react-native-safe-area-context';
-// import { resendVerificationCode } from '@/src/modules/auth/services/signUpService';
 import { verifyChangeEmail } from '@/src/modules/settings/services/yourAccountService';
 
 const ConfirmEmailChangeScreen = () => {
@@ -22,7 +21,6 @@ const ConfirmEmailChangeScreen = () => {
 
   const [code, setCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  // const [isResending, setIsResending] = useState(false);
   const [isVerifyEnabled, setIsVerifyEnabled] = useState(false);
 
   // Redirect if no email
