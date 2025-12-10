@@ -13,7 +13,7 @@ interface IParentTweetProps {
   isVisible?: boolean;
 }
 const ParentTweet: React.FC<IParentTweetProps> = (props) => {
-  const { tweet, isVisible = true } = props;
+  const { tweet } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   return (
@@ -45,14 +45,7 @@ const ParentTweet: React.FC<IParentTweetProps> = (props) => {
 
       {/* Tweet Media */}
       {(tweet.images.length > 0 || tweet.videos.length > 0) && (
-        <TweetMedia
-          images={tweet.images}
-          videos={tweet.videos}
-          tweetId={tweet.tweetId}
-          tweet={tweet}
-          isVisible={isVisible}
-          isParentMedia={true}
-        />
+        <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} />
       )}
     </Pressable>
   );

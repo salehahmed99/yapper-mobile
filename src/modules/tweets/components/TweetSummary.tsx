@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTweet } from '../hooks/useTweet';
+import { useTweetSummary } from '../hooks/useTweetSummary';
 
 interface TweetSummaryProps {
   tweetId: string;
@@ -18,98 +19,156 @@ export default function TweetSummary({ tweetId, onBack }: TweetSummaryProps) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { data: tweet, isLoading, isError } = useTweet(tweetId);
+  const { data: tweet, isLoading: isTweetLoading, isError: isTweetError } = useTweet(tweetId);
+  const {
+    data: summary,
+    isLoading: isSummaryLoading,
+    isError: isSummaryError,
+    error: summaryError,
+  } = useTweetSummary(tweetId);
 
-  if (isLoading) {
+  // Check if error is due to tweet being too short (400 error)
+  const isTweetTooShort = summaryError && (summaryError as any)?.response?.status === 400;
+
+  if (isTweetLoading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} testID="tweet_summary_loading">
         <View style={styles.header}>
-          <Pressable onPress={onBack} style={styles.backButton}>
+          <Pressable
+            onPress={onBack}
+            style={styles.backButton}
+            accessibilityLabel="Go back"
+            accessibilityRole="button"
+            testID="tweet_summary_back_button"
+          >
             <ArrowLeft size={theme.iconSizes.lg} color={theme.colors.text.primary} />
           </Pressable>
-          <Text style={styles.headerTitle}>{t('tweetSummary.title')}</Text>
+          <Text style={styles.headerTitle} accessibilityRole="header">
+            {t('tweetSummary.title')}
+          </Text>
           <View style={styles.placeholderRight} />
         </View>
         <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color={theme.colors.text.primary} />
+          <ActivityIndicator size="large" color={theme.colors.text.primary} accessibilityLabel="Loading tweet" />
         </View>
       </SafeAreaView>
     );
   }
 
-  if (isError || !tweet) {
+  if (isTweetError || !tweet) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} testID="tweet_summary_error">
         <View style={styles.header}>
-          <Pressable onPress={onBack} style={styles.backButton}>
+          <Pressable
+            onPress={onBack}
+            style={styles.backButton}
+            accessibilityLabel="Go back"
+            accessibilityRole="button"
+            testID="tweet_summary_back_button"
+          >
             <ArrowLeft size={theme.iconSizes.lg} color={theme.colors.text.primary} />
           </Pressable>
-          <Text style={styles.headerTitle}>{t('tweetSummary.title')}</Text>
+          <Text style={styles.headerTitle} accessibilityRole="header">
+            {t('tweetSummary.title')}
+          </Text>
           <View style={styles.placeholderRight} />
         </View>
         <View style={styles.centerContent}>
-          <Text style={styles.errorText}>{t('tweetSummary.failedToLoad')}</Text>
+          <Text style={styles.errorText} testID="tweet_summary_error_text">
+            {t('tweetSummary.failedToLoad')}
+          </Text>
         </View>
       </SafeAreaView>
     );
   }
+
+  const renderSummaryContent = () => {
+    if (isSummaryLoading) {
+      return (
+        <View style={styles.summaryLoading} testID="summary_loading">
+          <ActivityIndicator size="small" color={theme.colors.text.primary} accessibilityLabel="Loading summary" />
+          <Text style={styles.loadingText}>{t('tweetSummary.loadingSummary')}</Text>
+        </View>
+      );
+    }
+
+    if (isTweetTooShort) {
+      return (
+        <View style={styles.errorContainer} testID="summary_too_short">
+          <Text style={styles.errorText} accessibilityLabel="Tweet too short for summary">
+            {t('tweetSummary.tweetTooShort')}
+          </Text>
+        </View>
+      );
+    }
+
+    if (isSummaryError || !summary) {
+      return (
+        <View style={styles.errorContainer} testID="summary_error">
+          <Text style={styles.errorText} accessibilityLabel="Summary failed to load">
+            {t('tweetSummary.summaryFailed')}
+          </Text>
+        </View>
+      );
+    }
+
+    return (
+      <Text style={styles.analysisText} testID="summary_content" accessibilityLabel={`AI Summary: ${summary}`}>
+        {summary}
+      </Text>
+    );
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} testID="tweet_summary_screen">
       {/* Header */}
-      <View style={styles.header}>
-        <Pressable onPress={onBack} style={styles.backButton}>
+      <View style={styles.header} testID="tweet_summary_header">
+        <Pressable
+          onPress={onBack}
+          style={styles.backButton}
+          accessibilityLabel="Go back"
+          accessibilityRole="button"
+          testID="tweet_summary_back_button"
+        >
           <ArrowLeft size={theme.iconSizes.lg} color={theme.colors.text.primary} />
         </Pressable>
-        <Text style={styles.headerTitle}>{t('tweetSummary.title')}</Text>
+        <Text style={styles.headerTitle} accessibilityRole="header">
+          {t('tweetSummary.title')}
+        </Text>
         <View style={styles.placeholderRight} />
       </View>
 
       <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
         {/* Tweet Card */}
-        <View style={styles.tweetCard}>
+        <View style={styles.tweetCard} testID="tweet_summary_tweet_card">
           <View style={styles.userInfo}>
             <Image
               source={tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : DEFAULT_AVATAR_URL}
               style={styles.avatar}
+              accessibilityLabel={`${tweet.user.name}'s avatar`}
             />
             <View style={styles.userDetails}>
               <View style={styles.nameRow}>
-                <Text style={styles.name}>{tweet.user.name}</Text>
+                <Text style={styles.name} testID="tweet_author_name">
+                  {tweet.user.name}
+                </Text>
               </View>
-              <Text style={styles.username}>@{tweet.user.username}</Text>
+              <Text style={styles.username} testID="tweet_author_username">
+                @{tweet.user.username}
+              </Text>
             </View>
           </View>
-          <Text style={styles.tweetText}>{tweet.content}</Text>
+          <Text style={styles.tweetText} testID="tweet_content" accessibilityLabel={`Tweet: ${tweet.content}`}>
+            {tweet.content}
+          </Text>
         </View>
 
         {/* Analysis Section */}
-        <View style={styles.analysisSection}>
-          <Text style={styles.analysisTitle}>Tweet Summary</Text>
-
-          <View style={styles.bulletPoint}>
-            <Text style={styles.bullet}>•</Text>
-            <Text style={styles.analysisText}>
-              This tweet discusses the importance of community giving and gratitude, aligning with the user's focus on
-              civic engagement.
-            </Text>
-          </View>
-
-          <View style={styles.bulletPoint}>
-            <Text style={styles.bullet}>•</Text>
-            <Text style={styles.analysisText}>
-              The message has received significant engagement, sparking conversations about leadership and social
-              responsibility in the current political climate.
-            </Text>
-          </View>
-
-          <View style={styles.bulletPoint}>
-            <Text style={styles.bullet}>•</Text>
-            <Text style={styles.analysisText}>
-              Posted recently, it reflects a tradition of holiday outreach and contrasts with other prevailing political
-              rhetoric.
-            </Text>
-          </View>
+        <View style={styles.analysisSection} testID="summary_section">
+          <Text style={styles.analysisTitle} accessibilityRole="header">
+            {t('tweetSummary.summaryTitle')}
+          </Text>
+          {renderSummaryContent()}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -233,5 +292,19 @@ const createStyles = (theme: Theme) =>
       fontFamily: theme.typography.fonts.regular,
       color: theme.colors.text.secondary,
       lineHeight: 22,
+    },
+    summaryLoading: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.sm,
+      paddingVertical: theme.spacing.md,
+    },
+    loadingText: {
+      fontSize: theme.typography.sizes.sm,
+      fontFamily: theme.typography.fonts.regular,
+      color: theme.colors.text.secondary,
+    },
+    errorContainer: {
+      paddingVertical: theme.spacing.md,
     },
   });

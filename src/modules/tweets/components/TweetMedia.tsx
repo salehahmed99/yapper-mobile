@@ -1,14 +1,10 @@
 import { Theme } from '@/src/constants/theme';
 import { useMediaViewer } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
-import { useCachedMedia } from '@/src/modules/tweets/hooks/useCachedMedia';
-import { ITweet } from '@/src/modules/tweets/types';
-import { useFocusEffect } from '@react-navigation/native';
 import { Image } from 'expo-image';
-import { VideoView, useVideoPlayer } from 'expo-video';
-import { Volume2, VolumeX } from 'lucide-react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Play } from 'lucide-react-native';
+import React, { useCallback, useEffect, useMemo } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 const MAX_MEDIA_ITEMS = 4;
 
@@ -16,9 +12,6 @@ interface ITweetMediaProps {
   images: string[];
   videos: string[];
   tweetId: string;
-  tweet: ITweet;
-  isVisible?: boolean;
-  isParentMedia?: boolean;
 }
 
 type MediaItem = {
@@ -27,37 +20,20 @@ type MediaItem = {
   index: number;
 };
 
-const TweetMedia: React.FC<ITweetMediaProps> = ({
-  images,
-  videos,
-  tweetId,
-  tweet,
-  isVisible = false,
-  isParentMedia = false,
-}) => {
+const TweetMedia: React.FC<ITweetMediaProps> = ({ images, videos, tweetId }) => {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { openMediaViewer, isOpen: isMediaViewerOpen, lastClosedData } = useMediaViewer();
-  const [isMuted, setIsMuted] = useState(false);
-  const toggleMute = useCallback(() => setIsMuted((prev) => !prev), []);
+  const { openMediaViewer } = useMediaViewer();
 
-  const shouldRenderVideos = isVisible;
-
-  const prefetchedImagesRef = React.useRef<Set<string>>(new Set());
+  const prefetchedMediaRef = React.useRef<Set<string>>(new Set());
   useEffect(() => {
-    images.forEach((url) => {
-      if (!prefetchedImagesRef.current.has(url)) {
+    [...images, ...videos].forEach((url) => {
+      if (!prefetchedMediaRef.current.has(url)) {
         Image.prefetch(url);
-        prefetchedImagesRef.current.add(url);
+        prefetchedMediaRef.current.add(url);
       }
     });
-  }, [images]);
-
-  // Cache videos
-  const cachedVideo0 = useCachedMedia(videos[0] || '', 'video');
-  const cachedVideo1 = useCachedMedia(videos[1] || '', 'video');
-  const cachedVideo2 = useCachedMedia(videos[2] || '', 'video');
-  const cachedVideo3 = useCachedMedia(videos[3] || '', 'video');
+  }, [images, videos]);
 
   const allMedia = useMemo<MediaItem[]>(() => {
     const mediaItems: MediaItem[] = [];
@@ -73,195 +49,17 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({
     return mediaItems.slice(0, MAX_MEDIA_ITEMS);
   }, [images, videos]);
 
-  const videoUrls = useMemo(
-    () =>
-      allMedia
-        .filter((item) => item.type === 'video')
-        .slice(0, MAX_MEDIA_ITEMS)
-        .map((item) => ({ url: item.url, index: item.index })),
-    [allMedia],
-  );
-
-  // Only create video players if visible and have videos
-  const hasVideos = videoUrls.length > 0;
-
-  const player0 = useVideoPlayer(hasVideos && videoUrls[0] ? cachedVideo0 : '', (player) => {
-    if (hasVideos && videoUrls[0]) {
-      player.loop = true;
-      player.muted = isMuted;
-    }
-  });
-
-  const player1 = useVideoPlayer(hasVideos && videoUrls[1] ? cachedVideo1 : '', (player) => {
-    if (hasVideos && videoUrls[1]) {
-      player.loop = true;
-      player.muted = isMuted;
-    }
-  });
-
-  const player2 = useVideoPlayer(hasVideos && videoUrls[2] ? cachedVideo2 : '', (player) => {
-    if (hasVideos && videoUrls[2]) {
-      player.loop = true;
-      player.muted = isMuted;
-    }
-  });
-
-  const player3 = useVideoPlayer(hasVideos && videoUrls[3] ? cachedVideo3 : '', (player) => {
-    if (hasVideos && videoUrls[3]) {
-      player.loop = true;
-      player.muted = isMuted;
-    }
-  });
-
-  const videoPlayers = useMemo(() => {
-    const players: Record<number, ReturnType<typeof useVideoPlayer>> = {};
-    if (videoUrls[0]) players[videoUrls[0].index] = player0;
-    if (videoUrls[1]) players[videoUrls[1].index] = player1;
-    if (videoUrls[2]) players[videoUrls[2].index] = player2;
-    if (videoUrls[3]) players[videoUrls[3].index] = player3;
-    return players;
-  }, [videoUrls, player0, player1, player2, player3]);
-
-  useEffect(() => {
-    Object.values(videoPlayers).forEach((player) => {
-      if (player) {
-        player.muted = isMuted;
-      }
-    });
-  }, [isMuted, videoPlayers]);
-
-  useEffect(() => {
-    if (
-      lastClosedData &&
-      lastClosedData.tweetId === tweetId &&
-      videoUrls.length > 0 &&
-      lastClosedData.mediaIndex !== null &&
-      lastClosedData.mediaIndex !== undefined
-    ) {
-      const mediaItem = allMedia[lastClosedData.mediaIndex];
-      if (mediaItem?.type === 'video' && lastClosedData.videoTime !== undefined) {
-        const player = videoPlayers[mediaItem.index];
-        if (player) {
-          try {
-            player.currentTime = lastClosedData.videoTime;
-          } catch {
-            // Ignore
-          }
-        }
-      }
-    }
-  }, [lastClosedData, tweetId, videoUrls, videoPlayers, allMedia]);
-
-  // Pause all videos when screen loses focus (navigating away), resume when returning
-  useFocusEffect(
-    useCallback(() => {
-      // Don't autoplay parent media videos
-      if (isVisible && !isParentMedia) {
-        Object.values(videoPlayers).forEach((player) => {
-          try {
-            player?.play();
-          } catch {
-            // Ignore
-          }
-        });
-      }
-
-      return () => {
-        Object.values(videoPlayers).forEach((player) => {
-          try {
-            player?.pause();
-          } catch {
-            // Ignore
-          }
-        });
-      };
-    }, [videoPlayers, isVisible, isParentMedia]),
-  );
-
-  // Cleanup: pause all videos when component unmounts
-  useEffect(() => {
-    return () => {
-      Object.values(videoPlayers).forEach((player) => {
-        try {
-          player?.pause();
-        } catch {
-          // Ignore
-        }
-      });
-    };
-  }, [videoPlayers]);
-
-  // Control video playback based on visibility
-  useEffect(() => {
-    const shouldPlayVideo = isVisible && videoUrls.length > 0 && !isMediaViewerOpen && !isParentMedia;
-
-    if (shouldPlayVideo) {
-      const firstVideoIndex = videoUrls[0].index;
-      const firstPlayer = videoPlayers[firstVideoIndex];
-      if (firstPlayer) {
-        try {
-          firstPlayer.play();
-        } catch {
-          // Ignore
-        }
-      }
-
-      videoUrls.slice(1).forEach((video) => {
-        try {
-          videoPlayers[video.index]?.pause();
-        } catch {
-          // Ignore
-        }
-      });
-    } else {
-      Object.values(videoPlayers).forEach((player) => {
-        try {
-          player?.pause();
-        } catch {
-          // Ignore
-        }
-      });
-    }
-  }, [isVisible, isMediaViewerOpen, videoUrls, videoPlayers, isParentMedia]);
-
-  const handleMutePress = (e: React.BaseSyntheticEvent) => {
-    e.stopPropagation();
-    toggleMute();
-  };
-
   const handleMediaPress = useCallback(
-    (index: number, mediaItem: MediaItem) => {
-      let videoTime = 0;
-
-      if (mediaItem.type === 'video') {
-        const player = videoPlayers[mediaItem.index];
-        if (player) {
-          try {
-            videoTime = player.currentTime || 0;
-          } catch {
-            // Ignore
-          }
-        }
-      }
-
-      Object.values(videoPlayers).forEach((player) => {
-        try {
-          player?.pause();
-        } catch {
-          // Ignore
-        }
-      });
-
+    (index: number) => {
       openMediaViewer({
         tweetId,
-        tweet,
         mediaIndex: index,
         images,
         videos,
-        videoTime,
+        videoTime: 0,
       });
     },
-    [videoPlayers, openMediaViewer, tweetId, tweet, images, videos],
+    [openMediaViewer, tweetId, images, videos],
   );
 
   if (allMedia.length === 0) {
@@ -270,13 +68,12 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({
 
   const renderMediaItem = (item: MediaItem, position: number) => {
     const isVideo = item.type === 'video';
-    const remainingCount = allMedia.length - MAX_MEDIA_ITEMS;
+    const totalMediaCount = images.length + videos.length;
+    const remainingCount = totalMediaCount - MAX_MEDIA_ITEMS;
     const showOverlay = position === 3 && remainingCount > 0;
-    const player = isVideo ? videoPlayers[item.index] : null;
 
     const handlePress = () => {
-      // Always open the media viewer on tap (images and videos)
-      handleMediaPress(position, item);
+      handleMediaPress(position);
     };
 
     const itemStyle = [
@@ -296,25 +93,16 @@ const TweetMedia: React.FC<ITweetMediaProps> = ({
         accessibilityLabel={`media_${item.type}_${position}`}
         accessibilityRole="button"
       >
-        {isVideo && player && shouldRenderVideos ? (
-          <>
-            <VideoView style={styles.image} player={player} nativeControls={false} contentFit="cover" />
-            <TouchableOpacity
-              style={styles.muteButton}
-              onPress={handleMutePress}
-              activeOpacity={0.7}
-              accessibilityLabel="video_mute_toggle"
-              accessibilityRole="button"
-            >
-              {isMuted ? (
-                <VolumeX size={theme.iconSizes.sm} color="#FFFFFF" strokeWidth={2.5} />
-              ) : (
-                <Volume2 size={theme.iconSizes.sm} color="#FFFFFF" strokeWidth={2.5} />
-              )}
-            </TouchableOpacity>
-          </>
-        ) : (
-          <Image source={{ uri: item.url }} style={styles.image} contentFit="cover" cachePolicy="memory-disk" />
+        {/* Show image for both images and video thumbnails */}
+        <Image source={{ uri: item.url }} style={styles.image} contentFit="cover" cachePolicy="memory-disk" />
+
+        {/* Play icon overlay for videos */}
+        {isVideo && (
+          <View style={styles.playIconContainer} accessibilityLabel={`play_icon_${position}`}>
+            <View style={styles.playIconCircle}>
+              <Play size={24} color="#FFFFFF" fill="#FFFFFF" />
+            </View>
+          </View>
         )}
 
         {showOverlay && (
@@ -345,7 +133,7 @@ export default TweetMedia;
 const MEDIA_GAP = 2;
 const SINGLE_MEDIA_MAX_HEIGHT = 400;
 const MULTIPLE_MEDIA_HEIGHT = 280;
-const MUTE_BUTTON_SIZE = 32;
+const PLAY_ICON_SIZE = 50;
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -408,16 +196,18 @@ const createStyles = (theme: Theme) =>
       fontFamily: theme.typography.fonts.bold,
       color: theme.colors.text.inverse,
     },
-    muteButton: {
-      position: 'absolute',
-      bottom: theme.spacing.md,
-      right: theme.spacing.md,
-      width: MUTE_BUTTON_SIZE,
-      height: MUTE_BUTTON_SIZE,
-      borderRadius: MUTE_BUTTON_SIZE / 2,
-      backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    playIconContainer: {
+      ...StyleSheet.absoluteFillObject,
       justifyContent: 'center',
       alignItems: 'center',
-      ...theme.shadows.sm,
+    },
+    playIconCircle: {
+      width: PLAY_ICON_SIZE,
+      height: PLAY_ICON_SIZE,
+      borderRadius: PLAY_ICON_SIZE / 2,
+      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingLeft: 4, // Slight offset to center the play icon visually
     },
   });

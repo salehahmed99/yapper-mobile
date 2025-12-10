@@ -1,8 +1,7 @@
 import { useMediaViewer } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
 import TweetMedia from '@/src/modules/tweets/components/TweetMedia';
-import { useFocusEffect } from '@react-navigation/native';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 import React from 'react';
 
 // Mock dependencies
@@ -14,28 +13,15 @@ jest.mock('@/src/context/MediaViewerContext', () => ({
   useMediaViewer: jest.fn(),
 }));
 
-jest.mock('@react-navigation/native', () => ({
-  useFocusEffect: jest.fn(),
-}));
-
-jest.mock('expo-image', () => ({
-  Image: 'Image',
-}));
-
-jest.mock('expo-video', () => ({
-  VideoView: 'VideoView',
-  useVideoPlayer: jest.fn(() => ({
-    play: jest.fn(),
-    pause: jest.fn(),
-    currentTime: 0,
-    loop: true,
-    muted: false,
-  })),
-}));
+jest.mock('expo-image', () => {
+  const React = require('react');
+  const MockImage = (props: any) => React.createElement('Image', props);
+  MockImage.prefetch = jest.fn();
+  return { Image: MockImage };
+});
 
 jest.mock('lucide-react-native', () => ({
-  Volume2: () => 'Volume2Icon',
-  VolumeX: () => 'VolumeXIcon',
+  Play: () => 'PlayIcon',
 }));
 
 const mockTheme = {
@@ -71,6 +57,7 @@ const mockTheme = {
   },
   iconSizes: {
     sm: 20,
+    lg: 28,
   },
   shadows: {
     sm: {},
@@ -79,12 +66,6 @@ const mockTheme = {
 
 describe('TweetMedia', () => {
   const mockOpenMediaViewer = jest.fn();
-  const mockUseFocusEffectCallback = jest.fn();
-  const mockTweet = {
-    tweetId: 'tweet1',
-    content: 'Test tweet',
-    user: { id: 'user1', name: 'Test User', username: 'testuser' },
-  } as any;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -98,49 +79,41 @@ describe('TweetMedia', () => {
       isOpen: false,
       lastClosedData: null,
     });
-
-    (useFocusEffect as jest.Mock).mockImplementation((callback) => {
-      mockUseFocusEffectCallback(callback);
-      // Call the effect immediately for testing
-      const cleanup = callback();
-      return cleanup;
-    });
   });
 
   describe('Rendering', () => {
     it('should render nothing when no media is provided', () => {
-      const rendered = render(
-        <TweetMedia images={[]} videos={[]} tweetId="tweet1" tweet={mockTweet} isVisible={true} />,
-      );
-
-      expect(rendered.root == null || rendered.root).toBe(true);
+      const { toJSON } = render(<TweetMedia images={[]} videos={[]} tweetId="tweet1" />);
+      expect(toJSON()).toBeNull();
     });
 
     it('should render images correctly', () => {
       const images = ['https://example.com/image1.jpg', 'https://example.com/image2.jpg'];
 
-      const rendered = render(
-        <TweetMedia images={images} videos={[]} tweetId="tweet1" tweet={mockTweet} isVisible={true} />,
-      );
+      render(<TweetMedia images={images} videos={[]} tweetId="tweet1" />);
 
-      expect(rendered.root).toBeTruthy();
+      expect(screen.getByLabelText('media_image_0')).toBeTruthy();
+      expect(screen.getByLabelText('media_image_1')).toBeTruthy();
     });
 
-    it('should render video with mute button', () => {
+    it('should render video thumbnails with play icon overlay', () => {
       const videos = ['https://example.com/video1.mp4'];
 
-      render(
-        <TweetMedia
-          images={[]}
-          videos={videos}
-          tweetId="tweet1"
-          tweet={mockTweet}
-          isVisible={true}
-          isParentMedia={false}
-        />,
-      );
+      render(<TweetMedia images={[]} videos={videos} tweetId="tweet1" />);
 
-      expect(screen.getByLabelText('video_mute_toggle')).toBeTruthy();
+      // Video should render as thumbnail with play icon
+      expect(screen.getByLabelText('media_video_0')).toBeTruthy();
+      expect(screen.getByLabelText('play_icon_0')).toBeTruthy();
+    });
+
+    it('should render mixed media correctly', () => {
+      const images = ['https://example.com/image1.jpg'];
+      const videos = ['https://example.com/video1.mp4'];
+
+      render(<TweetMedia images={images} videos={videos} tweetId="tweet1" />);
+
+      expect(screen.getByLabelText('media_image_0')).toBeTruthy();
+      expect(screen.getByLabelText('media_video_1')).toBeTruthy();
     });
   });
 
@@ -148,7 +121,7 @@ describe('TweetMedia', () => {
     it('should open media viewer when image is pressed', () => {
       const images = ['https://example.com/image1.jpg'];
 
-      render(<TweetMedia images={images} videos={[]} tweetId="tweet1" tweet={mockTweet} isVisible={true} />);
+      render(<TweetMedia images={images} videos={[]} tweetId="tweet1" />);
 
       const pressables = screen.getAllByRole('button');
       fireEvent.press(pressables[0]);
@@ -161,77 +134,96 @@ describe('TweetMedia', () => {
         videoTime: 0,
       });
     });
-  });
 
-  describe('Visibility Control', () => {
-    it('should render videos when isVisible is true', () => {
+    it('should open media viewer when video thumbnail is pressed', () => {
       const videos = ['https://example.com/video1.mp4'];
 
-      render(
-        <TweetMedia
-          images={[]}
-          videos={videos}
-          tweetId="tweet1"
-          tweet={mockTweet}
-          isVisible={true}
-          isParentMedia={false}
-        />,
-      );
+      render(<TweetMedia images={[]} videos={videos} tweetId="tweet1" />);
 
-      expect(screen.getByLabelText('video_mute_toggle')).toBeTruthy();
+      const pressables = screen.getAllByRole('button');
+      fireEvent.press(pressables[0]);
+
+      expect(mockOpenMediaViewer).toHaveBeenCalledWith({
+        tweetId: 'tweet1',
+        mediaIndex: 0,
+        images: [],
+        videos,
+        videoTime: 0,
+      });
     });
 
-    it('should not render videos when isVisible is false', async () => {
-      const videos = ['https://example.com/video1.mp4'];
+    it('should pass correct media index for multiple images', () => {
+      const images = [
+        'https://example.com/image1.jpg',
+        'https://example.com/image2.jpg',
+        'https://example.com/image3.jpg',
+      ];
 
-      render(
-        <TweetMedia
-          images={[]}
-          videos={videos}
-          tweetId="tweet1"
-          tweet={mockTweet}
-          isVisible={false}
-          isParentMedia={false}
-        />,
-      );
+      render(<TweetMedia images={images} videos={[]} tweetId="tweet1" />);
 
-      await waitFor(
-        () => {
-          expect(screen.queryByLabelText('video_mute_toggle')).toBeFalsy();
-        },
-        { timeout: 500 },
-      );
-    });
-  });
+      const pressables = screen.getAllByRole('button');
+      fireEvent.press(pressables[1]); // Press second image
 
-  describe('Parent Media Handling', () => {
-    it('should not play video when isParentMedia is true', async () => {
-      const videos = ['https://example.com/video1.mp4'];
-
-      render(
-        <TweetMedia
-          images={[]}
-          videos={videos}
-          tweetId="tweet1"
-          tweet={mockTweet}
-          isVisible={true}
-          isParentMedia={true}
-        />,
-      );
-
-      await waitFor(() => {
-        expect(true).toBe(true);
+      expect(mockOpenMediaViewer).toHaveBeenCalledWith({
+        tweetId: 'tweet1',
+        mediaIndex: 1,
+        images,
+        videos: [],
+        videoTime: 0,
       });
     });
   });
 
-  describe('Accessibility', () => {
-    it('should have proper accessibility labels', () => {
-      const images = ['https://example.com/image1.jpg'];
+  describe('Media Grid Layout', () => {
+    it('should limit to 4 media items max', () => {
+      const images = [
+        'https://example.com/image1.jpg',
+        'https://example.com/image2.jpg',
+        'https://example.com/image3.jpg',
+        'https://example.com/image4.jpg',
+        'https://example.com/image5.jpg', // This should not be rendered
+      ];
 
-      render(<TweetMedia images={images} videos={[]} tweetId="tweet1" tweet={mockTweet} isVisible={true} />);
+      render(<TweetMedia images={images} videos={[]} tweetId="tweet1" />);
 
       expect(screen.getByLabelText('media_image_0')).toBeTruthy();
+      expect(screen.getByLabelText('media_image_1')).toBeTruthy();
+      expect(screen.getByLabelText('media_image_2')).toBeTruthy();
+      expect(screen.getByLabelText('media_image_3')).toBeTruthy();
+      expect(screen.queryByLabelText('media_image_4')).toBeNull();
+    });
+
+    it('should show remaining count overlay when more than 4 items', () => {
+      const images = [
+        'https://example.com/image1.jpg',
+        'https://example.com/image2.jpg',
+        'https://example.com/image3.jpg',
+        'https://example.com/image4.jpg',
+        'https://example.com/image5.jpg',
+      ];
+
+      render(<TweetMedia images={images} videos={[]} tweetId="tweet1" />);
+
+      expect(screen.getByText('+1')).toBeTruthy();
+    });
+  });
+
+  describe('Accessibility', () => {
+    it('should have proper accessibility labels for images', () => {
+      const images = ['https://example.com/image1.jpg'];
+
+      render(<TweetMedia images={images} videos={[]} tweetId="tweet1" />);
+
+      expect(screen.getByLabelText('media_image_0')).toBeTruthy();
+    });
+
+    it('should have proper accessibility labels for videos', () => {
+      const videos = ['https://example.com/video1.mp4'];
+
+      render(<TweetMedia images={[]} videos={videos} tweetId="tweet1" />);
+
+      expect(screen.getByLabelText('media_video_0')).toBeTruthy();
+      expect(screen.getByLabelText('play_icon_0')).toBeTruthy();
     });
   });
 });

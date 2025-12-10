@@ -1,5 +1,4 @@
 import { Theme } from '@/src/constants/theme';
-import { ITweet } from './index';
 
 export type MediaItem = {
   type: 'image' | 'video';
@@ -9,7 +8,6 @@ export type MediaItem = {
 
 export type MediaViewerData = {
   tweetId: string;
-  tweet: ITweet;
   mediaIndex: number;
   images: string[];
   videos: string[];
