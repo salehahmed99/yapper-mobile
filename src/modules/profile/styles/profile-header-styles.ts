@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '../../../constants/theme';
 
-export const createHeaderStyles = (theme: Theme, isRTL: boolean = false) =>
+export const createHeaderStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
       marginBottom: theme.spacing.xl,
@@ -22,7 +22,7 @@ export const createHeaderStyles = (theme: Theme, isRTL: boolean = false) =>
       zIndex: 5,
     },
     imageContainer: {
-      flexDirection: isRTL ? 'row-reverse' : 'row',
+      flexDirection: 'row',
       width: '100%',
       justifyContent: 'space-between',
       paddingHorizontal: theme.spacing.lg,
@@ -48,13 +48,13 @@ export const createHeaderStyles = (theme: Theme, isRTL: boolean = false) =>
       paddingHorizontal: theme.spacing.md,
       paddingVertical: theme.spacing.sm,
       marginTop: theme.spacing.md,
-      ...(isRTL ? { marginLeft: theme.spacing.sm } : { marginRight: theme.spacing.sm }),
+      marginRight: theme.spacing.sm,
       justifyContent: 'center',
       alignItems: 'center',
       minWidth: 40,
     },
     buttonsContainer: {
-      flexDirection: isRTL ? 'row-reverse' : 'row',
+      flexDirection: 'row',
       marginTop: theme.spacing.md,
     },
     viewPostsButton: {
@@ -90,7 +90,7 @@ export const createHeaderStyles = (theme: Theme, isRTL: boolean = false) =>
       alignItems: 'center',
       position: 'absolute',
       top: theme.spacing.xxxl + 5,
-      ...(isRTL ? { right: theme.spacing.xl } : { left: theme.spacing.xl }),
+      left: theme.spacing.xl,
     },
     actionsButton: {
       backgroundColor: `rgba(0, 0, 0, ${theme.opacity.translucent - 0.2})`,
@@ -101,7 +101,7 @@ export const createHeaderStyles = (theme: Theme, isRTL: boolean = false) =>
       alignItems: 'center',
       position: 'absolute',
       top: theme.spacing.xxxl + 5,
-      ...(isRTL ? { left: theme.spacing.xl } : { right: theme.spacing.xl }),
+      right: theme.spacing.xl,
     },
     editText: {
       color: theme.colors.text.link,
@@ -123,15 +123,15 @@ export const createHeaderStyles = (theme: Theme, isRTL: boolean = false) =>
       fontSize: theme.typography.sizes.xs,
     },
     nameContainer: {
-      flexDirection: isRTL ? 'row-reverse' : 'row',
+      flexDirection: 'row',
       alignItems: 'center',
       gap: theme.spacing.md,
-      alignSelf: isRTL ? 'flex-end' : 'flex-start',
+      alignSelf: 'flex-start',
     },
     info: {
       paddingHorizontal: theme.spacing.lg,
       marginTop: theme.spacing.md - 4,
-      alignItems: isRTL ? 'flex-end' : 'flex-start',
+      alignItems: 'flex-start',
     },
     loadingContainer: {
       marginTop: theme.spacing.lg,
@@ -141,28 +141,28 @@ export const createHeaderStyles = (theme: Theme, isRTL: boolean = false) =>
       fontSize: theme.typography.sizes.lg,
       fontWeight: theme.typography.weights.bold,
       color: theme.colors.text.primary,
-      textAlign: isRTL ? 'right' : 'left',
-      alignSelf: isRTL ? 'flex-end' : 'flex-start',
+      textAlign: 'left',
+      alignSelf: 'flex-start',
     },
     handle: {
       color: theme.colors.text.secondary,
       marginBottom: theme.spacing.sm,
-      textAlign: isRTL ? 'right' : 'left',
+      textAlign: 'left',
     },
     bio: {
       fontSize: theme.typography.sizes.sm - 1,
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.xs,
-      textAlign: isRTL ? 'right' : 'left',
+      textAlign: 'left',
     },
     link: {
       fontSize: theme.typography.sizes.xs - 1,
       color: theme.colors.text.link,
       marginBottom: theme.spacing.sm,
-      textAlign: isRTL ? 'right' : 'left',
+      textAlign: 'left',
     },
     stats: {
-      flexDirection: isRTL ? 'row-reverse' : 'row',
+      flexDirection: 'row',
     },
     stat: {
       fontSize: theme.typography.sizes.sm - 1,
@@ -171,7 +171,7 @@ export const createHeaderStyles = (theme: Theme, isRTL: boolean = false) =>
     statWithMargin: {
       fontSize: theme.typography.sizes.sm - 1,
       color: theme.colors.text.primary,
-      ...(isRTL ? { marginRight: theme.spacing.md - 2 } : { marginLeft: theme.spacing.md - 2 }),
+      marginLeft: theme.spacing.md - 2,
     },
     bold: {
       fontWeight: theme.typography.weights.bold,

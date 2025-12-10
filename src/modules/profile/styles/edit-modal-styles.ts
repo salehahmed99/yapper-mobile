@@ -1,10 +1,10 @@
 import { Platform, StyleSheet } from 'react-native';
 import { Theme } from '../../../constants/theme';
 
-export const createEditModalStyles = (theme: Theme, isRTL: boolean = false) =>
+export const createEditModalStyles = (theme: Theme) =>
   StyleSheet.create({
     buttonContainer: {
-      flexDirection: isRTL ? 'row-reverse' : 'row',
+      flexDirection: 'row',
       justifyContent: 'space-between',
       paddingHorizontal: theme.spacing.xl,
       paddingVertical: theme.spacing.lg + (Platform.OS === 'ios' ? 0 : 20),
@@ -28,7 +28,7 @@ export const createEditModalStyles = (theme: Theme, isRTL: boolean = false) =>
       paddingHorizontal: theme.spacing.xl,
     },
     avatarContainer: {
-      alignSelf: isRTL ? 'flex-end' : 'flex-start',
+      alignSelf: 'flex-start',
       position: 'relative',
     },
     avatar: {
@@ -42,7 +42,7 @@ export const createEditModalStyles = (theme: Theme, isRTL: boolean = false) =>
     overlay: {
       position: 'absolute',
       top: -theme.spacing.xl,
-      ...(isRTL ? { right: theme.spacing.xs + 3 } : { left: theme.spacing.xs + 3 }),
+      left: theme.spacing.xs + 3,
       width: theme.sizes.avatar.md - theme.spacing.md - 2,
       height: theme.sizes.avatar.md - theme.spacing.md - 2,
       borderRadius: (theme.sizes.avatar.md - theme.spacing.md - 2) / 2,
@@ -58,7 +58,7 @@ export const createEditModalStyles = (theme: Theme, isRTL: boolean = false) =>
       borderTopColor: theme.colors.border,
       borderTopWidth: 0.5,
       paddingVertical: theme.spacing.md,
-      flexDirection: isRTL ? 'row-reverse' : 'row',
+      flexDirection: 'row',
       alignItems: 'center',
       gap: theme.spacing.md - 2,
     },
@@ -73,18 +73,18 @@ export const createEditModalStyles = (theme: Theme, isRTL: boolean = false) =>
       color: theme.colors.text.link,
       fontWeight: theme.typography.weights.semiBold,
       fontSize: theme.typography.sizes.sm,
-      textAlign: isRTL ? 'right' : 'left',
+      textAlign: 'left',
       flex: 1,
-      writingDirection: isRTL ? 'rtl' : 'ltr',
+      writingDirection: 'ltr',
     },
     inputMultiline: {
       color: theme.colors.text.link,
       fontWeight: theme.typography.weights.semiBold,
       fontSize: theme.typography.sizes.sm,
       height: theme.spacing.xxxl + theme.spacing.xl,
-      textAlign: isRTL ? 'right' : 'left',
+      textAlign: 'left',
       flex: 1,
-      writingDirection: isRTL ? 'rtl' : 'ltr',
+      writingDirection: 'ltr',
     },
     banner: {
       width: '100%',

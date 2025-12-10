@@ -2,12 +2,11 @@ import { DEFAULT_AVATAR_URL, DEFAULT_BANNER_URL } from '@/src/constants/defaults
 import { formatCount } from '@/src/utils/formatCount';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, ChevronRight, Ellipsis, Mail } from 'lucide-react-native';
+import { ChevronLeft, Ellipsis, Mail } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Image as RNImage, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../../context/ThemeContext';
-import { useRTL } from '../../../hooks/useRTL';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { useBlockUser } from '../hooks/useBlockUser';
 import { useFollowUser } from '../hooks/useFollowUser';
@@ -66,8 +65,7 @@ export default function ProfileHeader({
   const [bannerUri, setBannerUri] = useState(DEFAULT_BANNER_URL);
   const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
   const { theme } = useTheme();
-  const isRTL = useRTL();
-  const headerStyles = useMemo(() => createHeaderStyles(theme, isRTL), [theme, isRTL]);
+  const headerStyles = useMemo(() => createHeaderStyles(theme), [theme]);
 
   const router = useRouter();
 
@@ -230,7 +228,7 @@ export default function ProfileHeader({
             }
           }}
         >
-          {isRTL ? <ChevronRight color="#fff" size={25} /> : <ChevronLeft color="#fff" size={25} />}
+          <ChevronLeft color="#fff" size={25} />
         </TouchableOpacity>
 
         {/* Profile Actions */}

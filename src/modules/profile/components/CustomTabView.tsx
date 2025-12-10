@@ -4,7 +4,6 @@ import type { NavigationState, SceneRendererProps } from 'react-native-tab-view'
 import { TabBar, TabView } from 'react-native-tab-view';
 import { Theme } from '../../../constants/theme';
 import { useTheme } from '../../../context/ThemeContext';
-import { useRTL } from '../../../hooks/useRTL';
 
 type RouteType = { key: string; title: string };
 
@@ -23,7 +22,7 @@ interface ICustomTabViewProps {
   userId?: string;
 }
 
-const createStyles = (theme: Theme, isRTL: boolean = false) =>
+const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
       height: 800,
@@ -34,7 +33,7 @@ const createStyles = (theme: Theme, isRTL: boolean = false) =>
       shadowOpacity: 0,
       backgroundColor: theme.colors.background.primary,
       borderBottomColor: theme.colors.border,
-      flexDirection: isRTL ? 'row-reverse' : 'row',
+      flexDirection: 'row',
     },
     tab: {},
     activeUnderline: {
@@ -46,7 +45,7 @@ const createStyles = (theme: Theme, isRTL: boolean = false) =>
       fontWeight: 'bold',
       fontSize: 15,
       textTransform: 'none',
-      writingDirection: isRTL ? 'rtl' : 'ltr',
+      writingDirection: 'ltr',
     },
     scene: {
       flex: 1,
@@ -62,8 +61,7 @@ const CustomTabView: React.FC<ICustomTabViewProps> = ({
 }) => {
   const layout = useWindowDimensions();
   const { theme } = useTheme();
-  const isRTL = useRTL();
-  const styles = createStyles(theme, isRTL);
+  const styles = createStyles(theme);
 
   const routes: RouteType[] = tabs.map((tab) => ({
     key: tab.key,

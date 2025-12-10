@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleProp, Text, TextInput, TextStyle, View, ViewStyle } from 'react-native';
 import { useTheme } from '../../../context/ThemeContext';
-import { useRTL } from '../../../hooks/useRTL';
 import { createEditModalStyles } from '../styles/edit-modal-styles';
 
 interface InputProps {
@@ -30,8 +29,7 @@ const Input: React.FC<InputProps> = ({
   testID,
 }) => {
   const { theme } = useTheme();
-  const isRTL = useRTL();
-  const editModalStyles = createEditModalStyles(theme, isRTL);
+  const editModalStyles = createEditModalStyles(theme);
   const defaultPlaceholderColor = placeholderTextColor || theme.colors.text.secondary;
 
   return (
@@ -45,7 +43,6 @@ const Input: React.FC<InputProps> = ({
         multiline={multiline}
         numberOfLines={numberOfLines}
         placeholderTextColor={defaultPlaceholderColor}
-        textAlign={isRTL ? 'right' : 'left'}
         testID={testID ? `${testID}_field` : undefined}
       />
     </View>

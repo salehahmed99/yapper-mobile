@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { borderRadius, spacing, typography } from '../../../constants/theme';
 import { useTheme } from '../../../context/ThemeContext';
-import { useRTL } from '../../../hooks/useRTL';
 
 export type ProfileCardData = {
   id: string;
@@ -25,7 +24,6 @@ type ProfileCardProps = {
 export default function ProfileCard({ profile, onFollow, isFollowing = false }: ProfileCardProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const isRTL = useRTL();
 
   const styles = StyleSheet.create({
     card: {
@@ -35,7 +33,7 @@ export default function ProfileCard({ profile, onFollow, isFollowing = false }: 
       borderColor: theme.colors.border,
       borderRadius: borderRadius.lg,
       overflow: 'hidden',
-      ...(isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }),
+      marginRight: spacing.md,
     },
     banner: {
       width: '100%',
@@ -57,14 +55,14 @@ export default function ProfileCard({ profile, onFollow, isFollowing = false }: 
       borderColor: theme.colors.background.primary,
     },
     nameRow: {
-      flexDirection: isRTL ? 'row-reverse' : 'row',
+      flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'flex-start',
       marginBottom: 2,
     },
     nameContainer: {
       flex: 1,
-      ...(isRTL ? { marginLeft: spacing.sm } : { marginRight: spacing.sm }),
+      marginRight: spacing.sm,
     },
     name: {
       fontSize: typography.sizes.sm,
@@ -89,7 +87,7 @@ export default function ProfileCard({ profile, onFollow, isFollowing = false }: 
       marginBottom: spacing.sm,
     },
     followedByContainer: {
-      flexDirection: isRTL ? 'row-reverse' : 'row',
+      flexDirection: 'row',
       alignItems: 'center',
     },
     followedByIcon: {
@@ -97,7 +95,7 @@ export default function ProfileCard({ profile, onFollow, isFollowing = false }: 
       height: 16,
       borderRadius: borderRadius.full,
       backgroundColor: theme.colors.background.secondary,
-      ...(isRTL ? { marginLeft: 4 } : { marginRight: 4 }),
+      marginRight: 4,
     },
     followedByText: {
       fontSize: typography.sizes.xs,
@@ -105,7 +103,7 @@ export default function ProfileCard({ profile, onFollow, isFollowing = false }: 
       color: theme.colors.text.secondary,
       lineHeight: 16,
       flex: 1,
-      textAlign: isRTL ? 'right' : 'left',
+      textAlign: 'left',
     },
     followButton: {
       backgroundColor: theme.colors.text.primary,
