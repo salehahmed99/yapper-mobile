@@ -139,12 +139,12 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             {/* Menu tiles */}
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(protected)/search')}
-              accessibilityLabel="sidemenu_search_button"
-              testID="sidemenu_search_button"
+              onPress={() => navigate('/(protected)/explore')}
+              accessibilityLabel="sidemenu_explore_button"
+              testID="sidemenu_explore_button"
             >
               <Search color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
-              <Text style={styles.menuTileText}>{t('menu.search')}</Text>
+              <Text style={styles.menuTileText}>{t('menu.explore')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tile}
