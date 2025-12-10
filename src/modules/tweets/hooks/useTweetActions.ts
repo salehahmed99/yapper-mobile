@@ -181,6 +181,14 @@ export const useTweetActions = () => {
       );
     },
 
+    onSuccess: () => {
+      // Invalidate profile posts to refetch and show the new repost entry
+      queryClient.invalidateQueries({
+        queryKey: profileTweetsQueryKey,
+        predicate: (query) => query.queryKey.includes('posts'),
+      });
+    },
+
     onError: (error, variables) => {
       console.log('Error updating repost status:', error);
 
