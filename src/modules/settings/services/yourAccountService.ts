@@ -33,8 +33,11 @@ export const deleteAccount = async (): Promise<boolean> => {
 export const changeUsername = async (newUsername: string): Promise<boolean> => {
   try {
     const res = await api.patch('/users/me', { username: newUsername });
-    useAuthStore.getState().setUserName(newUsername);
-    return res.status === 200 || res.status === 201;
+    if (res.status === 200 || res.status === 201) {
+      useAuthStore.getState().setUserName(newUsername);
+      return true;
+    }
+    return false;
   } catch (error) {
     throw new Error(extractErrorMessage(error));
   }
@@ -65,8 +68,11 @@ export const verifyChangeEmail = async (token: string, newEmail: string): Promis
 export const changeCountry = async (newCountry: string): Promise<boolean> => {
   try {
     const res = await api.patch('/users/me', { country: newCountry });
-    useAuthStore.getState().setCountry(newCountry);
-    return res.status === 200 || res.status === 201;
+    if (res.status === 200 || res.status === 201) {
+      useAuthStore.getState().setCountry(newCountry);
+      return true;
+    }
+    return false;
   } catch (error) {
     throw new Error(extractErrorMessage(error));
   }
