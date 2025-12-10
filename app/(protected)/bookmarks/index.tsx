@@ -50,7 +50,7 @@ export default function BookmarksScreen() {
             testID="bookmarks_back_button"
           >
             <ArrowLeft
-              color={theme.colors.text.primary}
+              color={theme.colors.background.inverse}
               size={24}
               style={isRTL ? { transform: [{ scaleX: -1 }] } : undefined}
             />

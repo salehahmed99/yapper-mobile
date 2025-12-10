@@ -222,14 +222,14 @@ export default function SearchResultsScreen() {
 
   const handleSearchFocus = useCallback(() => {
     router.push({
-      pathname: '/(protected)/search/search-suggestions',
+      pathname: '/(protected)/search/search-suggestions' as any,
       params: { query: query, ...(username && { username }) },
     });
   }, [router, query, username]);
 
   const handleClear = useCallback(() => {
     router.push({
-      pathname: '/(protected)/search/search-suggestions',
+      pathname: '/(protected)/search/search-suggestions' as any,
       params: { query: '', ...(username && { username }) },
     });
   }, [router, username]);

@@ -28,6 +28,9 @@
     "settings": "Settings",
     "help": "Help Center"
   },
+  "bookmarks": {
+    "title": "Bookmarks"
+  },
   "search": {
     "placeholder": "Search",
     "searchUserPosts": "Search {{username}}'s posts",
