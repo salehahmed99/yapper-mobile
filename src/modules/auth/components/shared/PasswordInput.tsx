@@ -151,14 +151,14 @@ const createStyles = (theme: Theme, scaleWidth: number = 1, scaleHeight: number 
     },
     eyeIcon: {
       position: 'absolute',
-      left: theme.spacing.xxxl * scaleWidth,
+      right: theme.spacing.xxxl * scaleWidth,
       top: theme.spacing.lg * scaleHeight,
       paddingHorizontal: theme.spacing.xs * scaleWidth,
       paddingVertical: theme.spacing.xs * scaleHeight,
     },
     successIcon: {
       position: 'absolute',
-      left: theme.spacing.md * scaleWidth,
+      right: theme.spacing.md * scaleWidth,
       top: theme.spacing.xl * scaleHeight,
       width: 20 * scaleWidth,
       height: 20 * scaleHeight,
@@ -169,7 +169,7 @@ const createStyles = (theme: Theme, scaleWidth: number = 1, scaleHeight: number 
     },
     errorIconContainer: {
       position: 'absolute',
-      left: theme.spacing.md * scaleWidth,
+      right: theme.spacing.md * scaleWidth,
       top: theme.spacing.lg * scaleHeight,
       paddingHorizontal: theme.spacing.xs * scaleWidth,
       paddingVertical: theme.spacing.xs * scaleHeight,

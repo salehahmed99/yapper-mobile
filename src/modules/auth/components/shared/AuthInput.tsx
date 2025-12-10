@@ -206,7 +206,7 @@ const createStyles = (theme: Theme, scaleWidth = 1, scaleHeight = 1, scaleFonts 
     },
     successIcon: {
       position: 'absolute',
-      left: theme.spacing.md * scaleWidth,
+      right: theme.spacing.md * scaleWidth,
       top: theme.spacing.lg * scaleHeight,
       width: 20 * scaleWidth,
       height: 20 * scaleHeight,
