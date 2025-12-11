@@ -1,3 +1,4 @@
+import { NotificationProvider } from '@/src/context/NotificationContext';
 import { QueryProvider } from '@/src/context/QueryProvider';
 import { ThemeProvider } from '@/src/context/ThemeContext';
 import i18n, { initLanguage } from '@/src/i18n';
@@ -5,6 +6,7 @@ import { useAuthStore } from '@/src/store/useAuthStore';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useFonts } from 'expo-font';
+import * as Notifications from 'expo-notifications';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect, useState } from 'react';
@@ -24,6 +26,15 @@ const AuthInitializer: React.FC<IAuthInitializerProps> = ({ children }) => {
 
   return <>{children}</>;
 };
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
 
 SplashScreen.preventAutoHideAsync();
 
@@ -71,19 +82,21 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <QueryProvider>
-        <I18nextProvider i18n={i18n}>
-          <ThemeProvider>
-            <BottomSheetModalProvider>
-              <AuthInitializer>
-                <Stack screenOptions={{ headerShown: false }}></Stack>
-              </AuthInitializer>
-            </BottomSheetModalProvider>
-          </ThemeProvider>
-          <Toast />
-        </I18nextProvider>
-      </QueryProvider>
-    </GestureHandlerRootView>
+    <NotificationProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <QueryProvider>
+          <I18nextProvider i18n={i18n}>
+            <ThemeProvider>
+              <BottomSheetModalProvider>
+                <AuthInitializer>
+                  <Stack screenOptions={{ headerShown: false }}></Stack>
+                </AuthInitializer>
+              </BottomSheetModalProvider>
+            </ThemeProvider>
+            <Toast />
+          </I18nextProvider>
+        </QueryProvider>
+      </GestureHandlerRootView>
+    </NotificationProvider>
   );
 }

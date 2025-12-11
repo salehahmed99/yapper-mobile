@@ -3,6 +3,7 @@ import YapperLogo from '@/src/components/icons/YapperLogo';
 import AppBar from '@/src/components/shell/AppBar';
 import type { Theme } from '@/src/constants/theme';
 import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
+import { useNotification } from '@/src/context/NotificationContext';
 import { useTheme } from '@/src/context/ThemeContext';
 import useSpacing from '@/src/hooks/useSpacing';
 import CreatePostModal from '@/src/modules/tweets/components/CreatePostModal';
@@ -12,7 +13,8 @@ import TweetList from '@/src/modules/tweets/components/TweetList';
 import { useTweetActions } from '@/src/modules/tweets/hooks/useTweetActions';
 import { useTweets } from '@/src/modules/tweets/hooks/useTweets';
 import { useTweetsFiltersStore } from '@/src/modules/tweets/store/useTweetsFiltersStore';
-import React, { useState } from 'react';
+import { registerDeviceForPushNotifications } from '@/src/services/notificationService';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Animated,
@@ -53,6 +55,13 @@ export default function HomeScreen() {
   }, [homeIndex, slideAnim, screenWidth]);
 
   const [isCreatePostModalVisible, setIsCreatePostModalVisible] = useState(false);
+  const { expoPushToken } = useNotification();
+
+  useEffect(() => {
+    if (expoPushToken) {
+      registerDeviceForPushNotifications(expoPushToken);
+    }
+  }, [expoPushToken]);
 
   const tweetsFilters = useTweetsFiltersStore((state) => state.filters);
   const forYouQuery = useTweets(tweetsFilters, 'for-you');
