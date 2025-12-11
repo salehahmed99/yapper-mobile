@@ -96,7 +96,7 @@ export const submitInterests = async (categoryIds: number[]): Promise<void> => {
  */
 export const changeUserLanguage = async (languageCode: string): Promise<void> => {
   try {
-    await api.put('/users/me/change-language', { language: languageCode });
+    await api.patch('/users/me/change-language', { language: languageCode });
   } catch (error: unknown) {
     const message = extractErrorMessage(error);
     throw new Error(message);
