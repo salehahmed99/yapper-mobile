@@ -333,7 +333,7 @@ function MediaViewerContent({
                       </Pressable>
                     )}
                   </View>
-                </View>
+                </SafeAreaView>
               </Animated.View>
 
               {/* Actions Row - shown for both video and image */}
