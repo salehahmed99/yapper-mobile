@@ -70,25 +70,33 @@ interface IQuotesResponse {
   data: ITweet[];
   count: number;
   parent?: {
-    tweet_id: string;
-    user_id: string;
+    tweetId: string;
+    userId: string;
     type: TweetType;
     content: string;
     images: string[];
     videos: string[];
-    num_likes: number;
-    num_reposts: number;
-    num_views: number;
-    num_quotes: number;
-    num_replies: number;
-    num_bookmarks: number;
-    created_at: string;
-    updated_at: string;
-    deleted_at: string | null;
+    numLikes: number;
+    numReposts: number;
+    numViews: number;
+    numQuotes: number;
+    numReplies: number;
+    numBookmarks: number;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
+    user: IUser;
   };
-  next_cursor?: string;
-  has_more: boolean;
+  nextCursor?: string;
+  hasMore: boolean;
 }
+
+interface ITweetSummary {
+  tweetId: string;
+  summary: string;
+}
+
+type ITweetSummaryResponse = IApiResponse<ITweetSummary>;
 
 export {
   IBookmarks,
@@ -101,4 +109,5 @@ export {
   ITweetFilters,
   ITweets,
   ITweetsResponse,
+  ITweetSummaryResponse,
 };

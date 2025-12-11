@@ -1,4 +1,4 @@
-import { IUser, IUserDTO } from '@/src/types/user';
+import { IUser } from '@/src/types/user';
 
 export type TweetUserListType = 'likes' | 'reposts';
 export type ProfileUserListType = 'followers' | 'following' | 'mutualFollowers';
@@ -27,9 +27,9 @@ export interface IUserListResponse {
 
 export interface IUserListResponseBackend {
   data: {
-    data: IUserDTO[];
-    next_cursor?: string;
-    has_more?: boolean;
+    data: IUser[];
+    nextCursor?: string;
+    hasMore?: boolean;
   };
   count: number;
   message: string;

@@ -448,6 +448,15 @@
       "likers": "Likers"
     }
   },
+  "tweetSummary": {
+    "title": "Grok",
+    "noTweetId": "Error: No tweet ID provided",
+    "failedToLoad": "Failed to load tweet",
+    "summaryTitle": "AI Summary",
+    "loadingSummary": "Generating summary...",
+    "tweetTooShort": "This tweet is too short to generate a summary.",
+    "summaryFailed": "Failed to generate summary. Please try again later."
+  },
   "profile": {
     "editProfile": "Edit profile",
     "blocked": "Blocked",
