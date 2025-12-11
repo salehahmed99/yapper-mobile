@@ -1,32 +1,16 @@
-import emojiData from '@/assets/emojis.json';
 import CustomBottomSheet from '@/src/components/CustomBottomSheet';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { getEmojiCategories, searchEmojis } from '@/src/modules/chat/utils/emoji.utils';
 import { BottomSheetFlatList, BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Search } from 'lucide-react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-interface Emoji {
-  emoji: string;
-  name: string;
-  keywords: string[];
-}
-
-interface EmojiCategory {
-  title: string;
-  data: Emoji[];
-}
-
 interface EmojiPickerSheetProps {
   onSelect: (emoji: string) => void;
   onClose: () => void;
 }
-
-// Transform the raw data into a flat list of categories if needed,
-// but フラットリスト handles section data well if flattened or using sticky headers.
-// The provided JSON is Array<{ title: string, data: Emoji[] }>
-const typedEmojiData = emojiData as EmojiCategory[];
 
 export default function EmojiPickerSheet({ onSelect, onClose }: EmojiPickerSheetProps) {
   const { theme } = useTheme();
@@ -44,23 +28,14 @@ export default function EmojiPickerSheet({ onSelect, onClose }: EmojiPickerSheet
   // Filter emojis based on search
   const filteredData = useMemo(() => {
     if (!searchQuery.trim()) {
-      return typedEmojiData.flatMap((category) => [
+      return getEmojiCategories().flatMap((category) => [
         { type: 'header', title: category.title } as const,
         ...category.data.map((emoji) => ({ type: 'emoji', ...emoji }) as const),
       ]);
     }
 
-    const query = searchQuery.toLowerCase();
-    const matches: (Emoji & { type: 'emoji' })[] = [];
-
-    for (const category of typedEmojiData) {
-      for (const emoji of category.data) {
-        if (emoji.name.includes(query) || emoji.keywords.some((k) => k.includes(query))) {
-          matches.push({ type: 'emoji', ...emoji });
-        }
-      }
-    }
-    return matches;
+    const matches = searchEmojis(searchQuery);
+    return matches.map((emoji) => ({ type: 'emoji', ...emoji }));
   }, [searchQuery]);
 
   const renderItem = useCallback(
