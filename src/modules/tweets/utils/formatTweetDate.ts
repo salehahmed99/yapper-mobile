@@ -1,11 +1,12 @@
+import i18n, { toLocalizedNumber } from '@/src/i18n';
 import { formatDateDDMMYYYY } from '../../../utils/dateUtils';
 
 /**
  * Formats a tweet creation date to display like Twitter
- * - Less than 1 minute: "now"
- * - Less than 1 hour: "Xm" (e.g., "5m")
- * - Less than 24 hours: "Xh" (e.g., "3h")
- * - Less than 7 days: "Xd" (e.g., "2d")
+ * - Less than 1 minute: "now" / "الآن"
+ * - Less than 1 hour: "Xm" / "Xد" (e.g., "5m" / "٥د")
+ * - Less than 24 hours: "Xh" / "Xس" (e.g., "3h" / "٣س")
+ * - Less than 7 days: "Xd" / "Xي" (e.g., "2d" / "٢ي")
  * - Older than 7 days: "DD/MM/YYYY"
  */
 export const formatTweetDate = (dateString: string): string => {
@@ -19,22 +20,22 @@ export const formatTweetDate = (dateString: string): string => {
 
   // Less than 1 minute
   if (diffInSeconds < 60) {
-    return 'now';
+    return i18n.t('tweets.date.now');
   }
 
   // Less than 1 hour
   if (diffInMinutes < 60) {
-    return `${diffInMinutes}m`;
+    return `${toLocalizedNumber(diffInMinutes.toString())}${i18n.t('tweets.date.minutesShort')}`;
   }
 
   // Less than 24 hours
   if (diffInHours < 24) {
-    return `${diffInHours}h`;
+    return `${toLocalizedNumber(diffInHours.toString())}${i18n.t('tweets.date.hoursShort')}`;
   }
 
   // Less than 7 days
   if (diffInDays < 7) {
-    return `${diffInDays}d`;
+    return `${toLocalizedNumber(diffInDays.toString())}${i18n.t('tweets.date.daysShort')}`;
   }
 
   // Older than 7 days - return formatted date

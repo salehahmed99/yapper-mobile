@@ -1,16 +1,23 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View, I18nManager } from 'react-native';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { format } from 'date-fns';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import { useTranslation } from 'react-i18next';
+import i18n, { toLocalizedNumber } from '@/src/i18n';
+import { format } from 'date-fns';
+import { ar, enUS } from 'date-fns/locale';
 import { AlertCircle, Check } from 'lucide-react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Animated, I18nManager, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const dateLocales: { [key: string]: any } = {
+  en: enUS,
+  ar: ar,
+};
 
 interface IAuthInputProps {
   description: string;
   label: string;
-  value: string; // ISO format for backend
+  value: string;
   status?: 'success' | 'error' | 'none';
   showCheck?: boolean;
   showDescription?: boolean;
@@ -35,17 +42,20 @@ const AuthInput: React.FC<IAuthInputProps> = ({
   const [displayDate, setDisplayDate] = useState<string>('');
 
   const { theme } = useTheme();
-  const { i18n } = useTranslation();
-  const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
+  const { t } = useTranslation();
   const { width, height } = useWindowDimensions();
+  const isRTL = I18nManager.isRTL;
+  const currentLanguage = i18n?.language || 'en';
+  const languageCode = currentLanguage.split('-')[0];
+  const currentLocale = dateLocales[languageCode] || enUS;
 
   const scaleWidth = Math.min(Math.max(width / 390, 0.85), 1.1);
   const scaleHeight = Math.min(Math.max(height / 844, 0.85), 1.1);
   const scaleFonts = Math.min(scaleWidth, scaleHeight);
 
   const styles = useMemo(
-    () => createStyles(theme, scaleWidth, scaleHeight, scaleFonts, isRTL),
-    [theme, scaleWidth, scaleHeight, scaleFonts, isRTL],
+    () => createStyles(theme, scaleWidth, scaleHeight, scaleFonts),
+    [theme, scaleWidth, scaleHeight, scaleFonts],
   );
 
   const labelPosition = useRef(new Animated.Value(value ? 1 : 0)).current;
@@ -64,17 +74,17 @@ const AuthInput: React.FC<IAuthInputProps> = ({
     if (value) {
       const dateObj = new Date(value);
       if (!isNaN(dateObj.getTime())) {
-        setDisplayDate(format(dateObj, 'MMMM dd, yyyy')); // Human-readable
+        const formattedDate = format(dateObj, 'MMMM dd, yyyy', { locale: currentLocale });
+        setDisplayDate(toLocalizedNumber(formattedDate));
       }
     } else {
       setDisplayDate('');
     }
-  }, [value]);
+  }, [value, currentLocale]);
 
   const labelStyle = {
     position: 'absolute' as const,
-    left: isRTL ? undefined : theme.spacing.lg,
-    right: isRTL ? theme.spacing.lg : undefined,
+    left: theme.spacing.lg,
     top: labelPosition.interpolate({ inputRange: [0, 1], outputRange: [18, -10] }),
     fontSize: labelPosition.interpolate({ inputRange: [0, 1], outputRange: [17, 13] }),
     color: labelPosition.interpolate({
@@ -91,10 +101,9 @@ const AuthInput: React.FC<IAuthInputProps> = ({
 
   const onDateConfirm = (selectedDate: Date) => {
     setShowPicker(false);
-    // Backend ISO format
     onChange(selectedDate.toISOString().split('T')[0]);
-    // Display human-readable
-    setDisplayDate(format(selectedDate, 'MMMM dd, yyyy'));
+    const formattedDate = format(selectedDate, 'MMMM dd, yyyy', { locale: currentLocale });
+    setDisplayDate(toLocalizedNumber(formattedDate));
   };
 
   return (
@@ -122,7 +131,10 @@ const AuthInput: React.FC<IAuthInputProps> = ({
               onConfirm={onDateConfirm}
               onCancel={() => setShowPicker(false)}
               maximumDate={new Date()}
-              minimumDate={new Date(1900, 0, 1)} // Prevent weird 1970 fallback
+              minimumDate={new Date(1900, 0, 1)}
+              locale={currentLanguage}
+              confirmTextIOS={t('buttons.confirm')}
+              cancelTextIOS={t('buttons.cancel')}
             />
           </>
         ) : (
@@ -136,6 +148,7 @@ const AuthInput: React.FC<IAuthInputProps> = ({
             autoCorrect={false}
             keyboardAppearance="dark"
             accessibilityLabel="Auth_input"
+            textAlign={isRTL ? 'right' : 'left'}
           />
         )}
 
@@ -161,7 +174,7 @@ const AuthInput: React.FC<IAuthInputProps> = ({
 
 export default AuthInput;
 
-const createStyles = (theme: Theme, scaleWidth = 1, scaleHeight = 1, scaleFonts = 1, isRTL: boolean = false) =>
+const createStyles = (theme: Theme, scaleWidth = 1, scaleHeight = 1, scaleFonts = 1) =>
   StyleSheet.create({
     container: {
       width: '100%',
@@ -210,8 +223,7 @@ const createStyles = (theme: Theme, scaleWidth = 1, scaleHeight = 1, scaleFonts 
     },
     successIcon: {
       position: 'absolute',
-      right: isRTL ? undefined : theme.spacing.md * scaleWidth,
-      left: isRTL ? theme.spacing.md * scaleWidth : undefined,
+      right: theme.spacing.md * scaleWidth,
       top: theme.spacing.lg * scaleHeight,
       width: 20 * scaleWidth,
       height: 20 * scaleHeight,
@@ -222,8 +234,7 @@ const createStyles = (theme: Theme, scaleWidth = 1, scaleHeight = 1, scaleFonts 
     },
     errorIconContainer: {
       position: 'absolute',
-      right: isRTL ? undefined : theme.spacing.md * scaleWidth,
-      left: isRTL ? theme.spacing.md * scaleWidth : undefined,
+      left: theme.spacing.md * scaleWidth,
       top: theme.spacing.md * scaleHeight,
       paddingHorizontal: theme.spacing.xs * scaleWidth,
       paddingVertical: theme.spacing.xs * scaleHeight,

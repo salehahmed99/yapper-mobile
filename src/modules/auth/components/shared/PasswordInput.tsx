@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import { Eye, EyeOff, Check, AlertCircle } from 'lucide-react-native';
 import { useTheme } from '@/src/context/ThemeContext';
-import { useTranslation } from 'react-i18next';
 import { Theme } from '@/src/constants/theme';
 
 interface IPasswordInputProps {
@@ -38,17 +37,16 @@ const PasswordInput: React.FC<IPasswordInputProps> = ({
   const [focused, setFocused] = useState(false);
   const anim = useState(new Animated.Value(value ? 1 : 0))[0];
   const { theme } = useTheme();
-  const { i18n } = useTranslation();
   const { width, height } = useWindowDimensions();
-  const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
+  const isRTL = I18nManager.isRTL;
 
   const scaleWidth = Math.min(Math.max(width / 390, 0.85), 1.1);
   const scaleHeight = Math.min(Math.max(height / 844, 0.85), 1.1);
   const scaleFonts = Math.min(scaleWidth, scaleHeight);
 
   const styles = useMemo(
-    () => createStyles(theme, scaleWidth, scaleHeight, scaleFonts, isRTL),
-    [theme, scaleWidth, scaleHeight, scaleFonts, isRTL],
+    () => createStyles(theme, scaleWidth, scaleHeight, scaleFonts),
+    [theme, scaleWidth, scaleHeight, scaleFonts],
   );
 
   const animateLabel = (toValue: number) => {
@@ -92,6 +90,7 @@ const PasswordInput: React.FC<IPasswordInputProps> = ({
         placeholderTextColor={theme.colors.text.secondary}
         allowFontScaling={true}
         accessibilityLabel="password_input"
+        textAlign={isRTL ? 'right' : 'left'}
       />
 
       {value.length > 0 && (
@@ -129,13 +128,7 @@ const PasswordInput: React.FC<IPasswordInputProps> = ({
   );
 };
 
-const createStyles = (
-  theme: Theme,
-  scaleWidth: number = 1,
-  scaleHeight: number = 1,
-  scaleFonts: number = 1,
-  isRTL: boolean = false,
-) =>
+const createStyles = (theme: Theme, scaleWidth: number = 1, scaleHeight: number = 1, scaleFonts: number = 1) =>
   StyleSheet.create({
     inputContainer: {
       position: 'relative',
@@ -151,6 +144,7 @@ const createStyles = (
       color: theme.colors.text.primary,
       backgroundColor: theme.colors.background.primary,
       fontFamily: theme.typography.fonts.regular,
+      textAlign: 'auto',
     },
     inputFocused: {
       borderColor: theme.colors.text.link,
@@ -162,24 +156,21 @@ const createStyles = (
     },
     floatingLabel: {
       position: 'absolute',
-      left: isRTL ? undefined : theme.spacing.md * scaleWidth,
-      right: isRTL ? theme.spacing.md * scaleWidth : undefined,
+      left: theme.spacing.md * scaleWidth,
       backgroundColor: theme.colors.background.primary,
       paddingHorizontal: theme.spacing.xs * scaleWidth,
       zIndex: 1,
     },
     eyeIcon: {
       position: 'absolute',
-      right: isRTL ? undefined : theme.spacing.xxxl * scaleWidth,
-      left: isRTL ? theme.spacing.xxxl * scaleWidth : undefined,
+      right: theme.spacing.xxxl * scaleWidth,
       top: theme.spacing.lg * scaleHeight,
       paddingHorizontal: theme.spacing.xs * scaleWidth,
       paddingVertical: theme.spacing.xs * scaleHeight,
     },
     successIcon: {
       position: 'absolute',
-      right: isRTL ? undefined : theme.spacing.md * scaleWidth,
-      left: isRTL ? theme.spacing.md * scaleWidth : undefined,
+      right: theme.spacing.md * scaleWidth,
       top: theme.spacing.xl * scaleHeight,
       width: 20 * scaleWidth,
       height: 20 * scaleHeight,
@@ -190,8 +181,7 @@ const createStyles = (
     },
     errorIconContainer: {
       position: 'absolute',
-      right: isRTL ? undefined : theme.spacing.md * scaleWidth,
-      left: isRTL ? theme.spacing.md * scaleWidth : undefined,
+      right: theme.spacing.md * scaleWidth,
       top: theme.spacing.lg * scaleHeight,
       paddingHorizontal: theme.spacing.xs * scaleWidth,
       paddingVertical: theme.spacing.xs * scaleHeight,

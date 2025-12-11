@@ -74,6 +74,7 @@ describe('FindAccountScreen', () => {
       identifier: '',
       textType: null,
       resetToken: '',
+      returnRoute: null,
       setIdentifier: jest.fn(),
       detectTextType: jest.fn((input: string) => {
         // Simulate email detection
@@ -85,12 +86,16 @@ describe('FindAccountScreen', () => {
         return null;
       }),
       setResetToken: jest.fn(),
+      setReturnRoute: jest.fn(),
       reset: jest.fn(),
     };
 
     mockUseForgotPasswordStore.mockImplementation((selector) => {
       return selector(mockStoreState);
     });
+
+    // Mock getState method on the store
+    (mockUseForgotPasswordStore as any).getState = jest.fn(() => mockStoreState);
   });
 
   it('resets store on mount', () => {

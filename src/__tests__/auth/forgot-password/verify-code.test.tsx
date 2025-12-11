@@ -43,6 +43,7 @@ jest.mock('react-i18next', () => ({
         'auth.forgotPassword.errorTitle': 'Error',
         'auth.forgotPassword.genericError': 'An unexpected error occurred. Please try again.',
         'activityLoader.verifyingCode': 'Verifying code...',
+        'buttons.next': 'Next',
       };
       return translations[key] || key;
     },

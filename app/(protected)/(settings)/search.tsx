@@ -1,24 +1,24 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, StatusBar, TextInput, TouchableOpacity, I18nManager } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { useTranslation } from 'react-i18next';
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
 import { SettingsSection } from '@/src/modules/settings/components/SettingsSection';
 import { getSettingsData, getYourAccountData } from '@/src/modules/settings/components/settingsConfig';
 import { ISettingsItem } from '@/src/modules/settings/types/types';
-import { useTheme } from '@/src/context/ThemeContext';
-import { Theme } from '@/src/constants/theme';
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { I18nManager, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const SettingsSearchScreen: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const SETTINGS_DATA = useMemo(() => getSettingsData(t), [t]);
   const YOUR_ACCOUNT_DATA = useMemo(() => getYourAccountData(t), [t]);
   const [searchQuery, setSearchQuery] = useState('');
   const inputRef = useRef<TextInput>(null);
   const { theme, isDark } = useTheme();
-  const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
-  const styles = useMemo(() => createStyles(theme, isRTL), [theme, isRTL]);
+  const isRTL = I18nManager.isRTL;
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   // Auto-focus input when screen loads
   useEffect(() => {
@@ -124,7 +124,7 @@ export const SettingsSearchScreen: React.FC = () => {
   );
 };
 
-const createStyles = (theme: Theme, isRTL: boolean) =>
+const createStyles = (theme: Theme) =>
   StyleSheet.create({
     safeArea: {
       flex: 1,
@@ -144,8 +144,7 @@ const createStyles = (theme: Theme, isRTL: boolean) =>
       borderBottomColor: theme.colors.border,
     },
     backButton: {
-      marginRight: isRTL ? 0 : theme.spacing.md,
-      marginLeft: isRTL ? theme.spacing.md : 0,
+      marginRight: theme.spacing.md,
       padding: theme.spacing.xs,
     },
     searchInput: {
@@ -153,11 +152,10 @@ const createStyles = (theme: Theme, isRTL: boolean) =>
       fontSize: theme.typography.sizes.lg,
       color: theme.colors.text.primary,
       padding: 0,
-      textAlign: isRTL ? 'right' : 'left',
+      textAlign: 'auto',
     },
     clearButton: {
-      marginLeft: isRTL ? 0 : theme.spacing.md,
-      marginRight: isRTL ? theme.spacing.md : 0,
+      marginLeft: theme.spacing.md,
       padding: theme.spacing.xs,
     },
     scrollView: {
@@ -169,7 +167,7 @@ const createStyles = (theme: Theme, isRTL: boolean) =>
     emptyState: {
       flex: 1,
       justifyContent: 'flex-start',
-      alignItems: isRTL ? 'flex-end' : 'flex-start',
+      alignItems: 'flex-start',
       paddingVertical: theme.spacing.xxl,
       paddingHorizontal: theme.spacing.xxl,
     },
@@ -179,26 +177,26 @@ const createStyles = (theme: Theme, isRTL: boolean) =>
       color: theme.colors.text.primary,
       marginTop: theme.spacing.md,
       marginBottom: theme.spacing.xs,
-      textAlign: isRTL ? 'right' : 'left',
+      textAlign: 'left',
     },
     emptyStateSubtext: {
       fontSize: theme.typography.sizes.sm,
       color: theme.colors.text.tertiary,
       lineHeight: 20,
-      textAlign: isRTL ? 'right' : 'left',
+      textAlign: 'left',
     },
     noResultsTitle: {
       fontSize: theme.typography.sizes.xxl,
       fontFamily: theme.typography.fonts.bold,
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.sm,
-      textAlign: isRTL ? 'right' : 'left',
+      textAlign: 'left',
     },
     noResultsSubtext: {
       fontSize: theme.typography.sizes.sm,
       color: theme.colors.text.tertiary,
       lineHeight: 20,
-      textAlign: isRTL ? 'right' : 'left',
+      textAlign: 'left',
     },
   });
 

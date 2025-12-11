@@ -1,7 +1,16 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import React from 'react';
-import { Animated, ScrollView, StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import {
+  Animated,
+  I18nManager,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 
 interface RouteItem {
   key: string;
@@ -24,6 +33,8 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
   const layout = useWindowDimensions();
   const { theme } = useTheme();
   const styles = createStyles(theme);
+  const { i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
 
   const [internalIndex, setInternalIndex] = React.useState(0);
   const index = propsIndex ?? internalIndex;
@@ -59,7 +70,7 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
       }
     });
   }, [containerMeasures, textWidths, scrollable]);
-  const indicatorLeft = React.useRef(new Animated.Value(0));
+  const indicatorStart = React.useRef(new Animated.Value(0));
   const indicatorWidth = React.useRef(new Animated.Value(0));
   const scrollRef = React.useRef<ScrollView | null>(null);
 
@@ -69,14 +80,16 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
 
     if (m) {
       // Use measured dimensions when available (covers both scrollable and non-scrollable)
+      const indicatorPosition = isRTL ? layout.width - m.x - m.width : m.x;
       Animated.parallel([
-        Animated.timing(indicatorLeft.current, { toValue: m.x, duration: 200, useNativeDriver: false }),
+        Animated.timing(indicatorStart.current, { toValue: indicatorPosition, duration: 200, useNativeDriver: false }),
         Animated.timing(indicatorWidth.current, { toValue: m.width, duration: 200, useNativeDriver: false }),
       ]).start();
 
       // if scrollable, ensure active tab is visible in scroll view: center it
       if (scrollable && scrollRef.current) {
         const containerWidth = layout.width;
+        // In RTL, the scroll direction is reversed, so we calculate from the end
         const offset = Math.max(0, m.x + m.width / 2 - containerWidth / 2);
         try {
           scrollRef.current.scrollTo({ x: offset, animated: true });
@@ -87,8 +100,10 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
     } else if (!scrollable) {
       // fallback: non-scrollable and no measures yet -> distribute equally
       const tabWidth = layout.width / routes.length;
+      // Use index-based position - works for both LTR and RTL since we use 'start' positioning
+      const indicatorX = index * tabWidth;
       Animated.parallel([
-        Animated.timing(indicatorLeft.current, { toValue: index * tabWidth, duration: 200, useNativeDriver: false }),
+        Animated.timing(indicatorStart.current, { toValue: indicatorX, duration: 200, useNativeDriver: false }),
         Animated.timing(indicatorWidth.current, { toValue: tabWidth, duration: 200, useNativeDriver: false }),
       ]).start();
     }
@@ -142,7 +157,12 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
             })}
             <Animated.View
               pointerEvents="none"
-              style={[styles.indicator, { left: indicatorLeft.current, width: indicatorWidth.current }]}
+              style={[
+                styles.indicator,
+                isRTL
+                  ? { right: indicatorStart.current, width: indicatorWidth.current }
+                  : { left: indicatorStart.current, width: indicatorWidth.current },
+              ]}
             />
           </ScrollView>
         </View>
@@ -193,7 +213,7 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
         })}
         <Animated.View
           pointerEvents="none"
-          style={[styles.indicator, { left: indicatorLeft.current, width: indicatorWidth.current }]}
+          style={[styles.indicator, { left: indicatorStart.current, width: indicatorWidth.current }]}
         />
       </View>
     );

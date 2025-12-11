@@ -1,15 +1,18 @@
 import { DEFAULT_AVATAR_URL, DEFAULT_BANNER_URL } from '@/src/constants/defaults';
 import { formatCount } from '@/src/utils/formatCount';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, Ellipsis } from 'lucide-react-native';
+import { ChevronLeft, Ellipsis, Mail, Search } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image as RNImage, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../../context/ThemeContext';
 import { useAuthStore } from '../../../store/useAuthStore';
+import { createChat } from '../../chat/services/chatService';
 import { useBlockUser } from '../hooks/useBlockUser';
 import { useFollowUser } from '../hooks/useFollowUser';
 // import BlockButton from '@/src/modules/user_list/components/BlockButton';
+import { useMutation } from '@tanstack/react-query';
 import { useMuteUser } from '../hooks/useMuteUser';
 import { getUserById } from '../services/profileService';
 import { createHeaderStyles } from '../styles/profile-header-styles';
@@ -18,6 +21,7 @@ import { formatDateToDisplay } from '../utils/helper-functions.utils';
 import { ImageOrigin, openImageViewer } from '../utils/profile-header.utils';
 import AvatarViewer from './AvatarViewer';
 import EditProfileModal from './EditProfileModal';
+import MutualFollowers from './MutualFollowers';
 import ProfileActionsMenu from './ProfileActionsMenu';
 
 type ProfileHeaderProps = {
@@ -29,6 +33,7 @@ import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 
 import { Theme } from '@/src/constants/theme';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const blockedButtonStyles = (theme: Theme, headerStyles: any) =>
   StyleSheet.create<{ button: ViewStyle; text: TextStyle }>({
     button: {
@@ -66,7 +71,7 @@ export default function ProfileHeader({
 
   const router = useRouter();
 
-  const { isFollowing, isLoading: followLoading, toggleFollow, setIsFollowing } = useFollowUser(false);
+  const { isFollowing, toggleFollow, setIsFollowing } = useFollowUser(false);
 
   const { isBlocked, isLoading: blockLoading, toggleBlock, setIsBlocked } = useBlockUser(false);
 
@@ -150,7 +155,7 @@ export default function ProfileHeader({
   };
 
   const handleFollowToggle = async () => {
-    if (!userId || followLoading) return;
+    if (!userId) return;
     await toggleFollow(userId);
     // Refetch user data to update follower count
     if (!isOwnProfile && userId) {
@@ -185,6 +190,28 @@ export default function ProfileHeader({
     }
   };
 
+  const createChatMutation = useMutation({
+    mutationFn: createChat,
+    onSuccess: (result) => {
+      if (profileUser) {
+        router.push({
+          pathname: `/messages/${result.chat.id}` as const,
+          params: {
+            name: profileUser.name,
+            username: profileUser.username,
+            avatarUrl: profileUser.avatarUrl || '',
+          },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any);
+      }
+    },
+  });
+
+  const handleMessagePress = () => {
+    if (!userId) return;
+    createChatMutation.mutate({ recipientId: userId });
+  };
+
   return (
     <View style={headerStyles.container} testID="profile_header_container">
       {/* Banner */}
@@ -203,8 +230,16 @@ export default function ProfileHeader({
           <View style={headerStyles.banner}>
             <ActivityIndicator size="large" color={theme.colors.text.link} />
           </View>
+        ) : isOwnProfile ? (
+          <Image
+            source={{ uri: bannerUri }}
+            style={headerStyles.banner}
+            testID="profile_header_banner_image"
+            cachePolicy="memory-disk"
+            priority="high"
+          />
         ) : (
-          <Image source={{ uri: bannerUri }} style={headerStyles.banner} testID="profile_header_banner_image" />
+          <RNImage source={{ uri: bannerUri }} style={headerStyles.banner} testID="profile_header_banner_image" />
         )}
 
         {/* Back Button */}
@@ -218,6 +253,20 @@ export default function ProfileHeader({
           }}
         >
           <ChevronLeft color="#fff" size={25} />
+        </TouchableOpacity>
+
+        {/* Search Button */}
+        <TouchableOpacity
+          testID="profile_header_search_button"
+          style={isOwnProfile ? headerStyles.actionsButton : headerStyles.searchButton}
+          onPress={() => {
+            router.push({
+              pathname: '/(protected)/search/search-suggestions' as any,
+              params: { username: displayUser?.username || '' },
+            });
+          }}
+        >
+          <Search color="#fff" size={22} />
         </TouchableOpacity>
 
         {/* Profile Actions */}
@@ -244,8 +293,16 @@ export default function ProfileHeader({
             <View style={headerStyles.avatar}>
               <ActivityIndicator size="small" color={theme.colors.text.link} />
             </View>
+          ) : isOwnProfile ? (
+            <Image
+              source={{ uri: imageUri }}
+              style={headerStyles.avatar}
+              testID="profile_header_avatar_image"
+              cachePolicy="memory-disk"
+              priority="high"
+            />
           ) : (
-            <Image source={{ uri: imageUri }} style={headerStyles.avatar} testID="profile_header_avatar_image" />
+            <RNImage source={{ uri: imageUri }} style={headerStyles.avatar} testID="profile_header_avatar_image" />
           )}
         </TouchableOpacity>
 
@@ -276,20 +333,55 @@ export default function ProfileHeader({
             )}
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity
-            testID="profile_header_follow_button"
-            style={[headerStyles.editButton, isFollowing && headerStyles.followingButton]}
-            onPress={handleFollowToggle}
-            disabled={followLoading}
-          >
-            {followLoading ? (
-              <ActivityIndicator size="small" color={theme.colors.text.primary} />
+          <View style={headerStyles.buttonsContainer}>
+            {/* Message Button */}
+            <TouchableOpacity
+              testID="profile_header_message_button"
+              style={headerStyles.messageButton}
+              onPress={handleMessagePress}
+              disabled={createChatMutation.isPending}
+            >
+              {createChatMutation.isPending ? (
+                <ActivityIndicator size="small" color={theme.colors.text.primary} />
+              ) : (
+                <Mail size={15} color={theme.colors.text.primary} />
+              )}
+            </TouchableOpacity>
+
+            {/* Follow or Block Button */}
+            {isBlocked ? (
+              <TouchableOpacity
+                style={blockedButtonStyles(theme, headerStyles).button}
+                onPress={handleBlock}
+                activeOpacity={0.7}
+                disabled={blockLoading}
+                testID="profile_header_block_button"
+                accessibilityLabel={`unblock_${displayUser?.username || displayUser?.name}`}
+                accessibilityRole="button"
+                accessibilityState={{ disabled: blockLoading }}
+              >
+                {blockLoading ? (
+                  <ActivityIndicator size="small" color={theme.colors.error} />
+                ) : (
+                  <Text style={blockedButtonStyles(theme, headerStyles).text}>{t('profile.blocked')}</Text>
+                )}
+              </TouchableOpacity>
             ) : (
-              <Text style={[headerStyles.editText, isFollowing && headerStyles.followingText]}>
-                {isFollowing ? t('profile.following') : t('profile.follow')}
-              </Text>
+              <TouchableOpacity
+                testID="profile_header_follow_button"
+                style={[headerStyles.editButton, isFollowing && headerStyles.followingButton]}
+                onPress={handleFollowToggle}
+              >
+                <Text style={[headerStyles.editText, isFollowing && headerStyles.followingText]}>
+                  {isFollowing
+                    ? t('profile.following')
+                    : profileUser?.isFollower
+                      ? t('profile.followBack')
+                      : t('profile.follow')}
+                </Text>
+              </TouchableOpacity>
             )}
-          </TouchableOpacity>
+          </View>
         )}
       </View>
 
@@ -304,12 +396,21 @@ export default function ProfileHeader({
             <Text style={headerStyles.name} testID="profile_header_name">
               {displayUser?.name || 'User'}
             </Text>
-            <Text style={headerStyles.handle} testID="profile_header_username">
-              @{displayUser?.username || 'username'}
-            </Text>
+            <View style={headerStyles.nameContainer}>
+              <Text style={headerStyles.handle} testID="profile_header_username">
+                @{displayUser?.username || 'username'}
+              </Text>
+
+              {!isOwnProfile && profileUser?.isFollower && (
+                <View style={headerStyles.followsYouContainer}>
+                  <Text style={headerStyles.followsYouText}>{t('profile.followsYou')}</Text>
+                </View>
+              )}
+            </View>
             <Text style={headerStyles.bio} testID="profile_header_bio">
               {displayUser?.bio || t('profile.noBio')}
             </Text>
+
             <Text style={headerStyles.link} testID="profile_header_joined_date">
               {displayUser?.username} • {t('profile.joined')} {formatDateToDisplay(displayUser?.createdAt || '')}
             </Text>
@@ -353,6 +454,25 @@ export default function ProfileHeader({
                 </Text>
               </TouchableOpacity>
             </View>
+            {/* Mutual Followers */}
+            {!isOwnProfile && profileUser && (
+              <TouchableOpacity
+                testID="profile_header_mutual_followers_button"
+                onPress={() => {
+                  const targetUserId = userId;
+                  const targetUsername = profileUser?.name;
+                  router.push(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    `/(profile)/Lists?tab=mutualFollowers&userId=${targetUserId}&username=${targetUsername}` as any,
+                  );
+                }}
+              >
+                <MutualFollowers
+                  mutualFollowers={profileUser.topMutualFollowers || []}
+                  totalCount={profileUser.mutualFollowersCount || 0}
+                />
+              </TouchableOpacity>
+            )}
           </>
         )}
       </View>

@@ -150,3 +150,9 @@ export interface ISignUpStep3Response {
   count: number;
   message: string;
 }
+
+export interface ICategoryResponse {
+  data: string[];
+  count: number;
+  message: string;
+}

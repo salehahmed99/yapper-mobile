@@ -9,20 +9,18 @@ const renderWithTheme = (component: React.ReactElement) => {
 
 describe('ReplyRestrictionSelector', () => {
   it('should render correctly with Everyone option', () => {
-    const { getByText } = renderWithTheme(<ReplyRestrictionSelector onPress={() => {}} selectedOption="Everyone" />);
+    const { getByText } = renderWithTheme(<ReplyRestrictionSelector onPress={() => {}} selectedOption={0} />);
     expect(getByText('Everyone can reply')).toBeTruthy();
   });
 
   it('should render correctly with Verified accounts option', () => {
-    const { getByText } = renderWithTheme(
-      <ReplyRestrictionSelector onPress={() => {}} selectedOption="Verified accounts" />,
-    );
+    const { getByText } = renderWithTheme(<ReplyRestrictionSelector onPress={() => {}} selectedOption={1} />);
     expect(getByText('Verified accounts can reply')).toBeTruthy();
   });
 
   it('should handle press', () => {
     const onPress = jest.fn();
-    const { getByTestId } = renderWithTheme(<ReplyRestrictionSelector onPress={onPress} selectedOption="Everyone" />);
+    const { getByTestId } = renderWithTheme(<ReplyRestrictionSelector onPress={onPress} selectedOption={0} />);
 
     fireEvent.press(getByTestId('create_post_reply_restriction_selector'));
     expect(onPress).toHaveBeenCalled();

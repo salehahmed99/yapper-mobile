@@ -1,8 +1,9 @@
-import React, { useRef, forwardRef, useImperativeHandle } from 'react';
-import { Modal, StyleSheet, View, ActivityIndicator, TouchableOpacity, Text } from 'react-native';
-import { WebView } from 'react-native-webview';
-import { X } from 'lucide-react-native';
 import { Theme } from '@/src/constants/theme';
+import { X } from 'lucide-react-native';
+import React, { forwardRef, useImperativeHandle, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { WebView } from 'react-native-webview';
 
 export interface ReCaptchaRef {
   open: () => void;
@@ -26,6 +27,7 @@ const ReCaptcha = forwardRef<ReCaptchaRef, ReCaptchaProps>(
     { siteKey, onVerify, onError, onExpire, onClose, size = 'normal', theme = 'light', lang = 'en', themeColors },
     ref,
   ) => {
+    const { t } = useTranslation();
     const [visible, setVisible] = React.useState(false);
     const [loading, setLoading] = React.useState(true);
     const webViewRef = useRef<WebView>(null);
@@ -152,9 +154,9 @@ const ReCaptcha = forwardRef<ReCaptchaRef, ReCaptchaProps>(
 </head>
 <body>
   <div class="container">
-    <div class="title">Please verify you're human</div>
-    <div id="recaptcha-container"><div class="loading">Loading reCAPTCHA...</div></div>
-    <button class="close-btn" onclick="handleClose()">Cancel</button>
+    <div class="title">${t('recaptcha.title')}</div>
+    <div id="recaptcha-container"><div class="loading">${t('recaptcha.loading')}</div></div>
+    <button class="close-btn" onclick="handleClose()">${t('recaptcha.cancel')}</button>
     <div id="error" class="error"></div>
   </div>
   <script>
@@ -180,7 +182,7 @@ const ReCaptcha = forwardRef<ReCaptchaRef, ReCaptchaProps>(
           setTimeout(renderRecaptcha, 500);
           return;
         }
-        const errorMsg = 'Failed to load reCAPTCHA';
+        const errorMsg = '${t('recaptcha.failedToLoad')}';
         document.getElementById('error').textContent = errorMsg;
         sendMessage({ type: 'error', error: errorMsg });
         return;
@@ -204,19 +206,19 @@ const ReCaptcha = forwardRef<ReCaptchaRef, ReCaptchaProps>(
           }, 100);
         }
       } catch (error) {
-        document.getElementById('error').textContent = 'Failed to render verification';
-        sendMessage({ type: 'error', error: error.message || 'Failed to load reCAPTCHA' });
+        document.getElementById('error').textContent = '${t('recaptcha.failedToRender')}';
+        sendMessage({ type: 'error', error: error.message || '${t('recaptcha.failedToLoad')}' });
       }
     }
 
     function onSuccess(token) { sendMessage({ type: 'success', token: token }); }
     function onExpire() {
       sendMessage({ type: 'expire' });
-      document.getElementById('error').textContent = 'Verification expired. Please try again.';
+      document.getElementById('error').textContent = '${t('recaptcha.expired')}';
     }
     function onError(error) {
-      sendMessage({ type: 'error', error: error || 'An error occurred' });
-      document.getElementById('error').textContent = 'Verification failed. Please try again.';
+      sendMessage({ type: 'error', error: error || '${t('recaptcha.failed')}' });
+      document.getElementById('error').textContent = '${t('recaptcha.failed')}';
     }
     function handleClose() { sendMessage({ type: 'close' }); }
 
@@ -226,7 +228,7 @@ const ReCaptcha = forwardRef<ReCaptchaRef, ReCaptchaProps>(
     script.async = true;
     script.defer = true;
     script.onerror = function() {
-      const errorMsg = 'Failed to load reCAPTCHA script';
+      const errorMsg = '${t('recaptcha.failedToLoadScript')}';
       document.getElementById('error').textContent = errorMsg;
       sendMessage({ type: 'error', error: errorMsg });
     };
@@ -254,7 +256,7 @@ const ReCaptcha = forwardRef<ReCaptchaRef, ReCaptchaProps>(
             {loading && (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#4285f4" />
-                <Text style={styles.loadingText}>Loading verification...</Text>
+                <Text style={styles.loadingText}>{t('recaptcha.loadingVerification')}</Text>
               </View>
             )}
 

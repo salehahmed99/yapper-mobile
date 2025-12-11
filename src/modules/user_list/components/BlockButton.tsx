@@ -4,7 +4,7 @@ import { useBlockUser } from '@/src/modules/profile/hooks/useBlockUser';
 import { IUser } from '@/src/types/user';
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 interface IBlockButtonProps {
   user: IUser;
@@ -49,7 +49,7 @@ const BlockButton: React.FC<IBlockButtonProps> = ({ user, onPress }) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   // Use the block hook
-  const { isBlocked, isLoading, toggleBlock, setIsBlocked } = useBlockUser(user.isBlocked || false);
+  const { isBlocked, toggleBlock, setIsBlocked } = useBlockUser(user.isBlocked || false);
 
   // Sync with user prop changes
   useEffect(() => {
@@ -75,22 +75,16 @@ const BlockButton: React.FC<IBlockButtonProps> = ({ user, onPress }) => {
       style={[styles.blockButton, isUnblock && styles.blockedButton]}
       onPress={handlePress}
       activeOpacity={0.7}
-      disabled={isLoading}
       testID={`block_button_${user.id}`}
       accessibilityLabel={isUnblock ? `unblock_${user.username || user.name}` : `block_${user.username || user.name}`}
       accessibilityRole="button"
-      accessibilityState={{ disabled: isLoading }}
     >
-      {isLoading ? (
-        <ActivityIndicator size="small" color={theme.colors.error} testID={`block_button_loader_${user.id}`} />
-      ) : (
-        <Text
-          style={[styles.blockButtonText, isUnblock && styles.blockedButtonText]}
-          testID={`block_button_text_${user.id}`}
-        >
-          {isUnblock ? t('userList.unblock') : t('userList.block')}
-        </Text>
-      )}
+      <Text
+        style={[styles.blockButtonText, isUnblock && styles.blockedButtonText]}
+        testID={`block_button_text_${user.id}`}
+      >
+        {isUnblock ? t('userList.unblock') : t('userList.block')}
+      </Text>
     </TouchableOpacity>
   );
 };

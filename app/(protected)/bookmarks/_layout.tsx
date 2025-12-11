@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
+import React from 'react';
 
-export default function YourAccountLayout() {
+export default function BookmarksLayout() {
   return (
     <Stack
       screenOptions={{

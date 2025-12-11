@@ -1,5 +1,7 @@
 import api from '@/src/services/apiClient';
 import {
+  IBookmarks,
+  IBookmarksResponse,
   IQuotesResponse,
   IReplies,
   IRepliesResponse,
@@ -120,6 +122,14 @@ export const getFollowing = async (tweetFilters: ITweetFilters): Promise<ITweets
   });
   return response.data.data;
 };
+
+export const getBookmarks = async (filters: { cursor?: string; limit?: number } = {}): Promise<IBookmarks> => {
+  const response = await api.get<IBookmarksResponse>('/tweets/bookmarks', {
+    params: filters,
+  });
+  return response.data.data;
+};
+
 export const getTweetById = async (tweetId: string): Promise<ITweet> => {
   const response = await api.get<ISingleTweetResponse>(`/tweets/${tweetId}`);
   return response.data.data;

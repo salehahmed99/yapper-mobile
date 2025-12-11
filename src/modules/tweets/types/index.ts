@@ -41,11 +41,21 @@ interface ITweetFilters {
 type ISingleTweetResponse = IApiResponse<ITweet>;
 type ITweetsResponse = IApiResponse<ITweets>;
 type IRepliesResponse = IApiResponse<IReplies>;
+type IBookmarksResponse = IApiResponse<IBookmarks>;
 
 interface ITweets {
   data: ITweet[];
   pagination: {
     nextCursor: string;
+    hasMore: boolean;
+  };
+}
+
+interface IBookmarks {
+  data: ITweet[];
+  pagination: {
+    count: number;
+    nextCursor: string | null;
     hasMore: boolean;
   };
 }
@@ -80,9 +90,9 @@ interface IQuotesResponse {
   has_more: boolean;
 }
 
-type ReplyRestrictionOptions = 'Everyone' | 'Verified accounts' | 'Accounts you follow' | 'Only accounts you mention';
-
 export {
+  IBookmarks,
+  IBookmarksResponse,
   IQuotesResponse,
   IReplies,
   IRepliesResponse,
@@ -91,5 +101,4 @@ export {
   ITweetFilters,
   ITweets,
   ITweetsResponse,
-  ReplyRestrictionOptions,
 };

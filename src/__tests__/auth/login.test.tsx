@@ -7,6 +7,23 @@ import React from 'react';
 import Toast from 'react-native-toast-message';
 import LoginScreen from '../../../app/(auth)/login';
 
+// Mock PasswordInput to avoid Animated issues
+jest.mock('@/src/modules/auth/components/shared/PasswordInput', () => {
+  const { TextInput, View, Text } = require('react-native');
+  return (props: any) => (
+    <View>
+      <Text>{props.label}</Text>
+      <TextInput
+        value={props.value}
+        onChangeText={props.onChangeText}
+        testID="password-input"
+        placeholder={props.label}
+        {...props}
+      />
+    </View>
+  );
+});
+
 // Mock expo-localization FIRST
 jest.mock('expo-localization', () => ({
   getLocales: () => [{ regionCode: 'US' }],
@@ -41,6 +58,8 @@ jest.mock('react-i18next', () => ({
         'auth.login.success.welcomeBack': 'Welcome back!',
         'auth.login.alerts.backButtonPressed': 'Back button pressed',
         'auth.login.alerts.forgotPasswordPressed': 'Forgot Password pressed',
+        'buttons.next': 'Next',
+        'buttons.login': 'Login',
       };
       return translations[key] || key;
     },
@@ -62,7 +81,7 @@ jest.mock('react-native-toast-message', () => ({
 }));
 
 // Mock the checkExists and login functions
-jest.mock('../../modules/auth/services/authService', () => ({
+jest.mock('@/src/modules/auth/services/authService', () => ({
   checkExists: jest.fn().mockResolvedValue(true),
   login: jest.fn().mockResolvedValue({ token: 'mockToken', user: { id: 1, email: 'test@example.com' } }),
 }));
