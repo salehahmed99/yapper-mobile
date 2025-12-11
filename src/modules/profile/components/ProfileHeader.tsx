@@ -8,9 +8,11 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Image as RNImage, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../../context/ThemeContext';
 import { useAuthStore } from '../../../store/useAuthStore';
+import { createChat } from '../../chat/services/chatService';
 import { useBlockUser } from '../hooks/useBlockUser';
 import { useFollowUser } from '../hooks/useFollowUser';
 // import BlockButton from '@/src/modules/user_list/components/BlockButton';
+import { useMutation } from '@tanstack/react-query';
 import { useMuteUser } from '../hooks/useMuteUser';
 import { getUserById } from '../services/profileService';
 import { createHeaderStyles } from '../styles/profile-header-styles';
@@ -188,6 +190,28 @@ export default function ProfileHeader({
     }
   };
 
+  const createChatMutation = useMutation({
+    mutationFn: createChat,
+    onSuccess: (result) => {
+      if (profileUser) {
+        router.push({
+          pathname: `/messages/${result.chat.id}` as const,
+          params: {
+            name: profileUser.name,
+            username: profileUser.username,
+            avatarUrl: profileUser.avatarUrl || '',
+          },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any);
+      }
+    },
+  });
+
+  const handleMessagePress = () => {
+    if (!userId) return;
+    createChatMutation.mutate({ recipientId: userId });
+  };
+
   return (
     <View style={headerStyles.container} testID="profile_header_container">
       {/* Banner */}
@@ -314,12 +338,14 @@ export default function ProfileHeader({
             <TouchableOpacity
               testID="profile_header_message_button"
               style={headerStyles.messageButton}
-              onPress={() => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                router.push('/(protected)/messages' as any);
-              }}
+              onPress={handleMessagePress}
+              disabled={createChatMutation.isPending}
             >
-              <Mail size={15} color={theme.colors.text.primary} />
+              {createChatMutation.isPending ? (
+                <ActivityIndicator size="small" color={theme.colors.text.primary} />
+              ) : (
+                <Mail size={15} color={theme.colors.text.primary} />
+              )}
             </TouchableOpacity>
 
             {/* Follow or Block Button */}

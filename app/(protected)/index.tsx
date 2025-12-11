@@ -90,6 +90,20 @@ export default function HomeScreen() {
   const tabTouchStartXRef = React.useRef<number | null>(null);
   const drawerEdgeThreshold = screenWidth * 0.2; // 20% of screen for drawer
 
+  // Use refs to avoid stale closures in PanResponder (same pattern as AppShell)
+  const isRTLRef = React.useRef(isRTL);
+  const screenWidthRef = React.useRef(screenWidth);
+  const drawerEdgeThresholdRef = React.useRef(drawerEdgeThreshold);
+
+  React.useEffect(() => {
+    isRTLRef.current = isRTL;
+  }, [isRTL]);
+
+  React.useEffect(() => {
+    screenWidthRef.current = screenWidth;
+    drawerEdgeThresholdRef.current = screenWidth * 0.2;
+  }, [screenWidth]);
+
   // PanResponder for smooth animated tab swiping
   const tabSwipePanResponder = React.useMemo(
     () =>
@@ -102,48 +116,56 @@ export default function HomeScreen() {
         onMoveShouldSetPanResponder: (evt, gestureState: PanResponderGestureState) => {
           const startX = tabTouchStartXRef.current ?? evt.nativeEvent.pageX;
           const { dx, dy } = gestureState;
+          const sw = screenWidthRef.current;
+          const threshold = drawerEdgeThresholdRef.current;
 
           // Exclude drawer edge zone (first 20% in LTR, last 20% in RTL)
-          if (isRTL) {
+          if (isRTLRef.current) {
             // In RTL, drawer is on the right
-            if (startX > screenWidth - drawerEdgeThreshold) return false;
+            if (startX > sw - threshold) return false;
           } else {
             // In LTR, drawer is on the left
-            if (startX < drawerEdgeThreshold) return false;
+            if (startX < threshold) return false;
           }
 
-          // Only capture horizontal swipes
-          return Math.abs(dx) > Math.abs(dy) * 1.5 && Math.abs(dx) > 10;
+          // Only capture horizontal swipes with sufficient movement
+          return Math.abs(dx) > Math.abs(dy) * 1.5 && Math.abs(dx) > 15;
+        },
+        onPanResponderGrant: () => {
+          // Stop any running animation when gesture starts
+          slideAnim.stopAnimation();
         },
         onPanResponderMove: (_evt, gestureState: PanResponderGestureState) => {
           // Follow finger with animation (invert for RTL)
-          const dx = isRTL ? -gestureState.dx : gestureState.dx;
-          const currentOffset = homeIndexRef.current === 0 ? 0 : -screenWidth;
+          const sw = screenWidthRef.current;
+          const dx = gestureState.dx;
+          const currentOffset = homeIndexRef.current === 0 ? 0 : -sw;
           // Clamp to valid range with resistance at edges
           let newValue = currentOffset + dx;
           if (newValue > 0) {
             newValue = newValue * 0.3; // Resistance when swiping past first tab
-          } else if (newValue < -screenWidth) {
-            newValue = -screenWidth + (newValue + screenWidth) * 0.3; // Resistance when swiping past last tab
+          } else if (newValue < -sw) {
+            newValue = -sw + (newValue + sw) * 0.3; // Resistance when swiping past last tab
           }
           slideAnim.setValue(newValue);
         },
         onPanResponderRelease: (_evt, gestureState: PanResponderGestureState) => {
-          const dx = isRTL ? -gestureState.dx : gestureState.dx;
-          const vx = isRTL ? -gestureState.vx : gestureState.vx;
+          const sw = screenWidthRef.current;
+          const dx = gestureState.dx;
+          const vx = gestureState.vx;
           const currentIndex = homeIndexRef.current;
 
           // Determine target tab based on swipe distance and velocity
           let targetIndex = currentIndex;
-          if (currentIndex === 0 && (dx < -screenWidth / 4 || vx < -0.5)) {
+          if (currentIndex === 0 && (dx < -sw / 4 || vx < -0.5)) {
             targetIndex = 1; // Swipe to Following
-          } else if (currentIndex === 1 && (dx > screenWidth / 4 || vx > 0.5)) {
+          } else if (currentIndex === 1 && (dx > sw / 4 || vx > 0.5)) {
             targetIndex = 0; // Swipe to For You
           }
 
           // Animate to target position
           Animated.spring(slideAnim, {
-            toValue: targetIndex === 0 ? 0 : -screenWidth,
+            toValue: targetIndex === 0 ? 0 : -sw,
             useNativeDriver: true,
             tension: 100,
             friction: 12,
@@ -153,6 +175,16 @@ export default function HomeScreen() {
             setHomeIndex(targetIndex);
           }
         },
+        onPanResponderTerminate: () => {
+          // If gesture is terminated (e.g., by scroll), snap back
+          const sw = screenWidthRef.current;
+          Animated.spring(slideAnim, {
+            toValue: homeIndexRef.current === 0 ? 0 : -sw,
+            useNativeDriver: true,
+            tension: 100,
+            friction: 12,
+          }).start();
+        },
       }),
     [isRTL, screenWidth, slideAnim, drawerEdgeThreshold],
   );
@@ -160,7 +192,7 @@ export default function HomeScreen() {
   const { addPostMutation } = useTweetActions();
 
   // Calculate translateX (invert for RTL)
-  const translateX = isRTL ? Animated.multiply(slideAnim, -1) : slideAnim;
+  const translateX = slideAnim;
 
   return (
     <View style={styles.container}>

@@ -12,8 +12,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { logout, logOutAll } from '../modules/auth/services/authService';
 import { getMyUser } from '../modules/profile/services/profileService';
-import { tokenRefreshService } from '../services/tokenRefreshService';
 import { IGetMyUserResponse } from '../modules/profile/types';
+import { socketService } from '../services/socketService';
+import { tokenRefreshService } from '../services/tokenRefreshService';
 
 interface IAuthState {
   user: IUser | null;
@@ -40,6 +41,7 @@ export const useAuthStore = create<IAuthState>((set) => ({
 
   /** Initialize auth on app start */
   initializeAuth: async () => {
+    let authSuccessful = false;
     try {
       const token = await getToken();
       const refreshToken = await getRefreshToken();
@@ -58,6 +60,7 @@ export const useAuthStore = create<IAuthState>((set) => ({
           if (refreshToken) {
             tokenRefreshService.start();
           }
+          authSuccessful = true; // Auth succeeded with existing token
         } catch {
           await deleteToken();
           await deleteRefreshToken();
@@ -83,6 +86,7 @@ export const useAuthStore = create<IAuthState>((set) => ({
             }
 
             tokenRefreshService.start();
+            authSuccessful = true; // Auth succeeded with refreshed token
           }
         } catch {
           await deleteToken();
@@ -96,6 +100,13 @@ export const useAuthStore = create<IAuthState>((set) => ({
       set({ user: null, token: null });
     } finally {
       set({ isInitialized: true });
+    }
+    if (authSuccessful) {
+      try {
+        await socketService.connect();
+      } catch (socketErr) {
+        console.warn('Socket connection failed, but auth remains valid:', socketErr);
+      }
     }
   },
 
@@ -111,6 +122,12 @@ export const useAuthStore = create<IAuthState>((set) => ({
     } catch (err) {
       console.error('Login error:', err);
       set({ user: null, token: null });
+      return; // Don't connect socket if login failed
+    }
+    try {
+      await socketService.connect();
+    } catch (socketErr) {
+      console.warn('Socket connection failed, but auth remains valid:', socketErr);
     }
   },
 
@@ -182,6 +199,7 @@ export const useAuthStore = create<IAuthState>((set) => ({
   logout: async (all: boolean = false) => {
     try {
       tokenRefreshService.stop();
+      socketService.disconnect();
       await deleteToken();
       await deleteRefreshToken();
       if (all) {
@@ -189,6 +207,7 @@ export const useAuthStore = create<IAuthState>((set) => ({
       } else {
         await logout();
       }
+      socketService.disconnect();
     } catch (err) {
       console.error('Logout error:', err);
     } finally {

@@ -1,11 +1,12 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useUnreadMessagesStore } from '@/src/store/useUnreadMessagesStore';
 import { BlurView } from 'expo-blur';
 import { usePathname, useRouter } from 'expo-router';
 import { Bell, Home, Mail, Search } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, I18nManager, StyleSheet, TouchableOpacity } from 'react-native';
+import { Animated, I18nManager, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUiShell } from '../../context/UiShellContext';
 import GrokLogo from '../icons/GrokLogo';
@@ -33,6 +34,8 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
   const { activeTab, setActiveTab, scrollY } = useUiShell();
   const router = useRouter();
   const pathname = usePathname();
+  const unreadChatIds = useUnreadMessagesStore((state) => state.unreadChatIds);
+  const unreadCount = unreadChatIds.size;
 
   // Sync activeTab with current route
   useEffect(() => {
@@ -98,11 +101,18 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
               testID={`bottom_nav_${item.key}`}
               accessibilityState={{ selected: isActive }}
             >
-              <Icon
-                color={isActive ? theme.colors.text.primary : theme.colors.text.secondary}
-                size={theme.iconSizes.icon}
-                style={styles.iconSpacing}
-              />
+              <View>
+                <Icon
+                  color={isActive ? theme.colors.text.primary : theme.colors.text.secondary}
+                  size={theme.iconSizes.icon}
+                  style={styles.iconSpacing}
+                />
+                {item.key === 'messages' && unreadCount > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{unreadCount > 99 ? '99+' : unreadCount}</Text>
+                  </View>
+                )}
+              </View>
             </TouchableOpacity>
           );
         })}
@@ -159,5 +169,23 @@ const createStyles = (theme: Theme) =>
     },
     iconSpacing: {
       marginBottom: theme.spacing.xs / 2,
+    },
+    badge: {
+      position: 'absolute',
+      top: -6,
+      right: -10,
+      backgroundColor: theme.colors.accent.bookmark,
+      borderRadius: 10,
+      minWidth: 18,
+      height: 18,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 4,
+    },
+    badgeText: {
+      color: '#FFFFFF',
+      fontSize: 10,
+      fontFamily: theme.typography.fonts.bold,
+      textAlign: 'center',
     },
   });

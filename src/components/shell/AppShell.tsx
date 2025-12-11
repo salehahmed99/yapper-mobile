@@ -1,5 +1,7 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useSocketConnection } from '@/src/hooks/useSocketConnection';
+import { useChatSocketListeners } from '@/src/modules/chat/hooks/useChatSocketListeners';
 import { Stack, usePathname, useSegments } from 'expo-router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +25,11 @@ const AppShell: React.FC = () => {
   const styles = createStyles(theme);
   const [anim] = React.useState(() => new Animated.Value(0));
   const segments = useSegments();
+
+  // Manage socket connection lifecycle
+  useSocketConnection();
+  // Manage chat listeners
+  useChatSocketListeners();
 
   const isInSettings = (segments as string[]).includes('(settings)');
   const shouldShowBottomNav = !isInSettings;

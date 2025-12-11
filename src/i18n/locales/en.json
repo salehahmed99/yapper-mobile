@@ -32,6 +32,57 @@
   "bookmarks": {
     "title": "Bookmarks"
   },
+  "messages": {
+    "title": "Messages",
+    "newMessage": "New Message",
+    "searchPeople": "Search people",
+    "startNewMessage": "Start a new message",
+    "noMessagesYet": "No messages yet",
+    "failedToLoad": "Failed to load messages",
+    "tapToRetry": "Tap to Retry",
+    "creatingChat": "Creating chat...",
+    "emptyState": {
+      "title": "Welcome to your inbox!",
+      "subtitle": "Drop a line, share posts and more with private conversations between you and others.",
+      "writeMessage": "Write a message"
+    },
+    "input": {
+      "placeholder": "Start a new message",
+      "pickImage": "Pick image",
+      "voiceNote": "Voice note",
+      "sendMessage": "Send message",
+      "messageInput": "Message input"
+    },
+    "header": {
+      "goBack": "Go back",
+      "chatInfo": "Chat info"
+    },
+    "bubble": {
+      "yourMessage": "Your message",
+      "receivedMessage": "Received message",
+      "replyingTo": "Replying to {{name}}",
+      "photo": "Photo",
+      "unknown": "Unknown"
+    },
+    "reactions": {
+      "reaction": "Reaction {{emoji}}, count {{count}}"
+    },
+    "search": {
+      "placeholder": "Search people",
+      "noResults": "No users found for \"{{query}}\"",
+      "searchPrompt": "Search for people to message",
+      "startChat": "Start chat with {{name}}"
+    },
+    "emoji": {
+      "searchPlaceholder": "Search emojis...",
+      "searchLabel": "Search emojis"
+    },
+    "accessibility": {
+      "loadingMessages": "Loading messages",
+      "retryLoading": "Retry loading messages",
+      "close": "Close"
+    }
+  },
   "search": {
     "placeholder": "Search",
     "searchUserPosts": "Search {{username}}'s posts",

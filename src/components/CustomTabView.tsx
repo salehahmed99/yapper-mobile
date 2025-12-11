@@ -89,6 +89,7 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
       // if scrollable, ensure active tab is visible in scroll view: center it
       if (scrollable && scrollRef.current) {
         const containerWidth = layout.width;
+        // In RTL, the scroll direction is reversed, so we calculate from the end
         const offset = Math.max(0, m.x + m.width / 2 - containerWidth / 2);
         try {
           scrollRef.current.scrollTo({ x: offset, animated: true });
@@ -212,12 +213,7 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
         })}
         <Animated.View
           pointerEvents="none"
-          style={[
-            styles.indicator,
-            isRTL
-              ? { right: indicatorStart.current, width: indicatorWidth.current }
-              : { left: indicatorStart.current, width: indicatorWidth.current },
-          ]}
+          style={[styles.indicator, { left: indicatorStart.current, width: indicatorWidth.current }]}
         />
       </View>
     );

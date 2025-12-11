@@ -37,12 +37,56 @@
   "bookmarks": {
     "title": "المفضلة"
   },
-  "buttons": {
-    "next": "التالي",
-    "back": "رجوع",
-    "continue": "متابعة",
-    "login": "تسجيل الدخول",
-    "logout": "تسجيل الخروج"
+  "messages": {
+    "title": "الرسائل",
+    "newMessage": "رسالة جديدة",
+    "searchPeople": "البحث عن أشخاص",
+    "startNewMessage": "ابدأ رسالة جديدة",
+    "noMessagesYet": "لا توجد رسائل بعد",
+    "failedToLoad": "فشل تحميل الرسائل",
+    "tapToRetry": "انقر للمحاولة مرة أخرى",
+    "creatingChat": "جاري إنشاء المحادثة...",
+    "emptyState": {
+      "title": "مرحباً بك في صندوق الوارد!",
+      "subtitle": "أرسل رسالة، شارك المنشورات والمزيد مع المحادثات الخاصة بينك وبين الآخرين.",
+      "writeMessage": "اكتب رسالة"
+    },
+    "input": {
+      "placeholder": "ابدأ رسالة جديدة",
+      "pickImage": "اختر صورة",
+      "voiceNote": "ملاحظة صوتية",
+      "sendMessage": "إرسال الرسالة",
+      "messageInput": "إدخال الرسالة"
+    },
+    "header": {
+      "goBack": "رجوع",
+      "chatInfo": "معلومات المحادثة"
+    },
+    "bubble": {
+      "yourMessage": "رسالتك",
+      "receivedMessage": "رسالة مستلمة",
+      "replyingTo": "الرد على {{name}}",
+      "photo": "صورة",
+      "unknown": "غير معروف"
+    },
+    "reactions": {
+      "reaction": "تفاعل {{emoji}}، العدد {{count}}"
+    },
+    "search": {
+      "placeholder": "البحث عن أشخاص",
+      "noResults": "لا يوجد مستخدمون لـ \"{{query}}\"",
+      "searchPrompt": "ابحث عن أشخاص لمراسلتهم",
+      "startChat": "بدء محادثة مع {{name}}"
+    },
+    "emoji": {
+      "searchPlaceholder": "البحث عن الرموز التعبيرية...",
+      "searchLabel": "البحث عن الرموز التعبيرية"
+    },
+    "accessibility": {
+      "loadingMessages": "جاري تحميل الرسائل",
+      "retryLoading": "إعادة محاولة تحميل الرسائل",
+      "close": "إغلاق"
+    }
   },
   "search": {
     "placeholder": "البحث",

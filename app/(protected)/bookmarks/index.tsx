@@ -39,7 +39,7 @@ export default function BookmarksScreen() {
   }, [bookmarksQuery.hasNextPage, bookmarksQuery.isFetchingNextPage, bookmarksQuery.fetchNextPage]);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="bookmarks_screen_container">
       <MediaViewerProvider>
         {/* Header */}
         <View style={[styles.header, { paddingTop: insets.top }]}>
@@ -52,10 +52,12 @@ export default function BookmarksScreen() {
             <ArrowLeft
               color={theme.colors.background.inverse}
               size={24}
-              style={isRTL ? { transform: [{ scaleX: -1 }] } : undefined}
+              style={isRTL ? { transform: [{ rotate: '180deg' }] } : undefined}
             />
           </TouchableOpacity>
-          <Text style={[styles.headerTitle]}>{t('bookmarks.title', 'Bookmarks')}</Text>
+          <Text style={[styles.headerTitle]} testID="bookmarks_header_title">
+            {t('bookmarks.title', 'Bookmarks')}
+          </Text>
           <View style={styles.headerSpacer} />
         </View>
 
