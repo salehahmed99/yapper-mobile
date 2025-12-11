@@ -138,7 +138,7 @@ export default function HomeScreen() {
         onPanResponderMove: (_evt, gestureState: PanResponderGestureState) => {
           // Follow finger with animation (invert for RTL)
           const sw = screenWidthRef.current;
-          const dx = gestureState.dx;
+          const dx = isRTLRef.current ? -gestureState.dx : gestureState.dx;
           const currentOffset = homeIndexRef.current === 0 ? 0 : -sw;
           // Clamp to valid range with resistance at edges
           let newValue = currentOffset + dx;
@@ -151,8 +151,8 @@ export default function HomeScreen() {
         },
         onPanResponderRelease: (_evt, gestureState: PanResponderGestureState) => {
           const sw = screenWidthRef.current;
-          const dx = gestureState.dx;
-          const vx = gestureState.vx;
+          const dx = isRTLRef.current ? -gestureState.dx : gestureState.dx;
+          const vx = isRTLRef.current ? -gestureState.vx : gestureState.vx;
           const currentIndex = homeIndexRef.current;
 
           // Determine target tab based on swipe distance and velocity
@@ -192,7 +192,7 @@ export default function HomeScreen() {
   const { addPostMutation } = useTweetActions();
 
   // Calculate translateX (invert for RTL)
-  const translateX = slideAnim;
+  const translateX = isRTL ? Animated.multiply(slideAnim, -1) : slideAnim;
 
   return (
     <View style={styles.container}>
