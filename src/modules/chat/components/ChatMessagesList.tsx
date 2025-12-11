@@ -163,6 +163,7 @@ export default function ChatMessagesList({
       ListHeaderComponent={renderHeader}
       ListFooterComponent={renderFooter}
       extraData={messagesMap}
+      testID="chat_messages_list"
     />
   );
 }

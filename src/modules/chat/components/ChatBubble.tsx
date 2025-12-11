@@ -82,7 +82,10 @@ export default function ChatBubble({
   const hasText = !!message.content?.trim();
 
   return (
-    <View style={[styles.container, isOwn ? styles.ownContainer : styles.otherContainer]}>
+    <View
+      style={[styles.container, isOwn ? styles.ownContainer : styles.otherContainer]}
+      testID={`chat_bubble_container_${message.id}`}
+    >
       {replyMessage && (
         <View style={[styles.replyPreview, isOwn ? styles.ownReplyPreview : styles.otherReplyPreview]}>
           <Text style={[styles.replyName, isOwn ? styles.ownReplyName : styles.otherReplyName]} numberOfLines={1}>
@@ -118,6 +121,8 @@ export default function ChatBubble({
         onLongPress={handleLongPress}
         delayLongPress={400}
         activeOpacity={0.8}
+        testID={`chat_bubble_${message.id}`}
+        accessibilityLabel={isOwn ? 'Your message' : 'Received message'}
       >
         {hasImage && (
           <Image

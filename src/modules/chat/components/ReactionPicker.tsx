@@ -55,10 +55,9 @@ export default function ReactionPickerModal({
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={styles.overlay} onPress={onClose}>
+      <Pressable style={styles.overlay} onPress={onClose} testID="reaction_picker_overlay">
         <View style={[styles.contentWrapper, getPositionStyle()]}>
-          {/* Reaction picker bar */}
-          <View style={styles.pickerContainer}>
+          <View style={styles.pickerContainer} testID="reaction_picker_container">
             {REACTIONS.map((emoji) => (
               <Pressable
                 key={emoji}

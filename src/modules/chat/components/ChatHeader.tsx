@@ -17,8 +17,14 @@ export default function ChatHeader({ name, username, avatarUrl, onBack, onInfo }
   const styles = createStyles(theme);
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={onBack}>
+    <View style={styles.container} testID="chat_header_container">
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={onBack}
+        testID="chat_header_back_button"
+        accessibilityLabel="Go back"
+        accessibilityRole="button"
+      >
         <ArrowLeft color={theme.colors.text.primary} size={24} />
       </TouchableOpacity>
       <View style={styles.userInfo}>
@@ -30,7 +36,7 @@ export default function ChatHeader({ name, username, avatarUrl, onBack, onInfo }
           </View>
         )}
         <View style={styles.textInfo}>
-          <Text style={styles.name} numberOfLines={1}>
+          <Text style={styles.name} numberOfLines={1} testID="chat_header_name">
             {name}
           </Text>
           <Text style={styles.username} numberOfLines={1}>
@@ -39,7 +45,13 @@ export default function ChatHeader({ name, username, avatarUrl, onBack, onInfo }
         </View>
       </View>
       {onInfo && (
-        <TouchableOpacity style={styles.infoButton} onPress={onInfo}>
+        <TouchableOpacity
+          style={styles.infoButton}
+          onPress={onInfo}
+          testID="chat_header_info_button"
+          accessibilityLabel="Chat info"
+          accessibilityRole="button"
+        >
           <Info color={theme.colors.text.primary} size={24} />
         </TouchableOpacity>
       )}

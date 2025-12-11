@@ -48,8 +48,8 @@ export default function TypingIndicator() {
   }, [dot1Anim, dot2Anim, dot3Anim]);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.bubble}>
+    <View style={styles.container} testID="typing_indicator_container">
+      <View style={styles.bubble} testID="typing_indicator_bubble">
         <View style={styles.dotsContainer}>
           <Animated.View style={[styles.dot, { transform: [{ translateY: dot1Anim }] }]} />
           <Animated.View style={[styles.dot, { transform: [{ translateY: dot2Anim }] }]} />

@@ -91,6 +91,7 @@ export default function MessagesList({
           />
         ) : undefined
       }
+      testID="messages_list"
     />
   );
 }

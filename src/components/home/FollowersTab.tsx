@@ -24,9 +24,10 @@ const FollowersTab: React.FC = () => {
       scrollIndicatorInsets={{ top: theme.ui.appBarHeight + theme.ui.tabViewHeight, bottom: theme.ui.navHeight }}
       onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: false })}
       scrollEventThrottle={16}
+      testID="followers_tab_scroll_view"
     >
       {Array.from({ length: 15 }).map((_, i) => (
-        <View key={i} style={styles.card}>
+        <View key={i} style={styles.card} testID={`followers_tab_card_${i}`}>
           <Text style={styles.cardTitle}>{`${t('home.tabs.following')} ${i + 1}`}</Text>
           <Text style={styles.cardBody}>{t('home.sampleContent')}</Text>
         </View>

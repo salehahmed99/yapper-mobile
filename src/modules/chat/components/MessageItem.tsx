@@ -48,7 +48,12 @@ export default function MessageItem({ chat, onPress }: MessageItemProps) {
   };
 
   return (
-    <TouchableOpacity style={styles.messageItem} onPress={onPress}>
+    <TouchableOpacity
+      style={styles.messageItem}
+      onPress={onPress}
+      testID={`message_item_${chat.id}`}
+      accessibilityLabel={`Chat with ${participant.name || participant.username}`}
+    >
       {participant.avatarUrl ? (
         <Image source={{ uri: participant.avatarUrl }} style={styles.avatar} />
       ) : (
@@ -59,7 +64,7 @@ export default function MessageItem({ chat, onPress }: MessageItemProps) {
       <View style={styles.messageContent}>
         <View style={styles.messageHeader}>
           <View style={styles.nameRow}>
-            <Text style={styles.messageName} numberOfLines={1}>
+            <Text style={styles.messageName} numberOfLines={1} testID={`message_item_name_${chat.id}`}>
               {participant.name || participant.username}
             </Text>
             <Text style={styles.messageUsername} numberOfLines={1}>

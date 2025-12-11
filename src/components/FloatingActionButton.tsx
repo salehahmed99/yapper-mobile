@@ -14,7 +14,14 @@ export default function FloatingActionButton({ onPress, icon, style }: FloatingA
   const styles = createStyles(theme);
 
   return (
-    <TouchableOpacity style={[styles.fab, style]} onPress={onPress} activeOpacity={0.8}>
+    <TouchableOpacity
+      style={[styles.fab, style]}
+      onPress={onPress}
+      activeOpacity={0.8}
+      testID="floating_action_button"
+      accessibilityRole="button"
+      accessibilityLabel="Floating action button"
+    >
       {icon}
     </TouchableOpacity>
   );

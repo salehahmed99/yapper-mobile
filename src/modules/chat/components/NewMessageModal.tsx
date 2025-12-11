@@ -33,6 +33,8 @@ const UserItem: React.FC<IUserItemProps> = ({ user, onPress, isCreating }) => {
       style={({ pressed }) => [styles.userItem, pressed && styles.userItemPressed]}
       onPress={() => onPress(user)}
       disabled={isCreating}
+      testID={`new_message_user_item_${user.userId}`}
+      accessibilityLabel={`Start chat with ${user.name}`}
     >
       <Image
         source={user.avatarUrl ? { uri: user.avatarUrl } : require('@assets/images/avatar-placeholder.png')}
@@ -201,13 +203,22 @@ const NewMessageModal: React.FC<INewMessageModalProps> = ({ visible, onClose, on
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={handleClose}>
-      <View style={[styles.container, { paddingTop: insets.top }]}>
+      <View style={[styles.container, { paddingTop: insets.top }]} testID="new_message_modal_container">
         {/* Header */}
         <View style={styles.header}>
-          <Pressable onPress={handleClose} style={styles.backButton} hitSlop={8}>
+          <Pressable
+            onPress={handleClose}
+            style={styles.backButton}
+            hitSlop={8}
+            testID="new_message_back_button"
+            accessibilityLabel="Close"
+            accessibilityRole="button"
+          >
             <ArrowLeft size={24} color={theme.colors.text.primary} />
           </Pressable>
-          <Text style={styles.headerTitle}>New Message</Text>
+          <Text style={styles.headerTitle} testID="new_message_header_title">
+            New Message
+          </Text>
           <View style={styles.headerRight} />
         </View>
 
@@ -224,6 +235,8 @@ const NewMessageModal: React.FC<INewMessageModalProps> = ({ visible, onClose, on
             autoCorrect={false}
             returnKeyType="search"
             autoFocus
+            testID="new_message_search_input"
+            accessibilityLabel="Search people"
           />
           {searchQuery.length > 0 && (
             <Pressable onPress={handleClearSearch} style={styles.clearButton} hitSlop={8}>

@@ -80,7 +80,7 @@ export default function EmojiPickerSheet({ onSelect, onClose }: EmojiPickerSheet
       onChange={handleSheetChanges}
       enableContentPanningGesture={false}
     >
-      <View style={styles.container}>
+      <View style={styles.container} testID="emoji_picker_container">
         <View style={styles.searchContainer}>
           <Search size={20} color={theme.colors.text.secondary} style={styles.searchIcon} />
           <BottomSheetTextInput
@@ -89,6 +89,8 @@ export default function EmojiPickerSheet({ onSelect, onClose }: EmojiPickerSheet
             placeholderTextColor={theme.colors.text.secondary}
             value={searchQuery}
             onChangeText={setSearchQuery}
+            testID="emoji_picker_search_input"
+            accessibilityLabel="Search emojis"
           />
         </View>
 

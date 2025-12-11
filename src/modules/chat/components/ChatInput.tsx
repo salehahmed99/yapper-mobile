@@ -105,7 +105,7 @@ export default function ChatInput({
   const canSend = (value.trim() || uploadedImageUrl) && !isUploading;
 
   return (
-    <View style={[styles.container, style]}>
+    <View style={[styles.container, style]} testID="chat_input_container">
       {replyingTo && (
         <View style={styles.replyBanner}>
           <View style={styles.replyBannerContent}>
@@ -139,7 +139,14 @@ export default function ChatInput({
         </View>
       )}
       <View style={styles.inputRow}>
-        <TouchableOpacity style={styles.mediaButton} onPress={handlePickImage} disabled={isUploading}>
+        <TouchableOpacity
+          style={styles.mediaButton}
+          onPress={handlePickImage}
+          disabled={isUploading}
+          testID="chat_input_image_button"
+          accessibilityLabel="Pick image"
+          accessibilityRole="button"
+        >
           <ImageIcon color={isUploading ? theme.colors.text.secondary : theme.colors.accent.bookmark} size={24} />
         </TouchableOpacity>
         <View style={styles.inputWrapper}>
@@ -151,15 +158,26 @@ export default function ChatInput({
             onChangeText={onChangeText}
             multiline
             maxLength={1000}
+            testID="chat_input_text_field"
+            accessibilityLabel="Message input"
           />
         </View>
-        <TouchableOpacity style={[styles.mediaButton, isRecording && styles.recordingButton]} onPress={handleVoiceNote}>
+        <TouchableOpacity
+          style={[styles.mediaButton, isRecording && styles.recordingButton]}
+          onPress={handleVoiceNote}
+          testID="chat_input_voice_button"
+          accessibilityLabel="Voice note"
+          accessibilityRole="button"
+        >
           <Mic color={isRecording ? theme.colors.text.inverse : theme.colors.accent.bookmark} size={24} />
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.sendButton, !canSend && styles.sendButtonDisabled]}
           onPress={handleSend}
           disabled={!canSend}
+          testID="chat_input_send_button"
+          accessibilityLabel="Send message"
+          accessibilityRole="button"
         >
           <Send color={canSend ? theme.colors.text.inverse : theme.colors.text.secondary} size={20} />
         </TouchableOpacity>

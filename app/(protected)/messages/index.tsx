@@ -127,20 +127,24 @@ export default function MessagesPage() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="messages_screen_container">
       <View style={styles.appBarWrapper}>
         <AppBar rightElement={<SettingsIcon color={theme.colors.text.primary} />}>
-          <Text style={styles.title}>Messages</Text>
+          <Text style={styles.title} testID="messages_header_title">
+            Messages
+          </Text>
         </AppBar>
       </View>
       <View style={{ marginTop: top }} />
       {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={theme.colors.accent.bookmark} />
+        <View style={styles.loadingContainer} testID="messages_loading_indicator">
+          <ActivityIndicator size="large" color={theme.colors.accent.bookmark} accessibilityLabel="Loading messages" />
         </View>
       ) : isError ? (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Failed to load messages</Text>
+        <View style={styles.errorContainer} testID="messages_error_container">
+          <Text style={styles.errorText} testID="messages_error_text">
+            Failed to load messages
+          </Text>
         </View>
       ) : (
         <MessagesList

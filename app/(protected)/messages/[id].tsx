@@ -93,7 +93,11 @@ export default function ChatConversationPage() {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      testID="chat_conversation_container"
+    >
       <View style={[styles.header, { paddingTop: headerPadding }]}>
         <ChatHeader
           name={userName}
@@ -105,15 +109,24 @@ export default function ChatConversationPage() {
       </View>
       <View style={styles.messagesContainer}>
         {isLoading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={theme.colors.accent.bookmark} />
+          <View style={styles.loadingContainer} testID="chat_loading_indicator">
+            <ActivityIndicator
+              size="large"
+              color={theme.colors.accent.bookmark}
+              accessibilityLabel="Loading messages"
+            />
           </View>
         ) : isError ? (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>Failed to load messages</Text>
+          <View style={styles.errorContainer} testID="chat_error_container">
+            <Text style={styles.errorText} testID="chat_error_text">
+              Failed to load messages
+            </Text>
             <TouchableOpacity
               style={styles.retryButton}
               onPress={() => queryClient.invalidateQueries({ queryKey: ['messages', chatId] })}
+              testID="chat_retry_button"
+              accessibilityLabel="Retry loading messages"
+              accessibilityRole="button"
             >
               <Text style={styles.retryButtonText}>Tap to Retry</Text>
             </TouchableOpacity>

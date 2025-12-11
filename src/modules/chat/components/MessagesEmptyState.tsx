@@ -12,12 +12,20 @@ export default function MessagesEmptyState({ onWriteMessage }: MessagesEmptyStat
   const styles = createStyles(theme);
 
   return (
-    <View style={styles.emptyState}>
-      <Text style={styles.emptyTitle}>Welcome to your inbox!</Text>
+    <View style={styles.emptyState} testID="messages_empty_state_container">
+      <Text style={styles.emptyTitle} testID="messages_empty_state_title">
+        Welcome to your inbox!
+      </Text>
       <Text style={styles.emptySubtitle}>
         Drop a line, share posts and more with private conversations between you and others.
       </Text>
-      <TouchableOpacity style={styles.emptyButton} onPress={onWriteMessage}>
+      <TouchableOpacity
+        style={styles.emptyButton}
+        onPress={onWriteMessage}
+        testID="messages_empty_state_button"
+        accessibilityLabel="Write a message"
+        accessibilityRole="button"
+      >
         <Text style={styles.emptyButtonText}>Write a message</Text>
       </TouchableOpacity>
     </View>
