@@ -1,13 +1,13 @@
-import React, { useMemo } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, StatusBar, ScrollView, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { useTranslation } from 'react-i18next';
+import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
 import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { useTheme } from '@/src/context/ThemeContext';
-import { Theme } from '@/src/constants/theme';
-import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
+import { router } from 'expo-router';
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const DeactivateAccountScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -20,7 +20,7 @@ export const DeactivateAccountScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
       <SettingsTopBar title={t('settings.deactivate.title')} onBackPress={() => router.back()} />
 

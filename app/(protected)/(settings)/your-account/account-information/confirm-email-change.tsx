@@ -5,13 +5,13 @@ import AuthInput from '@/src/modules/auth/components/shared/AuthInput';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import AuthTitle from '@/src/modules/auth/components/shared/Title';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
+import { verifyChangeEmail } from '@/src/modules/settings/services/yourAccountService';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import Toast from 'react-native-toast-message';
+import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { verifyChangeEmail } from '@/src/modules/settings/services/yourAccountService';
+import Toast from 'react-native-toast-message';
 
 const ConfirmEmailChangeScreen = () => {
   const { t } = useTranslation();
@@ -79,7 +79,7 @@ const ConfirmEmailChangeScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={styles.safeArea}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor={theme.colors.background.primary}

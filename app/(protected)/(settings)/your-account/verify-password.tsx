@@ -79,7 +79,7 @@ export const VerifyPasswordScreen: React.FC = () => {
   const isFormValid = password.length > 0 && !isLoading;
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={styles.safeArea}>
       <ActivityLoader visible={isLoading} />
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}

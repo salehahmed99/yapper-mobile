@@ -1,13 +1,13 @@
-import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, StatusBar, Text, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { useTheme } from '@/src/context/ThemeContext';
-import { changeCountry } from '@/src/modules/settings/services/yourAccountService';
 import { Theme } from '@/src/constants/theme';
-import Toast from 'react-native-toast-message';
+import { useTheme } from '@/src/context/ThemeContext';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
+import { changeCountry } from '@/src/modules/settings/services/yourAccountService';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 export const ConfirmCountryChangeScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -44,7 +44,7 @@ export const ConfirmCountryChangeScreen: React.FC = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={styles.safeArea}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor={theme.colors.background.primary}

@@ -71,7 +71,7 @@ export const UpdateEmailScreen: React.FC = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={styles.safeArea}>
       <ActivityLoader visible={isLoading} />
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}

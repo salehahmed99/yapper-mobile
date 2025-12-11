@@ -1,17 +1,17 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, StatusBar, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { AnimatedTextInput } from '@/src/modules/settings/components/AnimatedTextInput';
-import { useTheme } from '@/src/context/ThemeContext';
-import { Theme } from '@/src/constants/theme';
-import Toast from 'react-native-toast-message';
 import ActivityLoader from '@/src/components/ActivityLoader';
-import { Ionicons } from '@expo/vector-icons';
-import { isPasswordValid } from '@/src/modules/settings/utils/passwordValidation';
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
+import { AnimatedTextInput } from '@/src/modules/settings/components/AnimatedTextInput';
 import { confirmCurrentPassword, deleteAccount } from '@/src/modules/settings/services/yourAccountService';
+import { isPasswordValid } from '@/src/modules/settings/utils/passwordValidation';
 import { useAuthStore } from '@/src/store/useAuthStore';
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 export const ConfirmDeactivateScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -72,7 +72,7 @@ export const ConfirmDeactivateScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 
       {/* Close Button */}

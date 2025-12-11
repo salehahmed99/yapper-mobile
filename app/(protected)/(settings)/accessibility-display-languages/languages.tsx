@@ -81,7 +81,7 @@ export const LanguagesScreen: React.FC = () => {
   return (
     <>
       <ActivityLoader visible={isLoading} />
-      <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <SafeAreaView style={styles.safeArea}>
         <StatusBar
           barStyle={isDark ? 'light-content' : 'dark-content'}
           backgroundColor={theme.colors.background.primary}
