@@ -37,6 +37,7 @@ import {
   View,
   ViewToken,
 } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { EdgeInsets, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import ActionsRow from './ActionsRow';
 import CreatePostModal from './CreatePostModal';
@@ -157,6 +158,9 @@ function MediaViewerContent({
   }, [isScreenFocused, isVideo, player]);
 
   const toggleUI = () => {
+    // Dismiss bottom sheet if it's open
+    bottomSheetModalRef.current?.dismiss();
+
     const newShowUI = !showUI;
     setShowUI(newShowUI);
     Animated.timing(uiOpacity, {
@@ -264,248 +268,252 @@ function MediaViewerContent({
   return (
     <>
       <Modal visible animationType="fade" statusBarTranslucent onRequestClose={handleClose}>
-        <BottomSheetModalProvider>
-          <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-            <Pressable style={styles.containerPressable} onPress={toggleUI} accessibilityRole="button">
-              <StatusBar barStyle="light-content" backgroundColor={theme.colors.modal.background} />
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <BottomSheetModalProvider>
+            <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+              <Pressable style={styles.containerPressable} onPress={toggleUI} accessibilityRole="button">
+                <StatusBar barStyle="light-content" backgroundColor={theme.colors.modal.background} />
 
-              <FlatList
-                ref={flatListRef}
-                data={allMedia}
-                renderItem={renderItem}
-                keyExtractor={(item) => `${item.type}-${item.index}`}
-                horizontal
-                pagingEnabled
-                showsHorizontalScrollIndicator={false}
-                initialScrollIndex={mediaIndex}
-                getItemLayout={(_, index) => ({
-                  length: SCREEN_WIDTH,
-                  offset: SCREEN_WIDTH * index,
-                  index,
-                })}
-                onViewableItemsChanged={onViewableItemsChanged}
-                viewabilityConfig={viewabilityConfig}
-                snapToAlignment="center"
-                decelerationRate="fast"
-                removeClippedSubviews={false}
-                windowSize={3}
-                maxToRenderPerBatch={2}
-                initialNumToRender={1}
-                updateCellsBatchingPeriod={50}
-                disableIntervalMomentum
-                snapToInterval={SCREEN_WIDTH}
-                scrollEventThrottle={16}
-              />
+                <FlatList
+                  ref={flatListRef}
+                  data={allMedia}
+                  renderItem={renderItem}
+                  keyExtractor={(item) => `${item.type}-${item.index}`}
+                  horizontal
+                  pagingEnabled
+                  showsHorizontalScrollIndicator={false}
+                  initialScrollIndex={mediaIndex}
+                  getItemLayout={(_, index) => ({
+                    length: SCREEN_WIDTH,
+                    offset: SCREEN_WIDTH * index,
+                    index,
+                  })}
+                  onViewableItemsChanged={onViewableItemsChanged}
+                  viewabilityConfig={viewabilityConfig}
+                  snapToAlignment="center"
+                  decelerationRate="fast"
+                  removeClippedSubviews={false}
+                  windowSize={3}
+                  maxToRenderPerBatch={2}
+                  initialNumToRender={1}
+                  updateCellsBatchingPeriod={50}
+                  disableIntervalMomentum
+                  snapToInterval={SCREEN_WIDTH}
+                  scrollEventThrottle={16}
+                />
 
-              {/* Top Bar */}
-              <Animated.View
-                style={[styles.topBar, { opacity: uiOpacity }]}
-                pointerEvents={showUI ? 'box-none' : 'none'}
-              >
-                <SafeAreaView edges={['top']} style={styles.safeArea} pointerEvents="box-none">
-                  <View style={styles.topBarContent} pointerEvents="auto">
-                    <Pressable onPress={handleClose} style={styles.iconButton} accessibilityLabel="back_button">
-                      <ArrowLeft size={theme.iconSizes.lg} color={theme.colors.modal.iconColor} />
-                    </Pressable>
-
-                    {!isVideo && (
-                      <Pressable
-                        style={styles.topBarCenter}
-                        onPress={handleUserProfilePress}
-                        accessibilityLabel="media_view_profile"
-                        accessibilityRole="button"
-                      >
-                        {tweet?.user?.avatarUrl && (
-                          <Image
-                            source={{ uri: tweet.user.avatarUrl }}
-                            style={styles.avatar}
-                            cachePolicy="memory-disk"
-                          />
-                        )}
-                        <View style={styles.userInfo}>
-                          <Text style={styles.accountText} numberOfLines={1}>
-                            {tweet?.user?.name || 'Loading...'}
-                          </Text>
-                          <Text style={styles.handleText} numberOfLines={1}>
-                            @{tweet?.user?.username || '...'}
-                          </Text>
-                        </View>
-                      </Pressable>
-                    )}
-                  </View>
-                </SafeAreaView>
-              </Animated.View>
-
-              {/* Actions Row - shown for both video and image */}
-              <Animated.View
-                style={[isVideo ? styles.actionsBar : styles.bottomBar, { opacity: uiOpacity }]}
-                pointerEvents={showUI ? 'box-none' : 'none'}
-              >
-                <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
-                  {tweet && (
-                    <ActionsRow
-                      tweet={tweet}
-                      size="modal"
-                      onReplyPress={handleReplyPress}
-                      onRepostPress={handleRepostPress}
-                      onLikePress={handleLikePress}
-                      onBookmarkPress={handleBookmarkPress}
-                      onSharePress={() => console.warn('Share')}
-                      hideViews
-                    />
-                  )}
-                </SafeAreaView>
-              </Animated.View>
-
-              {/* User info for video - shown below actions */}
-              {isVideo && (
+                {/* Top Bar */}
                 <Animated.View
-                  style={[styles.bottomUserInfo, { opacity: uiOpacity }]}
+                  style={[styles.topBar, { opacity: uiOpacity }]}
                   pointerEvents={showUI ? 'box-none' : 'none'}
                 >
-                  <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
-                    <View style={styles.userInfoContent} pointerEvents="auto">
-                      <Pressable
-                        style={styles.bottomUserRow}
-                        onPress={handleUserProfilePress}
-                        accessibilityLabel="media_video_profile"
-                        accessibilityRole="button"
-                      >
-                        {tweet?.user?.avatarUrl && (
-                          <Image
-                            source={{ uri: tweet.user.avatarUrl }}
-                            style={styles.bottomAvatar}
-                            cachePolicy="memory-disk"
-                          />
-                        )}
-                        <View style={styles.bottomUserText}>
-                          <View style={styles.bottomUserNames}>
-                            <Text style={styles.bottomUserName} numberOfLines={1}>
+                  <SafeAreaView edges={['top']} style={styles.safeArea} pointerEvents="box-none">
+                    <View style={styles.topBarContent} pointerEvents="auto">
+                      <Pressable onPress={handleClose} style={styles.iconButton} accessibilityLabel="back_button">
+                        <ArrowLeft size={theme.iconSizes.lg} color={theme.colors.modal.iconColor} />
+                      </Pressable>
+
+                      {!isVideo && (
+                        <Pressable
+                          style={styles.topBarCenter}
+                          onPress={handleUserProfilePress}
+                          accessibilityLabel="media_view_profile"
+                          accessibilityRole="button"
+                        >
+                          {tweet?.user?.avatarUrl && (
+                            <Image
+                              source={{ uri: tweet.user.avatarUrl }}
+                              style={styles.avatar}
+                              cachePolicy="memory-disk"
+                            />
+                          )}
+                          <View style={styles.userInfo}>
+                            <Text style={styles.accountText} numberOfLines={1}>
                               {tweet?.user?.name || 'Loading...'}
                             </Text>
-                            <Text style={styles.bottomUserHandle} numberOfLines={1}>
+                            <Text style={styles.handleText} numberOfLines={1}>
                               @{tweet?.user?.username || '...'}
                             </Text>
                           </View>
-                        </View>
-                      </Pressable>
-                      {tweet?.content && (
-                        <Text style={styles.bottomTweetText} numberOfLines={2}>
-                          {tweet.content}
-                        </Text>
+                        </Pressable>
                       )}
                     </View>
                   </SafeAreaView>
                 </Animated.View>
-              )}
 
-              {/* Video controls */}
-              {isVideo && videoSource && (
+                {/* Actions Row - shown for both video and image */}
                 <Animated.View
-                  style={[styles.videoControlsContainer, { opacity: uiOpacity }]}
+                  style={[isVideo ? styles.actionsBar : styles.bottomBar, { opacity: uiOpacity }]}
                   pointerEvents={showUI ? 'box-none' : 'none'}
                 >
                   <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
-                    <View style={styles.videoControls} pointerEvents="auto">
-                      <Pressable
-                        onPress={togglePlayPause}
-                        style={styles.controlButton}
-                        accessibilityLabel="video_play_pause"
-                        accessibilityRole="button"
-                      >
-                        {player?.playing ? (
-                          <Pause
-                            size={theme.iconSizes.md}
-                            color={theme.colors.modal.iconColor}
-                            fill={theme.colors.modal.iconColor}
-                          />
-                        ) : (
-                          <Play
-                            size={theme.iconSizes.md}
-                            color={theme.colors.modal.iconColor}
-                            fill={theme.colors.modal.iconColor}
-                          />
-                        )}
-                      </Pressable>
-                      <Text style={styles.timeText} accessibilityLabel="video_current_time">
-                        {formatTime(currentTime)}
-                      </Text>
-                      <Pressable
-                        style={styles.progressBarContainer}
-                        onPress={handleProgressBarPress}
-                        onTouchStart={onProgressBarTouchStart}
-                        onTouchMove={onProgressBarTouchMove}
-                        onTouchEnd={onProgressBarTouchEnd}
-                        accessibilityLabel="video_progress_bar"
-                        accessibilityRole="adjustable"
-                      >
-                        <View ref={progressBarRef} style={styles.progressBar}>
-                          <View
-                            style={[
-                              styles.progressFill,
-                              { width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` },
-                            ]}
-                          >
-                            <View style={styles.progressThumb} />
-                          </View>
-                        </View>
-                      </Pressable>
-                      <Text style={styles.timeText} accessibilityLabel="video_duration">
-                        {formatTime(duration)}
-                      </Text>
-                      <Pressable
-                        onPress={toggleMute}
-                        style={styles.controlButton}
-                        accessibilityLabel="video_mute_toggle"
-                        accessibilityRole="button"
-                      >
-                        {isMuted ? (
-                          <VolumeX size={theme.iconSizes.md} color={theme.colors.modal.iconColor} />
-                        ) : (
-                          <Volume2 size={theme.iconSizes.md} color={theme.colors.modal.iconColor} />
-                        )}
-                      </Pressable>
-                      <Pressable
-                        onPress={() => setShowSpeedMenu(!showSpeedMenu)}
-                        style={styles.speedButton}
-                        accessibilityLabel="video_speed_menu"
-                        accessibilityRole="button"
-                      >
-                        <Text style={styles.speedText}>{playbackSpeed}x</Text>
-                      </Pressable>
-                    </View>
-
-                    {showSpeedMenu && (
-                      <View style={styles.speedMenu} pointerEvents="auto">
-                        {PLAYBACK_SPEEDS.map((speed) => (
-                          <Pressable
-                            key={String(speed)}
-                            onPress={() => handleSpeedChange(speed as any)}
-                            style={[styles.speedMenuItem, playbackSpeed === speed && styles.speedMenuItemActive]}
-                            accessibilityLabel={`video_speed_${speed}`}
-                            accessibilityRole="button"
-                          >
-                            <Text style={[styles.speedMenuText, playbackSpeed === speed && styles.speedMenuTextActive]}>
-                              {speed}x
-                            </Text>
-                          </Pressable>
-                        ))}
-                      </View>
+                    {tweet && (
+                      <ActionsRow
+                        tweet={tweet}
+                        size="modal"
+                        onReplyPress={handleReplyPress}
+                        onRepostPress={handleRepostPress}
+                        onLikePress={handleLikePress}
+                        onBookmarkPress={handleBookmarkPress}
+                        onSharePress={() => console.warn('Share')}
+                        hideViews
+                      />
                     )}
                   </SafeAreaView>
                 </Animated.View>
-              )}
-            </Pressable>
-          </SafeAreaView>
 
-          <RepostOptionsModal
-            isReposted={tweet?.isReposted ?? false}
-            onRepostPress={handleRepost}
-            onQuotePress={handleQuotePress}
-            onViewInteractionsPress={handleViewInteractionsPress}
-            bottomSheetModalRef={bottomSheetModalRef}
-          />
-        </BottomSheetModalProvider>
+                {/* User info for video - shown below actions */}
+                {isVideo && (
+                  <Animated.View
+                    style={[styles.bottomUserInfo, { opacity: uiOpacity }]}
+                    pointerEvents={showUI ? 'box-none' : 'none'}
+                  >
+                    <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
+                      <View style={styles.userInfoContent} pointerEvents="auto">
+                        <Pressable
+                          style={styles.bottomUserRow}
+                          onPress={handleUserProfilePress}
+                          accessibilityLabel="media_video_profile"
+                          accessibilityRole="button"
+                        >
+                          {tweet?.user?.avatarUrl && (
+                            <Image
+                              source={{ uri: tweet.user.avatarUrl }}
+                              style={styles.bottomAvatar}
+                              cachePolicy="memory-disk"
+                            />
+                          )}
+                          <View style={styles.bottomUserText}>
+                            <View style={styles.bottomUserNames}>
+                              <Text style={styles.bottomUserName} numberOfLines={1}>
+                                {tweet?.user?.name || 'Loading...'}
+                              </Text>
+                              <Text style={styles.bottomUserHandle} numberOfLines={1}>
+                                @{tweet?.user?.username || '...'}
+                              </Text>
+                            </View>
+                          </View>
+                        </Pressable>
+                        {tweet?.content && (
+                          <Text style={styles.bottomTweetText} numberOfLines={2}>
+                            {tweet.content}
+                          </Text>
+                        )}
+                      </View>
+                    </SafeAreaView>
+                  </Animated.View>
+                )}
+
+                {/* Video controls */}
+                {isVideo && videoSource && (
+                  <Animated.View
+                    style={[styles.videoControlsContainer, { opacity: uiOpacity }]}
+                    pointerEvents={showUI ? 'box-none' : 'none'}
+                  >
+                    <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
+                      <View style={styles.videoControls} pointerEvents="auto">
+                        <Pressable
+                          onPress={togglePlayPause}
+                          style={styles.controlButton}
+                          accessibilityLabel="video_play_pause"
+                          accessibilityRole="button"
+                        >
+                          {player?.playing ? (
+                            <Pause
+                              size={theme.iconSizes.md}
+                              color={theme.colors.modal.iconColor}
+                              fill={theme.colors.modal.iconColor}
+                            />
+                          ) : (
+                            <Play
+                              size={theme.iconSizes.md}
+                              color={theme.colors.modal.iconColor}
+                              fill={theme.colors.modal.iconColor}
+                            />
+                          )}
+                        </Pressable>
+                        <Text style={styles.timeText} accessibilityLabel="video_current_time">
+                          {formatTime(currentTime)}
+                        </Text>
+                        <Pressable
+                          style={styles.progressBarContainer}
+                          onPress={handleProgressBarPress}
+                          onTouchStart={onProgressBarTouchStart}
+                          onTouchMove={onProgressBarTouchMove}
+                          onTouchEnd={onProgressBarTouchEnd}
+                          accessibilityLabel="video_progress_bar"
+                          accessibilityRole="adjustable"
+                        >
+                          <View ref={progressBarRef} style={styles.progressBar}>
+                            <View
+                              style={[
+                                styles.progressFill,
+                                { width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` },
+                              ]}
+                            >
+                              <View style={styles.progressThumb} />
+                            </View>
+                          </View>
+                        </Pressable>
+                        <Text style={styles.timeText} accessibilityLabel="video_duration">
+                          {formatTime(duration)}
+                        </Text>
+                        <Pressable
+                          onPress={toggleMute}
+                          style={styles.controlButton}
+                          accessibilityLabel="video_mute_toggle"
+                          accessibilityRole="button"
+                        >
+                          {isMuted ? (
+                            <VolumeX size={theme.iconSizes.md} color={theme.colors.modal.iconColor} />
+                          ) : (
+                            <Volume2 size={theme.iconSizes.md} color={theme.colors.modal.iconColor} />
+                          )}
+                        </Pressable>
+                        <Pressable
+                          onPress={() => setShowSpeedMenu(!showSpeedMenu)}
+                          style={styles.speedButton}
+                          accessibilityLabel="video_speed_menu"
+                          accessibilityRole="button"
+                        >
+                          <Text style={styles.speedText}>{playbackSpeed}x</Text>
+                        </Pressable>
+                      </View>
+
+                      {showSpeedMenu && (
+                        <View style={styles.speedMenu} pointerEvents="auto">
+                          {PLAYBACK_SPEEDS.map((speed) => (
+                            <Pressable
+                              key={String(speed)}
+                              onPress={() => handleSpeedChange(speed as any)}
+                              style={[styles.speedMenuItem, playbackSpeed === speed && styles.speedMenuItemActive]}
+                              accessibilityLabel={`video_speed_${speed}`}
+                              accessibilityRole="button"
+                            >
+                              <Text
+                                style={[styles.speedMenuText, playbackSpeed === speed && styles.speedMenuTextActive]}
+                              >
+                                {speed}x
+                              </Text>
+                            </Pressable>
+                          ))}
+                        </View>
+                      )}
+                    </SafeAreaView>
+                  </Animated.View>
+                )}
+              </Pressable>
+            </SafeAreaView>
+
+            <RepostOptionsModal
+              isReposted={tweet?.isReposted ?? false}
+              onRepostPress={handleRepost}
+              onQuotePress={handleQuotePress}
+              onViewInteractionsPress={handleViewInteractionsPress}
+              bottomSheetModalRef={bottomSheetModalRef}
+            />
+          </BottomSheetModalProvider>
+        </GestureHandlerRootView>
       </Modal>
 
       <CreatePostModal

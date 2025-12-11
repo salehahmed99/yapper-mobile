@@ -10,6 +10,7 @@ import {
   ITweetFilters,
   ITweets,
   ITweetsResponse,
+  ITweetSummaryResponse,
 } from '../types';
 
 /**
@@ -259,15 +260,6 @@ export const getTweetQuotes = async (
   });
   return response.data.data;
 };
-
-interface ITweetSummaryResponse {
-  data: {
-    tweet_id: string;
-    summary: string;
-  };
-  count: number;
-  message: string;
-}
 
 export const getTweetSummary = async (tweetId: string): Promise<string> => {
   const response = await api.get<ITweetSummaryResponse>(`/tweets/${tweetId}/summary`);

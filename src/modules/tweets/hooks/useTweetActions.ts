@@ -1,6 +1,5 @@
 import { ICategoryTweetsResponse, IExploreResponse } from '@/src/modules/explore/types';
 import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Alert } from 'react-native';
 import { router, usePathname } from 'expo-router';
 import {
   bookmarkTweet,
@@ -169,6 +168,13 @@ export const useTweetActions = () => {
       );
     },
 
+    onSuccess: (_, variables) => {
+      // Invalidate likers list for this tweet so activity screen shows updated data
+      queryClient.invalidateQueries({
+        queryKey: ['userList', 'tweet', variables.tweetId, 'likes'],
+      });
+    },
+
     onError: (error: any, variables) => {
       console.log('Error updating like status:', error);
       console.log('Like error response:', error?.response?.data);
@@ -224,11 +230,15 @@ export const useTweetActions = () => {
       );
     },
 
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       // Invalidate profile posts to refetch and show the new repost entry
       queryClient.invalidateQueries({
         queryKey: profileTweetsQueryKey,
         predicate: (query) => query.queryKey.includes('posts'),
+      });
+      // Invalidate reposters list for this tweet so activity screen shows updated data
+      queryClient.invalidateQueries({
+        queryKey: ['userList', 'tweet', variables.tweetId, 'reposts'],
       });
     },
 
@@ -359,9 +369,6 @@ export const useTweetActions = () => {
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
     },
-    onError: () => {
-      Alert.alert('Post Failed', 'Something went wrong while posting your tweet. Please try again.');
-    },
   });
 
   const replyToPostMutation = useMutation({
@@ -416,9 +423,13 @@ export const useTweetActions = () => {
         updateTweetsInInfiniteCache(oldData, variables.tweetId, incrementQuotesCount),
       );
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
+      // Invalidate quotes list for this tweet so activity screen shows updated data
+      queryClient.invalidateQueries({
+        queryKey: ['tweet-quotes', variables.tweetId],
+      });
     },
     onError: (error, variables) => {
       console.log('Error quoting tweet:', error);

@@ -216,6 +216,7 @@ const createStyles = (theme: Theme) =>
     },
     scrollContent: {
       padding: theme.spacing.md,
+      paddingBottom: theme.spacing.xl,
     },
     tweetCard: {
       backgroundColor: theme.colors.background.secondary,
