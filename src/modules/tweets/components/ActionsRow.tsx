@@ -7,9 +7,10 @@ import ViewsIcon from '@/src/components/icons/ViewsIcon';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import { ITweet } from '../types';
 import TweetActionButton from './TweetActionButton';
+
 interface IActionsRowProps {
   tweet: ITweet;
   onReplyPress: () => void;
@@ -17,15 +18,30 @@ interface IActionsRowProps {
   onLikePress: () => void;
   onBookmarkPress: () => void;
   onSharePress: () => void;
-  size: 'small' | 'large';
+  size: 'small' | 'large' | 'modal';
+  containerStyle?: ViewStyle;
+  hideViews?: boolean;
 }
+
 const ActionsRow: React.FC<IActionsRowProps> = (props) => {
-  const { tweet, onReplyPress, onRepostPress, onLikePress, onBookmarkPress, onSharePress, size } = props;
+  const {
+    tweet,
+    onReplyPress,
+    onRepostPress,
+    onLikePress,
+    onBookmarkPress,
+    onSharePress,
+    size,
+    containerStyle,
+    hideViews = false,
+  } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
+  const showViews = size === 'small' && !hideViews;
+
   return (
-    <View style={styles.actionsRow}>
+    <View style={[styles.actionsRow, size === 'modal' && styles.actionsRowModal, containerStyle]}>
       <TweetActionButton
         icon={ReplyIcon}
         count={tweet.repliesCount}
@@ -54,7 +70,7 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
         testID="tweet_button_like"
         size={size}
       />
-      {size === 'small' && (
+      {showViews && (
         <TweetActionButton
           icon={ViewsIcon}
           count={tweet.viewsCount}
@@ -94,5 +110,11 @@ const createStyles = (theme: Theme) =>
       justifyContent: 'space-between',
       alignItems: 'center',
       marginTop: theme.spacing.xs,
+    },
+    actionsRowModal: {
+      marginTop: 0,
+      justifyContent: 'space-around',
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.sm,
     },
   });

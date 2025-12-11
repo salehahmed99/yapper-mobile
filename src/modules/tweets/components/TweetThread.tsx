@@ -6,10 +6,11 @@ import { useTheme } from '@/src/context/ThemeContext';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
 import { MoreHorizontal, Trash2 } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DEFAULT_AVATAR_URI } from '../../profile/utils/edit-profile.utils';
 import useTweetDropDownMenu from '../hooks/useTweetDropDownMenu';
 import { ITweet } from '../types';
@@ -51,13 +52,20 @@ const SingleTweet: React.FC<ITweetProps> = (props) => {
     onTweetPress,
     onAvatarPress,
   } = props;
-  const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const { t } = useTranslation();
+  const router = useRouter();
 
   const user = useAuthStore((state) => state.user);
   const { menuVisible, menuPosition, moreButtonRef, handleMorePress, setMenuVisible } = useTweetDropDownMenu();
 
+  const handleGrokPress = () => {
+    router.push({
+      pathname: '/(protected)/tweet-summary',
+      params: { tweetId: tweet.tweetId },
+    });
+  };
   const handleReplyPress = () => {
     setCreatePostType('reply');
     setIsCreatePostModalVisible(true);
@@ -122,7 +130,9 @@ const SingleTweet: React.FC<ITweetProps> = (props) => {
           <View style={styles.topRow}>
             <UserInfoRow tweet={tweet} />
             <View style={styles.optionsRow}>
-              <GrokLogo size={16} color={theme.colors.text.secondary} />
+              <TouchableOpacity onPress={handleGrokPress} hitSlop={8}>
+                <GrokLogo size={16} color={theme.colors.text.secondary} />
+              </TouchableOpacity>
               <Pressable
                 onPress={handleMorePress}
                 hitSlop={8}
@@ -142,7 +152,7 @@ const SingleTweet: React.FC<ITweetProps> = (props) => {
               {tweet.content}
             </Text>
           </View>
-          <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} isVisible={isVisible} />
+          <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} />
 
           {tweet.parentTweet && !tweet.conversationTweet && (
             <View style={{ marginTop: theme.spacing.xs }}>

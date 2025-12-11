@@ -82,21 +82,30 @@ const UserList: React.FC<UserListProps> = (props) => {
 
   const renderEmpty = () => {
     if (loading) return null;
-    if (!error) return null; // Don't show any empty message if not error
+    if (error) {
+      return (
+        <View style={styles.emptyState} testID="user_list_error_state">
+          <Text style={styles.errorText} testID="user_list_error_text">
+            {error}
+          </Text>
+          <TouchableOpacity
+            style={styles.retryButton}
+            onPress={refresh}
+            activeOpacity={0.7}
+            testID="user_list_retry_button"
+            accessibilityLabel="retry_loading_users"
+          >
+            <Text style={styles.retryText}>{t('userList.errorRetry')}</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+    // Show empty state when no users
     return (
       <View style={styles.emptyState} testID="user_list_empty_state">
-        <Text style={styles.errorText} testID="user_list_empty_text">
-          {error}
+        <Text style={styles.emptyText} testID="user_list_empty_text">
+          {t('userList.emptyState')}
         </Text>
-        <TouchableOpacity
-          style={styles.retryButton}
-          onPress={refresh}
-          activeOpacity={0.7}
-          testID="user_list_retry_button"
-          accessibilityLabel="retry_loading_users"
-        >
-          <Text style={styles.retryText}>{t('userList.errorRetry')}</Text>
-        </TouchableOpacity>
       </View>
     );
   };

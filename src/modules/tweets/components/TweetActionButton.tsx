@@ -13,12 +13,24 @@ interface ITweetActionButtonProps {
   filled?: boolean;
   accessibilityLabel: string;
   testID?: string;
-  size: 'small' | 'large';
+  size: 'small' | 'large' | 'modal';
 }
 const TweetActionButton: React.FC<ITweetActionButtonProps> = (props) => {
   const { icon: Icon, count, onPress, color, filled, accessibilityLabel, testID, size } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+
+  const getIconSize = () => {
+    switch (size) {
+      case 'small':
+        return theme.iconSizesAlt.xs;
+      case 'modal':
+        return theme.iconSizesAlt.sm;
+      case 'large':
+      default:
+        return theme.iconSizesAlt.xl;
+    }
+  };
 
   return (
     <Pressable
@@ -28,12 +40,7 @@ const TweetActionButton: React.FC<ITweetActionButtonProps> = (props) => {
       accessibilityLabel={accessibilityLabel}
       testID={testID}
     >
-      <Icon
-        size={size === 'small' ? theme.iconSizesAlt.xs : theme.iconSizesAlt.xl}
-        stroke={color || theme.colors.text.secondary}
-        filled={filled}
-        strokeWidth={0}
-      />
+      <Icon size={getIconSize()} stroke={color || theme.colors.text.secondary} filled={filled} strokeWidth={0} />
       {count ? (
         <Text
           style={[styles.actionCount, { color: color || theme.colors.text.secondary }]}
