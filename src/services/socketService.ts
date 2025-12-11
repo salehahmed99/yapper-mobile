@@ -12,43 +12,58 @@ class SocketService {
   private listeners: Map<string, SocketCallback[]> = new Map();
   private debugMode = true; // Set to false to disable socket logging
 
-  public async connect(): Promise<Socket | null> {
-    const token = await getToken();
+  private isConnecting = false;
 
-    if (!token) {
-      console.warn('SocketService: No token found, cannot connect.');
-      return null;
+  public async connect(): Promise<Socket | null> {
+    if (this.isConnecting) {
+      return this.socket;
     }
 
+    // if socket is already connected and valid, return it
     if (this.socket?.connected) {
       return this.socket;
     }
 
-    // Disconnect existing socket if any (e.g. reconnecting with new token)
-    if (this.socket) {
-      this.socket.disconnect();
+    try {
+      this.isConnecting = true;
+      const token = await getToken();
+
+      if (!token) {
+        console.warn('SocketService: No token found, cannot connect.');
+        return null;
+      }
+
+      // Disconnect existing socket if any
+      if (this.socket) {
+        this.socket.disconnect();
+        this.socket = null;
+      }
+
+      this.socket = io(SOCKET_URL, {
+        path: SOCKET_PATH,
+        autoConnect: false,
+        transports: ['websocket', 'polling'],
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        auth: {
+          token,
+        },
+        query: {
+          auth: token,
+        },
+      });
+
+      this.setupListeners();
+
+      this.socket.connect();
+      return this.socket;
+    } catch (error) {
+      console.error('SocketService: Connection error:', error);
+      return null;
+    } finally {
+      this.isConnecting = false;
     }
-
-    this.socket = io(SOCKET_URL, {
-      path: SOCKET_PATH,
-      autoConnect: true,
-      transports: ['websocket', 'polling'],
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-      auth: {
-        token,
-      },
-      query: {
-        auth: token,
-      },
-    });
-
-    this.socket.connect();
-
-    this.setupListeners();
-
-    return this.socket;
   }
 
   public disconnect() {
