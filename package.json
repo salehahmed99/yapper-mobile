@@ -17,15 +17,6 @@
     "type-check": "tsc --noEmit",
     "prepare": "husky"
   },
-  "jest": {
-    "preset": "jest-expo",
-    "setupFilesAfterEnv": [
-      "./jest.setup.ts"
-    ],
-    "transformIgnorePatterns": [
-      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg)"
-    ]
-  },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix",
@@ -97,6 +88,7 @@
     "@eslint/js": "^9.38.0",
     "@expo/cli": "^54.0.14",
     "@testing-library/react-native": "^13.3.3",
+    "@react-native-community/cli": "latest",
     "@types/humps": "^2.0.6",
     "@types/jest": "^29.5.14",
     "@types/react": "~19.1.0",

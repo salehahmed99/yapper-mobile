@@ -4,6 +4,44 @@ import '@testing-library/react-native';
 import dotenv from 'dotenv';
 import path from 'path';
 import { Animated } from 'react-native';
+import 'react-native-gesture-handler/jestSetup';
+
+// ----------------------------
+// Mock react-native-gesture-handler manually to avoid I18nManager issues
+// ----------------------------
+jest.mock('react-native-gesture-handler', () => {
+  const View = require('react-native/Libraries/Components/View/View');
+  return {
+    Swipeable: View,
+    DrawerLayout: View,
+    State: {},
+    ScrollView: View,
+    Slider: View,
+    Switch: View,
+    TextInput: View,
+    ToolbarAndroid: View,
+    ViewPagerAndroid: View,
+    DrawerLayoutAndroid: View,
+    WebView: View,
+    NativeViewGestureHandler: View,
+    TapGestureHandler: View,
+    FlingGestureHandler: View,
+    ForceTouchGestureHandler: View,
+    LongPressGestureHandler: View,
+    PanGestureHandler: View,
+    PinchGestureHandler: View,
+    RotationGestureHandler: View,
+    /* Buttons */
+    RawButton: View,
+    BaseButton: View,
+    RectButton: View,
+    BorderlessButton: View,
+    /* Other */
+    FlatList: View,
+    gestureHandlerRootHOC: jest.fn(),
+    Directions: {},
+  };
+});
 
 // Load environment variables from .env file
 dotenv.config({
@@ -12,19 +50,23 @@ dotenv.config({
 });
 
 // ----------------------------
-// Mock I18nManager BEFORE React Native
+// Mock React Native with I18nManager override
 // ----------------------------
-jest.doMock('react-native/Libraries/ReactNative/I18nManager', () => ({
-  isRTL: false,
-  allowRTL: jest.fn(),
-  forceRTL: jest.fn(),
-  doLeftAndRightSwapInRTL: true,
-  getConstants: () => ({
+jest.mock('react-native', () => {
+  const RN = jest.requireActual('react-native');
+  RN.I18nManager = {
     isRTL: false,
+    allowRTL: jest.fn(),
+    forceRTL: jest.fn(),
     doLeftAndRightSwapInRTL: true,
-    localeIdentifier: 'en_US',
-  }),
-}));
+    getConstants: () => ({
+      isRTL: false,
+      doLeftAndRightSwapInRTL: true,
+      localeIdentifier: 'en_US',
+    }),
+  };
+  return RN;
+});
 
 // ----------------------------
 // Mock AsyncStorage
@@ -45,6 +87,11 @@ jest.mock('expo-localization', () => ({
 // ----------------------------
 jest.mock('expo-updates', () => ({
   reloadAsync: jest.fn(),
+  checkAutomatically: 'ON_LOAD',
+  fetchUpdateAsync: jest.fn(),
+  checkForUpdateAsync: jest.fn(),
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
 }));
 
 // ----------------------------
@@ -56,20 +103,27 @@ jest.mock('expo-router', () => ({
     replace: jest.fn(),
     back: jest.fn(),
     navigate: jest.fn(),
+    setParams: jest.fn(),
   },
   useRouter: () => ({
     push: jest.fn(),
     replace: jest.fn(),
     back: jest.fn(),
     navigate: jest.fn(),
+    setParams: jest.fn(),
   }),
   useLocalSearchParams: () => ({}),
+  useGlobalSearchParams: () => ({}),
   useSegments: () => [],
   usePathname: () => '/',
   useFocusEffect: jest.fn((callback: () => void) => {
     // Call the callback immediately in tests
     if (callback) callback();
   }),
+  Link: 'Link',
+  Stack: ({ children }: any) => children,
+  Tabs: ({ children }: any) => children,
+  Slot: ({ children }: any) => children,
 }));
 
 // ----------------------------
@@ -81,6 +135,7 @@ jest.mock('i18next', () => ({
   changeLanguage: jest.fn(),
   language: 'en',
   t: (key: string) => key,
+  isInitialized: true,
 }));
 
 // ----------------------------
@@ -152,6 +207,24 @@ jest.mock('@react-native-google-signin/google-signin', () => ({
 }));
 
 // ----------------------------
+// Mock expo-auth-session
+// ----------------------------
+jest.mock('expo-auth-session', () => ({
+  makeRedirectUri: jest.fn().mockReturnValue('exp://localhost:19000'),
+  useAuthRequest: jest.fn(() => [null, { type: 'success', params: { code: 'test-code' } }, jest.fn()]),
+  exchangeCodeAsync: jest.fn(),
+  fetchUserInfoAsync: jest.fn(),
+}));
+
+// ----------------------------
+// Mock expo-web-browser
+// ----------------------------
+jest.mock('expo-web-browser', () => ({
+  maybeCompleteAuthSession: jest.fn(),
+  openAuthSessionAsync: jest.fn(),
+}));
+
+// ----------------------------
 // Mock lucide-react-native
 // ----------------------------
 jest.mock('lucide-react-native', () => {
@@ -168,6 +241,31 @@ jest.mock('lucide-react-native', () => {
     X: MockIcon,
     ChevronLeft: MockIcon,
     ChevronRight: MockIcon,
+    User: MockIcon,
+    Settings: MockIcon,
+    LogOut: MockIcon,
+    Camera: MockIcon,
+    Image: MockIcon,
+    Mic: MockIcon,
+    Send: MockIcon,
+    MoreHorizontal: MockIcon,
+    MoreVertical: MockIcon,
+    Edit: MockIcon,
+    Trash: MockIcon,
+    Search: MockIcon,
+    Home: MockIcon,
+    Bell: MockIcon,
+    MessageCircle: MockIcon,
+    Bookmark: MockIcon,
+    Share: MockIcon,
+    Heart: MockIcon,
+    Repeat: MockIcon,
+    MessageSquare: MockIcon,
+    Smile: MockIcon,
+    Plus: MockIcon,
+    HelpCircle: MockIcon,
+    MoonStar: MockIcon,
+    Trash2: MockIcon,
   };
 });
 
@@ -223,6 +321,37 @@ jest.mock('@/src/modules/auth/components/shared/AuthInput', () => {
           }),
     );
 });
+
+// ----------------------------
+// Mock expo-haptics
+// ----------------------------
+jest.mock('expo-haptics', () => ({
+  selectionAsync: jest.fn(),
+  notificationAsync: jest.fn(),
+  impactAsync: jest.fn(),
+  ImpactFeedbackStyle: {
+    Light: 'light',
+    Medium: 'medium',
+    Heavy: 'heavy',
+  },
+  NotificationFeedbackType: {
+    Success: 'success',
+    Warning: 'warning',
+    Error: 'error',
+  },
+}));
+
+// ----------------------------
+// Mock expo-image-picker (Global)
+// ----------------------------
+jest.mock('expo-image-picker', () => ({
+  launchImageLibraryAsync: jest.fn(() => Promise.resolve({ canceled: true, assets: [] })),
+  launchCameraAsync: jest.fn(() => Promise.resolve({ canceled: true, assets: [] })),
+  getMediaLibraryPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  requestMediaLibraryPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  getCameraPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  requestCameraPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+}));
 
 // ----------------------------
 // Mock react-native-modal-datetime-picker

@@ -23,6 +23,14 @@ jest.mock('@gorhom/bottom-sheet', () => ({
   BottomSheetModalProvider: ({ children }: any) => children,
 }));
 jest.mock('expo-image', () => ({ Image: 'Image' }));
+jest.mock('expo-image-picker', () => ({
+  getMediaLibraryPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  requestMediaLibraryPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  launchImageLibraryAsync: jest.fn(() => Promise.resolve({ canceled: false, assets: [] })),
+  getCameraPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  requestCameraPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  launchCameraAsync: jest.fn(() => Promise.resolve({ canceled: false, assets: [] })),
+}));
 jest.mock('@/src/store/useAuthStore', () => ({
   useAuthStore: jest.fn(() => ({ user: { avatarUrl: 'url' } })),
 }));

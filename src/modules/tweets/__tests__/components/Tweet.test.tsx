@@ -14,6 +14,13 @@ jest.mock('@/src/components/DropdownMenu', () => 'DropdownMenu');
 jest.mock('@/src/components/icons/GrokLogo', () => 'GrokLogo');
 jest.mock('expo-image', () => ({ Image: 'Image' }));
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
+jest.mock('@gorhom/bottom-sheet', () => ({
+  BottomSheetModal: 'BottomSheetModal',
+  BottomSheetModalProvider: ({ children }: any) => children,
+  BottomSheetBackdrop: 'BottomSheetBackdrop',
+  BottomSheetView: 'BottomSheetView',
+  useBottomSheet: () => ({ close: jest.fn() }),
+}));
 
 const renderWithTheme = (component: React.ReactElement) => {
   return render(<ThemeProvider>{component}</ThemeProvider>);
