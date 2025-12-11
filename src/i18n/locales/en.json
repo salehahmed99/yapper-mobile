@@ -26,7 +26,8 @@
     "messages": "Messages",
     "bookmarks": "Bookmarks",
     "settings": "Settings",
-    "help": "Help Center"
+    "help": "Help Center",
+    "logout": "Logout"
   },
   "bookmarks": {
     "title": "Bookmarks"

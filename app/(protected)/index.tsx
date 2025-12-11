@@ -68,23 +68,23 @@ export default function HomeScreen() {
 
   const onForYouRefresh = React.useCallback(() => {
     forYouQuery.refetch();
-  }, [forYouQuery]);
+  }, [forYouQuery.refetch]);
 
   const onForYouEndReached = React.useCallback(() => {
     if (forYouQuery.hasNextPage && !forYouQuery.isFetchingNextPage) {
       forYouQuery.fetchNextPage();
     }
-  }, [forYouQuery]);
+  }, [forYouQuery.hasNextPage, forYouQuery.isFetchingNextPage, forYouQuery.fetchNextPage]);
 
   const onFollowingRefresh = React.useCallback(() => {
     followingQuery.refetch();
-  }, [followingQuery]);
+  }, [followingQuery.refetch]);
 
   const onFollowingEndReached = React.useCallback(() => {
     if (followingQuery.hasNextPage && !followingQuery.isFetchingNextPage) {
       followingQuery.fetchNextPage();
     }
-  }, [followingQuery]);
+  }, [followingQuery.hasNextPage, followingQuery.isFetchingNextPage, followingQuery.fetchNextPage]);
 
   // Track touch start position for tab swipe
   const tabTouchStartXRef = React.useRef<number | null>(null);
@@ -154,7 +154,7 @@ export default function HomeScreen() {
           }
         },
       }),
-    [isRTL, screenWidth, slideAnim],
+    [isRTL, screenWidth, slideAnim, drawerEdgeThreshold],
   );
 
   const { addPostMutation } = useTweetActions();

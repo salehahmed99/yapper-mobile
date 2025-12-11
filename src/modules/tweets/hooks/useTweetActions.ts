@@ -13,7 +13,7 @@ import {
   undoRepostTweet,
   unlikeTweet,
 } from '../services/tweetService';
-import { ITweet, ITweets } from '../types';
+import { IBookmarks, ITweet, ITweets } from '../types';
 import {
   removeTweetFromInfiniteCache,
   updateCategoryPostsCache,
@@ -62,7 +62,9 @@ export const useTweetActions = () => {
 
   const tweetsQueryKey = ['tweets'];
   const profileTweetsQueryKey = ['profile'];
+
   const repliesQueryKey = ['replies'];
+  const bookmarksQueryKey = ['bookmarks'];
 
   const toggleLike = (tweet: ITweet) => {
     return {
@@ -254,6 +256,7 @@ export const useTweetActions = () => {
       await queryClient.cancelQueries({ queryKey: ['searchPosts'] });
       await queryClient.cancelQueries({ queryKey: ['explore', 'forYou'] });
       await queryClient.cancelQueries({ queryKey: ['categoryPosts'] });
+      await queryClient.cancelQueries({ queryKey: bookmarksQueryKey });
 
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
         updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleBookmark),
@@ -282,6 +285,55 @@ export const useTweetActions = () => {
       queryClient.setQueryData<ITweet>(['tweet', { tweetId: variables.tweetId }], (oldData) =>
         oldData ? toggleBookmark(oldData) : oldData,
       );
+
+      // Handle Bookmarks Optimistic Update
+      if (variables.isBookmarked) {
+        // Removing bookmark
+        queryClient.setQueriesData<InfiniteData<IBookmarks>>(
+          { queryKey: bookmarksQueryKey },
+          (oldData) =>
+            removeTweetFromInfiniteCache(
+              oldData as unknown as InfiniteData<ITweets>,
+              variables.tweetId,
+            ) as unknown as InfiniteData<IBookmarks>,
+        );
+      } else {
+        // Adding bookmark
+        const tweet =
+          queryClient.getQueryData<ITweet>(['tweet', { tweetId: variables.tweetId }]) ||
+          queryClient
+            .getQueryData<InfiniteData<ITweets>>(tweetsQueryKey)
+            ?.pages.flatMap((p) => p.data)
+            .find((t) => t.tweetId === variables.tweetId) ||
+          queryClient
+            .getQueryData<InfiniteData<ITweets>>(profileTweetsQueryKey)
+            ?.pages.flatMap((p) => {
+              const page = p as any;
+              return Array.isArray(page.data?.data) ? page.data.data : page.data;
+            })
+            .find((t: ITweet) => t.tweetId === variables.tweetId);
+
+        if (tweet) {
+          const bookmarkedTweet = { ...tweet, isBookmarked: true, bookmarksCount: (tweet.bookmarksCount || 0) + 1 };
+          queryClient.setQueriesData<InfiniteData<IBookmarks>>({ queryKey: bookmarksQueryKey }, (oldData) => {
+            if (!oldData?.pages) return oldData;
+
+            const newPages = [...oldData.pages];
+            if (newPages.length > 0) {
+              // Add to the beginning of the first page
+              newPages[0] = {
+                ...newPages[0],
+                data: [bookmarkedTweet, ...newPages[0].data],
+              };
+            }
+
+            return {
+              ...oldData,
+              pages: newPages,
+            };
+          });
+        }
+      }
     },
 
     onError: (error, variables) => {
@@ -294,6 +346,7 @@ export const useTweetActions = () => {
       queryClient.invalidateQueries({ queryKey: ['searchPosts'] });
       queryClient.invalidateQueries({ queryKey: ['explore', 'forYou'] });
       queryClient.invalidateQueries({ queryKey: ['categoryPosts'] });
+      queryClient.invalidateQueries({ queryKey: bookmarksQueryKey });
     },
   });
 

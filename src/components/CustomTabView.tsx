@@ -80,15 +80,15 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
 
     if (m) {
       // Use measured dimensions when available (covers both scrollable and non-scrollable)
+      const indicatorPosition = isRTL ? layout.width - m.x - m.width : m.x;
       Animated.parallel([
-        Animated.timing(indicatorStart.current, { toValue: m.x, duration: 200, useNativeDriver: false }),
+        Animated.timing(indicatorStart.current, { toValue: indicatorPosition, duration: 200, useNativeDriver: false }),
         Animated.timing(indicatorWidth.current, { toValue: m.width, duration: 200, useNativeDriver: false }),
       ]).start();
 
       // if scrollable, ensure active tab is visible in scroll view: center it
       if (scrollable && scrollRef.current) {
         const containerWidth = layout.width;
-        // In RTL, the scroll direction is reversed, so we calculate from the end
         const offset = Math.max(0, m.x + m.width / 2 - containerWidth / 2);
         try {
           scrollRef.current.scrollTo({ x: offset, animated: true });

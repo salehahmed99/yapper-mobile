@@ -16,6 +16,6 @@ export const useBookmarks = (filters: IBookmarkFilters = {}) => {
     getNextPageParam: (lastPage) => lastPage.pagination.nextCursor ?? undefined,
     initialPageParam: undefined as string | undefined,
     gcTime: 5 * 60 * 1000, // Cache for 5 minutes
-    staleTime: 30 * 1000, // Consider data stale after 30 seconds
+    staleTime: 5 * 60 * 1000, // Prevent automatic refetching on mount/focus
   });
 };

@@ -30,13 +30,13 @@ export default function BookmarksScreen() {
 
   const onRefresh = React.useCallback(() => {
     bookmarksQuery.refetch();
-  }, [bookmarksQuery]);
+  }, [bookmarksQuery.refetch]);
 
   const onEndReached = React.useCallback(() => {
     if (bookmarksQuery.hasNextPage && !bookmarksQuery.isFetchingNextPage) {
       bookmarksQuery.fetchNextPage();
     }
-  }, [bookmarksQuery]);
+  }, [bookmarksQuery.hasNextPage, bookmarksQuery.isFetchingNextPage, bookmarksQuery.fetchNextPage]);
 
   return (
     <View style={styles.container}>
