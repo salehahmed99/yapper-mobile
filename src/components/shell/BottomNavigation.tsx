@@ -9,14 +9,12 @@ import { useTranslation } from 'react-i18next';
 import { Animated, I18nManager, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUiShell } from '../../context/UiShellContext';
-import GrokLogo from '../icons/GrokLogo';
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
 const items = [
   { key: 'home', label: 'Home', path: '/(protected)', icon: Home },
   { key: 'search', label: 'Search', path: '/(protected)/explore', icon: Search },
-  { key: 'grok', label: 'Grok', path: '/(protected)/grok', icon: GrokLogo },
   { key: 'notifications', label: 'Notifications', path: '/(protected)/notifications', icon: Bell },
   { key: 'messages', label: 'Messages', path: '/(protected)/messages', icon: Mail },
 ];
