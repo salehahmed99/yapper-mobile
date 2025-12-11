@@ -436,7 +436,9 @@
     "mute": "كتم",
     "unmute": "إلغاء الكتم",
     "block": "حظر",
-    "unblock": "إلغاء الحظر"
+    "unblock": "إلغاء الحظر",
+    "findWhoYoureLookingFor": "ابحث عن الشخص الذي تبحث عنه",
+    "searchForPersonToMention": "ابحث عن الشخص الذي تريد الإشارة إليه"
   },
   "tweetActivity": {
     "title": "نشاط المنشور",

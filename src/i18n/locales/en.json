@@ -435,7 +435,9 @@
     "mute": "Mute",
     "unmute": "Unmute",
     "block": "Block",
-    "unblock": "Unblock"
+    "unblock": "Unblock",
+    "findWhoYoureLookingFor": "Find who you're looking for",
+    "searchForPersonToMention": "Search for the person you want to mention"
   },
   "tweetActivity": {
     "title": "Post activity",

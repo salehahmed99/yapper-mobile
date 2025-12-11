@@ -19,11 +19,11 @@ interface IUserSuggestionsListProps extends SuggestionsProvidedProps {
 const UserSuggestionsList: React.FC<IUserSuggestionsListProps> = (props) => {
   const { onSelect, users, onCloseModal, keyword } = props;
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = useMemo(() => createListStyles(theme), [theme]);
 
   const navigateToSearch = () => {
     onCloseModal();
-    console.log(keyword);
     router.push({ pathname: '/(protected)/search/search-suggestions', params: { query: keyword } });
   };
   if (users.length === 0) {
@@ -32,9 +32,9 @@ const UserSuggestionsList: React.FC<IUserSuggestionsListProps> = (props) => {
         <View style={styles.searchIconContainer}>
           <Search size={theme.iconSizes.md} stroke={theme.colors.white} />
         </View>
-        <View style={styles.emptyTextContainer}>
-          <Text style={styles.title}>Find who you're looking for</Text>
-          <Text style={styles.subtitle}>Search for the person you want to mention</Text>
+        <View>
+          <Text style={styles.title}>{t('userList.findWhoYoureLookingFor')}</Text>
+          <Text style={styles.subtitle}>{t('userList.searchForPersonToMention')}</Text>
         </View>
       </Pressable>
     );
@@ -81,7 +81,7 @@ const UserSuggestionItem: React.FC<IUserSuggestionItemProps> = (props) => {
         </Text>
         {(user.isFollowing || user.isFollower) && (
           <View style={styles.followStatus}>
-            <AccountIcon size={theme.iconSizes.sm} stroke={theme.colors.text.secondary} strokeWidth={0} filled={true} />
+            <AccountIcon size={theme.iconSizes.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
             <Text
               style={styles.username}
               accessibilityLabel="full_tweet_user_username"
@@ -117,9 +117,6 @@ const createListStyles = (theme: Theme) =>
       padding: theme.spacing.md,
       borderTopWidth: 1,
       borderTopColor: theme.colors.border,
-    },
-    emptyTextContainer: {
-      // gap: theme.spacing.md,
     },
     title: {
       fontFamily: theme.typography.fonts.semiBold,
