@@ -42,7 +42,7 @@ export default function SearchSuggestionsScreen() {
     (selectedQuery: string) => {
       addToHistory(selectedQuery);
       router.push({
-        pathname: '/(protected)/search/search-results',
+        pathname: '/(protected)/search/search-results' as any,
         params: { query: selectedQuery, ...(username && { username }) },
       });
     },

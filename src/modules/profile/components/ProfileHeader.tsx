@@ -2,7 +2,7 @@ import { DEFAULT_AVATAR_URL, DEFAULT_BANNER_URL } from '@/src/constants/defaults
 import { formatCount } from '@/src/utils/formatCount';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, Ellipsis, Search, Mail } from 'lucide-react-native';
+import { ChevronLeft, Ellipsis, Mail, Search } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Image as RNImage, Text, TouchableOpacity, View } from 'react-native';
@@ -237,7 +237,7 @@ export default function ProfileHeader({
           style={isOwnProfile ? headerStyles.actionsButton : headerStyles.searchButton}
           onPress={() => {
             router.push({
-              pathname: '/(protected)/search/search-suggestions',
+              pathname: '/(protected)/search/search-suggestions' as any,
               params: { username: displayUser?.username || '' },
             });
           }}

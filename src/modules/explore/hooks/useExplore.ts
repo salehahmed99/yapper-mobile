@@ -34,7 +34,7 @@ const useExplore = (): UseExploreReturn => {
     (trending: IExploreTrending | ITrendItem) => {
       const query = 'text' in trending ? trending.text : trending.hashtag;
       router.push({
-        pathname: '/(protected)/search/search-results',
+        pathname: '/(protected)/search/search-results' as any,
         params: { query },
       });
     },

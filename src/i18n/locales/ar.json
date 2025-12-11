@@ -31,7 +31,18 @@
     "messages": "الرسائل",
     "bookmarks": "المفضلة",
     "settings": "الإعدادات",
-    "help": "مركز المساعدة"
+    "help": "مركز المساعدة",
+    "logout": "تسجيل الخروج"
+  },
+  "bookmarks": {
+    "title": "المفضلة"
+  },
+  "buttons": {
+    "next": "التالي",
+    "back": "رجوع",
+    "continue": "متابعة",
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج"
   },
   "search": {
     "placeholder": "البحث",

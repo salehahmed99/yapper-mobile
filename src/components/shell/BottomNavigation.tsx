@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'expo-router';
 import { Bell, Home, Mail, Search } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
+import { Animated, I18nManager, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUiShell } from '../../context/UiShellContext';
 import GrokLogo from '../icons/GrokLogo';
@@ -28,7 +28,8 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
   const { anim } = props;
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
   const { activeTab, setActiveTab, scrollY } = useUiShell();
   const router = useRouter();
   const pathname = usePathname();
@@ -41,8 +42,20 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
     }
   }, [pathname, activeTab, setActiveTab]);
 
+  // Helper to normalize path by removing route group segments like (protected)
+  const normalizePath = (path: string) => {
+    // Remove segments that match (*) pattern (route groups)
+    return path.replace(/\/\([^)]+\)/g, '').replace(/^$/, '/');
+  };
+
   const onPress = (item: (typeof items)[number]) => {
-    if (activeTab === item.key && pathname === item.path) {
+    // Normalize both paths to compare without route group prefixes
+    const normalizedItemPath = normalizePath(item.path);
+    const normalizedPathname = normalizePath(pathname);
+
+    const isCurrentRoute = normalizedPathname === normalizedItemPath;
+
+    if (activeTab === item.key && isCurrentRoute) {
       // Already on this tab/route, do nothing
       return;
     }
@@ -60,7 +73,8 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
 
   const insets = useSafeAreaInsets();
   const navHeight = theme.ui.navHeight + insets.bottom;
-  const translateStyle = anim ? { transform: [{ translateX: anim }] } : undefined;
+  // In RTL, invert the translateX so navbar moves in the correct direction with drawer
+  const translateStyle = anim ? { transform: [{ translateX: isRTL ? Animated.multiply(anim, -1) : anim }] } : undefined;
 
   return (
     <AnimatedBlurView

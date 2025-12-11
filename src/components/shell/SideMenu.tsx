@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import {
   Animated,
   GestureResponderHandlers,
+  I18nManager,
   Image,
   ScrollView,
   StyleSheet,
@@ -32,12 +33,13 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
   const user = useAuthStore((state) => state.user);
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const { isSideMenuOpen, closeSideMenu } = useUiShell();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
   const [isThemeSheetVisible, setIsThemeSheetVisible] = React.useState(false);
+  const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
 
   function navigate(path: string) {
     // If already on target path, just close menu
@@ -68,11 +70,18 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
 
   const overlayBg = `${theme.colors.background.primary}6F`;
 
+  // Calculate drawer position based on RTL
+  // In RTL: drawer comes from the right (end), so we use 'end' positioning
+  // In LTR: drawer comes from the left (start), so we use 'start' positioning
+  const drawerPosition = isRTL
+    ? { end: Animated.subtract(anim, theme.ui.drawerWidth) }
+    : { start: Animated.subtract(anim, theme.ui.drawerWidth) };
+
   return (
     <Animated.View style={styles.root} pointerEvents="box-none">
       <Animated.View
         {...(props.panHandlers ?? {})}
-        style={[styles.drawer, { left: Animated.subtract(anim, theme.ui.drawerWidth), opacity: drawerOpacity }]}
+        style={[styles.drawer, drawerPosition, { opacity: drawerOpacity }]}
         accessibilityElementsHidden={!isSideMenuOpen}
         importantForAccessibility={isSideMenuOpen ? 'yes' : 'no-hide-descendants'}
       >
@@ -185,15 +194,6 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(protected)/bookmarks')}
-              accessibilityLabel="sidemenu_bookmarks_button"
-              testID="sidemenu_bookmarks_button"
-            >
-              <Bookmark color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
-              <Text style={styles.menuTileText}>{t('menu.bookmarks')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.tile}
               onPress={() => navigate('/(protected)/(settings)/settingsScreen')}
               accessibilityLabel="sidemenu_settings_button"
               testID="sidemenu_settings_button"
@@ -258,7 +258,7 @@ const createStyles = (theme: Theme) =>
       top: 0,
       bottom: 0,
       width: theme.ui.drawerWidth,
-      left: 0,
+      start: 0,
       backgroundColor: theme.colors.background.primary,
       paddingTop: theme.spacing.xl,
       paddingHorizontal: theme.spacing.lg,
@@ -291,7 +291,7 @@ const createStyles = (theme: Theme) =>
       width: theme.ui.avatarLarge,
       height: theme.ui.avatarLarge,
       borderRadius: theme.ui.avatarLarge / 2,
-      marginRight: theme.spacing.sm,
+      marginEnd: theme.spacing.sm,
       marginBottom: theme.spacing.sm,
     },
     profileInfo: {
@@ -311,7 +311,7 @@ const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'flex-end',
-      marginLeft: theme.spacing.md,
+      marginStart: theme.spacing.md,
     },
 
     profileAndAccountsRow: {
@@ -328,7 +328,7 @@ const createStyles = (theme: Theme) =>
       width: theme.ui.avatar,
       height: theme.ui.avatar,
       borderRadius: theme.ui.avatar / 2,
-      marginRight: theme.spacing.xs,
+      marginEnd: theme.spacing.xs,
     },
     optionsButton: {
       padding: theme.spacing.xs,
@@ -340,7 +340,7 @@ const createStyles = (theme: Theme) =>
     },
     followCount: {
       color: theme.colors.text.secondary,
-      marginRight: theme.spacing.md,
+      marginEnd: theme.spacing.md,
     },
     bold: {
       fontFamily: theme.typography.fonts.semiBold,
@@ -352,12 +352,12 @@ const createStyles = (theme: Theme) =>
       paddingVertical: theme.spacing.md,
     },
     tileText: {
-      marginLeft: theme.spacing.md,
+      marginStart: theme.spacing.md,
       color: theme.colors.text.primary,
       fontSize: theme.typography.sizes.md,
     },
     menuTileText: {
-      marginLeft: theme.spacing.xl,
+      marginStart: theme.spacing.xl,
       color: theme.colors.text.primary,
       fontSize: theme.typography.sizes.xl,
       fontFamily: theme.typography.fonts.medium,
@@ -381,13 +381,13 @@ const createStyles = (theme: Theme) =>
     },
     bottomOverlay: {
       position: 'absolute',
-      left: 0,
-      right: 0,
+      start: 0,
+      end: 0,
       bottom: 0,
     },
     toggleWrapper: {
       position: 'absolute',
-      left: theme.spacing.md + theme.spacing.sm,
+      start: theme.spacing.md + theme.spacing.sm,
       top: theme.spacing.sm,
     },
     toggleButton: {

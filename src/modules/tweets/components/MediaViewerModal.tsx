@@ -43,7 +43,7 @@ import {
   View,
   ViewToken,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CreatePostModal from './CreatePostModal';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -67,6 +67,7 @@ function MediaViewerContent({
   theme,
 }: MediaViewerContentProps) {
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const router = useRouter();
   const { data: tweet } = useTweet(tweetId);
@@ -254,7 +255,7 @@ function MediaViewerContent({
   return (
     <>
       <Modal visible animationType="fade" statusBarTranslucent onRequestClose={handleClose}>
-        <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
           <Pressable style={styles.containerPressable} onPress={toggleUI} accessibilityRole="button">
             <StatusBar barStyle="light-content" backgroundColor={theme.colors.modal.background} />
 
@@ -288,7 +289,7 @@ function MediaViewerContent({
 
             {/* Top Bar */}
             <Animated.View style={[styles.topBar, { opacity: uiOpacity }]} pointerEvents={showUI ? 'box-none' : 'none'}>
-              <SafeAreaView edges={['top']} style={styles.safeArea} pointerEvents="box-none">
+              <View style={styles.safeArea} pointerEvents="box-none">
                 <View style={styles.topBarContent} pointerEvents="auto">
                   <Pressable onPress={handleClose} style={styles.iconButton} accessibilityLabel="back_button">
                     <ArrowLeft size={theme.iconSizes.lg} color={theme.colors.modal.iconColor} />
@@ -315,7 +316,7 @@ function MediaViewerContent({
                     </Pressable>
                   )}
                 </View>
-              </SafeAreaView>
+              </View>
             </Animated.View>
 
             {allMedia[currentIndex]?.type === 'video' && (
@@ -323,7 +324,7 @@ function MediaViewerContent({
                 style={[styles.actionsBar, { opacity: uiOpacity }]}
                 pointerEvents={showUI ? 'box-none' : 'none'}
               >
-                <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
+                <View style={[styles.safeArea, { paddingBottom: insets.bottom }]} pointerEvents="box-none">
                   <View style={styles.actionsRow} pointerEvents="auto">
                     <Pressable onPress={handleReplyPress} style={styles.actionItem} hitSlop={15}>
                       <ReplyIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
@@ -388,7 +389,7 @@ function MediaViewerContent({
                       <ShareIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
                     </Pressable>
                   </View>
-                </SafeAreaView>
+                </View>
               </Animated.View>
             )}
 
@@ -397,7 +398,7 @@ function MediaViewerContent({
                 style={[styles.bottomUserInfo, { opacity: uiOpacity }]}
                 pointerEvents={showUI ? 'box-none' : 'none'}
               >
-                <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
+                <View style={[styles.safeArea, { paddingBottom: insets.bottom }]} pointerEvents="box-none">
                   <View style={styles.userInfoContent} pointerEvents="auto">
                     <Pressable
                       style={styles.bottomUserRow}
@@ -429,7 +430,7 @@ function MediaViewerContent({
                       </Text>
                     )}
                   </View>
-                </SafeAreaView>
+                </View>
               </Animated.View>
             )}
 
@@ -438,7 +439,7 @@ function MediaViewerContent({
                 style={[styles.bottomBar, { opacity: uiOpacity }]}
                 pointerEvents={showUI ? 'box-none' : 'none'}
               >
-                <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
+                <View style={[styles.safeArea, { paddingBottom: insets.bottom }]} pointerEvents="box-none">
                   <View style={styles.actionsRow} pointerEvents="auto">
                     <Pressable onPress={handleReplyPress} style={styles.actionItem} hitSlop={15}>
                       <ReplyIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
@@ -503,7 +504,7 @@ function MediaViewerContent({
                       <ShareIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
                     </Pressable>
                   </View>
-                </SafeAreaView>
+                </View>
               </Animated.View>
             )}
 
@@ -512,7 +513,7 @@ function MediaViewerContent({
                 style={[styles.videoControlsContainer, { opacity: uiOpacity }]}
                 pointerEvents={showUI ? 'box-none' : 'none'}
               >
-                <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
+                <View style={[styles.safeArea, { paddingBottom: insets.bottom }]} pointerEvents="box-none">
                   <View style={styles.videoControls} pointerEvents="auto">
                     <Pressable
                       onPress={togglePlayPause}
@@ -599,11 +600,11 @@ function MediaViewerContent({
                       ))}
                     </View>
                   )}
-                </SafeAreaView>
+                </View>
               </Animated.View>
             )}
           </Pressable>
-        </SafeAreaView>
+        </View>
       </Modal>
 
       <CreatePostModal

@@ -18,6 +18,7 @@ interface ITweetListProps {
   topSpacing?: number;
   bottomSpacing?: number;
   isTabActive?: boolean;
+  useCustomRefreshIndicator?: boolean;
 }
 const TweetList: React.FC<ITweetListProps> = (props) => {
   const {
@@ -31,6 +32,7 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
     topSpacing = 0,
     bottomSpacing = 0,
     isTabActive = true,
+    useCustomRefreshIndicator = false,
   } = props;
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
@@ -53,11 +55,11 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
     return (
       <View>
         {topSpacing > 0 && <View style={{ height: topSpacing }} />}
-        {/* {refreshing && (
+        {useCustomRefreshIndicator && refreshing && (
           <View style={styles.customRefreshContainer}>
             <ActivityIndicator color={theme.colors.text.primary} />
           </View>
-        )} */}
+        )}
       </View>
     );
   };
@@ -103,8 +105,8 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
           key={'refresh-' + topSpacing}
           refreshing={refreshing ?? false}
           onRefresh={onRefresh}
-          tintColor={theme.colors.text.primary}
-          colors={[theme.colors.text.primary]}
+          tintColor={useCustomRefreshIndicator ? 'transparent' : theme.colors.text.primary}
+          colors={useCustomRefreshIndicator ? ['transparent'] : [theme.colors.text.primary]}
           progressViewOffset={topSpacing}
         />
       }
@@ -118,7 +120,6 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
       removeClippedSubviews={false}
       onViewableItemsChanged={onViewableItemsChanged}
       viewabilityConfig={viewabilityConfig}
-      // persistentScrollbar={true}
     />
   );
 };

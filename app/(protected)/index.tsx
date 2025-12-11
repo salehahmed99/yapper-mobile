@@ -13,17 +13,44 @@ import { useTweetActions } from '@/src/modules/tweets/hooks/useTweetActions';
 import { useTweets } from '@/src/modules/tweets/hooks/useTweets';
 import { useTweetsFiltersStore } from '@/src/modules/tweets/store/useTweetsFiltersStore';
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import {
+  Animated,
+  I18nManager,
+  PanResponder,
+  PanResponderGestureState,
+  Platform,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 
 export default function HomeScreen() {
   const { theme } = useTheme();
   const { top, bottom } = useSpacing();
   const styles = createStyles(theme);
-  // Use a local index for the Home top tabs (For You / Following).
-  // We intentionally do NOT write this into the global `activeTab` state
-  // so the bottom navigation remains correctly highlighted when switching
-  // between these inner tabs.
+  const { i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
+  const { width: screenWidth } = useWindowDimensions();
+
+  // Animation value for tab sliding (0 = For You visible, -screenWidth = Following visible)
+  const slideAnim = React.useRef(new Animated.Value(0)).current;
+
   const [homeIndex, setHomeIndex] = useState(0);
+  const homeIndexRef = React.useRef(homeIndex);
+  React.useEffect(() => {
+    homeIndexRef.current = homeIndex;
+  }, [homeIndex]);
+
+  // Animate to the selected tab when index changes (e.g., from tab bar tap)
+  React.useEffect(() => {
+    Animated.spring(slideAnim, {
+      toValue: homeIndex === 0 ? 0 : -screenWidth,
+      useNativeDriver: true,
+      tension: 100,
+      friction: 12,
+    }).start();
+  }, [homeIndex, slideAnim, screenWidth]);
 
   const [isCreatePostModalVisible, setIsCreatePostModalVisible] = useState(false);
 
@@ -31,47 +58,110 @@ export default function HomeScreen() {
   const forYouQuery = useTweets(tweetsFilters, 'for-you');
   const followingQuery = useTweets(tweetsFilters, 'following');
 
-  // Select the active query based on tab index
-  const activeQuery = homeIndex === 0 ? forYouQuery : followingQuery;
+  const forYouTweets = React.useMemo(() => {
+    return forYouQuery.data?.pages.flatMap((page) => page.data) ?? [];
+  }, [forYouQuery.data]);
 
-  // Flatten all pages of tweets into a single array
-  const tweets = React.useMemo(() => {
-    const allTweets = activeQuery.data?.pages.flatMap((page) => page.data) ?? [];
-    return allTweets;
-  }, [activeQuery.data]);
+  const followingTweets = React.useMemo(() => {
+    return followingQuery.data?.pages.flatMap((page) => page.data) ?? [];
+  }, [followingQuery.data]);
 
-  const onRefresh = React.useCallback(() => {
-    activeQuery.refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeQuery.refetch]);
+  const onForYouRefresh = React.useCallback(() => {
+    forYouQuery.refetch();
+  }, [forYouQuery.refetch]);
 
-  const onEndReached = React.useCallback(() => {
-    if (activeQuery.hasNextPage && !activeQuery.isFetchingNextPage) {
-      activeQuery.fetchNextPage();
+  const onForYouEndReached = React.useCallback(() => {
+    if (forYouQuery.hasNextPage && !forYouQuery.isFetchingNextPage) {
+      forYouQuery.fetchNextPage();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeQuery.hasNextPage, activeQuery.isFetchingNextPage, activeQuery.fetchNextPage]);
+  }, [forYouQuery.hasNextPage, forYouQuery.isFetchingNextPage, forYouQuery.fetchNextPage]);
 
-  // Render different content based on the selected tab
-  const renderScene = () => {
-    return (
-      <View style={styles.tweetContainer}>
-        <TweetList
-          data={tweets}
-          onRefresh={onRefresh}
-          refreshing={activeQuery.isRefetching}
-          onEndReached={onEndReached}
-          onEndReachedThreshold={0.5}
-          isLoading={activeQuery.isLoading}
-          isFetchingNextPage={activeQuery.isFetchingNextPage}
-          topSpacing={top}
-          bottomSpacing={bottom}
-        />
-      </View>
-    );
-  };
+  const onFollowingRefresh = React.useCallback(() => {
+    followingQuery.refetch();
+  }, [followingQuery.refetch]);
+
+  const onFollowingEndReached = React.useCallback(() => {
+    if (followingQuery.hasNextPage && !followingQuery.isFetchingNextPage) {
+      followingQuery.fetchNextPage();
+    }
+  }, [followingQuery.hasNextPage, followingQuery.isFetchingNextPage, followingQuery.fetchNextPage]);
+
+  // Track touch start position for tab swipe
+  const tabTouchStartXRef = React.useRef<number | null>(null);
+  const drawerEdgeThreshold = screenWidth * 0.2; // 20% of screen for drawer
+
+  // PanResponder for smooth animated tab swiping
+  const tabSwipePanResponder = React.useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: (evt) => {
+          // Track where the touch started
+          tabTouchStartXRef.current = evt.nativeEvent.pageX;
+          return false; // Don't capture on start, let onMove decide
+        },
+        onMoveShouldSetPanResponder: (evt, gestureState: PanResponderGestureState) => {
+          const startX = tabTouchStartXRef.current ?? evt.nativeEvent.pageX;
+          const { dx, dy } = gestureState;
+
+          // Exclude drawer edge zone (first 20% in LTR, last 20% in RTL)
+          if (isRTL) {
+            // In RTL, drawer is on the right
+            if (startX > screenWidth - drawerEdgeThreshold) return false;
+          } else {
+            // In LTR, drawer is on the left
+            if (startX < drawerEdgeThreshold) return false;
+          }
+
+          // Only capture horizontal swipes
+          return Math.abs(dx) > Math.abs(dy) * 1.5 && Math.abs(dx) > 10;
+        },
+        onPanResponderMove: (_evt, gestureState: PanResponderGestureState) => {
+          // Follow finger with animation (invert for RTL)
+          const dx = isRTL ? -gestureState.dx : gestureState.dx;
+          const currentOffset = homeIndexRef.current === 0 ? 0 : -screenWidth;
+          // Clamp to valid range with resistance at edges
+          let newValue = currentOffset + dx;
+          if (newValue > 0) {
+            newValue = newValue * 0.3; // Resistance when swiping past first tab
+          } else if (newValue < -screenWidth) {
+            newValue = -screenWidth + (newValue + screenWidth) * 0.3; // Resistance when swiping past last tab
+          }
+          slideAnim.setValue(newValue);
+        },
+        onPanResponderRelease: (_evt, gestureState: PanResponderGestureState) => {
+          const dx = isRTL ? -gestureState.dx : gestureState.dx;
+          const vx = isRTL ? -gestureState.vx : gestureState.vx;
+          const currentIndex = homeIndexRef.current;
+
+          // Determine target tab based on swipe distance and velocity
+          let targetIndex = currentIndex;
+          if (currentIndex === 0 && (dx < -screenWidth / 4 || vx < -0.5)) {
+            targetIndex = 1; // Swipe to Following
+          } else if (currentIndex === 1 && (dx > screenWidth / 4 || vx > 0.5)) {
+            targetIndex = 0; // Swipe to For You
+          }
+
+          // Animate to target position
+          Animated.spring(slideAnim, {
+            toValue: targetIndex === 0 ? 0 : -screenWidth,
+            useNativeDriver: true,
+            tension: 100,
+            friction: 12,
+          }).start();
+
+          if (targetIndex !== currentIndex) {
+            setHomeIndex(targetIndex);
+          }
+        },
+      }),
+    [isRTL, screenWidth, slideAnim, drawerEdgeThreshold],
+  );
 
   const { addPostMutation } = useTweetActions();
+
+  // Calculate translateX (invert for RTL)
+  const translateX = isRTL ? Animated.multiply(slideAnim, -1) : slideAnim;
+
   return (
     <View style={styles.container}>
       <MediaViewerProvider>
@@ -82,7 +172,39 @@ export default function HomeScreen() {
           />
         </View>
         <MediaViewerModal />
-        {renderScene()}
+        {/* Swipeable tab container */}
+        <View style={styles.tabsOuterContainer} {...tabSwipePanResponder.panHandlers}>
+          <Animated.View style={[styles.tabsInnerContainer, { width: screenWidth * 2, transform: [{ translateX }] }]}>
+            <View style={[styles.tabPage, { width: screenWidth }]}>
+              <TweetList
+                data={forYouTweets}
+                onRefresh={onForYouRefresh}
+                refreshing={forYouQuery.isRefetching}
+                onEndReached={onForYouEndReached}
+                onEndReachedThreshold={0.5}
+                isLoading={forYouQuery.isLoading}
+                isFetchingNextPage={forYouQuery.isFetchingNextPage}
+                useCustomRefreshIndicator={Platform.OS === 'ios'}
+                topSpacing={top}
+                bottomSpacing={bottom}
+              />
+            </View>
+            <View style={[styles.tabPage, { width: screenWidth }]}>
+              <TweetList
+                data={followingTweets}
+                onRefresh={onFollowingRefresh}
+                refreshing={followingQuery.isRefetching}
+                onEndReached={onFollowingEndReached}
+                onEndReachedThreshold={0.5}
+                isLoading={followingQuery.isLoading}
+                isFetchingNextPage={followingQuery.isFetchingNextPage}
+                useCustomRefreshIndicator={Platform.OS === 'ios'}
+                topSpacing={top}
+                bottomSpacing={bottom}
+              />
+            </View>
+          </Animated.View>
+        </View>
         <Fab onPress={() => setIsCreatePostModalVisible(true)} />
         <CreatePostModal
           visible={isCreatePostModalVisible}
@@ -108,7 +230,15 @@ const createStyles = (theme: Theme) =>
       right: 0,
       zIndex: 1,
     },
-    tweetContainer: {
+    tabsOuterContainer: {
+      flex: 1,
+      overflow: 'hidden',
+    },
+    tabsInnerContainer: {
+      flex: 1,
+      flexDirection: 'row',
+    },
+    tabPage: {
       flex: 1,
     },
   });
