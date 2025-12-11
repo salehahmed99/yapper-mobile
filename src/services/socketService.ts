@@ -116,13 +116,13 @@ class SocketService {
       }
     });
 
-    this.socket.on('disconnect', (reason) => {
+    this.socket.on('disconnect', (reason: string) => {
       if (this.debugMode) {
         console.log('[Socket] ❌ Disconnected:', reason);
       }
     });
 
-    this.socket.on('connect_error', (error) => {
+    this.socket.on('connect_error', (error: Error) => {
       console.warn('[Socket] ⚠️ Connection error:', error.message);
     });
 
