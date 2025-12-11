@@ -62,6 +62,8 @@ jest.mock('react-i18next', () => ({
         'auth.forgotPassword.errorDescription': 'Failed to reset password. Please try again.',
         'auth.forgotPassword.genericError': 'An unexpected error occurred. Please try again.',
         'auth.forgotPassword.resettingPassword': 'Resetting password...',
+        'buttons.next': 'Next',
+        'buttons.back': 'Back',
       };
       return translations[key] || key;
     },

@@ -47,6 +47,7 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({ onImageSele
         quality: 0.8,
         base64: false,
         exif: false,
+        allowsMultipleSelection: false,
       });
 
       if (!result.canceled && result.assets[0]) {
@@ -95,11 +96,11 @@ const createStyles = (theme: Theme, scaleWidth = 1, scaleHeight = 1, scaleFonts 
     uploadContainer: {
       width: 200 * scaleWidth,
       height: 200 * scaleHeight,
-      borderRadius: theme.borderRadius.md,
+      borderRadius: 100 * scaleWidth,
       borderWidth: 2,
       borderStyle: 'dashed',
       borderColor: theme.colors.text.link,
-      backgroundColor: theme.colors.background.primary,
+      backgroundColor: theme.colors.background.secondary,
       justifyContent: 'center',
       alignItems: 'center',
       alignSelf: 'center',

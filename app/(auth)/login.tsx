@@ -21,8 +21,8 @@ import TopBar from '@/src/modules/auth/components/shared/TopBar';
 // Utils
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { ILoginResponse } from '@/src/modules/auth/types';
-import { ButtonOptions } from '@/src/modules/auth/utils/enums';
 import { useAuthStore } from '@/src/store/useAuthStore';
+import { ButtonOptions } from '@/src/modules/auth/utils/enums';
 
 // Types
 type InputType = 'email' | 'phone' | 'username' | null;

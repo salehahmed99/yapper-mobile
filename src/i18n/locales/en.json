@@ -97,7 +97,8 @@
       "buttons": {
         "next": "Next",
         "login": "Login",
-        "back": "Back"
+        "back": "Back",
+        "forgotPassword": "Forgot Password?"
       },
       "errors": {
         "invalidInput": "Invalid Input",
@@ -217,6 +218,21 @@
           "uploaded": "Profile picture uploaded successfully."
         }
       },
+      "interests": {
+        "title": "What do you want to see on Yapper?",
+        "description": "Choose what you like, and we'll customize your Yapper experience with more of what you're interested in.",
+        "errors": {
+          "minSelection": "Select at least 1 category",
+          "selectAtLeast1": "Please select at least 1 category to continue.",
+          "loadFailed": "Failed to load categories",
+          "error": "Error",
+          "generic": "An error occurred"
+        },
+        "success": {
+          "title": "Great work 🎉",
+          "saved": "Your interests have been saved successfully."
+        }
+      },
       "userName": {
         "title": "What should we call you?",
         "subtitle": "Your @username is unique. You can always change it later.",
@@ -334,7 +350,20 @@
     "back": "Back",
     "continue": "Continue",
     "login": "Login",
-    "logout": "Logout"
+    "logout": "Logout",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  },
+  "recaptcha": {
+    "title": "Please verify you're human",
+    "loading": "Loading reCAPTCHA...",
+    "loadingVerification": "Loading verification...",
+    "cancel": "Cancel",
+    "expired": "Verification expired. Please try again.",
+    "failed": "Verification failed. Please try again.",
+    "failedToLoad": "Failed to load reCAPTCHA",
+    "failedToRender": "Failed to render verification",
+    "failedToLoadScript": "Failed to load reCAPTCHA script"
   },
   "activityLoader": {
     "sendingCode": "Sending code...",

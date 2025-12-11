@@ -55,7 +55,7 @@ const UserNameScreen: React.FC = () => {
         errorToast: t('auth.username.errorToast'),
         invalidFormatToast: t('auth.username.invalidFormatToast'),
         usernameRequiredTitle: t('auth.username.error'),
-        usernameRequiredMessage: 'Please select a username',
+        usernameRequiredMessage: t('auth.username.selectPrompt'),
       }}
     />
   );

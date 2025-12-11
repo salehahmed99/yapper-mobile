@@ -8,6 +8,7 @@ interface ISignUpState {
   verificationToken: string;
   password: string;
   userNames: string[];
+  selectedInterests: number[];
 
   // Actions
   setName: (value: string) => void;
@@ -16,6 +17,7 @@ interface ISignUpState {
   setVerificationToken: (token: string) => void;
   setPassword: (value: string) => void;
   setUserNames: (names: string[]) => void;
+  setSelectedInterests: (interests: number[]) => void;
   reset: () => void;
 }
 
@@ -27,6 +29,7 @@ export const useSignUpStore = create<ISignUpState>((set) => ({
   verificationToken: '',
   password: '',
   userNames: [],
+  selectedInterests: [],
 
   // Actions
   setName: (value: string) => set({ name: value }),
@@ -35,5 +38,15 @@ export const useSignUpStore = create<ISignUpState>((set) => ({
   setVerificationToken: (token: string) => set({ verificationToken: token }),
   setPassword: (value: string) => set({ password: value }),
   setUserNames: (names: string[]) => set({ userNames: names }),
-  reset: () => set({ name: '', email: '', dateOfBirth: '', verificationToken: '', password: '', userNames: [] }),
+  setSelectedInterests: (interests: number[]) => set({ selectedInterests: interests }),
+  reset: () =>
+    set({
+      name: '',
+      email: '',
+      dateOfBirth: '',
+      verificationToken: '',
+      password: '',
+      userNames: [],
+      selectedInterests: [],
+    }),
 }));

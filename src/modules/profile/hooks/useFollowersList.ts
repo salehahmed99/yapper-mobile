@@ -18,6 +18,7 @@ interface UseFollowersListOptions extends Omit<
   following?: boolean;
   enabled?: boolean;
 }
+
 export const useFollowersList = ({
   userId,
   cursor = '',

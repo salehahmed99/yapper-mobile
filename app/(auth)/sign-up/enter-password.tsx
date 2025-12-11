@@ -6,7 +6,7 @@ import PasswordInput from '@/src/modules/auth/components/shared/PasswordInput';
 import AuthTitle from '@/src/modules/auth/components/shared/Title';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { passwordSchema } from '@/src/modules/auth/schemas/schemas';
-import { signUpStep3 } from '@/src/modules/auth/services/signUpService';
+import { changeUserLanguage, signUpStep3 } from '@/src/modules/auth/services/signUpService';
 import { useSignUpStore } from '@/src/modules/auth/store/useSignUpStore';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { router } from 'expo-router';
@@ -14,6 +14,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
+import i18n from '@/src/i18n';
 
 const EnterPasswordScreen = () => {
   const { theme } = useTheme();
@@ -63,6 +64,7 @@ const EnterPasswordScreen = () => {
       });
       setSkipRedirect(true);
       await loginUser(response.data.user, response.data.accessToken, response.data.refreshToken);
+      await changeUserLanguage(i18n.language);
 
       Toast.show({
         type: 'success',

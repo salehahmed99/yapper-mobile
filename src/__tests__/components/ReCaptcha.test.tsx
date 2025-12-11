@@ -58,8 +58,8 @@ describe('ReCaptcha', () => {
     ref.current?.open();
 
     await waitFor(() => {
-      // Verify modal is visible by checking for loading indicator
-      expect(screen.getByText('Loading verification...')).toBeTruthy();
+      // Verify modal is visible by checking for the close button testID
+      expect(screen.getByTestId('recaptcha_close_button')).toBeTruthy();
     });
   });
 
@@ -71,13 +71,13 @@ describe('ReCaptcha', () => {
     ref.current?.open();
 
     await waitFor(() => {
-      expect(screen.getByText('Loading verification...')).toBeTruthy();
+      expect(screen.getByTestId('recaptcha_close_button')).toBeTruthy();
     });
 
     ref.current?.close();
 
     await waitFor(() => {
-      expect(screen.queryByText('Loading verification...')).toBeFalsy();
+      expect(screen.queryByTestId('recaptcha_close_button')).toBeFalsy();
     });
   });
 
@@ -140,13 +140,13 @@ describe('ReCaptcha', () => {
     ref.current?.open();
 
     await waitFor(() => {
-      expect(screen.getByText('Loading verification...')).toBeTruthy();
+      expect(screen.getByTestId('recaptcha_close_button')).toBeTruthy();
     });
 
     ref.current?.close();
 
     await waitFor(() => {
-      expect(screen.queryByText('Loading verification...')).toBeFalsy();
+      expect(screen.queryByTestId('recaptcha_close_button')).toBeFalsy();
     });
   });
 

@@ -16,6 +16,9 @@ jest.mock('expo-router', () => ({
     back: jest.fn(),
   },
   useLocalSearchParams: () => mockUseLocalSearchParams(),
+  useFocusEffect: jest.fn((callback: () => void) => {
+    if (callback) callback();
+  }),
 }));
 
 // Mock react-i18next
@@ -90,6 +93,11 @@ jest.mock('@/src/store/useAuthStore', () => ({
 jest.mock('@/src/modules/auth/services/authService', () => ({
   OAuthStep1: jest.fn(),
   OAuthStep2: jest.fn(),
+}));
+
+// Mock signUpService
+jest.mock('@/src/modules/auth/services/signUpService', () => ({
+  changeUserLanguage: jest.fn().mockResolvedValue(undefined),
 }));
 
 // Mock Toast
@@ -249,7 +257,7 @@ describe('BirthDateScreen', () => {
       });
 
       expect(mockSetSkipRedirect).toHaveBeenCalledWith(true);
-      expect(mockLoginUser).toHaveBeenCalledWith(mockUser, mockAccessToken);
+      expect(mockLoginUser).toHaveBeenCalledWith(mockUser, mockAccessToken, undefined);
 
       expect(Toast.show).toHaveBeenCalledWith({
         type: 'success',
