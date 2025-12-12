@@ -65,6 +65,8 @@ export const useTweetActions = () => {
 
   const repliesQueryKey = ['replies'];
   const bookmarksQueryKey = ['bookmarks'];
+  const notificationsQueryKey = ['notifications'];
+  const mentionsQueryKey = ['mentions'];
 
   const toggleLike = (tweet: ITweet) => {
     return {
@@ -120,6 +122,8 @@ export const useTweetActions = () => {
       await queryClient.cancelQueries({ queryKey: ['searchPosts'] });
       await queryClient.cancelQueries({ queryKey: ['explore', 'forYou'] });
       await queryClient.cancelQueries({ queryKey: ['categoryPosts'] });
+      await queryClient.cancelQueries({ queryKey: notificationsQueryKey });
+      await queryClient.cancelQueries({ queryKey: mentionsQueryKey });
 
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
         updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleLike),
@@ -173,6 +177,8 @@ export const useTweetActions = () => {
       queryClient.invalidateQueries({
         queryKey: ['userList', 'tweet', variables.tweetId, 'likes'],
       });
+      queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
+      queryClient.invalidateQueries({ queryKey: mentionsQueryKey });
     },
 
     onError: (error: any, variables) => {
@@ -185,6 +191,8 @@ export const useTweetActions = () => {
       queryClient.invalidateQueries({ queryKey: ['searchPosts'] });
       queryClient.invalidateQueries({ queryKey: ['explore', 'forYou'] });
       queryClient.invalidateQueries({ queryKey: ['categoryPosts'] });
+      queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
+      queryClient.invalidateQueries({ queryKey: mentionsQueryKey });
     },
   });
 
@@ -200,6 +208,8 @@ export const useTweetActions = () => {
       await queryClient.cancelQueries({ queryKey: ['searchPosts'] });
       await queryClient.cancelQueries({ queryKey: ['explore', 'forYou'] });
       await queryClient.cancelQueries({ queryKey: ['categoryPosts'] });
+      await queryClient.cancelQueries({ queryKey: notificationsQueryKey });
+      await queryClient.cancelQueries({ queryKey: mentionsQueryKey });
 
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
         updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleRepost),
@@ -240,6 +250,8 @@ export const useTweetActions = () => {
       queryClient.invalidateQueries({
         queryKey: ['userList', 'tweet', variables.tweetId, 'reposts'],
       });
+      queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
+      queryClient.invalidateQueries({ queryKey: mentionsQueryKey });
     },
 
     onError: (error, variables) => {
@@ -252,6 +264,8 @@ export const useTweetActions = () => {
       queryClient.invalidateQueries({ queryKey: ['searchPosts'] });
       queryClient.invalidateQueries({ queryKey: ['explore', 'forYou'] });
       queryClient.invalidateQueries({ queryKey: ['categoryPosts'] });
+      queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
+      queryClient.invalidateQueries({ queryKey: mentionsQueryKey });
     },
   });
 
@@ -268,6 +282,8 @@ export const useTweetActions = () => {
       await queryClient.cancelQueries({ queryKey: ['explore', 'forYou'] });
       await queryClient.cancelQueries({ queryKey: ['categoryPosts'] });
       await queryClient.cancelQueries({ queryKey: bookmarksQueryKey });
+      await queryClient.cancelQueries({ queryKey: notificationsQueryKey });
+      await queryClient.cancelQueries({ queryKey: mentionsQueryKey });
 
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
         updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleBookmark),
@@ -358,6 +374,13 @@ export const useTweetActions = () => {
       queryClient.invalidateQueries({ queryKey: ['explore', 'forYou'] });
       queryClient.invalidateQueries({ queryKey: ['categoryPosts'] });
       queryClient.invalidateQueries({ queryKey: bookmarksQueryKey });
+      queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
+      queryClient.invalidateQueries({ queryKey: mentionsQueryKey });
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
+      queryClient.invalidateQueries({ queryKey: mentionsQueryKey });
     },
   });
 

@@ -1,7 +1,7 @@
 import { IApiResponse } from '@/src/types/api';
 import { IUser } from '@/src/types/user';
 
-type TweetType = 'tweet' | 'reply' | 'repost' | 'quote';
+export type TweetType = 'tweet' | 'reply' | 'repost' | 'quote';
 
 interface ITweet {
   tweetId: string;
@@ -22,7 +22,7 @@ interface ITweet {
   isReposted: boolean;
   isBookmarked: boolean;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
   user: IUser;
   repostedBy?: {
     repostId: string;

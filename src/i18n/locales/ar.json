@@ -117,6 +117,12 @@
     "profile": "الملف الشخصي",
     "title": "الشاشة الرئيسية"
   },
+  "notifications": {
+    "tabs": {
+      "all": "الكل",
+      "mentions": "الإشارات"
+    }
+  },
   "welcome": {
     "title": "مرحباً بك في Yapper",
     "subtitle": "تواصل وشارك واتصل",

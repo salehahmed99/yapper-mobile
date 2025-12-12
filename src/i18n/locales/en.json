@@ -111,6 +111,12 @@
     "messages": "Messages",
     "profile": "Profile"
   },
+  "notifications": {
+    "tabs": {
+      "all": "All",
+      "mentions": "Mentions"
+    }
+  },
   "explore": {
     "title": "Explore",
     "limitReached": "Limit reached",

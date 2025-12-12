@@ -1,5 +1,6 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNotificationStore } from '@/src/store/useNotificationStore';
 import { useUnreadMessagesStore } from '@/src/store/useUnreadMessagesStore';
 import { BlurView } from 'expo-blur';
 import { usePathname, useRouter } from 'expo-router';
@@ -33,7 +34,9 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
   const router = useRouter();
   const pathname = usePathname();
   const unreadChatIds = useUnreadMessagesStore((state) => state.unreadChatIds);
-  const unreadCount = unreadChatIds.size;
+  const unreadMessagesCount = unreadChatIds.size;
+
+  const unreadNotificationsCount = useNotificationStore((state) => state.unreadCount);
 
   // Sync activeTab with current route
   useEffect(() => {
@@ -105,9 +108,16 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
                   size={theme.iconSizes.icon}
                   style={styles.iconSpacing}
                 />
-                {item.key === 'messages' && unreadCount > 0 && (
+                {item.key === 'notifications' && unreadNotificationsCount > 0 && (
                   <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{unreadCount > 99 ? '99+' : unreadCount}</Text>
+                    <Text style={styles.badgeText}>
+                      {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+                    </Text>
+                  </View>
+                )}
+                {item.key === 'messages' && unreadMessagesCount > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}</Text>
                   </View>
                 )}
               </View>
