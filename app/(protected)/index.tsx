@@ -3,11 +3,9 @@ import YapperLogo from '@/src/components/icons/YapperLogo';
 import AppBar from '@/src/components/shell/AppBar';
 import type { Theme } from '@/src/constants/theme';
 import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
-import { useNotification } from '@/src/context/NotificationContext';
 import { useTheme } from '@/src/context/ThemeContext';
 import useSpacing from '@/src/hooks/useSpacing';
 import { useSwipableTabs } from '@/src/hooks/useSwipableTabs';
-import { registerDeviceForPushNotifications } from '@/src/modules/notifications/services/notificationService';
 import CreatePostModal from '@/src/modules/tweets/components/CreatePostModal';
 import Fab from '@/src/modules/tweets/components/Fab';
 import MediaViewerModal from '@/src/modules/tweets/components/MediaViewerModal';
@@ -15,7 +13,7 @@ import TweetList from '@/src/modules/tweets/components/TweetList';
 import { useTweetActions } from '@/src/modules/tweets/hooks/useTweetActions';
 import { useTweets } from '@/src/modules/tweets/hooks/useTweets';
 import { useTweetsFiltersStore } from '@/src/modules/tweets/store/useTweetsFiltersStore';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Animated, Platform, StyleSheet, View } from 'react-native';
 
 export default function HomeScreen() {
@@ -25,13 +23,6 @@ export default function HomeScreen() {
 
   const { translateX, tabSwipePanResponder, homeIndex, setHomeIndex, screenWidth } = useSwipableTabs();
   const [isCreatePostModalVisible, setIsCreatePostModalVisible] = useState(false);
-  const { expoPushToken } = useNotification();
-
-  useEffect(() => {
-    if (expoPushToken) {
-      registerDeviceForPushNotifications(expoPushToken);
-    }
-  }, [expoPushToken]);
 
   const tweetsFilters = useTweetsFiltersStore((state) => state.filters);
   const forYouQuery = useTweets(tweetsFilters, 'for-you');

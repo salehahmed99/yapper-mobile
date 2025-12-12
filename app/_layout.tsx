@@ -1,4 +1,3 @@
-import { NotificationProvider } from '@/src/context/NotificationContext';
 import { QueryProvider } from '@/src/context/QueryProvider';
 import { ThemeProvider } from '@/src/context/ThemeContext';
 import i18n, { initLanguage } from '@/src/i18n';
@@ -7,7 +6,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useFonts } from 'expo-font';
 import * as Notifications from 'expo-notifications';
-import { Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect, useState } from 'react';
 import { I18nextProvider } from 'react-i18next';
@@ -50,6 +49,27 @@ export default function RootLayout() {
     ...Ionicons.font,
     ...MaterialCommunityIcons.font,
   });
+  useEffect(() => {
+    const responseListener = Notifications.addNotificationResponseReceivedListener((response) => {
+      const data = response.notification.request.content.data;
+      const tweetId = data.tweet_id as string;
+      const userId = data.user_id as string;
+      console.log(tweetId);
+      console.log(userId);
+      if (tweetId) {
+        router.push({ pathname: '/(protected)/tweets/[tweetId]', params: { tweetId: tweetId } });
+      }
+      if (userId) {
+        router.push({ pathname: '/(protected)/(profile)/[id]', params: { id: userId } });
+      }
+      console.log('here');
+      console.log(data);
+      console.log('here');
+    });
+    return () => {
+      responseListener.remove();
+    };
+  }, []);
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -82,21 +102,19 @@ export default function RootLayout() {
   }
 
   return (
-    <NotificationProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <QueryProvider>
-          <I18nextProvider i18n={i18n}>
-            <ThemeProvider>
-              <BottomSheetModalProvider>
-                <AuthInitializer>
-                  <Stack screenOptions={{ headerShown: false }}></Stack>
-                </AuthInitializer>
-              </BottomSheetModalProvider>
-            </ThemeProvider>
-            <Toast />
-          </I18nextProvider>
-        </QueryProvider>
-      </GestureHandlerRootView>
-    </NotificationProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryProvider>
+        <I18nextProvider i18n={i18n}>
+          <ThemeProvider>
+            <BottomSheetModalProvider>
+              <AuthInitializer>
+                <Stack screenOptions={{ headerShown: false }}></Stack>
+              </AuthInitializer>
+            </BottomSheetModalProvider>
+          </ThemeProvider>
+          <Toast />
+        </I18nextProvider>
+      </QueryProvider>
+    </GestureHandlerRootView>
   );
 }

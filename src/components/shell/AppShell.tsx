@@ -1,6 +1,7 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { useSocketConnection } from '@/src/hooks/useSocketConnection';
+import useSyncExpoPushToken from '@/src/hooks/useSyncExpoPushToken';
 import { useChatSocketListeners } from '@/src/modules/chat/hooks/useChatSocketListeners';
 import { useNotificationSocketListeners } from '@/src/modules/notifications/hooks/useNotificationSocketListeners';
 import { Stack, usePathname, useSegments } from 'expo-router';
@@ -26,6 +27,9 @@ const AppShell: React.FC = () => {
   const styles = createStyles(theme);
   const [anim] = React.useState(() => new Animated.Value(0));
   const segments = useSegments();
+
+  // Sync push token
+  useSyncExpoPushToken();
 
   // Manage socket connection lifecycle
   useSocketConnection();
