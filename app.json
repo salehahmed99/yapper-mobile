@@ -22,7 +22,8 @@
       "bundleIdentifier": "com.salehahmed99.yappermobile",
       "icon": "./assets/images/yapper.png",
       "infoPlist": {
-        "LSApplicationQueriesSchemes": ["googlechrome", "itms-apps"]
+        "LSApplicationQueriesSchemes": ["googlechrome", "itms-apps"],
+        "NSMicrophoneUsageDescription": "This app requires microphone access to record audio."
       }
     },
     "android": {
@@ -67,7 +68,8 @@
       ],
       "expo-font",
       "expo-localization",
-      "expo-video"
+      "expo-video",
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true,

@@ -2,11 +2,12 @@ import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { IChatMessageItem } from '@/src/modules/chat/types';
 import { formatMessageTime } from '@/src/modules/chat/utils/formatters';
-import { Image as ImageIcon } from 'lucide-react-native';
+import { Image as ImageIcon, Mic } from 'lucide-react-native';
 import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ReactionPicker from './ReactionPicker';
+import VoiceNotePlayer from './VoiceNotePlayer';
 
 interface ChatBubbleProps {
   message: IChatMessageItem;
@@ -82,6 +83,7 @@ export default function ChatBubble({
 
   const hasImage = !!message.imageUrl;
   const hasText = !!message.content?.trim();
+  const hasVoice = message.messageType === 'voice' && !!message.voiceNoteUrl;
 
   return (
     <View
@@ -97,16 +99,28 @@ export default function ChatBubble({
             {!!replyMessage.imageUrl && (
               <ImageIcon size={12} color={isOwn ? theme.colors.text.secondary : theme.colors.text.secondary} />
             )}
+            {(replyMessage.messageType === 'voice' || !!replyMessage.voiceNoteUrl) && (
+              <Mic size={12} color={isOwn ? theme.colors.text.secondary : theme.colors.text.secondary} />
+            )}
             <Text
               style={[
                 styles.replyText,
                 isOwn ? styles.ownReplyText : styles.otherReplyText,
                 hasImage && styles.imageCaption,
-                { paddingEnd: replyMessage.imageUrl ? theme.spacing.md : 0 },
+                {
+                  paddingEnd:
+                    replyMessage.imageUrl || replyMessage.messageType === 'voice' || replyMessage.voiceNoteUrl
+                      ? theme.spacing.md
+                      : 0,
+                },
               ]}
               numberOfLines={2}
             >
-              {!!replyMessage.imageUrl && !replyMessage.content ? t('messages.bubble.photo') : replyMessage.content}
+              {(replyMessage.messageType === 'voice' || replyMessage.voiceNoteUrl) && !replyMessage.content
+                ? t('messages.bubble.voiceMessage')
+                : !!replyMessage.imageUrl && !replyMessage.content
+                  ? t('messages.bubble.photo')
+                  : replyMessage.content}
             </Text>
           </View>
         </View>
@@ -119,6 +133,7 @@ export default function ChatBubble({
           isOwn ? styles.ownBubbleTail : styles.otherBubbleTail,
           hasImage && styles.imageBubble,
           hasImage && hasText && styles.imageWithTextBubble,
+          hasVoice && styles.voiceBubble,
         ]}
         onPress={handleDoubleTap}
         onLongPress={handleLongPress}
@@ -127,6 +142,13 @@ export default function ChatBubble({
         testID={`chat_bubble_${message.id}`}
         accessibilityLabel={isOwn ? t('messages.bubble.yourMessage') : t('messages.bubble.receivedMessage')}
       >
+        {hasVoice && (
+          <VoiceNotePlayer
+            voiceNoteUrl={message.voiceNoteUrl!}
+            voiceNoteDuration={message.voiceNoteDuration}
+            isOwn={isOwn}
+          />
+        )}
         {hasImage && (
           <Image
             source={{ uri: message.imageUrl! }}
@@ -309,5 +331,8 @@ const createStyles = (theme: Theme) =>
       fontSize: theme.typography.sizes.xs,
       color: theme.colors.text.secondary,
       marginLeft: 2,
+    },
+    voiceBubble: {
+      minWidth: 200,
     },
   });

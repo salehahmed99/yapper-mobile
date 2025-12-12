@@ -5,7 +5,7 @@ import { socketService } from '@/src/services/socketService';
 // ============================================================================
 
 // Message types
-export type MessageType = 'text' | 'reply' | 'image' | 'video';
+export type MessageType = 'text' | 'reply' | 'image' | 'video' | 'voice';
 
 // Sender info
 export interface IChatSocketSender {
@@ -24,6 +24,8 @@ export interface IChatSocketMessage {
   reply_to?: string | null;
   reply_to_message_id?: string | null;
   image_url?: string | null;
+  voice_note_url?: string | null;
+  voice_note_duration?: string | null;
   is_read: boolean;
   is_edited?: boolean;
   created_at: string;
@@ -50,6 +52,8 @@ export interface ISendMessagePayload {
     message_type: MessageType;
     reply_to_message_id: string | null;
     image_url: string | null;
+    voice_note_url?: string | null;
+    voice_note_duration?: string | null;
     is_first_message: boolean;
   };
 }
@@ -106,6 +110,8 @@ export interface IMessageSentData {
   reply_to?: string | null;
   reply_to_message_id?: string | null;
   image_url?: string | null;
+  voice_note_url?: string | null;
+  voice_note_duration?: string | null;
   is_read: boolean;
   created_at: string;
   updated_at?: string;
@@ -219,14 +225,12 @@ class ChatSocketService {
   public joinChat(chatId: string): void {
     const payload: IJoinChatPayload = { chat_id: chatId };
     socketService.emit(ChatSocketEvents.JOIN_CHAT, payload);
-    console.log('[ChatSocket] Joining chat:', chatId);
   }
 
   // Leave a chat room
   public leaveChat(chatId: string): void {
     const payload: ILeaveChatPayload = { chat_id: chatId };
     socketService.emit(ChatSocketEvents.LEAVE_CHAT, payload);
-    console.log('[ChatSocket] Leaving chat:', chatId);
   }
 
   // Send a message in a chat
@@ -237,6 +241,8 @@ class ChatSocketService {
     replyTo: string | null = null,
     imageUrl: string | null = null,
     isFirstMessage: boolean = false,
+    voiceNoteUrl: string | null = null,
+    voiceNoteDuration: string | null = null,
   ): void {
     const payload: ISendMessagePayload = {
       chat_id: chatId,
@@ -245,11 +251,12 @@ class ChatSocketService {
         message_type: messageType,
         reply_to_message_id: replyTo,
         image_url: imageUrl,
+        voice_note_url: voiceNoteUrl,
+        voice_note_duration: voiceNoteDuration,
         is_first_message: isFirstMessage,
       },
     };
     socketService.emit(ChatSocketEvents.SEND_MESSAGE, payload);
-    console.log('[ChatSocket] Sending message to:', chatId);
   }
 
   // Update/edit a message
@@ -260,7 +267,6 @@ class ChatSocketService {
       update: { content },
     };
     socketService.emit(ChatSocketEvents.UPDATE_MESSAGE, payload);
-    console.log('[ChatSocket] Updating message:', messageId);
   }
 
   // Delete a message
@@ -270,7 +276,6 @@ class ChatSocketService {
       message_id: messageId,
     };
     socketService.emit(ChatSocketEvents.DELETE_MESSAGE, payload);
-    console.log('[ChatSocket] Deleting message:', messageId);
   }
 
   // Notify that user started typing
@@ -293,7 +298,6 @@ class ChatSocketService {
       emoji,
     };
     socketService.emit(ChatSocketEvents.ADD_REACTION, payload);
-    console.log('[ChatSocket] Adding reaction to message:', messageId, 'with', emoji);
   }
 
   // Remove reaction from a message
@@ -304,7 +308,6 @@ class ChatSocketService {
       emoji,
     };
     socketService.emit(ChatSocketEvents.REMOVE_REACTION, payload);
-    console.log('[ChatSocket] Removing reaction from message:', messageId);
   }
 
   // Get paginated messages from a chat via socket
@@ -315,7 +318,6 @@ class ChatSocketService {
       ...(before && { before }),
     };
     socketService.emit(ChatSocketEvents.GET_MESSAGES, payload);
-    console.log('[ChatSocket] Getting messages for:', chatId);
   }
 
   // -------------------------------------------------------------------------

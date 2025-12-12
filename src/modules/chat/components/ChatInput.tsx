@@ -1,10 +1,17 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import { uploadMessageImage } from '@/src/modules/chat/services/chatService';
+import { uploadMessageImage, uploadVoiceNote } from '@/src/modules/chat/services/chatService';
 import { IReplyContext } from '@/src/modules/chat/types';
+import {
+  RecordingPresets,
+  requestRecordingPermissionsAsync,
+  setAudioModeAsync,
+  useAudioRecorder,
+  useAudioRecorderState,
+} from 'expo-audio';
 import * as ImagePicker from 'expo-image-picker';
-import { Image as ImageIcon, Mic, Send, X } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { Image as ImageIcon, Mic, Send, Trash2, X } from 'lucide-react-native';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
@@ -23,7 +30,7 @@ import {
 interface ChatInputProps {
   value: string;
   onChangeText: (text: string) => void;
-  onSend: (imageUrl?: string | null) => void;
+  onSend: (imageUrl?: string | null, voiceNoteUrl?: string | null, voiceNoteDuration?: string | null) => void;
   placeholder?: string;
   style?: ViewStyle;
   replyingTo?: IReplyContext | null;
@@ -45,7 +52,40 @@ export default function ChatInput({
   const [previewUri, setPreviewUri] = useState<string | null>(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
+
+  // Voice recording state
+  const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const recorderState = useAudioRecorderState(audioRecorder);
+  const [voicePreviewUri, setVoicePreviewUri] = useState<string | null>(null);
+  const [recordingDuration, setRecordingDuration] = useState(0);
+  const [isUploadingVoice, setIsUploadingVoice] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | number | null>(null);
+
+  // Recording timer
+  useEffect(() => {
+    if (recorderState.isRecording) {
+      timerRef.current = setInterval(() => {
+        setRecordingDuration((prev) => prev + 1);
+      }, 1000);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [recorderState.isRecording]);
+
+  const formatRecordingTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const showToast = (message: string) => {
     if (Platform.OS === 'android') {
@@ -57,7 +97,7 @@ export default function ChatInput({
 
   const handleSend = () => {
     if (value.trim() || uploadedImageUrl) {
-      onSend(uploadedImageUrl);
+      onSend(uploadedImageUrl, null, null);
       setPreviewUri(null);
       setUploadedImageUrl(null);
     }
@@ -94,9 +134,79 @@ export default function ChatInput({
     }
   };
 
+  // Configure audio mode for recording on mount
+  useEffect(() => {
+    const configureAudioMode = async () => {
+      try {
+        await setAudioModeAsync({
+          playsInSilentMode: true,
+          allowsRecording: true,
+        });
+      } catch (error) {
+        console.warn('Failed to configure audio mode:', error);
+      }
+    };
+    configureAudioMode();
+  }, []);
+
+  const handleStartRecording = async () => {
+    try {
+      const permission = await requestRecordingPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert('Permission Required', 'Please allow access to your microphone.');
+        return;
+      }
+      setRecordingDuration(0);
+      await audioRecorder.prepareToRecordAsync();
+      audioRecorder.record();
+    } catch (error) {
+      console.error('Failed to start recording:', error);
+      showToast('Failed to start recording. Please try again.');
+    }
+  };
+
+  const handleStopRecording = async () => {
+    try {
+      await audioRecorder.stop();
+      const uri = audioRecorder.uri;
+      if (uri) {
+        setVoicePreviewUri(uri);
+      }
+    } catch (error) {
+      console.error('Failed to stop recording:', error);
+      showToast('Failed to stop recording. Please try again.');
+    }
+  };
+
   const handleVoiceNote = () => {
-    setIsRecording(!isRecording);
-    Alert.alert('Coming Soon', 'Voice notes will be available soon!');
+    if (recorderState.isRecording) {
+      handleStopRecording();
+    } else {
+      handleStartRecording();
+    }
+  };
+
+  const handleDeleteVoiceNote = () => {
+    setVoicePreviewUri(null);
+    setRecordingDuration(0);
+  };
+
+  const handleSendVoiceNote = async () => {
+    if (!voicePreviewUri) return;
+
+    setIsUploadingVoice(true);
+    try {
+      const uploadResult = await uploadVoiceNote(voicePreviewUri, recordingDuration);
+
+      onSend(null, uploadResult.voiceNoteUrl, uploadResult.duration);
+      setVoicePreviewUri(null);
+      setRecordingDuration(0);
+    } catch (error) {
+      console.error('Failed to upload voice note:', error);
+      showToast('Failed to send voice note. Please try again.');
+    } finally {
+      setIsUploadingVoice(false);
+    }
   };
 
   const handleRemoveImage = () => {
@@ -105,6 +215,8 @@ export default function ChatInput({
   };
 
   const canSend = (value.trim() || uploadedImageUrl) && !isUploading;
+  const isRecording = recorderState.isRecording;
+  const hasVoicePreview = !!voicePreviewUri;
 
   return (
     <View style={[styles.container, style]} testID="chat_input_container">
@@ -114,11 +226,19 @@ export default function ChatInput({
             <Text style={styles.replyBannerLabel}>Replying to {replyingTo.senderName}</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
               {replyingTo.hasImage && <ImageIcon size={14} color={theme.colors.text.secondary} />}
+              {replyingTo.hasVoice && <Mic size={14} color={theme.colors.text.secondary} />}
               <Text
-                style={[styles.replyBannerText, { flex: 1, paddingEnd: replyingTo.hasImage ? theme.spacing.sm : 0 }]}
+                style={[
+                  styles.replyBannerText,
+                  { flex: 1, paddingEnd: replyingTo.hasImage || replyingTo.hasVoice ? theme.spacing.sm : 0 },
+                ]}
                 numberOfLines={1}
               >
-                {replyingTo.hasImage && !replyingTo.content ? 'Photo' : replyingTo.content}
+                {replyingTo.hasVoice && !replyingTo.content
+                  ? 'Voice message'
+                  : replyingTo.hasImage && !replyingTo.content
+                    ? 'Photo'
+                    : replyingTo.content}
               </Text>
             </View>
           </View>
@@ -140,50 +260,91 @@ export default function ChatInput({
           </TouchableOpacity>
         </View>
       )}
-      <View style={styles.inputRow}>
-        <TouchableOpacity
-          style={styles.mediaButton}
-          onPress={handlePickImage}
-          disabled={isUploading}
-          testID="chat_input_image_button"
-          accessibilityLabel={t('messages.input.pickImage')}
-          accessibilityRole="button"
-        >
-          <ImageIcon color={isUploading ? theme.colors.text.secondary : theme.colors.accent.bookmark} size={24} />
-        </TouchableOpacity>
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={styles.input}
-            placeholder={placeholder}
-            placeholderTextColor={theme.colors.text.secondary}
-            value={value}
-            onChangeText={onChangeText}
-            multiline
-            maxLength={300}
-            testID="chat_input_text_field"
-            accessibilityLabel={t('messages.input.messageInput')}
-          />
+      {/* Voice Recording UI */}
+      {isRecording && (
+        <View style={styles.recordingBanner}>
+          <View style={styles.recordingIndicator}>
+            <View style={styles.recordingDot} />
+            <Text style={styles.recordingText}>Recording...</Text>
+          </View>
+          <Text style={styles.recordingTimer}>{formatRecordingTime(recordingDuration)}</Text>
+          <TouchableOpacity style={styles.stopRecordingButton} onPress={handleVoiceNote}>
+            <Text style={styles.stopRecordingText}>Stop</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={[styles.mediaButton, isRecording && styles.recordingButton]}
-          onPress={handleVoiceNote}
-          testID="chat_input_voice_button"
-          accessibilityLabel={t('messages.input.voiceNote')}
-          accessibilityRole="button"
-        >
-          <Mic color={isRecording ? theme.colors.text.inverse : theme.colors.accent.bookmark} size={24} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.sendButton, !canSend && styles.sendButtonDisabled]}
-          onPress={handleSend}
-          disabled={!canSend}
-          testID="chat_input_send_button"
-          accessibilityLabel={t('messages.input.sendMessage')}
-          accessibilityRole="button"
-        >
-          <Send color={canSend ? theme.colors.text.inverse : theme.colors.text.secondary} size={20} />
-        </TouchableOpacity>
-      </View>
+      )}
+      {/* Voice Preview UI */}
+      {hasVoicePreview && !isRecording && (
+        <View style={styles.voicePreviewBanner}>
+          <View style={styles.voicePreviewInfo}>
+            <Mic size={20} color={theme.colors.accent.bookmark} />
+            <Text style={styles.voicePreviewText}>Voice message ({formatRecordingTime(recordingDuration)})</Text>
+          </View>
+          <View style={styles.voicePreviewActions}>
+            <TouchableOpacity
+              style={styles.voicePreviewDelete}
+              onPress={handleDeleteVoiceNote}
+              disabled={isUploadingVoice}
+            >
+              <Trash2 size={20} color={theme.colors.error} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.voicePreviewSend} onPress={handleSendVoiceNote} disabled={isUploadingVoice}>
+              {isUploadingVoice ? (
+                <ActivityIndicator size="small" color={theme.colors.text.inverse} />
+              ) : (
+                <Send size={18} color={theme.colors.text.inverse} />
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+      {/* Regular Input Row - hide when recording or has voice preview */}
+      {!isRecording && !hasVoicePreview && (
+        <View style={styles.inputRow}>
+          <TouchableOpacity
+            style={styles.mediaButton}
+            onPress={handlePickImage}
+            disabled={isUploading}
+            testID="chat_input_image_button"
+            accessibilityLabel={t('messages.input.pickImage')}
+            accessibilityRole="button"
+          >
+            <ImageIcon color={isUploading ? theme.colors.text.secondary : theme.colors.accent.bookmark} size={24} />
+          </TouchableOpacity>
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={styles.input}
+              placeholder={placeholder}
+              placeholderTextColor={theme.colors.text.secondary}
+              value={value}
+              onChangeText={onChangeText}
+              multiline
+              maxLength={300}
+              testID="chat_input_text_field"
+              accessibilityLabel={t('messages.input.messageInput')}
+            />
+          </View>
+          <TouchableOpacity
+            style={[styles.mediaButton, isRecording && styles.recordingButton]}
+            onPress={handleVoiceNote}
+            testID="chat_input_voice_button"
+            accessibilityLabel={t('messages.input.voiceNote')}
+            accessibilityRole="button"
+          >
+            <Mic color={isRecording ? theme.colors.text.inverse : theme.colors.accent.bookmark} size={24} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.sendButton, !canSend && styles.sendButtonDisabled]}
+            onPress={handleSend}
+            disabled={!canSend}
+            testID="chat_input_send_button"
+            accessibilityLabel={t('messages.input.sendMessage')}
+            accessibilityRole="button"
+          >
+            <Send color={canSend ? theme.colors.text.inverse : theme.colors.text.secondary} size={20} />
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }
@@ -289,6 +450,84 @@ const createStyles = (theme: Theme) =>
       height: theme.spacing.xxl,
       borderRadius: theme.borderRadius.xxl,
       backgroundColor: 'rgba(0,0,0,0.6)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    // Voice Recording Styles
+    recordingBanner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: theme.spacing.md,
+      backgroundColor: theme.colors.error + '15',
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.error + '30',
+    },
+    recordingIndicator: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.sm,
+    },
+    recordingDot: {
+      width: 10,
+      height: 10,
+      borderRadius: 5,
+      backgroundColor: theme.colors.error,
+    },
+    recordingText: {
+      color: theme.colors.error,
+      fontSize: theme.typography.sizes.sm,
+      fontFamily: theme.typography.fonts.medium,
+    },
+    recordingTimer: {
+      color: theme.colors.text.primary,
+      fontSize: theme.typography.sizes.md,
+      fontFamily: theme.typography.fonts.bold,
+    },
+    stopRecordingButton: {
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.sm,
+      backgroundColor: theme.colors.error,
+      borderRadius: theme.borderRadius.md,
+    },
+    stopRecordingText: {
+      color: theme.colors.text.inverse,
+      fontSize: theme.typography.sizes.sm,
+      fontFamily: theme.typography.fonts.semiBold,
+    },
+    // Voice Preview Styles
+    voicePreviewBanner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: theme.spacing.md,
+      backgroundColor: theme.colors.accent.bookmark + '15',
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.accent.bookmark + '30',
+    },
+    voicePreviewInfo: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.sm,
+    },
+    voicePreviewText: {
+      color: theme.colors.text.primary,
+      fontSize: theme.typography.sizes.sm,
+      fontFamily: theme.typography.fonts.medium,
+    },
+    voicePreviewActions: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.sm,
+    },
+    voicePreviewDelete: {
+      padding: theme.spacing.sm,
+    },
+    voicePreviewSend: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: theme.colors.accent.bookmark,
       justifyContent: 'center',
       alignItems: 'center',
     },

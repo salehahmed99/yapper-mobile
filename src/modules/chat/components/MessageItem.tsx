@@ -1,7 +1,7 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { formatRelativeTime } from '@/src/modules/chat/utils/formatters';
-import { Image as ImageIcon } from 'lucide-react-native';
+import { Image as ImageIcon, Mic } from 'lucide-react-native';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { IChat } from '../types';
@@ -22,7 +22,8 @@ export default function MessageItem({ chat, onPress }: MessageItemProps) {
     if (!lastMessage) return <Text style={styles.noMessages}>No messages yet</Text>;
 
     const hasImage = !!lastMessage.imageUrl;
-    const content = lastMessage.content || (hasImage ? 'Photo' : '');
+    const hasVoice = lastMessage.messageType === 'voice' || !!lastMessage.voiceNoteUrl;
+    const content = lastMessage.content || (hasVoice ? 'Voice message' : hasImage ? 'Photo' : '');
 
     return (
       <View style={styles.previewContainer}>
@@ -33,11 +34,18 @@ export default function MessageItem({ chat, onPress }: MessageItemProps) {
             style={styles.previewIcon}
           />
         )}
+        {hasVoice && (
+          <Mic
+            size={16}
+            color={hasUnread ? theme.colors.text.primary : theme.colors.text.secondary}
+            style={styles.previewIcon}
+          />
+        )}
         <Text
           style={[
             styles.messagePreview,
             hasUnread && styles.messagePreviewUnread,
-            hasImage && styles.imageTextContainer,
+            (hasImage || hasVoice) && styles.imageTextContainer,
           ]}
           numberOfLines={1}
         >
@@ -115,7 +123,7 @@ const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: theme.spacing.xxs,
+      marginBottom: theme.spacing.xs,
     },
     nameRow: {
       flexDirection: 'row',
