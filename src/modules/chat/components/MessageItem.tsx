@@ -17,6 +17,14 @@ export default function MessageItem({ chat, onPress }: MessageItemProps) {
   const { participant, lastMessage, unreadCount } = chat;
   const hasUnread = unreadCount > 0;
   const timestamp = lastMessage?.createdAt;
+  console.log(participant);
+
+  if (!participant) {
+    return null;
+  }
+
+  const displayName = participant.name || participant.username || 'Unknown';
+  const avatarLetter = participant.name?.charAt(0) || participant.username?.charAt(0) || '?';
 
   const renderPreview = () => {
     if (!lastMessage) return <Text style={styles.noMessages}>No messages yet</Text>;
@@ -60,23 +68,23 @@ export default function MessageItem({ chat, onPress }: MessageItemProps) {
       style={styles.messageItem}
       onPress={onPress}
       testID={`message_item_${chat.id}`}
-      accessibilityLabel={`Chat with ${participant.name || participant.username}`}
+      accessibilityLabel={`Chat with ${displayName}`}
     >
       {participant.avatarUrl ? (
         <Image source={{ uri: participant.avatarUrl }} style={styles.avatar} />
       ) : (
         <View style={[styles.avatar, styles.avatarPlaceholder]}>
-          <Text style={styles.avatarText}>{participant.name?.charAt(0) || participant.username.charAt(0)}</Text>
+          <Text style={styles.avatarText}>{avatarLetter}</Text>
         </View>
       )}
       <View style={styles.messageContent}>
         <View style={styles.messageHeader}>
           <View style={styles.nameRow}>
             <Text style={styles.messageName} numberOfLines={1} testID={`message_item_name_${chat.id}`}>
-              {participant.name || participant.username}
+              {displayName}
             </Text>
             <Text style={styles.messageUsername} numberOfLines={1}>
-              @{participant.username}
+              @{participant.username || 'unknown'}
             </Text>
             {timestamp && (
               <>
