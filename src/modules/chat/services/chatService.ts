@@ -97,11 +97,20 @@ export const getMessages = async (params: IGetMessagesParams): Promise<IGetMessa
       ...msg,
       senderId: msg.sender?.id || msg.sender_id || msg.senderId,
       imageUrl: msg.imageUrl || msg.image_url || null,
-      reactions: (msg.reactions || []).map((r: any) => ({
-        emoji: r.emoji,
-        count: r.count,
-        reactedByMe: r.reactedByMe ?? r.reacted_by_me ?? false,
-      })),
+      reactions: (msg.reactions || []).map((r: any) => {
+        const reactedByMe = r.reactedByMe ?? r.reacted_by_me ?? false;
+        // Calculate if others reacted. In 1-on-1, this logic effectively flags if the other user reacted.
+        const count = r.count || 0;
+        const participantCount = reactedByMe ? 1 : 0;
+        const reactedByOther = count > participantCount;
+
+        return {
+          emoji: r.emoji,
+          count: count,
+          reactedByMe: reactedByMe,
+          reactedByOther: reactedByOther,
+        };
+      }),
     }));
 
     return {

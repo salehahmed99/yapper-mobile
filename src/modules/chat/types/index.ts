@@ -70,6 +70,7 @@ export interface IMessageReaction {
   emoji: string;
   count: number;
   reactedByMe: boolean;
+  reactedByOther?: boolean;
 }
 
 export interface IChatMessageItem {

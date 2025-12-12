@@ -25,7 +25,7 @@ const CustomBottomSheet: React.FC<ICustomBottomSheetProps> = (props) => {
         {...props}
         disappearsOnIndex={-1}
         appearsOnIndex={0}
-        opacity={0.5} // Reduced opacity for better look
+        opacity={1}
         pressBehavior="close"
         style={{ backgroundColor: theme.colors.overlay }}
       />
@@ -47,9 +47,9 @@ const CustomBottomSheet: React.FC<ICustomBottomSheetProps> = (props) => {
       enablePanDownToClose={true}
       enableOverDrag={true}
       enableContentPanningGesture={enableContentPanningGesture}
-      style={{ marginTop: insets.top }}
+      topInset={insets.top}
     >
-      <ContentWrapper style={{ flex: 1 }}>{children}</ContentWrapper>
+      <ContentWrapper style={{ flex: 1, paddingBottom: insets.bottom }}>{children}</ContentWrapper>
     </BottomSheetModal>
   );
 };

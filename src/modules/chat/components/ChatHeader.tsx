@@ -12,9 +12,10 @@ interface ChatHeaderProps {
   avatarUrl?: string;
   onBack: () => void;
   onInfo?: () => void;
+  onProfilePress?: () => void;
 }
 
-export default function ChatHeader({ name, username, avatarUrl, onBack, onInfo }: ChatHeaderProps) {
+export default function ChatHeader({ name, username, avatarUrl, onBack, onInfo, onProfilePress }: ChatHeaderProps) {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const { t } = useTranslation();
@@ -35,7 +36,12 @@ export default function ChatHeader({ name, username, avatarUrl, onBack, onInfo }
           size={24}
         />
       </TouchableOpacity>
-      <View style={styles.userInfo}>
+      <TouchableOpacity
+        style={styles.userInfo}
+        onPress={onProfilePress}
+        disabled={!onProfilePress}
+        testID="chat_header_user_info"
+      >
         {avatarUrl ? (
           <Image source={{ uri: avatarUrl }} style={styles.avatar} />
         ) : (
@@ -51,7 +57,7 @@ export default function ChatHeader({ name, username, avatarUrl, onBack, onInfo }
             @{username}
           </Text>
         </View>
-      </View>
+      </TouchableOpacity>
       {onInfo && (
         <TouchableOpacity
           style={styles.infoButton}
