@@ -11,14 +11,18 @@ import { useNotifications } from '@/src/modules/notifications/hooks/useNotificat
 import { notificationSocketService } from '@/src/modules/notifications/services/notificationSocketService';
 import MediaViewerModal from '@/src/modules/tweets/components/MediaViewerModal';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, Platform, StyleSheet, Text, View } from 'react-native';
 
 const NotificationsScreen = () => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
-
+  const { t } = useTranslation();
   // Mark all notifications as seen
-  notificationSocketService.markSeen();
+
+  React.useEffect(() => {
+    notificationSocketService.markSeen();
+  }, []);
 
   // Get notifications and mentions
   const notificationsQuery = useNotifications();
@@ -32,10 +36,11 @@ const NotificationsScreen = () => {
     );
   }, [notificationsQuery.data]);
 
-  if (notifications.length === 0 && notificationsQuery.hasNextPage) {
-    notificationsQuery.fetchNextPage();
-  }
-
+  React.useEffect(() => {
+    if (notifications.length === 0 && notificationsQuery.hasNextPage) {
+      notificationsQuery.fetchNextPage();
+    }
+  }, [notifications.length, notificationsQuery.hasNextPage]);
   const mentions = React.useMemo(() => {
     return mentionsQuery.data?.pages.flatMap((page) => page.notifications) ?? [];
   }, [mentionsQuery.data]);
@@ -69,7 +74,7 @@ const NotificationsScreen = () => {
       <MediaViewerProvider>
         <View style={styles.appBarWrapper}>
           <AppBar
-            children={<Text style={styles.appBarTitle}>Notifications</Text>}
+            children={<Text style={styles.appBarTitle}>{t('notifications.title')}</Text>}
             tabView={<NotificationsTabView index={homeIndex} onIndexChange={(i) => setHomeIndex(i)} />}
           />
         </View>

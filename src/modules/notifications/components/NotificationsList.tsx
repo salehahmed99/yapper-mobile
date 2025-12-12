@@ -81,7 +81,7 @@ const NotificationsList: React.FC<INotificationsListProps> = (props) => {
       style={{ flex: 1 }}
       data={data}
       renderItem={({ item }) => <NotificationContainer notification={item} />}
-      keyExtractor={(item, index) => `${item.createdAt}-${index}`}
+      keyExtractor={(item) => item.id}
       scrollIndicatorInsets={{ top: topSpacing - insets.top, bottom: bottomSpacing - insets.bottom }}
       refreshControl={
         <RefreshControl

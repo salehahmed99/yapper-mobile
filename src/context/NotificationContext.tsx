@@ -28,8 +28,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   useEffect(() => {
     registerForPushNotificationsAsync()
       .then((token) => setExpoPushToken(token ?? ''))
-      .catch((error: any) => setExpoPushToken(`${error}`));
-
+      .catch((error: any) => {
+        console.error('Failed to register for push notifications:', error);
+        setExpoPushToken(null);
+      });
     const notificationListener = Notifications.addNotificationReceivedListener((notification) => {
       setNotification(notification);
     });

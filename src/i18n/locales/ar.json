@@ -118,6 +118,7 @@
     "title": "الشاشة الرئيسية"
   },
   "notifications": {
+    "title": "الإشعارات",
     "tabs": {
       "all": "الكل",
       "mentions": "الإشارات"

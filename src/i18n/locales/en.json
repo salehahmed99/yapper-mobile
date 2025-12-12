@@ -112,6 +112,7 @@
     "profile": "Profile"
   },
   "notifications": {
+    "title": "Notifications",
     "tabs": {
       "all": "All",
       "mentions": "Mentions"

@@ -1,6 +1,6 @@
 import { useNotificationStore } from '@/src/store/useNotificationStore';
 import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { notificationSocketService } from '../services/notificationSocketService';
 import {
   IFollowNotificationEvent,
@@ -15,97 +15,76 @@ import {
 export function useNotificationSocketListeners() {
   const queryClient = useQueryClient();
   const setUnreadCount = useNotificationStore((state) => state.setUnreadCount);
-  const unreadCount = useNotificationStore((state) => state.unreadCount);
+  const incrementUnreadCount = useNotificationStore((state) => state.incrementUnreadCount);
 
   // Handle newest count updates
-  const handleNewestCount = useCallback(
-    (data: INewestCountDataEvent) => {
-      console.log('[NotificationSocket] Newest count:', data.newest_count);
-      setUnreadCount(data.newest_count);
-    },
-    [setUnreadCount],
-  );
+  const handleNewestCount = (data: INewestCountDataEvent) => {
+    // console.log('[NotificationSocket] Newest count:', data.newest_count);
+    setUnreadCount(data.newest_count);
+  };
 
   // Handle follow notifications
-  const handleFollow = useCallback(
-    (data: IFollowNotificationEvent) => {
-      console.log('[NotificationSocket] Follow notification:', data);
+  const handleFollow = (data: IFollowNotificationEvent) => {
+    // console.log('[NotificationSocket] Follow notification:', data);
 
-      // Invalidate notifications query to refresh the list
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    // Invalidate notifications query to refresh the list
+    queryClient.invalidateQueries({ queryKey: ['notifications'] });
 
-      // Update unread count based on action
-      if (data.action === 'add' || data.action === 'aggregate') {
-        setUnreadCount(unreadCount + 1);
-      }
-    },
-    [queryClient],
-  );
+    // Update unread count based on action
+    if (data.action === 'add' || data.action === 'aggregate') {
+      incrementUnreadCount();
+    }
+  };
 
   // Handle like notifications
-  const handleLike = useCallback(
-    (data: ILikeNotificationEvent) => {
-      console.log('[NotificationSocket] Like notification:', data);
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+  const handleLike = (data: ILikeNotificationEvent) => {
+    // console.log('[NotificationSocket] Like notification:', data);
+    queryClient.invalidateQueries({ queryKey: ['notifications'] });
 
-      if (data.action === 'add' || data.action === 'aggregate') {
-        setUnreadCount(unreadCount + 1);
-      }
-    },
-    [queryClient],
-  );
+    if (data.action === 'add' || data.action === 'aggregate') {
+      incrementUnreadCount();
+    }
+  };
 
   // Handle reply notifications
-  const handleReply = useCallback(
-    (data: IReplyNotificationEvent) => {
-      console.log('[NotificationSocket] Reply notification:', data);
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+  const handleReply = (data: IReplyNotificationEvent) => {
+    // console.log('[NotificationSocket] Reply notification:', data);
+    queryClient.invalidateQueries({ queryKey: ['notifications'] });
 
-      if (data.action === 'add') {
-        setUnreadCount(unreadCount + 1);
-      }
-    },
-    [queryClient],
-  );
+    if (data.action === 'add') {
+      incrementUnreadCount();
+    }
+  };
 
   // Handle repost notifications
-  const handleRepost = useCallback(
-    (data: IRepostNotificationEvent) => {
-      console.log('[NotificationSocket] Repost notification:', data);
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+  const handleRepost = (data: IRepostNotificationEvent) => {
+    // console.log('[NotificationSocket] Repost notification:', data);
+    queryClient.invalidateQueries({ queryKey: ['notifications'] });
 
-      if (data.action === 'add' || data.action === 'aggregate') {
-        setUnreadCount(unreadCount + 1);
-      }
-    },
-    [queryClient],
-  );
+    if (data.action === 'add' || data.action === 'aggregate') {
+      incrementUnreadCount();
+    }
+  };
 
   // Handle quote notifications
-  const handleQuote = useCallback(
-    (data: IQuoteNotificationEvent) => {
-      console.log('[NotificationSocket] Quote notification:', data);
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+  const handleQuote = (data: IQuoteNotificationEvent) => {
+    // console.log('[NotificationSocket] Quote notification:', data);
+    queryClient.invalidateQueries({ queryKey: ['notifications'] });
 
-      if (data.action === 'add') {
-        setUnreadCount(unreadCount + 1);
-      }
-    },
-    [queryClient],
-  );
+    if (data.action === 'add') {
+      incrementUnreadCount();
+    }
+  };
 
   // Handle mention notifications
-  const handleMention = useCallback(
-    (data: IMentionNotificationEvent) => {
-      console.log('[NotificationSocket] Mention notification:', data);
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+  const handleMention = (data: IMentionNotificationEvent) => {
+    // console.log('[NotificationSocket] Mention notification:', data);
+    queryClient.invalidateQueries({ queryKey: ['notifications'] });
 
-      if (data.action === 'add') {
-        setUnreadCount(unreadCount + 1);
-      }
-    },
-    [queryClient],
-  );
+    if (data.action === 'add') {
+      incrementUnreadCount();
+    }
+  };
 
   // Subscribe to socket events
   useEffect(() => {
