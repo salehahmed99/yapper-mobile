@@ -97,6 +97,8 @@ export const getMessages = async (params: IGetMessagesParams): Promise<IGetMessa
       ...msg,
       senderId: msg.sender?.id || msg.sender_id || msg.senderId,
       imageUrl: msg.imageUrl || msg.image_url || null,
+      voiceNoteUrl: msg.voiceNoteUrl || msg.voice_note_url || null,
+      voiceNoteDuration: msg.voiceNoteDuration || msg.voice_note_duration || null,
       reactions: (msg.reactions || []).map((r: any) => {
         const reactedByMe = r.reactedByMe ?? r.reacted_by_me ?? false;
         // Calculate if others reacted. In 1-on-1, this logic effectively flags if the other user reacted.
@@ -224,6 +226,59 @@ export const uploadMessageImage = async (imageUri: string): Promise<IUploadImage
 
     return {
       imageUrl: response.data.data.imageUrl,
+    };
+  } catch (error) {
+    throw new Error(extractErrorMessage(error));
+  }
+};
+
+// Voice Note Upload types
+export interface IUploadVoiceNoteResponse {
+  data: {
+    voiceNoteUrl: string;
+    duration: string;
+  };
+  count: number;
+  message: string;
+}
+
+export interface IUploadVoiceNoteResult {
+  voiceNoteUrl: string;
+  duration: string;
+}
+
+// Convert seconds to MM:SS format
+const formatDurationMMSS = (seconds: number): string => {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
+
+export const uploadVoiceNote = async (voiceUri: string, durationSeconds: number): Promise<IUploadVoiceNoteResult> => {
+  try {
+    const formData = new FormData();
+    const filename = voiceUri.split('/').pop() || 'voice.m4a';
+    const match = /\.(\w+)$/.exec(filename);
+    const type = match ? `audio/${match[1]}` : 'audio/m4a';
+
+    formData.append('voice_note', {
+      uri: voiceUri,
+      name: filename,
+      type,
+    } as unknown as Blob);
+
+    formData.append('duration', formatDurationMMSS(durationSeconds));
+
+    const response = await api.post<IUploadVoiceNoteResponse>('/messages/voices/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    console.log('Voice note uploaded:', response.data);
+
+    return {
+      voiceNoteUrl: response.data.data.voiceNoteUrl,
+      duration: response.data.data.duration,
     };
   } catch (error) {
     throw new Error(extractErrorMessage(error));

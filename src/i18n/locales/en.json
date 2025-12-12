@@ -62,6 +62,7 @@
       "receivedMessage": "Received message",
       "replyingTo": "Replying to {{name}}",
       "photo": "Photo",
+      "voiceMessage": "Voice message",
       "unknown": "Unknown"
     },
     "reactions": {

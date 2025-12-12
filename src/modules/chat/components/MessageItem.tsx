@@ -1,7 +1,7 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { formatRelativeTime } from '@/src/modules/chat/utils/formatters';
-import { Image as ImageIcon } from 'lucide-react-native';
+import { Image as ImageIcon, Mic } from 'lucide-react-native';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { IChat } from '../types';
@@ -18,11 +18,19 @@ export default function MessageItem({ chat, onPress }: MessageItemProps) {
   const hasUnread = unreadCount > 0;
   const timestamp = lastMessage?.createdAt;
 
+  if (!participant) {
+    return null;
+  }
+
+  const displayName = participant.name || participant.username || 'Unknown';
+  const avatarLetter = participant.name?.charAt(0) || participant.username?.charAt(0) || '?';
+
   const renderPreview = () => {
     if (!lastMessage) return <Text style={styles.noMessages}>No messages yet</Text>;
 
     const hasImage = !!lastMessage.imageUrl;
-    const content = lastMessage.content || (hasImage ? 'Photo' : '');
+    const hasVoice = lastMessage.messageType === 'voice' || !!lastMessage.voiceNoteUrl;
+    const content = lastMessage.content || (hasVoice ? 'Voice message' : hasImage ? 'Photo' : '');
 
     return (
       <View style={styles.previewContainer}>
@@ -33,11 +41,18 @@ export default function MessageItem({ chat, onPress }: MessageItemProps) {
             style={styles.previewIcon}
           />
         )}
+        {hasVoice && (
+          <Mic
+            size={16}
+            color={hasUnread ? theme.colors.text.primary : theme.colors.text.secondary}
+            style={styles.previewIcon}
+          />
+        )}
         <Text
           style={[
             styles.messagePreview,
             hasUnread && styles.messagePreviewUnread,
-            hasImage && styles.imageTextContainer,
+            (hasImage || hasVoice) && styles.imageTextContainer,
           ]}
           numberOfLines={1}
         >
@@ -52,23 +67,23 @@ export default function MessageItem({ chat, onPress }: MessageItemProps) {
       style={styles.messageItem}
       onPress={onPress}
       testID={`message_item_${chat.id}`}
-      accessibilityLabel={`Chat with ${participant.name || participant.username}`}
+      accessibilityLabel={`Chat with ${displayName}`}
     >
       {participant.avatarUrl ? (
         <Image source={{ uri: participant.avatarUrl }} style={styles.avatar} />
       ) : (
         <View style={[styles.avatar, styles.avatarPlaceholder]}>
-          <Text style={styles.avatarText}>{participant.name?.charAt(0) || participant.username.charAt(0)}</Text>
+          <Text style={styles.avatarText}>{avatarLetter}</Text>
         </View>
       )}
       <View style={styles.messageContent}>
         <View style={styles.messageHeader}>
           <View style={styles.nameRow}>
             <Text style={styles.messageName} numberOfLines={1} testID={`message_item_name_${chat.id}`}>
-              {participant.name || participant.username}
+              {displayName}
             </Text>
             <Text style={styles.messageUsername} numberOfLines={1}>
-              @{participant.username}
+              @{participant.username || 'unknown'}
             </Text>
             {timestamp && (
               <>
@@ -115,7 +130,7 @@ const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: theme.spacing.xxs,
+      marginBottom: theme.spacing.xs,
     },
     nameRow: {
       flexDirection: 'row',

@@ -67,6 +67,7 @@
       "receivedMessage": "رسالة مستلمة",
       "replyingTo": "الرد على {{name}}",
       "photo": "صورة",
+      "voiceMessage": "رسالة صوتية",
       "unknown": "غير معروف"
     },
     "reactions": {

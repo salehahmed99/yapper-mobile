@@ -49,6 +49,7 @@
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "expo": "~54.0.27",
+    "expo-audio": "~1.1.0",
     "expo-auth-session": "~7.0.10",
     "expo-blur": "~15.0.8",
     "expo-constants": "~18.0.11",

@@ -43,7 +43,7 @@ interface UseChatConversationReturn {
 
   // Actions
   handleTextChange: (text: string) => void;
-  handleSend: (imageUrl?: string | null) => void;
+  handleSend: (imageUrl?: string | null, voiceNoteUrl?: string | null, voiceNoteDuration?: string | null) => void;
   handleLoadMore: () => void;
   handleReplyToMessage: (message: IChatMessageItem, senderName: string) => void;
   handleCancelReply: () => void;
@@ -142,6 +142,8 @@ export function useChatConversation({ chatId }: UseChatConversationOptions): Use
         messageType: data.message.message_type,
         replyTo: data.message.reply_to_message_id || null,
         replyToMessage,
+        voiceNoteUrl: data.message.voice_note_url || null,
+        voiceNoteDuration: data.message.voice_note_duration || null,
         imageUrl: data.message.image_url || null,
         isRead: data.message.is_read,
         createdAt: data.message.created_at,
@@ -196,6 +198,8 @@ export function useChatConversation({ chatId }: UseChatConversationOptions): Use
         replyTo: data.reply_to_message_id || null,
         replyToMessage,
         imageUrl: data.image_url || null,
+        voiceNoteUrl: data.voice_note_url || null,
+        voiceNoteDuration: data.voice_note_duration || null,
         isRead: data.is_read,
         createdAt: data.created_at,
         updatedAt: data.updated_at || data.created_at,
@@ -438,15 +442,25 @@ export function useChatConversation({ chatId }: UseChatConversationOptions): Use
   );
 
   const handleSend = useCallback(
-    (imageUrl?: string | null) => {
-      if ((!inputText.trim() && !imageUrl) || !chatId) return;
+    (imageUrl?: string | null, voiceNoteUrl?: string | null, voiceNoteDuration?: string | null) => {
+      // For voice notes, we send even without text content
+      if ((!inputText.trim() && !imageUrl && !voiceNoteUrl) || !chatId) return;
 
       const content = inputText.trim();
-      const messageType = replyingTo ? 'reply' : 'text';
+      const messageType = voiceNoteUrl ? 'voice' : replyingTo ? 'reply' : imageUrl ? 'image' : 'text';
       const replyToId = replyingTo?.messageId || null;
       const isFirstMessage = messages.length === 0;
 
-      chatSocketService.sendMessage(chatId, content, messageType, replyToId, imageUrl || null, isFirstMessage);
+      chatSocketService.sendMessage(
+        chatId,
+        content,
+        messageType,
+        replyToId,
+        imageUrl || null,
+        isFirstMessage,
+        voiceNoteUrl || null,
+        voiceNoteDuration || null,
+      );
 
       if (isTyping) {
         setIsTyping(false);
@@ -466,6 +480,7 @@ export function useChatConversation({ chatId }: UseChatConversationOptions): Use
       content: message.content,
       senderName,
       hasImage: !!message.imageUrl || message.messageType === 'image',
+      hasVoice: !!message.voiceNoteUrl || message.messageType === 'voice',
     });
   }, []);
 
