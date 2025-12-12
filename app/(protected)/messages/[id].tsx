@@ -87,6 +87,15 @@ export default function ChatConversationPage() {
     router.back();
   };
 
+  const handleProfilePress = () => {
+    if (sender?.id) {
+      router.push({
+        pathname: '/(protected)/(profile)/[id]',
+        params: { id: sender.id },
+      });
+    }
+  };
+
   // For testing: clear and refetch the messages cache
   const queryClient = useQueryClient();
   const handleClearCache = () => {
@@ -107,6 +116,7 @@ export default function ChatConversationPage() {
           avatarUrl={params.avatarUrl}
           onBack={handleBack}
           onInfo={handleClearCache}
+          onProfilePress={handleProfilePress}
         />
       </View>
       <View style={styles.messagesContainer}>

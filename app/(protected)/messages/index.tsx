@@ -10,7 +10,7 @@ import { chatSocketService, INewMessageData, IUnreadChatsSummary } from '@/src/m
 import { IChat } from '@/src/modules/chat/types';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
-import { MailPlus, SettingsIcon } from 'lucide-react-native';
+import { MailPlus } from 'lucide-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
@@ -131,7 +131,7 @@ export default function MessagesPage() {
   return (
     <View style={styles.container} testID="messages_screen_container">
       <View style={styles.appBarWrapper}>
-        <AppBar rightElement={<SettingsIcon color={theme.colors.text.primary} />}>
+        <AppBar>
           <Text style={styles.title} testID="messages_header_title">
             {t('messages.title')}
           </Text>

@@ -341,6 +341,19 @@ export function useChatConversation({ chatId }: UseChatConversationOptions): Use
           messages: page.messages.map((msg) => {
             if (msg.id !== data.message_id) return msg;
 
+            // Deduplicate: Check if this user actually reacted with this emoji before removing
+            const hasReaction = msg.reactions?.some((r) => {
+              if (r.emoji !== data.emoji) return false;
+              if (isFromCurrentUser) return r.reactedByMe;
+              // For other user: if I haven't reacted, count > 0 means they did.
+              // If I *have* reacted, count > 1 means they *also* did.
+              return !r.reactedByMe || r.count > 1;
+            });
+
+            if (!hasReaction) {
+              return msg;
+            }
+
             const updatedReactions = (msg.reactions || [])
               .map((r) =>
                 r.emoji === data.emoji
