@@ -159,7 +159,7 @@ export default function ChatInput({
             value={value}
             onChangeText={onChangeText}
             multiline
-            maxLength={1000}
+            maxLength={300}
             testID="chat_input_text_field"
             accessibilityLabel={t('messages.input.messageInput')}
           />
