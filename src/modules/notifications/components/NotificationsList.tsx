@@ -47,7 +47,11 @@ const NotificationsList: React.FC<INotificationsListProps> = (props) => {
       <View>
         {topSpacing > 0 && <View style={{ height: topSpacing }} />}
         {useCustomRefreshIndicator && refreshing && (
-          <View style={styles.customRefreshContainer}>
+          <View
+            style={styles.customRefreshContainer}
+            accessibilityLabel="notifications_refreshing"
+            testID="notifications_refreshing"
+          >
             <ActivityIndicator color={theme.colors.text.primary} />
           </View>
         )}
@@ -59,7 +63,11 @@ const NotificationsList: React.FC<INotificationsListProps> = (props) => {
     return (
       <View>
         {isFetchingNextPage && (
-          <View style={styles.loadingFooter}>
+          <View
+            style={styles.loadingFooter}
+            accessibilityLabel="notifications_loading_more"
+            testID="notifications_loading_more"
+          >
             <ActivityIndicator size="small" color={theme.colors.text.primary} />
           </View>
         )}
@@ -70,7 +78,7 @@ const NotificationsList: React.FC<INotificationsListProps> = (props) => {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={styles.loadingContainer} accessibilityLabel="notifications_loading" testID="notifications_loading">
         <ActivityIndicator size="large" color={theme.colors.text.primary} />
       </View>
     );

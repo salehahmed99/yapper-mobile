@@ -21,32 +21,46 @@ const Notification: React.FC<INotificationProps> = (props) => {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   return (
-    <Pressable style={styles.container} onPress={onPress}>
-      {icon}
+    <Pressable
+      style={styles.container}
+      onPress={onPress}
+      accessibilityLabel="notification_item"
+      testID="notification_item"
+    >
+      <View accessibilityLabel="notification_icon" testID="notification_icon">
+        {icon}
+      </View>
       <View style={styles.detailsColumn}>
         <View style={styles.headerRow}>
-          <View style={styles.avatarsContainer}>
-            {users.map((user) => (
+          <View style={styles.avatarsContainer} accessibilityLabel="notification_avatars_container">
+            {users.map((user, index) => (
               <Pressable
                 key={user.id}
                 onPress={() => onAvatarPress(user.id)}
-                accessibilityLabel="notification_avatar"
-                testID="notification_avatar"
+                accessibilityLabel={`notification_avatar_${index}`}
+                testID={`notification_avatar_${index}`}
               >
                 <Image
                   source={user.avatarUrl ? { uri: user.avatarUrl } : DEFAULT_AVATAR_URI}
                   style={styles.avatar}
                   cachePolicy="memory-disk"
+                  accessibilityLabel={`avatar_image_${user.username}`}
                 />
               </Pressable>
             ))}
           </View>
-          <Text style={styles.timestamp} accessibilityLabel="notification_timestamp">
+          <Text style={styles.timestamp} accessibilityLabel="notification_timestamp" testID="notification_timestamp">
             {createdAt && formatTweetDate(createdAt)}
           </Text>
         </View>
-        <Text style={styles.title}>{title}</Text>
-        {body && <Text style={styles.body}>{body}</Text>}
+        <Text style={styles.title} accessibilityLabel="notification_title" testID="notification_title">
+          {title}
+        </Text>
+        {body && (
+          <Text style={styles.body} accessibilityLabel="notification_body" testID="notification_body">
+            {body}
+          </Text>
+        )}
       </View>
     </Pressable>
   );
