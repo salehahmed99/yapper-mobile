@@ -6,7 +6,7 @@ import React from 'react';
 
 // Mocks
 jest.mock('@/src/components/shell/AppBar', () => {
-  const { View, Text } = require('react-native');
+  const { View } = require('react-native');
   return ({ children }: any) => <View testID="app_bar">{children}</View>;
 });
 

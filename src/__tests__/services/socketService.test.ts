@@ -66,7 +66,7 @@ describe('SocketService', () => {
       await socketService.connect();
 
       // Second connect should just return it
-      const socket = await socketService.connect();
+      await socketService.connect();
       expect(getToken).toHaveBeenCalledTimes(1); // Should not accept new token
       expect(io).toHaveBeenCalledTimes(1);
     });
@@ -82,7 +82,7 @@ describe('SocketService', () => {
       (io as unknown as jest.Mock).mockImplementation(() => {
         throw new Error('Connection failed');
       });
-      const socket = await socketService.connect();
+      await socketService.connect();
       expect(consoleSpy.error).toHaveBeenCalled();
     });
 
