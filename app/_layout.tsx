@@ -54,17 +54,12 @@ export default function RootLayout() {
       const data = response.notification.request.content.data;
       const tweetId = data.tweet_id as string;
       const userId = data.user_id as string;
-      console.log(tweetId);
-      console.log(userId);
       if (tweetId) {
         router.push({ pathname: '/(protected)/tweets/[tweetId]', params: { tweetId: tweetId } });
       }
       if (userId) {
         router.push({ pathname: '/(protected)/(profile)/[id]', params: { id: userId } });
       }
-      console.log('here');
-      console.log(data);
-      console.log('here');
     });
     return () => {
       responseListener.remove();
