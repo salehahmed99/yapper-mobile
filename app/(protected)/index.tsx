@@ -7,6 +7,7 @@ import { useNotification } from '@/src/context/NotificationContext';
 import { useTheme } from '@/src/context/ThemeContext';
 import useSpacing from '@/src/hooks/useSpacing';
 import { useSwipableTabs } from '@/src/hooks/useSwipableTabs';
+import { registerDeviceForPushNotifications } from '@/src/modules/notifications/services/notificationService';
 import CreatePostModal from '@/src/modules/tweets/components/CreatePostModal';
 import Fab from '@/src/modules/tweets/components/Fab';
 import MediaViewerModal from '@/src/modules/tweets/components/MediaViewerModal';
@@ -14,7 +15,6 @@ import TweetList from '@/src/modules/tweets/components/TweetList';
 import { useTweetActions } from '@/src/modules/tweets/hooks/useTweetActions';
 import { useTweets } from '@/src/modules/tweets/hooks/useTweets';
 import { useTweetsFiltersStore } from '@/src/modules/tweets/store/useTweetsFiltersStore';
-import { registerDeviceForPushNotifications } from '@/src/services/notificationService';
 import React, { useEffect, useState } from 'react';
 import { Animated, Platform, StyleSheet, View } from 'react-native';
 
