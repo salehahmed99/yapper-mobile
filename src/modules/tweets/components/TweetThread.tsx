@@ -164,7 +164,7 @@ const SingleTweet: React.FC<ITweetProps> = (props) => {
           </View>
           <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} />
 
-          {tweet.postType === 'quote' && tweet.parentTweet && (
+          {(tweet.postType === 'quote' || tweet.type === 'quote') && tweet.parentTweet && (
             <View style={{ marginTop: theme.spacing.xs }}>
               <ParentTweet tweet={tweet.parentTweet} isVisible={isVisible} />
             </View>
