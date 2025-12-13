@@ -119,9 +119,9 @@ const createStyles = (theme: Theme, isOwn: boolean) => {
         minWidth: 180,
       },
       playButton: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
+        width: theme.spacing.xxll,
+        height: theme.spacing.xxll,
+        borderRadius: theme.spacing.xxll / 2,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: isOwn ? theme.colors.text.inverse : theme.colors.accent.bookmark,
@@ -130,9 +130,9 @@ const createStyles = (theme: Theme, isOwn: boolean) => {
         flex: 1,
       },
       waveform: {
-        height: 4,
+        height: theme.spacing.xs,
         backgroundColor: isOwn ? theme.colors.text.inverse + '44' : theme.colors.text.primary + '44',
-        borderRadius: 2,
+        borderRadius: theme.spacing.xs / 2,
         overflow: 'hidden',
       },
       progress: {
@@ -142,7 +142,7 @@ const createStyles = (theme: Theme, isOwn: boolean) => {
       duration: {
         fontSize: theme.typography.sizes.xs,
         color: isOwn ? theme.colors.text.inverse : theme.colors.text.secondary,
-        marginTop: 4,
+        marginTop: theme.spacing.xs,
       },
       micIcon: {
         opacity: 0.8,
