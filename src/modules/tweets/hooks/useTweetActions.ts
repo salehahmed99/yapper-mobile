@@ -18,6 +18,7 @@ import {
   removeTweetFromInfiniteCache,
   updateCategoryPostsCache,
   updateExploreCache,
+  updateSearchPostsCache,
   updateTweetsInInfiniteCache,
 } from '../utils/cacheUtils';
 
@@ -156,7 +157,7 @@ export const useTweetActions = () => {
       );
 
       queryClient.setQueriesData<InfiniteData<any>>({ queryKey: ['searchPosts'] }, (oldData) =>
-        updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleLike),
+        updateSearchPostsCache(oldData, variables.tweetId, toggleLike),
       );
 
       queryClient.setQueriesData<IExploreResponse>({ queryKey: ['explore', 'forYou'] }, (oldData) =>
@@ -224,7 +225,7 @@ export const useTweetActions = () => {
       );
 
       queryClient.setQueriesData<InfiniteData<any>>({ queryKey: ['searchPosts'] }, (oldData) =>
-        updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleRepost),
+        updateSearchPostsCache(oldData, variables.tweetId, toggleRepost),
       );
 
       queryClient.setQueriesData<IExploreResponse>({ queryKey: ['explore', 'forYou'] }, (oldData) =>
@@ -298,7 +299,7 @@ export const useTweetActions = () => {
       );
 
       queryClient.setQueriesData<InfiniteData<any>>({ queryKey: ['searchPosts'] }, (oldData) =>
-        updateTweetsInInfiniteCache(oldData, variables.tweetId, toggleBookmark),
+        updateSearchPostsCache(oldData, variables.tweetId, toggleBookmark),
       );
 
       queryClient.setQueriesData<IExploreResponse>({ queryKey: ['explore', 'forYou'] }, (oldData) =>

@@ -1,4 +1,5 @@
 import { ICategoryTweetsResponse, IExploreResponse } from '@/src/modules/explore/types';
+import { ISearchPostsResponse } from '@/src/modules/search/types';
 import { InfiniteData } from '@tanstack/react-query';
 import { ITweet, ITweets } from '../types';
 
@@ -146,6 +147,29 @@ export const updateCategoryPostsCache = (
         data: {
           ...page.data,
           tweets: page.data.tweets.map((tweet) => updateTweetDeep(tweet, tweetId, updater)),
+        },
+      };
+    }),
+  };
+};
+
+export const updateSearchPostsCache = (
+  oldData: InfiniteData<ISearchPostsResponse> | undefined,
+  tweetId: string,
+  updater: (tweet: ITweet) => ITweet,
+): InfiniteData<ISearchPostsResponse> | undefined => {
+  if (!oldData?.pages) return oldData;
+
+  return {
+    ...oldData,
+    pages: oldData.pages.map((page) => {
+      if (!page?.data?.data) return page;
+
+      return {
+        ...page,
+        data: {
+          ...page.data,
+          data: page.data.data.map((tweet) => updateTweetDeep(tweet, tweetId, updater)),
         },
       };
     }),
