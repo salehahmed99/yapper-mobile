@@ -140,7 +140,7 @@ const ForYouContent: React.FC<IForYouContentProps> = ({
                 </TouchableOpacity>
               )}
             </View>
-            {whoToFollow.map((user) => {
+            {whoToFollow.slice(0, 3).map((user) => {
               const mappedUser = mapExploreUserToUser(user);
               return (
                 <UserListItem

@@ -19,6 +19,7 @@ import {
   updateCategoryPostsCache,
   updateExploreCache,
   updateSearchPostsCache,
+  updateTweetQuotesCache,
   updateTweetsInInfiniteCache,
 } from '../utils/cacheUtils';
 
@@ -123,6 +124,7 @@ export const useTweetActions = () => {
       await queryClient.cancelQueries({ queryKey: ['searchPosts'] });
       await queryClient.cancelQueries({ queryKey: ['explore', 'forYou'] });
       await queryClient.cancelQueries({ queryKey: ['categoryPosts'] });
+      await queryClient.cancelQueries({ queryKey: ['tweet-quotes'] });
       await queryClient.cancelQueries({ queryKey: notificationsQueryKey });
       await queryClient.cancelQueries({ queryKey: mentionsQueryKey });
 
@@ -168,6 +170,10 @@ export const useTweetActions = () => {
         updateCategoryPostsCache(oldData, variables.tweetId, toggleLike),
       );
 
+      queryClient.setQueriesData<InfiniteData<any>>({ queryKey: ['tweet-quotes'] }, (oldData) =>
+        updateTweetQuotesCache(oldData, variables.tweetId, toggleLike),
+      );
+
       queryClient.setQueryData<ITweet>(['tweet', { tweetId: variables.tweetId }], (oldData) =>
         oldData ? toggleLike(oldData) : oldData,
       );
@@ -192,6 +198,7 @@ export const useTweetActions = () => {
       queryClient.invalidateQueries({ queryKey: ['searchPosts'] });
       queryClient.invalidateQueries({ queryKey: ['explore', 'forYou'] });
       queryClient.invalidateQueries({ queryKey: ['categoryPosts'] });
+      queryClient.invalidateQueries({ queryKey: ['tweet-quotes'] });
       queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
       queryClient.invalidateQueries({ queryKey: mentionsQueryKey });
     },
@@ -209,6 +216,7 @@ export const useTweetActions = () => {
       await queryClient.cancelQueries({ queryKey: ['searchPosts'] });
       await queryClient.cancelQueries({ queryKey: ['explore', 'forYou'] });
       await queryClient.cancelQueries({ queryKey: ['categoryPosts'] });
+      await queryClient.cancelQueries({ queryKey: ['tweet-quotes'] });
       await queryClient.cancelQueries({ queryKey: notificationsQueryKey });
       await queryClient.cancelQueries({ queryKey: mentionsQueryKey });
 
@@ -234,6 +242,10 @@ export const useTweetActions = () => {
 
       queryClient.setQueriesData<InfiniteData<ICategoryTweetsResponse>>({ queryKey: ['categoryPosts'] }, (oldData) =>
         updateCategoryPostsCache(oldData, variables.tweetId, toggleRepost),
+      );
+
+      queryClient.setQueriesData<InfiniteData<any>>({ queryKey: ['tweet-quotes'] }, (oldData) =>
+        updateTweetQuotesCache(oldData, variables.tweetId, toggleRepost),
       );
 
       queryClient.setQueryData<ITweet>(['tweet', { tweetId: variables.tweetId }], (oldData) =>
@@ -265,6 +277,7 @@ export const useTweetActions = () => {
       queryClient.invalidateQueries({ queryKey: ['searchPosts'] });
       queryClient.invalidateQueries({ queryKey: ['explore', 'forYou'] });
       queryClient.invalidateQueries({ queryKey: ['categoryPosts'] });
+      queryClient.invalidateQueries({ queryKey: ['tweet-quotes'] });
       queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
       queryClient.invalidateQueries({ queryKey: mentionsQueryKey });
     },
@@ -282,6 +295,7 @@ export const useTweetActions = () => {
       await queryClient.cancelQueries({ queryKey: ['searchPosts'] });
       await queryClient.cancelQueries({ queryKey: ['explore', 'forYou'] });
       await queryClient.cancelQueries({ queryKey: ['categoryPosts'] });
+      await queryClient.cancelQueries({ queryKey: ['tweet-quotes'] });
       await queryClient.cancelQueries({ queryKey: bookmarksQueryKey });
       await queryClient.cancelQueries({ queryKey: notificationsQueryKey });
       await queryClient.cancelQueries({ queryKey: mentionsQueryKey });
@@ -308,6 +322,10 @@ export const useTweetActions = () => {
 
       queryClient.setQueriesData<InfiniteData<ICategoryTweetsResponse>>({ queryKey: ['categoryPosts'] }, (oldData) =>
         updateCategoryPostsCache(oldData, variables.tweetId, toggleBookmark),
+      );
+
+      queryClient.setQueriesData<InfiniteData<any>>({ queryKey: ['tweet-quotes'] }, (oldData) =>
+        updateTweetQuotesCache(oldData, variables.tweetId, toggleBookmark),
       );
 
       queryClient.setQueryData<ITweet>(['tweet', { tweetId: variables.tweetId }], (oldData) =>
@@ -374,6 +392,7 @@ export const useTweetActions = () => {
       queryClient.invalidateQueries({ queryKey: ['searchPosts'] });
       queryClient.invalidateQueries({ queryKey: ['explore', 'forYou'] });
       queryClient.invalidateQueries({ queryKey: ['categoryPosts'] });
+      queryClient.invalidateQueries({ queryKey: ['tweet-quotes'] });
       queryClient.invalidateQueries({ queryKey: bookmarksQueryKey });
       queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
       queryClient.invalidateQueries({ queryKey: mentionsQueryKey });

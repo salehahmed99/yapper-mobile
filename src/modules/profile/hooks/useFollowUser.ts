@@ -1,6 +1,7 @@
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { IExploreResponse, IWhoToFollowResponse } from '../../explore/types';
 import { ITweet, ITweets } from '../../tweets/types';
 import { followUser, unfollowUser } from '../services/profileService';
 import { updateUserStateInTweetsCache } from '../utils/profileCacheUtils';
@@ -32,6 +33,39 @@ export const useFollowUser = (initialFollowState: boolean = false): UseFollowUse
     };
   };
 
+  // Helper to update whoToFollow in explore cache
+  const updateExploreWhoToFollow = (
+    oldData: IExploreResponse | undefined,
+    userId: string,
+    newFollowingState: boolean,
+  ): IExploreResponse | undefined => {
+    if (!oldData?.data?.whoToFollow) return oldData;
+
+    return {
+      ...oldData,
+      data: {
+        ...oldData.data,
+        whoToFollow: oldData.data.whoToFollow.map((user) =>
+          user.id === userId ? { ...user, isFollowing: newFollowingState } : user,
+        ),
+      },
+    };
+  };
+
+  // Helper to update whoToFollow dedicated cache
+  const updateWhoToFollowCache = (
+    oldData: IWhoToFollowResponse | undefined,
+    userId: string,
+    newFollowingState: boolean,
+  ): IWhoToFollowResponse | undefined => {
+    if (!oldData?.data) return oldData;
+
+    return {
+      ...oldData,
+      data: oldData.data.map((user) => (user.id === userId ? { ...user, isFollowing: newFollowingState } : user)),
+    };
+  };
+
   const followMutation = useMutation({
     mutationFn: async (variables: FollowMutationVariables) => {
       return variables.isFollowing ? unfollowUser(variables.userId) : followUser(variables.userId);
@@ -42,6 +76,8 @@ export const useFollowUser = (initialFollowState: boolean = false): UseFollowUse
       await queryClient.cancelQueries({ queryKey: ['tweets'] });
       await queryClient.cancelQueries({ queryKey: ['followers'] });
       await queryClient.cancelQueries({ queryKey: ['following'] });
+      await queryClient.cancelQueries({ queryKey: ['explore', 'forYou'] });
+      await queryClient.cancelQueries({ queryKey: ['whoToFollow'] });
 
       setIsFollowing(!variables.isFollowing);
 
@@ -51,6 +87,16 @@ export const useFollowUser = (initialFollowState: boolean = false): UseFollowUse
 
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: ['profile'] }, (oldData) =>
         updateUserStateInTweetsCache(oldData, variables.userId, toggleFollowState),
+      );
+
+      // Update explore cache (whoToFollow section in ForYou tab)
+      queryClient.setQueryData<IExploreResponse>(['explore', 'forYou'], (oldData) =>
+        updateExploreWhoToFollow(oldData, variables.userId, !variables.isFollowing),
+      );
+
+      // Update dedicated whoToFollow cache (Show more screen)
+      queryClient.setQueriesData<IWhoToFollowResponse>({ queryKey: ['whoToFollow'] }, (oldData) =>
+        updateWhoToFollowCache(oldData, variables.userId, !variables.isFollowing),
       );
     },
     onSuccess: async (data, variables) => {
@@ -71,6 +117,8 @@ export const useFollowUser = (initialFollowState: boolean = false): UseFollowUse
       queryClient.invalidateQueries({ queryKey: ['followers'] });
       queryClient.invalidateQueries({ queryKey: ['following'] });
       queryClient.invalidateQueries({ queryKey: ['userList'] });
+      queryClient.invalidateQueries({ queryKey: ['explore', 'forYou'] });
+      queryClient.invalidateQueries({ queryKey: ['whoToFollow'] });
     },
   });
 

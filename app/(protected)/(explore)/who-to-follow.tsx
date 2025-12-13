@@ -1,13 +1,13 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import { getWhoToFollow } from '@/src/modules/explore/services/exploreService';
+import { useWhoToFollow } from '@/src/modules/explore/hooks/useWhoToFollow';
 import { IExploreUser } from '@/src/modules/explore/types';
 import FollowButton from '@/src/modules/user_list/components/FollowButton';
 import UserListItem from '@/src/modules/user_list/components/UserListItem';
 import { IUser } from '@/src/types/user';
 import { useRouter } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -80,38 +80,9 @@ export default function WhoToFollowScreen() {
   const insets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const [users, setUsers] = useState<IExploreUser[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchUsers = useCallback(
-    async (isRefresh = false) => {
-      if (isRefresh) {
-        setRefreshing(true);
-      } else {
-        setLoading(true);
-      }
-      setError(null);
-
-      try {
-        const response = await getWhoToFollow();
-        setUsers(response.data);
-      } catch (err) {
-        console.error('Error fetching who to follow:', err);
-        setError(t('explore.errors.fetchFailed', 'Failed to load suggestions'));
-      } finally {
-        setLoading(false);
-        setRefreshing(false);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
-
-  useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+  // Use React Query hook for caching
+  const { data, isLoading, isRefetching, refetch, error } = useWhoToFollow();
+  const users = data?.data || [];
 
   const handleUserPress = useCallback(
     (user: IUser) => {
@@ -136,7 +107,7 @@ export default function WhoToFollowScreen() {
   );
 
   const renderEmpty = useCallback(() => {
-    if (loading) {
+    if (isLoading) {
       return (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.text.link} />
@@ -147,7 +118,7 @@ export default function WhoToFollowScreen() {
     if (error) {
       return (
         <View style={styles.emptyContainer}>
-          <Text style={styles.errorText}>{error}</Text>
+          <Text style={styles.errorText}>{t('explore.errors.fetchFailed', 'Failed to load suggestions')}</Text>
         </View>
       );
     }
@@ -157,7 +128,7 @@ export default function WhoToFollowScreen() {
         <Text style={styles.emptyText}>{t('explore.noSuggestions', 'No suggestions available')}</Text>
       </View>
     );
-  }, [loading, error, styles, theme.colors.text.link, t]);
+  }, [isLoading, error, styles, theme.colors.text.link, t]);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -177,11 +148,7 @@ export default function WhoToFollowScreen() {
         ListEmptyComponent={renderEmpty}
         ListFooterComponent={() => <View style={{ height: insets.bottom + 60 }} />}
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={() => fetchUsers(true)}
-            tintColor={theme.colors.text.link}
-          />
+          <RefreshControl refreshing={isRefetching} onRefresh={() => refetch()} tintColor={theme.colors.text.link} />
         }
         showsVerticalScrollIndicator={false}
       />

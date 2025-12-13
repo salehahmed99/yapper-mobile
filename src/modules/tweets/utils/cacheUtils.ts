@@ -175,3 +175,27 @@ export const updateSearchPostsCache = (
     }),
   };
 };
+
+/**
+ * Update tweets in tweet-quotes infinite cache
+ * Structure: InfiniteData<{ data: ITweet[], count, parent?, nextCursor, hasMore }>
+ */
+export const updateTweetQuotesCache = (
+  oldData: InfiniteData<{ data: ITweet[]; count?: number; nextCursor?: string; hasMore: boolean }> | undefined,
+  tweetId: string,
+  updater: (tweet: ITweet) => ITweet,
+): InfiniteData<{ data: ITweet[]; count?: number; nextCursor?: string; hasMore: boolean }> | undefined => {
+  if (!oldData?.pages) return oldData;
+
+  return {
+    ...oldData,
+    pages: oldData.pages.map((page) => {
+      if (!page?.data) return page;
+
+      return {
+        ...page,
+        data: page.data.map((tweet) => updateTweetDeep(tweet, tweetId, updater)),
+      };
+    }),
+  };
+};
