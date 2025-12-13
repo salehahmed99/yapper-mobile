@@ -1,7 +1,7 @@
 import { getUserRelations } from '@/src/modules/profile/services/profileService';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import React, { useCallback, useState } from 'react';
 import MuteAndBlockScreen from '../components/MuteAndBlockScreen';
 
 export default function MuteAndBlockContainer() {
@@ -12,22 +12,24 @@ export default function MuteAndBlockContainer() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchRelations = async () => {
-      try {
-        setIsLoading(true);
-        const data = await getUserRelations();
-        setBlockedCount(data.blockedCount);
-        setMutedCount(data.mutedCount);
-      } catch (error) {
-        console.error('Error fetching user relations:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  useFocusEffect(
+    useCallback(() => {
+      const fetchRelations = async () => {
+        try {
+          setIsLoading(true);
+          const data = await getUserRelations();
+          setBlockedCount(data.blockedCount);
+          setMutedCount(data.mutedCount);
+        } catch (error) {
+          console.error('Error fetching user relations:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
-    fetchRelations();
-  }, []);
+      fetchRelations();
+    }, []),
+  );
 
   const handleBlockedAccountsPress = () => {
     router.push('/(protected)/(settings)/MuteAndBlock/Blocked');

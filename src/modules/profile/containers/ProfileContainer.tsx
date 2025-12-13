@@ -258,9 +258,11 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
               },
             ]}
           >
-            <Text style={blockedStyles.blockedTitle}>@{displayUser?.username} is blocked</Text>
+            <Text style={blockedStyles.blockedTitle}>
+              {t('profile.blockedUser', { username: displayUser?.username })}
+            </Text>
             <Text style={blockedStyles.blockedDesc}>
-              Are you sure you want to view these posts? Viewing posts won’t unblock @{displayUser?.username}.
+              {t('profile.blockedUserDescription', { username: displayUser?.username })}
             </Text>
             <TouchableOpacity style={headerStyles.viewPostsButton} onPress={() => setShowTabs(true)}>
               <Text style={headerStyles.viewPostsText}>{t('profile.viewPosts')}</Text>

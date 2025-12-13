@@ -3,9 +3,11 @@ import MuteAndBlockHeader from '@/src/modules/settings/components/MuteAndBlockHe
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { Stack } from 'expo-router';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function MuteAndBlockLayout() {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const username = user?.username || '';
 
@@ -25,7 +27,6 @@ export default function MuteAndBlockLayout() {
       },
       headerShadowVisible: false,
       headerBackTitleVisible: false,
-      animation: 'slide_from_right' as const,
     }),
     [theme],
   );
@@ -35,10 +36,10 @@ export default function MuteAndBlockLayout() {
       headerShown: true,
       headerBackVisible: true,
       headerBackTitle: '',
-      headerTitle: () => <MuteAndBlockHeader username={username} title="Mute and block" />,
+      headerTitle: () => <MuteAndBlockHeader username={username} title={t('settings.mute_block.title')} />,
       headerTitleAlign: 'center' as const,
     }),
-    [username],
+    [username, t],
   );
 
   const mutedAccountsOptions = React.useMemo(
@@ -47,10 +48,10 @@ export default function MuteAndBlockLayout() {
       headerBackVisible: true,
       headerBackTitle: '',
       headerBackTitleVisible: false,
-      headerTitle: () => <MuteAndBlockHeader username={username} title="Muted accounts" />,
+      headerTitle: () => <MuteAndBlockHeader username={username} title={t('settings.mute_block.muted_accounts')} />,
       headerTitleAlign: 'center' as const,
     }),
-    [username],
+    [username, t],
   );
 
   const blockedAccountsOptions = React.useMemo(
@@ -59,10 +60,10 @@ export default function MuteAndBlockLayout() {
       headerBackVisible: true,
       headerBackTitle: '',
       headerBackTitleVisible: false,
-      headerTitle: () => <MuteAndBlockHeader username={username} title="Blocked accounts" />,
+      headerTitle: () => <MuteAndBlockHeader username={username} title={t('settings.mute_block.blocked_accounts')} />,
       headerTitleAlign: 'center' as const,
     }),
-    [username],
+    [username, t],
   );
 
   return (

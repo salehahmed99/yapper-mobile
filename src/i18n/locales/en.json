@@ -471,6 +471,8 @@
   "profile": {
     "editProfile": "Edit profile",
     "blocked": "Blocked",
+    "blockedUser": "@{{username}} is blocked",
+    "blockedUserDescription": "Are you sure you want to view these posts? Viewing posts won't unblock @{{username}}.",
     "viewPosts": "View posts",
     "follow": "Follow",
     "followBack": "Follow Back",
@@ -722,6 +724,7 @@
       "update_failed_message": "Failed to update language. Please try again."
     },
     "mute_block": {
+      "title": "Mute and block",
       "description": "Manage the accounts, words and notifications that you've muted or blocked.",
       "blocked_accounts": "Blocked accounts",
       "muted_accounts": "Muted accounts",

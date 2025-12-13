@@ -39,7 +39,8 @@ const AppShell: React.FC = () => {
   useNotificationSocketListeners();
 
   const isInSettings = (segments as string[]).includes('(settings)');
-  const shouldShowBottomNav = !isInSettings;
+  const isInListsScreen = (segments as string[]).includes('Lists');
+  const shouldShowBottomNav = !isInSettings && !isInListsScreen;
 
   return (
     <UiShellProvider>
