@@ -184,7 +184,24 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
     >
       {/* Header buttons */}
       <View style={editModalStyles.buttonContainer} testID="profile_edit_modal_header">
-        <TouchableOpacity onPress={onClose} disabled={isSaving} testID="profile_edit_modal_cancel_button">
+        <TouchableOpacity
+          onPress={() => {
+            if (user) {
+              setUpdatedUser({
+                name: user.name || '',
+                bio: user.bio || '',
+                country: user.country || '',
+                website: '',
+                birthday: user.birthDate || '',
+              });
+              setLocalAvatarUri(imageUri);
+              setLocalBannerUri(bannerUri);
+            }
+            onClose();
+          }}
+          disabled={isSaving}
+          testID="profile_edit_modal_cancel_button"
+        >
           <Text style={editModalStyles.buttonsText}>{t('profile.editModal.cancel')}</Text>
         </TouchableOpacity>
 
