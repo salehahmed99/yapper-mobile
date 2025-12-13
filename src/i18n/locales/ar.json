@@ -472,6 +472,8 @@
   "profile": {
     "editProfile": "تعديل الملف الشخصي",
     "blocked": "محظور",
+    "blockedUser": "@{{username}} محظور",
+    "blockedUserDescription": "هل أنت متأكد أنك تريد عرض هذه المنشورات؟ عرض المنشورات لن يلغي حظر @{{username}}.",
     "viewPosts": "عرض المنشورات",
     "follow": "متابعة",
     "followBack": "متابعة متبادلة",
@@ -713,6 +715,7 @@
       "update_failed_message": "فشل تحديث اللغة. يرجى المحاولة مرة أخرى."
     },
     "mute_block": {
+      "title": "الكتم والحظر",
       "description": "إدارة الحسابات والكلمات والإشعارات التي قمت بكتمها أو حظرها.",
       "blocked_accounts": "الحسابات المحظورة",
       "muted_accounts": "الحسابات المكتومة",
