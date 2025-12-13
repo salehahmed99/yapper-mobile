@@ -45,7 +45,7 @@ const NotificationContainer = (props: INotificationContainerProps) => {
         // navigate to tweet details screen
         router.push({
           pathname: '/(protected)/tweets/[tweetId]',
-          params: { tweetId: notificationData.tweets[0].tweetId },
+          params: { tweetId: notificationData.tweets[0].tweetId, userId: currentUser?.id },
         });
       } else {
         // navigate to new custom notification tweets screen

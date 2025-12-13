@@ -12,12 +12,13 @@ import { useUiShell } from '../../context/UiShellContext';
 interface IAppBarProps {
   title?: string;
   children?: React.ReactNode;
+  leftElement?: React.ReactNode;
   rightElement?: React.ReactNode;
   tabView?: React.ReactNode;
 }
 
 const AppBar: React.FC<IAppBarProps> = (props) => {
-  const { title, children, rightElement, tabView } = props;
+  const { title, children, leftElement, rightElement, tabView } = props;
   const { theme } = useTheme();
   const user = useAuthStore((state) => state.user);
   const styles = createStyles(theme);
@@ -37,25 +38,26 @@ const AppBar: React.FC<IAppBarProps> = (props) => {
         <>
           <View style={styles.headerContainer}>
             <View style={styles.sideContainer}>
-              {!isSideMenuOpen ? (
-                <Pressable
-                  onPress={toggleSideMenu}
-                  accessibilityLabel={t('accessibility.openMenu')}
-                  testID="appbar_menu_button"
-                  accessibilityRole="button"
-                  style={styles.avatarButton}
-                >
-                  <View style={styles.avatarBackground}>
-                    <Image
-                      source={{ uri: user?.avatarUrl || DEFAULT_AVATAR_URL }}
-                      style={styles.avatar}
-                      resizeMode="cover"
-                    />
-                  </View>
-                </Pressable>
-              ) : (
-                <View style={styles.avatarButton} />
-              )}
+              {leftElement ??
+                (!isSideMenuOpen ? (
+                  <Pressable
+                    onPress={toggleSideMenu}
+                    accessibilityLabel={t('accessibility.openMenu')}
+                    testID="appbar_menu_button"
+                    accessibilityRole="button"
+                    style={styles.avatarButton}
+                  >
+                    <View style={styles.avatarBackground}>
+                      <Image
+                        source={{ uri: user?.avatarUrl || DEFAULT_AVATAR_URL }}
+                        style={styles.avatar}
+                        resizeMode="cover"
+                      />
+                    </View>
+                  </Pressable>
+                ) : (
+                  <View style={styles.avatarButton} />
+                ))}
             </View>
 
             <View style={styles.center}>
@@ -86,8 +88,6 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       paddingHorizontal: theme.spacing.md,
       backgroundColor: theme.colors.background.primary + 'DF',
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border,
     },
     headerContainer: {
       flexDirection: 'row',
@@ -103,6 +103,8 @@ const createStyles = (theme: Theme) =>
       height: theme.ui.tabViewHeight,
       alignItems: 'center',
       justifyContent: 'center',
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
     },
     avatar: {
       width: theme.ui.avatar,

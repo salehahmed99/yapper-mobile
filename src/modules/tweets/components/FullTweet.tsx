@@ -1,34 +1,22 @@
-import DropdownMenu, { DropdownMenuItem } from '@/src/components/DropdownMenu';
-import GrokLogo from '@/src/components/icons/GrokLogo';
-import ViewsIcon from '@/src/components/icons/ViewsIcon';
 import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import i18n from '@/src/i18n';
-import { useAuthStore } from '@/src/store/useAuthStore';
 import { formatDateDDMMYYYY, formatShortTime } from '@/src/utils/dateUtils';
 import { formatCount } from '@/src/utils/formatCount';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { BlurView } from 'expo-blur';
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
-import { ArrowLeft, ArrowRight, MoreHorizontal, Trash2 } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { I18nManager, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import useTweetDropDownMenu from '../hooks/useTweetDropDownMenu';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ITweet } from '../types';
 import ActionsRow from './ActionsRow';
 import CreatePostModal from './CreatePostModal';
 import ParentTweet from './ParentTweet';
-import RepostIndicator from './RepostIndicator';
 import RepostOptionsModal from './RepostOptionsModal';
 import TweetMedia from './TweetMedia';
 
 interface IFullTweetProps {
   tweet: ITweet;
-  onDeletePress: (tweetId: string) => void;
   onAvatarPress: (userId: string) => void;
   onReply: (tweetId: string, content: string) => void;
   onQuote: (tweetId: string, content: string) => void;
@@ -40,24 +28,11 @@ interface IFullTweetProps {
 }
 
 const FullTweet: React.FC<IFullTweetProps> = (props) => {
-  const {
-    tweet,
-    onDeletePress,
-    onAvatarPress,
-    onReply,
-    onQuote,
-    onRepost,
-    onLike,
-    onBookmark,
-    onViewPostInteractions,
-    onShare,
-  } = props;
+  const { tweet, onAvatarPress, onReply, onQuote, onRepost, onLike, onBookmark, onViewPostInteractions, onShare } =
+    props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
-  const user = useAuthStore((state) => state.user);
 
   const handleReplyPress = () => {
     setCreatePostType('reply');
@@ -78,188 +53,102 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
   const handleRepostPress = () => {
     bottomSheetModalRef.current?.present();
   };
-  const { menuVisible, menuPosition, moreButtonRef, handleMorePress, setMenuVisible } = useTweetDropDownMenu();
-
-  const handleGrokPress = () => {
-    router.push({
-      pathname: '/(protected)/tweet-summary',
-      params: { tweetId: tweet.tweetId },
-    });
-  };
-
-  const menuItems: DropdownMenuItem[] = [
-    {
-      label: t('tweetActivity.viewPostInteractions'),
-      onPress: () => {
-        onViewPostInteractions(tweet.tweetId, tweet.user.id);
-      },
-      icon: <ViewsIcon size={theme.iconSizes.md} stroke={theme.colors.text.primary} strokeWidth={0} />,
-    },
-  ];
-
-  if (tweet.user.id === user?.id) {
-    menuItems.push({
-      label: t('tweets.deletePost'),
-      onPress: () => onDeletePress(tweet.tweetId),
-      icon: <Trash2 size={theme.iconSizes.md} stroke={theme.colors.text.primary} />,
-    });
-  }
 
   return (
-    <View style={styles.wrapper}>
-      {/* Header with BlurView */}
-      <BlurView intensity={30} style={[styles.headerBlur, { paddingTop: insets.top }]}>
-        <View style={styles.headerContainer}>
-          {/* Back Button */}
-          <Pressable
-            onPress={() => router.back()}
-            style={styles.headerButton}
-            accessibilityLabel="Go back"
-            accessibilityRole="button"
-          >
-            {isRTL ? (
-              <ArrowRight size={theme.iconSizesAlt.xl} color={theme.colors.text.primary} />
-            ) : (
-              <ArrowLeft size={theme.iconSizesAlt.xl} color={theme.colors.text.primary} />
-            )}
-          </Pressable>
-
-          {/* Title */}
-          <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle}>{t('tweets.full_tweet.title')}</Text>
-          </View>
-
-          {/* Right Actions */}
-          <View style={styles.headerRightActions}>
-            <Pressable
-              onPress={handleGrokPress}
-              style={styles.headerButton}
-              accessibilityLabel="Grok"
-              accessibilityRole="button"
-            >
-              <GrokLogo size={theme.iconSizesAlt.xl} color={theme.colors.text.primary} />
-            </Pressable>
-            <Pressable
-              onPress={handleMorePress}
-              hitSlop={8}
-              ref={moreButtonRef}
-              style={styles.headerButton}
-              accessibilityLabel="More options"
-              accessibilityRole="button"
-            >
-              <MoreHorizontal size={theme.iconSizesAlt.xl} color={theme.colors.text.primary} />
-            </Pressable>
-          </View>
-        </View>
-      </BlurView>
-
+    <View style={styles.container}>
       {/* Content */}
-      <ScrollView
-        style={[styles.container, { marginTop: insets.top + theme.ui.appBarHeight }]}
-        accessibilityLabel="full_tweet_container_main"
-        testID="full_tweet_container_main"
-      >
-        {tweet.type === 'repost' && (
-          <RepostIndicator repostById={tweet.repostedBy?.id} repostedByName={tweet.repostedBy?.name} />
-        )}
 
-        <View style={styles.header}>
-          <View style={styles.userInfoContainer}>
-            <Pressable
-              onPress={() => onAvatarPress(tweet.user.id)}
-              accessibilityLabel="full_tweet_avatar"
-              testID="full_tweet_avatar"
+      <View style={styles.header}>
+        <View style={styles.userInfoContainer}>
+          <Pressable
+            onPress={() => onAvatarPress(tweet.user.id)}
+            accessibilityLabel="full_tweet_avatar"
+            testID="full_tweet_avatar"
+          >
+            <Image
+              source={tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : DEFAULT_AVATAR_URL}
+              style={styles.avatar}
+              accessibilityLabel="full_tweet_image_avatar"
+            />
+          </Pressable>
+          <View style={styles.userDetails}>
+            <Text style={styles.name} accessibilityLabel="full_tweet_user_name" testID="full_tweet_user_name">
+              {tweet.user.name}
+            </Text>
+            <Text
+              style={styles.username}
+              accessibilityLabel="full_tweet_user_username"
+              testID="full_tweet_user_username"
             >
-              <Image
-                source={tweet.user.avatarUrl ? { uri: tweet.user.avatarUrl } : DEFAULT_AVATAR_URL}
-                style={styles.avatar}
-                accessibilityLabel="full_tweet_image_avatar"
-              />
-            </Pressable>
-            <View style={styles.userDetails}>
-              <Text style={styles.name} accessibilityLabel="full_tweet_user_name" testID="full_tweet_user_name">
-                {tweet.user.name}
-              </Text>
-              <Text
-                style={styles.username}
-                accessibilityLabel="full_tweet_user_username"
-                testID="full_tweet_user_username"
-              >
-                @{tweet.user.username}
-              </Text>
-            </View>
+              @{tweet.user.username}
+            </Text>
           </View>
         </View>
+      </View>
 
-        <View style={styles.contentSection}>
-          <Text style={styles.tweetText} accessibilityLabel="full_tweet_content_text" testID="full_tweet_content_text">
-            {tweet.content}
-          </Text>
+      <View style={styles.contentSection}>
+        <Text style={styles.tweetText} accessibilityLabel="full_tweet_content_text" testID="full_tweet_content_text">
+          {tweet.content}
+        </Text>
+      </View>
+
+      {(tweet.images.length > 0 || tweet.videos.length > 0) && (
+        <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} />
+      )}
+
+      {tweet.type === 'quote' && tweet.parentTweet && (
+        <View style={{ marginTop: theme.spacing.xs }}>
+          <ParentTweet tweet={tweet.parentTweet} />
         </View>
+      )}
 
-        {(tweet.images.length > 0 || tweet.videos.length > 0) && (
-          <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} />
-        )}
+      <View
+        style={styles.timestampViewsSection}
+        accessibilityLabel="full_tweet_timestamp_views"
+        testID="full_tweet_timestamp_views"
+      >
+        <Text style={styles.timestampText} accessibilityLabel="full_tweet_time" testID="full_tweet_time">
+          {formatShortTime(tweet.createdAt)}
+        </Text>
+        <View style={styles.dot}></View>
+        <Text style={styles.timestampText} accessibilityLabel="full_tweet_date" testID="full_tweet_date">
+          {formatDateDDMMYYYY(tweet.createdAt)}
+        </Text>
+        <View style={styles.dot}></View>
+        <Text style={styles.viewsCount} accessibilityLabel="full_tweet_views_count" testID="full_tweet_views_count">
+          {formatCount(tweet.viewsCount)}
+          <Text style={styles.timestampText}> {t('tweets.full_tweet.views')}</Text>{' '}
+        </Text>
+      </View>
 
-        {tweet.type === 'quote' && tweet.parentTweet && (
-          <View style={{ marginTop: theme.spacing.xs }}>
-            <ParentTweet tweet={tweet.parentTweet} />
-          </View>
-        )}
-
-        <View
-          style={styles.timestampViewsSection}
-          accessibilityLabel="full_tweet_timestamp_views"
-          testID="full_tweet_timestamp_views"
-        >
-          <Text style={styles.timestampText} accessibilityLabel="full_tweet_time" testID="full_tweet_time">
-            {formatShortTime(tweet.createdAt)}
-          </Text>
-          <View style={styles.dot}></View>
-          <Text style={styles.timestampText} accessibilityLabel="full_tweet_date" testID="full_tweet_date">
-            {formatDateDDMMYYYY(tweet.createdAt)}
-          </Text>
-          <View style={styles.dot}></View>
-          <Text style={styles.viewsCount} accessibilityLabel="full_tweet_views_count" testID="full_tweet_views_count">
-            {formatCount(tweet.viewsCount)}
-            <Text style={styles.timestampText}> {t('tweets.full_tweet.views')}</Text>{' '}
-          </Text>
-        </View>
-
-        <View style={styles.actionsSection}>
-          <ActionsRow
-            tweet={tweet}
-            size="large"
-            onReplyPress={handleReplyPress}
-            onRepostPress={handleRepostPress}
-            onLikePress={() => onLike(tweet.tweetId, tweet.isLiked)}
-            onBookmarkPress={() => onBookmark(tweet.tweetId, tweet.isBookmarked)}
-            onSharePress={onShare}
-          />
-        </View>
-        <DropdownMenu
-          visible={menuVisible}
-          onClose={() => setMenuVisible(false)}
-          items={menuItems}
-          position={menuPosition}
-        />
-        <CreatePostModal
-          visible={isCreatePostModalVisible}
-          onClose={() => setIsCreatePostModalVisible(false)}
-          type={createPostType}
+      <View style={styles.actionsSection}>
+        <ActionsRow
           tweet={tweet}
-          onPostReply={onReply}
-          onPostQuote={onQuote}
+          size="large"
+          onReplyPress={handleReplyPress}
+          onRepostPress={handleRepostPress}
+          onLikePress={() => onLike(tweet.tweetId, tweet.isLiked)}
+          onBookmarkPress={() => onBookmark(tweet.tweetId, tweet.isBookmarked)}
+          onSharePress={onShare}
         />
+      </View>
 
-        <RepostOptionsModal
-          isReposted={tweet.isReposted}
-          onRepostPress={() => onRepost(tweet.tweetId, tweet.isReposted)}
-          onQuotePress={handleQuotePress}
-          onViewInteractionsPress={() => onViewPostInteractions(tweet.tweetId, tweet.user.id)}
-          bottomSheetModalRef={bottomSheetModalRef}
-        />
-      </ScrollView>
+      <CreatePostModal
+        visible={isCreatePostModalVisible}
+        onClose={() => setIsCreatePostModalVisible(false)}
+        type={createPostType}
+        tweet={tweet}
+        onPostReply={onReply}
+        onPostQuote={onQuote}
+      />
+
+      <RepostOptionsModal
+        isReposted={tweet.isReposted}
+        onRepostPress={() => onRepost(tweet.tweetId, tweet.isReposted)}
+        onQuotePress={handleQuotePress}
+        onViewInteractionsPress={() => onViewPostInteractions(tweet.tweetId, tweet.user.id)}
+        bottomSheetModalRef={bottomSheetModalRef}
+      />
     </View>
   );
 };
@@ -268,9 +157,6 @@ export default FullTweet;
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
-    wrapper: {
-      backgroundColor: theme.colors.background.primary,
-    },
     headerBlur: {
       flexDirection: 'column',
       alignItems: 'center',
