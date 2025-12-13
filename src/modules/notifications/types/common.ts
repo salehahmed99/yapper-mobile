@@ -2,7 +2,7 @@
 // Common Types for Notifications Module
 // ============================================================================
 
-import { TweetType } from '../../tweets/types';
+import { IMention, TweetType } from '../../tweets/types';
 
 // Common user info structure
 export interface INotificationUser {
@@ -38,6 +38,7 @@ export interface INotificationTweetApi {
   tweetId: string;
   type: TweetType;
   parentTweet?: INotificationTweetApi;
+  mentions: IMention[];
   content: string;
   images: string[];
   videos: string[];

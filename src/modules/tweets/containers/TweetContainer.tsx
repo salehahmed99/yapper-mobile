@@ -69,6 +69,25 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
     ]);
   };
 
+  const handleMentionPress = (userId: string) => {
+    // router.push({
+    //   pathname: '/(protected)/(profile)/[id]',
+    //   params: {
+    //     id: userId,
+    //   },
+    // });
+    console.log(userId);
+  };
+
+  const handleHashtagPress = (hashtag: string) => {
+    router.push({
+      pathname: '/(protected)/search/search-results',
+      params: {
+        query: hashtag,
+      },
+    });
+  };
+
   const handleAvatarPress = (userId: string) => {
     // Don't navigate if already on this profile or if it's the current user's own profile
     const isCurrentProfile = userId === currentProfileId;
@@ -107,6 +126,8 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
               onBookmark={handleBookmark}
               onViewPostInteractions={handleViewPostInteractions}
               onShare={handleShare}
+              onMentionPress={handleMentionPress}
+              onHashtagPress={handleHashtagPress}
             />
           </>
         )}
@@ -130,6 +151,8 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
           onShare={handleShare}
           isVisible={props.isVisible}
           showThread={props.showThread}
+          onMentionPress={handleMentionPress}
+          onHashtagPress={handleHashtagPress}
         />
       </>
     );

@@ -37,6 +37,7 @@ describe('ActionsRow', () => {
     images: [],
     videos: [],
     type: 'tweet',
+    mentions: [],
   };
 
   const defaultProps = {

@@ -31,6 +31,7 @@ describe('profileCacheUtils', () => {
       isLiked: false,
       isReposted: false,
       isBookmarked: false,
+      mentions: [],
     };
 
     const mockTweet2: ITweet = {
@@ -60,6 +61,7 @@ describe('profileCacheUtils', () => {
       isLiked: false,
       isReposted: false,
       isBookmarked: false,
+      mentions: [],
     };
 
     const mockOldData: InfiniteData<ITweets> = {

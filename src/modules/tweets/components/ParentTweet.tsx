@@ -5,6 +5,8 @@ import { router } from 'expo-router';
 import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ITweet } from '../types';
+import { parseTweetBody } from '../utils/tweetParser';
+import TweetContent from './TweetContent';
 import TweetMedia from './TweetMedia';
 import UserInfoRow from './UserInfoRow';
 
@@ -16,6 +18,7 @@ const ParentTweet: React.FC<IParentTweetProps> = (props) => {
   const { tweet } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const segments = useMemo(() => parseTweetBody(tweet.content, tweet.mentions), [tweet.content, tweet.mentions]);
   return (
     <Pressable
       style={styles.container}
@@ -41,7 +44,9 @@ const ParentTweet: React.FC<IParentTweetProps> = (props) => {
         <UserInfoRow tweet={tweet} />
       </View>
       <View style={styles.tweetContent}>
-        <Text style={styles.tweetText}>{tweet.content}</Text>
+        <Text style={styles.tweetText}>
+          <TweetContent segments={segments} />
+        </Text>
       </View>
 
       {/* Tweet Media */}

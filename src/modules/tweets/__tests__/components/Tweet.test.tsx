@@ -37,6 +37,7 @@ describe('Tweet', () => {
     images: [],
     videos: [],
     type: 'tweet',
+    mentions: [],
   };
 
   const defaultProps = {
@@ -54,6 +55,8 @@ describe('Tweet', () => {
     onReply: jest.fn(),
     onQuote: jest.fn(),
     onRepost: jest.fn(),
+    onMentionPress: jest.fn(),
+    onHashtagPress: jest.fn(),
   };
 
   it('should render tweet content', () => {

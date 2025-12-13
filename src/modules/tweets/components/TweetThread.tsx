@@ -14,11 +14,13 @@ import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-nativ
 import { DEFAULT_AVATAR_URI } from '../../profile/utils/edit-profile.utils';
 import useTweetDropDownMenu from '../hooks/useTweetDropDownMenu';
 import { ITweet } from '../types';
+import { parseTweetBody } from '../utils/tweetParser';
 import ActionsRow from './ActionsRow';
 import CreatePostModal from './CreatePostModal';
 import ParentTweet from './ParentTweet';
 import RepostIndicator from './RepostIndicator';
 import RepostOptionsModal from './RepostOptionsModal';
+import TweetContent from './TweetContent';
 import TweetMedia from './TweetMedia';
 import UserInfoRow from './UserInfoRow';
 
@@ -35,6 +37,8 @@ interface ITweetProps {
   onShare: () => void;
   isVisible?: boolean;
   showThread: boolean;
+  onMentionPress: (userId: string) => void;
+  onHashtagPress: (hashtag: string) => void;
 }
 
 const SingleTweet: React.FC<ITweetProps> = (props) => {
@@ -51,6 +55,8 @@ const SingleTweet: React.FC<ITweetProps> = (props) => {
     isVisible = true,
     onAvatarPress,
     showThread,
+    onMentionPress,
+    onHashtagPress,
   } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -94,6 +100,7 @@ const SingleTweet: React.FC<ITweetProps> = (props) => {
   const handleRepostPress = () => {
     bottomSheetModalRef.current?.present();
   };
+  const segments = useMemo(() => parseTweetBody(tweet.content, tweet.mentions), [tweet.content, tweet.mentions]);
 
   const menuItems: DropdownMenuItem[] = [
     {
@@ -112,6 +119,7 @@ const SingleTweet: React.FC<ITweetProps> = (props) => {
       icon: <Trash2 size={theme.iconSizes.md} stroke={theme.colors.text.primary} />,
     });
   }
+
   return (
     <Pressable accessibilityLabel="tweet_container_main" testID="tweet_container_main" onPress={handleTweetPress}>
       {tweet.repostedBy && tweet.postType !== 'reply' && (
@@ -163,7 +171,7 @@ const SingleTweet: React.FC<ITweetProps> = (props) => {
           )}
           <View style={styles.tweetContent}>
             <Text style={styles.tweetText} accessibilityLabel="tweet_content_text" testID="tweet_content_text">
-              {tweet.content}
+              <TweetContent segments={segments} onMentionPress={onMentionPress} onHashtagPress={onHashtagPress} />
             </Text>
           </View>
           <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} />

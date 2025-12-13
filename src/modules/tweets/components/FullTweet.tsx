@@ -9,10 +9,12 @@ import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ITweet } from '../types';
+import { parseTweetBody } from '../utils/tweetParser';
 import ActionsRow from './ActionsRow';
 import CreatePostModal from './CreatePostModal';
 import ParentTweet from './ParentTweet';
 import RepostOptionsModal from './RepostOptionsModal';
+import TweetContent from './TweetContent';
 import TweetMedia from './TweetMedia';
 
 interface IFullTweetProps {
@@ -25,11 +27,24 @@ interface IFullTweetProps {
   onBookmark: (tweetId: string, isBookmarked: boolean) => void;
   onViewPostInteractions: (tweetId: string, ownerId: string) => void;
   onShare: () => void;
+  onMentionPress: (userId: string) => void;
+  onHashtagPress: (hashtag: string) => void;
 }
 
 const FullTweet: React.FC<IFullTweetProps> = (props) => {
-  const { tweet, onAvatarPress, onReply, onQuote, onRepost, onLike, onBookmark, onViewPostInteractions, onShare } =
-    props;
+  const {
+    tweet,
+    onAvatarPress,
+    onReply,
+    onQuote,
+    onRepost,
+    onLike,
+    onBookmark,
+    onViewPostInteractions,
+    onShare,
+    onMentionPress,
+    onHashtagPress,
+  } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { t } = useTranslation();
@@ -53,6 +68,7 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
   const handleRepostPress = () => {
     bottomSheetModalRef.current?.present();
   };
+  const segments = useMemo(() => parseTweetBody(tweet.content, tweet.mentions), [tweet.content, tweet.mentions]);
 
   return (
     <View style={styles.container}>
@@ -88,7 +104,7 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
 
       <View style={styles.contentSection}>
         <Text style={styles.tweetText} accessibilityLabel="full_tweet_content_text" testID="full_tweet_content_text">
-          {tweet.content}
+          <TweetContent segments={segments} onMentionPress={onMentionPress} onHashtagPress={onHashtagPress} />
         </Text>
       </View>
 
