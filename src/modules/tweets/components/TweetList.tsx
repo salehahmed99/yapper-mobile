@@ -90,7 +90,7 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
       style={{ flex: 1 }}
       data={data}
       renderItem={({ item }) => (
-        <TweetContainer tweet={item} isVisible={isTabActive && visibleTweetIds.has(item.tweetId)} />
+        <TweetContainer tweet={item} isVisible={isTabActive && visibleTweetIds.has(item.tweetId)} showThread={true} />
       )}
       keyExtractor={(item, index) => {
         if (item.type === 'repost') {

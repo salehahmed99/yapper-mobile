@@ -41,6 +41,7 @@ describe('Tweet', () => {
 
   const defaultProps = {
     tweet: mockTweet,
+    showThread: false,
     onReplyPress: jest.fn(),
     onLike: jest.fn(),
     onViewPostInteractions: jest.fn(),

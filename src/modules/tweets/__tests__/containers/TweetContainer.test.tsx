@@ -72,13 +72,13 @@ describe('TweetContainer', () => {
   };
 
   it('should render Tweet component when tweet prop is provided', () => {
-    const { getByText } = render(<TweetContainer tweet={mockTweet} />);
+    const { getByText } = render(<TweetContainer tweet={mockTweet} showThread={false} />);
     expect(getByText('test content')).toBeTruthy();
   });
 
   it('should render FullTweet component when tweetId prop is provided', () => {
     // Since QueryWrapper mock calls children with a dummy tweet
-    const { getByTestId } = render(<TweetContainer tweetId="1" />);
+    const { getByTestId } = render(<TweetContainer tweetId="1" showThread={false} />);
     expect(getByTestId('full-tweet-component')).toBeTruthy();
   });
 });

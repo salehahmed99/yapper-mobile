@@ -15,7 +15,7 @@ const TweetDetailsScreen = () => {
   return (
     <MediaViewerProvider>
       <View style={styles.container}>
-        <TweetContainer tweetId={tweetId} />
+        <TweetContainer tweetId={tweetId} showThread={false} />
         <RepliesContainer tweetId={tweetId} />
         <MediaViewerModal />
       </View>

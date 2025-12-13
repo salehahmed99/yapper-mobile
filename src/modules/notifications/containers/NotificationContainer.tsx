@@ -85,7 +85,7 @@ const NotificationContainer = (props: INotificationContainerProps) => {
   }
 
   if (tweet) {
-    return <TweetContainer tweet={tweet} />;
+    return <TweetContainer tweet={tweet} showThread={false} />;
   }
 
   return (

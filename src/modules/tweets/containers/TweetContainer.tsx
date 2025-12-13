@@ -14,11 +14,13 @@ type TweetContainerProps =
       tweet: ITweet;
       tweetId?: never;
       isVisible?: boolean;
+      showThread: boolean;
     }
   | {
       tweet?: never;
       tweetId: string;
       isVisible?: boolean;
+      showThread: boolean;
     };
 
 const TweetContainer: React.FC<TweetContainerProps> = (props) => {
@@ -137,6 +139,7 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
           onViewPostInteractions={handleViewPostInteractions}
           onShare={handleShare}
           isVisible={props.isVisible}
+          showThread={props.showThread}
         />
       </>
     );

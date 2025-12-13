@@ -35,6 +35,7 @@ interface ITweetProps {
   onViewPostInteractions: (tweetId: string, ownerId: string) => void;
   onShare: () => void;
   isVisible?: boolean;
+  showThread: boolean;
 }
 
 const SingleTweet: React.FC<ITweetProps> = (props) => {
@@ -51,6 +52,7 @@ const SingleTweet: React.FC<ITweetProps> = (props) => {
     isVisible = true,
     onTweetPress,
     onAvatarPress,
+    showThread,
   } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -108,7 +110,7 @@ const SingleTweet: React.FC<ITweetProps> = (props) => {
       testID="tweet_container_main"
       onPress={() => onTweetPress(tweet.tweetId)}
     >
-      {tweet.repostedBy && (
+      {tweet.repostedBy && tweet.postType !== 'reply' && (
         <RepostIndicator repostById={tweet.repostedBy?.id} repostedByName={tweet.repostedBy?.name} />
       )}
       <View style={styles.tweetContainer}>
@@ -147,6 +149,14 @@ const SingleTweet: React.FC<ITweetProps> = (props) => {
               </Pressable>
             </View>
           </View>
+          {(tweet.type === 'reply' || tweet.postType === 'reply') && tweet.parentTweet && !showThread && (
+            <View style={styles.replyingToContainer}>
+              <Text style={styles.replyingTo}>{t('tweets.replyingTo')}</Text>
+              <Pressable onPress={() => onAvatarPress(tweet.parentTweet!.user.id)}>
+                <Text style={styles.mention}>@{tweet.parentTweet.user.username}</Text>
+              </Pressable>
+            </View>
+          )}
           <View style={styles.tweetContent}>
             <Text style={styles.tweetText} accessibilityLabel="tweet_content_text" testID="tweet_content_text">
               {tweet.content}
@@ -154,7 +164,7 @@ const SingleTweet: React.FC<ITweetProps> = (props) => {
           </View>
           <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} />
 
-          {tweet.parentTweet && !tweet.conversationTweet && (
+          {tweet.postType === 'quote' && tweet.parentTweet && (
             <View style={{ marginTop: theme.spacing.xs }}>
               <ParentTweet tweet={tweet.parentTweet} isVisible={isVisible} />
             </View>
@@ -216,7 +226,12 @@ const TweetThread: React.FC<ITweetProps> = (props) => {
     );
   }
 
-  if (props.tweet.parentTweet && props.tweet.conversationTweet) {
+  if (
+    (props.tweet.postType === 'reply' || props.tweet.type === 'reply') &&
+    props.tweet.parentTweet &&
+    props.tweet.conversationTweet &&
+    props.showThread
+  ) {
     return (
       <View style={styles.conversationContainer}>
         <View style={{ position: 'relative', paddingBottom: theme.spacing.lg, gap: theme.spacing.lg }}>
@@ -293,5 +308,21 @@ const createStyles = (theme: Theme) =>
       bottom: theme.spacing.xs,
       zIndex: -1,
       width: 2,
+    },
+    replyingTo: {
+      fontFamily: theme.typography.fonts.regular,
+      fontSize: theme.typography.sizes.sm,
+      color: theme.colors.text.secondary,
+      flexShrink: 2,
+    },
+    mention: {
+      fontFamily: theme.typography.fonts.regular,
+      fontSize: theme.typography.sizes.sm,
+      color: theme.colors.accent.bookmark,
+    },
+    replyingToContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.xs,
     },
   });

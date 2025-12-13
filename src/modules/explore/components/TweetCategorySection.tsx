@@ -77,7 +77,7 @@ const TweetCategorySection: React.FC<ITweetCategorySectionProps> = ({ category, 
 
       {/* All Tweets using TweetContainer */}
       {tweets.map((tweet) => (
-        <TweetContainer key={tweet.tweetId} tweet={tweet} isVisible={false} />
+        <TweetContainer key={tweet.tweetId} tweet={tweet} isVisible={false} showThread={false} />
       ))}
     </View>
   );

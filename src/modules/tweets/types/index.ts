@@ -6,6 +6,7 @@ export type TweetType = 'tweet' | 'reply' | 'repost' | 'quote';
 interface ITweet {
   tweetId: string;
   type: TweetType;
+  postType?: 'tweet' | 'reply' | 'quote';
   parentTweet?: ITweet;
   conversationTweet?: ITweet;
   replies?: ITweet[];
