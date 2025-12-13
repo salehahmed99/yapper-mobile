@@ -12,23 +12,23 @@ export default function MuteAndBlockContainer() {
 
   const router = useRouter();
 
-  const fetchRelations = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const data = await getUserRelations();
-      setBlockedCount(data.blockedCount);
-      setMutedCount(data.mutedCount);
-    } catch (error) {
-      console.error('Error fetching user relations:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
   useFocusEffect(
     useCallback(() => {
+      const fetchRelations = async () => {
+        try {
+          setIsLoading(true);
+          const data = await getUserRelations();
+          setBlockedCount(data.blockedCount);
+          setMutedCount(data.mutedCount);
+        } catch (error) {
+          console.error('Error fetching user relations:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
       fetchRelations();
-    }, [fetchRelations]),
+    }, []),
   );
 
   const handleBlockedAccountsPress = () => {
