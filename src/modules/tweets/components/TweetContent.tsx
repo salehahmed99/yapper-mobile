@@ -21,7 +21,7 @@ const TweetContent: React.FC<ITweetContentProps> = ({ segments, onMentionPress, 
   const styles = createStyles(theme);
 
   return (
-    <Text>
+    <Text style={styles.body}>
       {segments.map((segment, index) => {
         // 1. Render Mentions
         if (segment.type === 'mention') {
@@ -69,6 +69,10 @@ const createStyles = (theme: Theme) => {
     },
     text: {
       color: theme.colors.text.primary,
+    },
+    body: {
+      fontFamily: theme.typography.fonts.regular,
+      fontSize: theme.typography.sizes.sm,
     },
   });
 };
