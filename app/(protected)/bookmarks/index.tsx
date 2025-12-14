@@ -1,11 +1,11 @@
 import { Theme } from '@/src/constants/theme';
 import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import useSpacing from '@/src/hooks/useSpacing';
 import MediaViewerModal from '@/src/modules/tweets/components/MediaViewerModal';
 import TweetList from '@/src/modules/tweets/components/TweetList';
 import { useBookmarks } from '@/src/modules/tweets/hooks/useBookmarks';
-import { useRouter } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +17,7 @@ export default function BookmarksScreen() {
   const styles = createStyles(theme);
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
-  const router = useRouter();
+  const { goBack } = useNavigation();
   const { bottom } = useSpacing();
   const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
 
@@ -30,13 +30,13 @@ export default function BookmarksScreen() {
 
   const onRefresh = React.useCallback(() => {
     bookmarksQuery.refetch();
-  }, [bookmarksQuery.refetch]);
+  }, [bookmarksQuery]);
 
   const onEndReached = React.useCallback(() => {
     if (bookmarksQuery.hasNextPage && !bookmarksQuery.isFetchingNextPage) {
       bookmarksQuery.fetchNextPage();
     }
-  }, [bookmarksQuery.hasNextPage, bookmarksQuery.isFetchingNextPage, bookmarksQuery.fetchNextPage]);
+  }, [bookmarksQuery]);
 
   return (
     <View style={styles.container} testID="bookmarks_screen_container">
@@ -44,7 +44,7 @@ export default function BookmarksScreen() {
         {/* Header */}
         <View style={[styles.header, { paddingTop: insets.top }]}>
           <TouchableOpacity
-            onPress={() => router.back()}
+            onPress={() => goBack()}
             style={styles.backButton}
             accessibilityLabel={t('buttons.back')}
             testID="bookmarks_back_button"

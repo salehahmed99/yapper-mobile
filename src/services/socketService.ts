@@ -10,7 +10,7 @@ type SocketCallback = (...args: any[]) => void;
 class SocketService {
   private socket: Socket | null = null;
   private listeners: Map<string, SocketCallback[]> = new Map();
-  private debugMode = true; // Set to false to disable socket logging
+  private debugMode = false;
 
   private isConnecting = false;
 
@@ -80,7 +80,7 @@ class SocketService {
   public emit(event: string, data: unknown) {
     if (this.socket) {
       if (this.debugMode) {
-        console.log(`[Socket EMIT] 📤 ${event}`, JSON.stringify(data, null, 2));
+        console.warn(`[Socket EMIT] 📤 ${event}`, JSON.stringify(data, null, 2));
       }
       this.socket.emit(event, data);
     } else {
@@ -96,7 +96,7 @@ class SocketService {
     // Wrap callback with logging
     const wrappedCallback: SocketCallback = (...args) => {
       if (this.debugMode) {
-        console.log(`[Socket RECV] 📥 ${event}`, JSON.stringify(args, null, 2));
+        console.warn(`[Socket RECV] 📥 ${event}`, JSON.stringify(args, null, 2));
       }
       callback(...args);
     };
@@ -127,13 +127,13 @@ class SocketService {
 
     this.socket.on('connect', () => {
       if (this.debugMode) {
-        console.log('[Socket] ✅ Connected');
+        console.warn('[Socket] ✅ Connected');
       }
     });
 
     this.socket.on('disconnect', (reason: string) => {
       if (this.debugMode) {
-        console.log('[Socket] ❌ Disconnected:', reason);
+        console.warn('[Socket] ❌ Disconnected:', reason);
       }
     });
 

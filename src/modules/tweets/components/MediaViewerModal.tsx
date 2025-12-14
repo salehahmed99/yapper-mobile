@@ -1,6 +1,7 @@
 import { Theme } from '@/src/constants/theme';
 import { useMediaViewer } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import {
   AVATAR_SIZE,
   BOTTOM_AVATAR_SIZE,
@@ -21,7 +22,6 @@ import { MediaItem, MediaViewerContentProps } from '@/src/modules/tweets/types/m
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useFocusEffect } from '@react-navigation/native';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
 import { VideoView } from 'expo-video';
 import { ArrowLeft, Pause, Play, Volume2, VolumeX } from 'lucide-react-native';
 import React, { useMemo, useRef, useState } from 'react';
@@ -65,7 +65,7 @@ function MediaViewerContent({
 }: MediaViewerContentProps) {
   const insets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(theme, insets), [theme, insets]);
-  const router = useRouter();
+  const { navigate } = useNavigation();
   const { likeMutation, repostMutation, replyToPostMutation, quotePostMutation, bookmarkMutation } = useTweetActions();
 
   // Fetch tweet data from the query cache - this ensures we always have the latest state
@@ -221,7 +221,7 @@ function MediaViewerContent({
 
   const handleUserProfilePress = () => {
     if (!tweet?.user?.id) return;
-    router.push({
+    navigate({
       pathname: '/(protected)/(profile)/[id]',
       params: { id: tweet.user.id },
     });
@@ -230,7 +230,7 @@ function MediaViewerContent({
   const handleViewInteractionsPress = () => {
     if (!tweet?.user?.id) return;
     player?.pause();
-    router.push({
+    navigate({
       pathname: '/(protected)/tweets/[tweetId]/activity',
       params: {
         tweetId: tweetId,
@@ -268,7 +268,7 @@ function MediaViewerContent({
   return (
     <>
       <Modal visible animationType="fade" statusBarTranslucent onRequestClose={handleClose}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
+        <GestureHandlerRootView style={styles.gestureRoot}>
           <BottomSheetModalProvider>
             <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
               <Pressable style={styles.containerPressable} onPress={toggleUI} accessibilityRole="button">
@@ -776,5 +776,8 @@ const createStyles = (theme: Theme, insets: EdgeInsets) =>
     speedMenuTextActive: {
       color: theme.colors.modal.buttonActiveColor,
       fontFamily: theme.typography.fonts.bold,
+    },
+    gestureRoot: {
+      flex: 1,
     },
   });

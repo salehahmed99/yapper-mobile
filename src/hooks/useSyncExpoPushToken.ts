@@ -16,7 +16,7 @@ const useSyncExpoPushToken = () => {
 
         if (newToken !== storedToken) {
           // 3. Only hit the backend if the token is new or changed
-          console.log('Push Token changed or not synced. Sending to backend...');
+          console.warn('Push Token changed or not synced. Sending to backend...');
 
           const result = await registerDeviceForPushNotifications(newToken);
 
@@ -25,7 +25,7 @@ const useSyncExpoPushToken = () => {
             await AsyncStorage.setItem('PUSH_TOKEN_SYNCED', newToken);
           }
         } else {
-          console.log('Push token already up to date.');
+          console.warn('Push token already up to date.');
         }
       } catch (error) {
         console.error('Error syncing push token:', error);

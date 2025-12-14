@@ -1,7 +1,7 @@
 import { DEFAULT_AVATAR_URL, DEFAULT_BANNER_URL } from '@/src/constants/defaults';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { formatCount } from '@/src/utils/formatCount';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
 import { ChevronLeft, Ellipsis, Mail, Search } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -69,7 +69,7 @@ export default function ProfileHeader({
   const { theme } = useTheme();
   const headerStyles = useMemo(() => createHeaderStyles(theme), [theme]);
 
-  const router = useRouter();
+  const { navigate, goBack } = useNavigation();
 
   const { isFollowing, toggleFollow, setIsFollowing } = useFollowUser(false);
 
@@ -194,7 +194,7 @@ export default function ProfileHeader({
     mutationFn: createChat,
     onSuccess: (result) => {
       if (profileUser) {
-        router.push({
+        navigate({
           pathname: `/messages/${result.chat.id}` as const,
           params: {
             name: profileUser.name,
@@ -247,9 +247,7 @@ export default function ProfileHeader({
           testID="profile_header_back_button"
           style={headerStyles.backButton}
           onPress={() => {
-            if (router.canGoBack()) {
-              router.back();
-            }
+            goBack();
           }}
         >
           <ChevronLeft color="#fff" size={25} />
@@ -260,7 +258,7 @@ export default function ProfileHeader({
           testID="profile_header_search_button"
           style={isOwnProfile ? headerStyles.actionsButton : headerStyles.searchButton}
           onPress={() => {
-            router.push({
+            navigate({
               pathname: '/(protected)/search/search-suggestions' as any,
               params: { username: displayUser?.username || '' },
             });
@@ -422,7 +420,7 @@ export default function ProfileHeader({
                 onPress={() => {
                   const targetUserId = isOwnProfile ? currentUser?.id : userId;
                   const targetUsername = isOwnProfile ? currentUser?.name : profileUser?.name;
-                  router.push(
+                  navigate(
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     `/(profile)/Lists?tab=following&userId=${targetUserId}&username=${targetUsername}` as any,
                   );
@@ -440,7 +438,7 @@ export default function ProfileHeader({
                 onPress={() => {
                   const targetUserId = isOwnProfile ? currentUser?.id : userId;
                   const targetUsername = isOwnProfile ? currentUser?.name : profileUser?.name;
-                  router.push(
+                  navigate(
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     `/(profile)/Lists?tab=followers&userId=${targetUserId}&username=${targetUsername}` as any,
                   );
@@ -461,7 +459,7 @@ export default function ProfileHeader({
                 onPress={() => {
                   const targetUserId = userId;
                   const targetUsername = profileUser?.name;
-                  router.push(
+                  navigate(
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     `/(profile)/Lists?tab=mutualFollowers&userId=${targetUserId}&username=${targetUsername}` as any,
                   );

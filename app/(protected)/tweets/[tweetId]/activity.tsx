@@ -2,6 +2,7 @@ import { ThemedText } from '@/src/components/ThemedText';
 import { Theme } from '@/src/constants/theme';
 import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import useSpacing from '@/src/hooks/useSpacing';
 import CustomTabView, { TabConfig } from '@/src/modules/profile/components/CustomTabView';
 import MediaViewerModal from '@/src/modules/tweets/components/MediaViewerModal';
@@ -10,9 +11,9 @@ import FollowButton from '@/src/modules/user_list/components/FollowButton';
 import UserList from '@/src/modules/user_list/components/UserList';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { IUser } from '@/src/types/user';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
@@ -20,7 +21,7 @@ export default function TweetActivityScreen() {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { t } = useTranslation();
-  const router = useRouter();
+  const { navigate, goBack } = useNavigation();
   const { tweetId, ownerId } = useLocalSearchParams<{ tweetId: string; ownerId?: string }>();
   const { bottom } = useSpacing();
   const user = useAuthStore((state) => state.user);
@@ -35,12 +36,15 @@ export default function TweetActivityScreen() {
   const currentUserId = user?.id ?? null;
   const isTweetOwner = ownerId ? ownerId === currentUserId : false;
 
-  const handleUserPress = (selectedUser: IUser) => {
-    router.push({
-      pathname: '/(protected)/(profile)/[id]',
-      params: { id: selectedUser.id },
-    });
-  };
+  const handleUserPress = useCallback(
+    (selectedUser: IUser) => {
+      navigate({
+        pathname: '/(protected)/(profile)/[id]',
+        params: { id: selectedUser.id },
+      });
+    },
+    [navigate],
+  );
 
   const RepostsTab = useMemo(
     () =>
@@ -55,7 +59,7 @@ export default function TweetActivityScreen() {
           />
         );
       },
-    [tweetId],
+    [tweetId, handleUserPress],
   );
 
   const QuotesTab = useMemo(
@@ -79,7 +83,7 @@ export default function TweetActivityScreen() {
           />
         );
       },
-    [tweetId],
+    [tweetId, handleUserPress],
   );
 
   const tabs: TabConfig[] = useMemo(() => {
@@ -98,7 +102,7 @@ export default function TweetActivityScreen() {
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={styles.headerContent}>
-            <TouchableOpacity onPress={() => router.back()} accessibilityLabel="back_button" style={styles.backButton}>
+            <TouchableOpacity onPress={() => goBack()} accessibilityLabel="back_button" style={styles.backButton}>
               <ChevronLeft size={24} color={theme.colors.text.primary} />
             </TouchableOpacity>
             <ThemedText style={styles.title}>{t('tweetActivity.title')}</ThemedText>

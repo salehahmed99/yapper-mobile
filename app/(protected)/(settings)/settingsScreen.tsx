@@ -1,12 +1,12 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { SettingsSearchBar } from '@/src/modules/settings/components/SettingsSearchBar';
 import { SettingsSection } from '@/src/modules/settings/components/SettingsSection';
 import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
 import { getSettingsData } from '@/src/modules/settings/components/settingsConfig';
 import { ISettingsItem } from '@/src/modules/settings/types/types';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { router } from 'expo-router';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StatusBar, StyleSheet, View } from 'react-native';
@@ -15,9 +15,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export const SettingsScreen: React.FC = () => {
   const { t } = useTranslation();
   const SETTINGS_DATA = useMemo(() => getSettingsData(t), [t]);
+  const { navigate, replace } = useNavigation();
   const handleItemPress = (item: ISettingsItem) => {
     if (item.route) {
-      router.push(`/(protected)/(settings)/${item.route}`);
+      navigate(`/(protected)/(settings)/${item.route}`);
     }
   };
 
@@ -33,7 +34,7 @@ export const SettingsScreen: React.FC = () => {
         <SettingsTopBar
           title={t('settings.main.title')}
           subtitle={`@${user?.username}`}
-          onBackPress={() => router.replace('/(protected)')}
+          onBackPress={() => replace('/(protected)')}
         />
 
         {/* Search Bar */}

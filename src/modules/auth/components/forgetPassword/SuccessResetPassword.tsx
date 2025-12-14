@@ -1,9 +1,9 @@
-import React, { useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
-import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { router } from 'expo-router';
+import { StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 
 interface SuccessResetPasswordProps {
   onContinue?: () => void;
@@ -12,6 +12,7 @@ interface SuccessResetPasswordProps {
 const SuccessResetPassword: React.FC<SuccessResetPasswordProps> = ({ onContinue }) => {
   const { theme } = useTheme();
   const { width, height } = useWindowDimensions();
+  const { replace } = useNavigation();
 
   // Separate scale factors for width, height, and font
   const scaleWidth = Math.min(Math.max(width / 390, 0.85), 1.1);
@@ -33,7 +34,7 @@ const SuccessResetPassword: React.FC<SuccessResetPasswordProps> = ({ onContinue 
       <Text style={styles.subtitle}>
         {t('auth.forgotPassword.successDescription')} {'\n\n'}
         {t('auth.forgotPassword.twoFactorPrefix')}{' '}
-        <Text style={styles.link} onPress={() => router.replace('/(auth)/login')}>
+        <Text style={styles.link} onPress={() => replace('/(auth)/login')}>
           {t('auth.forgotPassword.twoFactorLink')}
         </Text>
         . {t('auth.forgotPassword.twoFactorSuffix')}
@@ -43,7 +44,7 @@ const SuccessResetPassword: React.FC<SuccessResetPasswordProps> = ({ onContinue 
       <TouchableOpacity
         style={styles.button}
         activeOpacity={0.8}
-        onPress={onContinue || (() => router.replace('/(auth)/login'))}
+        onPress={onContinue || (() => replace('/(auth)/login'))}
         accessibilityLabel="success-reset-password_continue_button"
       >
         <Text style={styles.buttonText}>{t('auth.forgotPassword.continueButton')}</Text>

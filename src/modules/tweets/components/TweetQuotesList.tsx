@@ -69,7 +69,7 @@ const TweetQuotesList: React.FC<ITweetQuotesListProps> = ({ tweetId }) => {
 
         return (
           <FlatList
-            style={{ flex: 1 }}
+            style={styles.list}
             data={flattenedData}
             renderItem={({ item }) => (
               <TweetContainer tweet={item} isVisible={visibleTweetIds.has(item.tweetId)} showThread={false} />
@@ -109,6 +109,9 @@ const createStyles = (theme: Theme) =>
       color: theme.colors.text.secondary,
       fontSize: theme.typography.sizes.md,
       textAlign: 'center',
+    },
+    list: {
+      flex: 1,
     },
   });
 

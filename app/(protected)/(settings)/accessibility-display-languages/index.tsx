@@ -1,14 +1,14 @@
-import React, { useMemo } from 'react';
-import { View, ScrollView, StyleSheet, StatusBar } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { SettingsSection } from '@/src/modules/settings/components/SettingsSection';
+import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
 import { ISettingsItem } from '@/src/modules/settings/types/types';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { useTheme } from '@/src/context/ThemeContext';
-import { Theme } from '@/src/constants/theme';
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ScrollView, StatusBar, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const getAccessibilityDisplayData = (t: (key: string) => string): ISettingsItem[] => [
   {
@@ -24,14 +24,16 @@ const getAccessibilityDisplayData = (t: (key: string) => string): ISettingsItem[
 export const AccessibilityDisplayLanguagesScreen: React.FC = () => {
   const { t } = useTranslation();
   const ACCESSIBILITY_DISPLAY_DATA = getAccessibilityDisplayData(t);
+  const { navigate } = useNavigation();
   const handleItemPress = (item: ISettingsItem) => {
     if (item.route) {
-      router.push(`/(protected)/(settings)/accessibility-display-languages/${item.route}`);
+      navigate(`/(protected)/(settings)/accessibility-display-languages/${item.route}`);
     }
   };
 
   const user = useAuthStore((state) => state.user);
   const { theme, isDark } = useTheme();
+  const { goBack } = useNavigation();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   return (
@@ -44,7 +46,7 @@ export const AccessibilityDisplayLanguagesScreen: React.FC = () => {
         <SettingsTopBar
           title={t('settings.accessibility.title')}
           subtitle={`@${user?.username}`}
-          onBackPress={() => router.back()}
+          onBackPress={() => goBack()}
         />
 
         <ScrollView

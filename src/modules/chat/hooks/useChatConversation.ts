@@ -171,7 +171,7 @@ export function useChatConversation({ chatId }: UseChatConversationOptions): Use
       });
       queryClient.invalidateQueries({ queryKey: ['chats'] });
     },
-    [chatId, queryClient, messagesData, currentUser?.id],
+    [chatId, queryClient, currentUser?.id],
   );
 
   // Handle message sent confirmation
@@ -225,7 +225,7 @@ export function useChatConversation({ chatId }: UseChatConversationOptions): Use
       });
       queryClient.invalidateQueries({ queryKey: ['chats'] });
     },
-    [chatId, queryClient, messagesData],
+    [chatId, queryClient],
   );
   const handleUserTyping = useCallback(
     (data: IUserTypingData) => {

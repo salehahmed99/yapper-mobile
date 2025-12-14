@@ -1,6 +1,6 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import { useRouter } from 'expo-router';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { ArrowLeft, X } from 'lucide-react-native';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,7 +28,7 @@ const SearchInput: React.FC<ISearchInputProps> = ({
 }) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const router = useRouter();
+  const { goBack } = useNavigation();
   const insets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const inputRef = useRef<TextInput>(null);
@@ -44,9 +44,7 @@ const SearchInput: React.FC<ISearchInputProps> = ({
   }, [autoFocus]);
 
   const handleBack = () => {
-    if (router.canGoBack()) {
-      router.back();
-    }
+    goBack();
   };
 
   const handleClear = () => {

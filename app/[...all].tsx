@@ -1,14 +1,14 @@
-import { useRouter } from 'expo-router';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import React, { useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 export default function Page() {
-  const router = useRouter();
+  const { replace } = useNavigation();
 
   useEffect(() => {
     // Redirect unknown routes to the 404 page
-    router.replace('/404');
-  }, [router]);
+    replace('/404');
+  }, [replace]);
 
   return (
     <View style={styles.container}>

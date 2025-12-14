@@ -1,29 +1,30 @@
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
+import { usernameSchema } from '@/src/modules/auth/schemas/schemas';
+import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
+import { changeUsername } from '@/src/modules/settings/services/yourAccountService';
+import { useAuthStore } from '@/src/store/useAuthStore';
+import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  StatusBar,
-  TouchableOpacity,
   ActivityIndicator,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
   TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { Ionicons } from '@expo/vector-icons';
-import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
-import { useAuthStore } from '@/src/store/useAuthStore';
-import { useTheme } from '@/src/context/ThemeContext';
-import { Theme } from '@/src/constants/theme';
-import { usernameSchema } from '@/src/modules/auth/schemas/schemas';
 import Toast from 'react-native-toast-message';
-import { changeUsername } from '@/src/modules/settings/services/yourAccountService';
 
 export const ChangeUsernameScreen: React.FC = () => {
   const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
+  const { goBack } = useNavigation();
   const { theme, isDark } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [newUsername, setNewUsername] = useState(user?.username || '');
@@ -85,7 +86,7 @@ export const ChangeUsernameScreen: React.FC = () => {
         text1: t('settings.common.success'),
         text2: t('settings.username.success'),
       });
-      router.back();
+      goBack();
     } catch (err) {
       Toast.show({
         type: 'error',
@@ -113,7 +114,7 @@ export const ChangeUsernameScreen: React.FC = () => {
       />
       <View style={styles.container}>
         {/* Header */}
-        <SettingsTopBar title={t('settings.username.title')} onBackPress={() => router.back()} />
+        <SettingsTopBar title={t('settings.username.title')} onBackPress={() => goBack()} />
 
         {/* Content */}
         <ScrollView

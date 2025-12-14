@@ -1,8 +1,9 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { changeCountry } from '@/src/modules/settings/services/yourAccountService';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -12,6 +13,7 @@ import Toast from 'react-native-toast-message';
 export const ConfirmCountryChangeScreen: React.FC = () => {
   const { t } = useTranslation();
   const { country } = useLocalSearchParams<{ country: string }>();
+  const { goBack } = useNavigation();
   const [isUpdating, setIsUpdating] = useState(false);
 
   const handleConfirmChange = async () => {
@@ -25,7 +27,7 @@ export const ConfirmCountryChangeScreen: React.FC = () => {
         text1: t('settings.country.updated'),
         text2: t('settings.country.updated_message'),
       });
-      router.back();
+      goBack();
     } catch (error) {
       Toast.show({
         type: 'error',
@@ -37,7 +39,7 @@ export const ConfirmCountryChangeScreen: React.FC = () => {
   };
 
   const handleCancel = () => {
-    router.back();
+    goBack();
   };
 
   const { theme, isDark } = useTheme();
@@ -49,7 +51,7 @@ export const ConfirmCountryChangeScreen: React.FC = () => {
         barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor={theme.colors.background.primary}
       />
-      <TopBar showExitButton={true} onBackPress={() => router.back()} />
+      <TopBar showExitButton={true} onBackPress={() => goBack()} />
 
       <View style={styles.container}>
         <View style={styles.content}>

@@ -1,11 +1,11 @@
+import { useNavigation } from '@/src/hooks/useNavigation';
 import MuteButton from '@/src/modules/user_list/components/MuteButton';
 import UserList from '@/src/modules/user_list/components/UserList';
 import { useUserList } from '@/src/modules/user_list/hooks/useUserList';
 import { IUser } from '@/src/types/user';
-import { useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, Text, View } from 'react-native';
 import { Theme } from '../../../constants/theme';
 import { useTheme } from '../../../context/ThemeContext';
 import { createMutedAccountsStyles } from '../styles/muted-and-blocked-accounts-styles';
@@ -16,7 +16,7 @@ const createStyles = (theme: Theme) =>
   });
 
 export default function MutedAccountsContainer() {
-  const router = useRouter();
+  const { navigate } = useNavigation();
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -24,7 +24,7 @@ export default function MutedAccountsContainer() {
   const { users, loading, error } = useUserList({ type: 'muted', autoLoad: true });
 
   const handleUserPress = (user: IUser) => {
-    router.push(`/(profile)/${user.id}` as any);
+    navigate(`/(profile)/${user.id}` as any);
   };
 
   const handleMutePress = (_user: IUser) => {

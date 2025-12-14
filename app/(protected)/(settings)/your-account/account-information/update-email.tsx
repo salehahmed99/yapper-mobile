@@ -1,13 +1,13 @@
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import AuthInput from '@/src/modules/auth/components/shared/AuthInput';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { emailSchema } from '@/src/modules/auth/schemas/schemas';
 import { changeEmail } from '@/src/modules/settings/services/yourAccountService';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
@@ -17,6 +17,7 @@ import Toast from 'react-native-toast-message';
 export const UpdateEmailScreen: React.FC = () => {
   const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
+  const { navigate, goBack } = useNavigation();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -47,7 +48,7 @@ export const UpdateEmailScreen: React.FC = () => {
         text1: t('settings.email.updated'),
         text2: t('settings.email.updated_message'),
       });
-      router.push({
+      navigate({
         pathname: '/(protected)/(settings)/your-account/account-information/confirm-email-change',
         params: { email },
       });
@@ -64,7 +65,7 @@ export const UpdateEmailScreen: React.FC = () => {
   };
 
   const handleCancel = () => {
-    router.back();
+    goBack();
   };
 
   const { theme, isDark } = useTheme();

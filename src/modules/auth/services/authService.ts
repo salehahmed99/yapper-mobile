@@ -165,7 +165,7 @@ export const githubSignIn = async (): Promise<ILoginResponse | IOAuthResponse> =
     // Send to Backend
     // 'redirect_uri' sent to backend must match the one sent to GitHub (the Proxy)
 
-    console.log('Sending code to backend for token exchange...');
+    console.warn('Sending code to backend for token exchange...');
     const res = await api.post('/auth/mobile/github', {
       code: code,
       redirect_uri: PROXY_URL,

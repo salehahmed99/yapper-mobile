@@ -1,13 +1,14 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import useDebounce from '@/src/hooks/useDebounce';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import SearchHistoryList from '@/src/modules/search/components/SearchHistoryList';
 import SearchInput from '@/src/modules/search/components/SearchInput';
 import SuggestedUserItem from '@/src/modules/search/components/SuggestedUserItem';
 import SuggestionItem from '@/src/modules/search/components/SuggestionItem';
 import useSearchHistory from '@/src/modules/search/hooks/useSearchHistory';
 import { useSearchSuggestions } from '@/src/modules/search/hooks/useSearchSuggestions';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
@@ -15,7 +16,7 @@ import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-nativ
 export default function SearchSuggestionsScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const router = useRouter();
+  const { navigate } = useNavigation();
   const params = useLocalSearchParams<{ query?: string; username?: string }>();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -41,12 +42,12 @@ export default function SearchSuggestionsScreen() {
   const handleQueryPress = useCallback(
     (selectedQuery: string) => {
       addToHistory(selectedQuery);
-      router.push({
+      navigate({
         pathname: '/(protected)/search/search-results' as any,
         params: { query: selectedQuery, ...(username && { username }) },
       });
     },
-    [router, username, addToHistory],
+    [navigate, username, addToHistory],
   );
 
   const handleArrowPress = useCallback((selectedQuery: string) => {
@@ -55,12 +56,12 @@ export default function SearchSuggestionsScreen() {
 
   const handleUserPress = useCallback(
     (userId: string) => {
-      router.push({
+      navigate({
         pathname: '/(protected)/(profile)/[id]',
         params: { id: userId },
       });
     },
-    [router],
+    [navigate],
   );
 
   const handleSubmit = useCallback(() => {

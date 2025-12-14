@@ -1,6 +1,7 @@
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import AuthInputScreen from '@/src/modules/auth/components/shared/AuthInput';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import AuthTitle from '@/src/modules/auth/components/shared/Title';
@@ -8,7 +9,6 @@ import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { verifyOTP } from '@/src/modules/auth/services/forgetPasswordService';
 import { useForgotPasswordStore } from '@/src/modules/auth/store/useForgetPasswordStore';
 import { ButtonOptions } from '@/src/modules/auth/utils/enums';
-import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
@@ -17,6 +17,7 @@ import Toast from 'react-native-toast-message';
 const VerifyCodeScreen = () => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { replace, goBack } = useNavigation();
 
   const styles = React.useMemo(() => createStyles(theme), [theme]);
 
@@ -31,9 +32,9 @@ const VerifyCodeScreen = () => {
   // Redirect if no identifier (user shouldn't be here)
   useEffect(() => {
     if (!identifier) {
-      router.replace('/(auth)/forgot-password/find-account');
+      replace('/(auth)/forgot-password/find-account');
     }
-  }, [identifier]);
+  }, [identifier, replace]);
 
   useEffect(() => {
     setIsNextEnabled(code.trim().length === 6);
@@ -61,7 +62,7 @@ const VerifyCodeScreen = () => {
           text1: t('auth.forgotPassword.codeVerifiedTitle'),
           text2: t('auth.forgotPassword.codeVerifiedDescription'),
         });
-        router.replace('/(auth)/forgot-password/reset-password');
+        replace('/(auth)/forgot-password/reset-password');
       } else {
         Toast.show({
           type: 'error',
@@ -79,16 +80,16 @@ const VerifyCodeScreen = () => {
   };
 
   const handleBack = () => {
-    router.replace('/(auth)/forgot-password/find-account');
+    replace('/(auth)/forgot-password/find-account');
   };
 
   const handleTopBarBackPress = () => {
     const returnRoute = useForgotPasswordStore.getState().returnRoute;
     if (returnRoute) {
       useForgotPasswordStore.getState().setReturnRoute(null);
-      router.back();
+      goBack();
     } else {
-      router.replace('/(auth)/landing-screen');
+      replace('/(auth)/landing-screen');
     }
   };
   return (

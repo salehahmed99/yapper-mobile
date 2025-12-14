@@ -2,6 +2,7 @@ import FloatingActionButton from '@/src/components/FloatingActionButton';
 import AppBar from '@/src/components/shell/AppBar';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import useSpacing from '@/src/hooks/useSpacing';
 import MessagesList from '@/src/modules/chat/components/MessagesList';
 import NewMessageModal from '@/src/modules/chat/components/NewMessageModal';
@@ -9,7 +10,6 @@ import { getChats } from '@/src/modules/chat/services/chatService';
 import { chatSocketService, INewMessageData, IUnreadChatsSummary } from '@/src/modules/chat/services/chatSocketService';
 import { IChat } from '@/src/modules/chat/types';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'expo-router';
 import { MailPlus } from 'lucide-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +21,7 @@ const CHATS_PER_PAGE = 20;
 export default function MessagesPage() {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
-  const router = useRouter();
+  const { navigate } = useNavigation();
   const { bottom } = useSpacing();
   const styles = createStyles(theme);
   const { t } = useTranslation();
@@ -83,7 +83,7 @@ export default function MessagesPage() {
   }, [chats, searchQuery]);
 
   const handleChatPress = (chat: IChat) => {
-    router.push({
+    navigate({
       pathname: `/messages/${chat.id}` as const,
       params: {
         name: chat.participant.name || chat.participant.username,
@@ -107,7 +107,7 @@ export default function MessagesPage() {
     participant: { name: string; username: string; avatarUrl: string | null },
   ) => {
     setIsNewMessageModalVisible(false);
-    router.push({
+    navigate({
       pathname: `/messages/${chatId}` as const,
       params: {
         name: participant.name || participant.username,

@@ -1,18 +1,19 @@
-import React, { useMemo } from 'react';
-import { View, Text, ScrollView, StyleSheet, StatusBar, TouchableOpacity, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { useTranslation } from 'react-i18next';
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { useTheme } from '@/src/context/ThemeContext';
-import { Theme } from '@/src/constants/theme';
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Alert, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const AccountInformationScreen: React.FC = () => {
   const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const { theme, isDark } = useTheme();
+  const { navigate, replace, goBack } = useNavigation();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const handleLogout = () => {
@@ -26,7 +27,7 @@ export const AccountInformationScreen: React.FC = () => {
         style: 'destructive',
         onPress: async () => {
           await logout(false);
-          router.replace('/(auth)/landing-screen');
+          replace('/(auth)/landing-screen');
         },
       },
     ]);
@@ -43,7 +44,7 @@ export const AccountInformationScreen: React.FC = () => {
         style: 'destructive',
         onPress: async () => {
           await logout(true);
-          router.replace('/(auth)/landing-screen');
+          replace('/(auth)/landing-screen');
         },
       },
     ]);
@@ -74,7 +75,7 @@ export const AccountInformationScreen: React.FC = () => {
         <SettingsTopBar
           title={t('settings.account_info.title')}
           subtitle={`@${user?.username}`}
-          onBackPress={() => router.back()}
+          onBackPress={() => goBack()}
         />
 
         {/* Content */}
@@ -87,14 +88,14 @@ export const AccountInformationScreen: React.FC = () => {
             <InfoRow
               label={t('settings.account_info.username_label')}
               value={`@${user?.username}`}
-              onPress={() => router.push('/(protected)/(settings)/your-account/account-information/change-username')}
+              onPress={() => navigate('/(protected)/(settings)/your-account/account-information/change-username')}
             />
 
             <InfoRow
               label={t('settings.account_info.email_label')}
               value={user?.email || t('settings.account_info.add_label')}
               onPress={() =>
-                router.push({
+                navigate({
                   pathname: '/(protected)/(settings)/your-account/verify-password',
                   params: { returnTo: '/(protected)/(settings)/your-account/account-information/update-email' },
                 })
@@ -104,7 +105,7 @@ export const AccountInformationScreen: React.FC = () => {
             <InfoRow
               label={t('settings.account_info.country_label')}
               value={user?.country || t('settings.account_info.add_label')}
-              onPress={() => router.push('/(protected)/(settings)/your-account/account-information/edit-country')}
+              onPress={() => navigate('/(protected)/(settings)/your-account/account-information/edit-country')}
             />
 
             <View style={styles.helperTextContainer}>

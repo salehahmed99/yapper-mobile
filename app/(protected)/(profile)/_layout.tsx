@@ -1,6 +1,7 @@
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
@@ -14,7 +15,7 @@ const styles = StyleSheet.create({
 export default function ProfileLayout() {
   const { theme } = useTheme();
   const user = useAuthStore((state) => state.user);
-  const router = useRouter();
+  const { goBack } = useNavigation();
   const params = useLocalSearchParams<{ username?: string }>();
   const username = Array.isArray(params.username) ? params.username[0] : params.username;
   const listsUsername = username || user?.name || 'User';
@@ -44,19 +45,12 @@ export default function ProfileLayout() {
       title: listsUsername,
       headerShadowVisible: false,
       headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => {
-            if (router.canGoBack()) {
-              router.back();
-            }
-          }}
-          style={styles.backButton}
-        >
+        <TouchableOpacity onPress={() => goBack()} style={styles.backButton}>
           <ChevronLeft color={theme.colors.text.primary} size={24} />
         </TouchableOpacity>
       ),
     }),
-    [listsUsername, theme, router],
+    [listsUsername, theme, goBack],
   );
 
   return (

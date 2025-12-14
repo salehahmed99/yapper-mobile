@@ -125,7 +125,7 @@ export const useSwipableTabs = () => {
           }).start();
         },
       }),
-    [isRTL, screenWidth, slideAnim, drawerEdgeThreshold],
+    [slideAnim],
   );
 
   // Calculate translateX (invert for RTL)

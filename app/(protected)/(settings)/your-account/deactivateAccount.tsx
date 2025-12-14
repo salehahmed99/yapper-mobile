@@ -1,9 +1,9 @@
 import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { router } from 'expo-router';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -12,17 +12,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export const DeactivateAccountScreen: React.FC = () => {
   const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
+  const { navigate, goBack } = useNavigation();
   const { theme, isDark } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const handleDeactivate = () => {
-    router.push('/(protected)/(settings)/your-account/confirmDeactivate');
+    navigate('/(protected)/(settings)/your-account/confirmDeactivate');
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      <SettingsTopBar title={t('settings.deactivate.title')} onBackPress={() => router.back()} />
+      <SettingsTopBar title={t('settings.deactivate.title')} onBackPress={() => goBack()} />
 
       <ScrollView
         style={styles.content}

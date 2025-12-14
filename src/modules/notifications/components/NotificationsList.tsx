@@ -86,7 +86,7 @@ const NotificationsList: React.FC<INotificationsListProps> = (props) => {
 
   return (
     <FlashList
-      style={{ flex: 1 }}
+      style={styles.list}
       data={data}
       renderItem={({ item }) => <NotificationContainer notification={item} />}
       keyExtractor={(item) => item.id}
@@ -137,5 +137,8 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       justifyContent: 'center',
       width: '100%',
+    },
+    list: {
+      flex: 1,
     },
   });

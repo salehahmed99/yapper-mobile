@@ -1,13 +1,13 @@
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import ProfilePictureUpload from '@/src/modules/auth/components/shared/ProfilePictureUpload';
 import AuthTitle from '@/src/modules/auth/components/shared/Title';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { useSignUpStore } from '@/src/modules/auth/store/useSignUpStore';
 import { uploadProfilePicture } from '@/src/services/userService';
-import { router } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
@@ -16,6 +16,7 @@ import Toast from 'react-native-toast-message';
 const UploadPhotoScreen = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { replace } = useNavigation();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   // Zustand store
@@ -27,9 +28,9 @@ const UploadPhotoScreen = () => {
   // Redirect if no email or password (user shouldn't be here)
   useEffect(() => {
     if (!email) {
-      router.replace('/(auth)/sign-up/create-account-screen');
+      replace('/(auth)/sign-up/create-account-screen');
     }
-  }, [email]);
+  }, [email, replace]);
 
   const handleImageSelected = (file: { uri: string; name: string; type: string }) => {
     setImageFile(file);
@@ -37,7 +38,7 @@ const UploadPhotoScreen = () => {
 
   const handleSkip = () => {
     // Complete sign-up without profile picture
-    router.replace('/(auth)/sign-up/interests-selection');
+    replace('/(auth)/sign-up/interests-selection');
   };
 
   const handleNext = async () => {
@@ -60,7 +61,7 @@ const UploadPhotoScreen = () => {
           text1: t('auth.signUp.uploadPhoto.success.title'),
           text2: t('auth.signUp.uploadPhoto.success.uploaded'),
         });
-        router.replace('/(auth)/sign-up/interests-selection');
+        replace('/(auth)/sign-up/interests-selection');
       } else {
         Toast.show({
           type: 'error',

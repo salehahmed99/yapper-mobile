@@ -2,8 +2,8 @@ import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { useUiShell } from '@/src/context/UiShellContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { useRouter } from 'expo-router';
 import { Search } from 'lucide-react-native';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +17,7 @@ interface IExploreSearchBarProps {
 const ExploreSearchBar: React.FC<IExploreSearchBarProps> = ({ onSearchPress }) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const router = useRouter();
+  const { navigate } = useNavigation();
   const user = useAuthStore((state) => state.user);
   const { toggleSideMenu, isSideMenuOpen } = useUiShell();
   const insets = useSafeAreaInsets();
@@ -27,7 +27,7 @@ const ExploreSearchBar: React.FC<IExploreSearchBarProps> = ({ onSearchPress }) =
     if (onSearchPress) {
       onSearchPress();
     } else {
-      router.push('/(protected)/search/search-suggestions');
+      navigate('/(protected)/search/search-suggestions');
     }
   };
 

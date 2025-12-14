@@ -1,6 +1,7 @@
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { AnimatedTextInput } from '@/src/modules/settings/components/AnimatedTextInput';
 import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
 import ValidationItem from '@/src/modules/settings/components/ValidationItem';
@@ -8,7 +9,6 @@ import { changePassword, confirmCurrentPassword } from '@/src/modules/settings/s
 import { passwordSchema } from '@/src/modules/settings/types/schemas';
 import { isPasswordValid, validatePassword } from '@/src/modules/settings/utils/passwordValidation';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -18,6 +18,7 @@ import Toast from 'react-native-toast-message';
 export const ChangePasswordScreen: React.FC = () => {
   const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
+  const { navigate, goBack } = useNavigation();
   const { theme, isDark } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -78,7 +79,7 @@ export const ChangePasswordScreen: React.FC = () => {
     useAuthStore.getState().setSkipRedirect(true);
     const { useForgotPasswordStore } = require('@/src/modules/auth/store/useForgetPasswordStore');
     useForgotPasswordStore.getState().setReturnRoute('/(protected)/(settings)/your-account/changePassword');
-    router.push('/(auth)/forgot-password/find-account');
+    navigate('/(auth)/forgot-password/find-account');
   };
 
   return (
@@ -93,7 +94,7 @@ export const ChangePasswordScreen: React.FC = () => {
           <SettingsTopBar
             title={t('settings.password.title')}
             subtitle={`@${user?.username}`}
-            onBackPress={() => router.back()}
+            onBackPress={() => goBack()}
           />
 
           <ScrollView

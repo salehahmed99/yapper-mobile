@@ -150,11 +150,11 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
     <Modal visible={visible} animationType="slide" onRequestClose={onClose} presentationStyle="overFullScreen">
       <BottomSheetModalProvider>
         <View style={[styles.container, { paddingBottom: insets.bottom }]}>
-          <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <KeyboardAvoidingView style={styles.keyboardView} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
             <CreatePostHeader canPost={canPost} handleCancel={handleClosePostModal} handlePost={handlePost} />
             <ScrollView
-              style={{ flex: 1 }}
-              contentContainerStyle={{ flexGrow: 1, gap: theme.spacing.xxl }}
+              style={styles.scrollView}
+              contentContainerStyle={styles.scrollViewContent}
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={true}
             >
@@ -241,6 +241,16 @@ const createStyles = (theme: Theme) =>
       color: theme.colors.text.primary,
       fontFamily: theme.typography.fonts.regular,
       lineHeight: theme.typography.sizes.md * theme.typography.lineHeights.relaxed,
+    },
+    keyboardView: {
+      flex: 1,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    scrollViewContent: {
+      flexGrow: 1,
+      gap: theme.spacing.xxl,
     },
   });
 

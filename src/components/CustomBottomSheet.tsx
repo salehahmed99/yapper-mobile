@@ -49,7 +49,7 @@ const CustomBottomSheet: React.FC<ICustomBottomSheetProps> = (props) => {
       enableContentPanningGesture={enableContentPanningGesture}
       topInset={insets.top}
     >
-      <ContentWrapper style={{ flex: 1, paddingBottom: insets.bottom }}>{children}</ContentWrapper>
+      <ContentWrapper style={[styles.contentWrapper, { paddingBottom: insets.bottom }]}>{children}</ContentWrapper>
     </BottomSheetModal>
   );
 };
@@ -68,6 +68,9 @@ const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.border,
       width: 40,
       height: 5,
+    },
+    contentWrapper: {
+      flex: 1,
     },
   });
 

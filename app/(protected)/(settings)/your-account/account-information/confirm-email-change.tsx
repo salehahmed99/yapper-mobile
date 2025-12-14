@@ -1,12 +1,13 @@
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import AuthInput from '@/src/modules/auth/components/shared/AuthInput';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import AuthTitle from '@/src/modules/auth/components/shared/Title';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { verifyChangeEmail } from '@/src/modules/settings/services/yourAccountService';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StatusBar, StyleSheet, Text, View } from 'react-native';
@@ -16,6 +17,7 @@ import Toast from 'react-native-toast-message';
 const ConfirmEmailChangeScreen = () => {
   const { t } = useTranslation();
   const { theme, isDark } = useTheme();
+  const { goBack } = useNavigation();
   const styles = React.useMemo(() => createStyles(theme), [theme]);
   const { email } = useLocalSearchParams<{ email: string }>();
 
@@ -26,9 +28,9 @@ const ConfirmEmailChangeScreen = () => {
   // Redirect if no email
   useEffect(() => {
     if (!email) {
-      router.back();
+      goBack();
     }
-  }, [email]);
+  }, [email, goBack]);
 
   useEffect(() => {
     setIsVerifyEnabled(code.trim().length === 6);
@@ -55,9 +57,9 @@ const ConfirmEmailChangeScreen = () => {
           text1: t('settings.email_verify.verified'),
           text2: t('settings.email_verify.verified_message'),
         });
-        router.back();
-        router.back();
-        router.back();
+        goBack();
+        goBack();
+        goBack();
       } else {
         Toast.show({
           type: 'error',
@@ -75,7 +77,7 @@ const ConfirmEmailChangeScreen = () => {
   };
 
   const handleBack = () => {
-    router.back();
+    goBack();
   };
 
   return (

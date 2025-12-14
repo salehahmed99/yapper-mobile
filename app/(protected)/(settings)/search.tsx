@@ -1,10 +1,10 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { SettingsSection } from '@/src/modules/settings/components/SettingsSection';
 import { getSettingsData, getYourAccountData } from '@/src/modules/settings/components/settingsConfig';
 import { ISettingsItem } from '@/src/modules/settings/types/types';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { I18nManager, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -17,6 +17,7 @@ export const SettingsSearchScreen: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const inputRef = useRef<TextInput>(null);
   const { theme, isDark } = useTheme();
+  const { navigate, goBack } = useNavigation();
   const isRTL = I18nManager.isRTL;
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -48,7 +49,7 @@ export const SettingsSearchScreen: React.FC = () => {
 
   const handleItemPress = (item: ISettingsItem) => {
     if (item.route) {
-      router.push(`/(protected)/(settings)/${item.prefix || ''}${item.route}`);
+      navigate(`/(protected)/(settings)/${item.prefix || ''}${item.route}`);
     }
   };
 
@@ -63,7 +64,7 @@ export const SettingsSearchScreen: React.FC = () => {
         <View style={styles.searchHeader}>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => router.back()}
+            onPress={() => goBack()}
             accessibilityLabel="Go back"
             testID="Go_Back"
           >

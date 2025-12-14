@@ -1,5 +1,5 @@
+import { useNavigation } from '@/src/hooks/useNavigation';
 import * as Localization from 'expo-localization';
-import { router } from 'expo-router';
 import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,8 +21,8 @@ import TopBar from '@/src/modules/auth/components/shared/TopBar';
 // Utils
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { ILoginResponse } from '@/src/modules/auth/types';
-import { useAuthStore } from '@/src/store/useAuthStore';
 import { ButtonOptions } from '@/src/modules/auth/utils/enums';
+import { useAuthStore } from '@/src/store/useAuthStore';
 
 // Types
 type InputType = 'email' | 'phone' | 'username' | null;
@@ -43,6 +43,7 @@ const LoginScreen = () => {
   // ============================================
   // Hooks & Constants
   // ============================================
+  const { replace } = useNavigation();
   const defaultCountry = Localization.getLocales()[0]?.regionCode || 'US';
   const loginUser = useAuthStore((state) => state.loginUser);
   const setSkipRedirect = useAuthStore((state) => state.setSkipRedirect);
@@ -98,11 +99,11 @@ const LoginScreen = () => {
   };
 
   const handleBack = () => {
-    router.replace('/(auth)/landing-screen');
+    replace('/(auth)/landing-screen');
   };
 
   const handleForgotPassword = () => {
-    router.replace('/(auth)/forgot-password/find-account');
+    replace('/(auth)/forgot-password/find-account');
   };
 
   // ============================================

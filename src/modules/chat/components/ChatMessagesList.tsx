@@ -64,7 +64,7 @@ export default function ChatMessagesList({
         flashListRef.current?.scrollToEnd({ animated: false });
       }, 200);
     }
-  }, []);
+  }, [messages.length]);
   React.useEffect(() => {
     if (isOtherUserTyping) {
       setTimeout(() => {

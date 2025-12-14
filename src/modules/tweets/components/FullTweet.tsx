@@ -4,6 +4,7 @@ import ViewsIcon from '@/src/components/icons/ViewsIcon';
 import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import i18n from '@/src/i18n';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { formatDateDDMMYYYY, formatShortTime } from '@/src/utils/dateUtils';
@@ -11,7 +12,6 @@ import { formatCount } from '@/src/utils/formatCount';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { BlurView } from 'expo-blur';
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
 import { ArrowLeft, ArrowRight, MoreHorizontal, Trash2 } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -79,9 +79,10 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
     bottomSheetModalRef.current?.present();
   };
   const { menuVisible, menuPosition, moreButtonRef, handleMorePress, setMenuVisible } = useTweetDropDownMenu();
+  const { navigate, goBack } = useNavigation();
 
   const handleGrokPress = () => {
-    router.push({
+    navigate({
       pathname: '/(protected)/tweet-summary',
       params: { tweetId: tweet.tweetId },
     });
@@ -112,7 +113,7 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
         <View style={styles.headerContainer}>
           {/* Back Button */}
           <Pressable
-            onPress={() => router.back()}
+            onPress={() => goBack()}
             style={styles.headerButton}
             accessibilityLabel="Go back"
             accessibilityRole="button"

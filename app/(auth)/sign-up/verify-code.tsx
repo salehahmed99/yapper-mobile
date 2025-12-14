@@ -1,21 +1,22 @@
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import AuthInputScreen from '@/src/modules/auth/components/shared/AuthInput';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import AuthTitle from '@/src/modules/auth/components/shared/Title';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { resendVerificationCode, verifySignUpOTP } from '@/src/modules/auth/services/signUpService';
 import { useSignUpStore } from '@/src/modules/auth/store/useSignUpStore';
-import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 const VerifyCodeScreen = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { replace, navigate } = useNavigation();
   const styles = React.useMemo(() => createStyles(theme), [theme]);
 
   // Zustand store
@@ -31,9 +32,9 @@ const VerifyCodeScreen = () => {
   // Redirect if no email (user shouldn't be here)
   useEffect(() => {
     if (!email) {
-      router.replace('/(auth)/sign-up/create-account-screen');
+      replace('/(auth)/sign-up/create-account-screen');
     }
-  }, [email]);
+  }, [email, replace]);
 
   useEffect(() => {
     setIsNextEnabled(code.trim().length === 6);
@@ -62,7 +63,7 @@ const VerifyCodeScreen = () => {
         });
         setVerificationToken(code);
         setUserNames(res.data.recommendations || []);
-        router.push('/(auth)/sign-up/enter-password');
+        navigate('/(auth)/sign-up/enter-password');
       } else {
         Toast.show({
           type: 'error',
@@ -107,11 +108,11 @@ const VerifyCodeScreen = () => {
   };
 
   const handleBack = () => {
-    router.replace('/(auth)/sign-up/create-account-screen');
+    replace('/(auth)/sign-up/create-account-screen');
   };
 
   const handleTopBarBackPress = () => {
-    router.replace('/(auth)/landing-screen');
+    replace('/(auth)/landing-screen');
   };
 
   return (

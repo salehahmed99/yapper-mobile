@@ -87,7 +87,7 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
 
   return (
     <FlashList
-      style={{ flex: 1 }}
+      style={styles.list}
       data={data}
       renderItem={({ item }) => (
         <TweetContainer tweet={item} isVisible={isTabActive && visibleTweetIds.has(item.tweetId)} showThread={true} />
@@ -147,5 +147,8 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       justifyContent: 'center',
       width: '100%',
+    },
+    list: {
+      flex: 1,
     },
   });

@@ -1,10 +1,11 @@
 import { Theme } from '@/src/constants/theme';
 import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { useCategoryPosts } from '@/src/modules/explore/hooks/useCategoryPosts';
 import MediaViewerModal from '@/src/modules/tweets/components/MediaViewerModal';
 import TweetList from '@/src/modules/tweets/components/TweetList';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -39,7 +40,7 @@ const createStyles = (theme: Theme) =>
 export default function CategoryPostsScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const router = useRouter();
+  const { goBack } = useNavigation();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ categoryId: string; categoryName: string }>();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -68,8 +69,8 @@ export default function CategoryPostsScreen() {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const handleBack = useCallback(() => {
-    router.back();
-  }, [router]);
+    goBack();
+  }, [goBack]);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>

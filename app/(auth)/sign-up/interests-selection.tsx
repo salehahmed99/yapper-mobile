@@ -1,13 +1,14 @@
+import { useNavigation } from '@/src/hooks/useNavigation';
 import InterestsSelectionScreen from '@/src/modules/auth/components/InterestsSelectionScreen';
 import { getCategories, submitInterests } from '@/src/modules/auth/services/signUpService';
 import { useSignUpStore } from '@/src/modules/auth/store/useSignUpStore';
-import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
 
 const InterestsSelectionScreenWrapper: React.FC = () => {
   const { t } = useTranslation();
+  const { replace } = useNavigation();
 
   const email = useSignUpStore((state) => state.email);
   const setSelectedInterests = useSignUpStore((state) => state.setSelectedInterests);
@@ -18,9 +19,9 @@ const InterestsSelectionScreenWrapper: React.FC = () => {
   // Redirect if no email (user shouldn't be here)
   useEffect(() => {
     if (!email) {
-      router.replace('/(auth)/sign-up/create-account-screen');
+      replace('/(auth)/sign-up/create-account-screen');
     }
-  }, [email]);
+  }, [email, replace]);
 
   // Fetch categories on mount
   useEffect(() => {
@@ -54,7 +55,7 @@ const InterestsSelectionScreenWrapper: React.FC = () => {
         text2: t('auth.signUp.interests.success.saved'),
       });
 
-      router.replace('/(auth)/sign-up/user-name-screen');
+      replace('/(auth)/sign-up/user-name-screen');
     } catch (error) {
       const message = error instanceof Error ? error.message : t('auth.signUp.interests.errors.generic');
       Toast.show({
@@ -66,7 +67,7 @@ const InterestsSelectionScreenWrapper: React.FC = () => {
   };
 
   const handleSkip = () => {
-    router.replace('/(auth)/sign-up/user-name-screen');
+    replace('/(auth)/sign-up/user-name-screen');
   };
 
   return (

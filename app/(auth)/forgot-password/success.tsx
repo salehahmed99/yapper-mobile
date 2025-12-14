@@ -1,12 +1,12 @@
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import SuccessScreen from '@/src/modules/auth/components/forgetPassword/SuccessResetPassword';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { login } from '@/src/modules/auth/services/authService';
 import { useForgotPasswordStore } from '@/src/modules/auth/store/useForgetPasswordStore';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
@@ -15,6 +15,7 @@ import Toast from 'react-native-toast-message';
 const SuccessResetPasswordScreen = () => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { replace, goBack } = useNavigation();
   const styles = React.useMemo(() => createStyles(theme), [theme]);
   const { identifier, textType, newPassword, reset } = useForgotPasswordStore();
   const loginUser = useAuthStore((state) => state.loginUser);
@@ -24,7 +25,7 @@ const SuccessResetPasswordScreen = () => {
   const handleContinue = async () => {
     if (!identifier || !newPassword || !textType) {
       reset();
-      router.replace('/(auth)/login');
+      replace('/(auth)/login');
       return;
     }
 
@@ -45,7 +46,7 @@ const SuccessResetPasswordScreen = () => {
         await loginUser(response.data.user, response.data.accessToken, response.data.refreshToken);
         setSkipRedirect(false);
         reset();
-        router.replace('/(protected)');
+        replace('/(protected)');
       }
     } catch (error) {
       console.error('Auto-login failed:', error);
@@ -55,7 +56,7 @@ const SuccessResetPasswordScreen = () => {
         text2: 'Please login with your new password',
       });
       reset();
-      router.replace('/(auth)/login');
+      replace('/(auth)/login');
     } finally {
       setIsLoading(false);
     }
@@ -65,9 +66,9 @@ const SuccessResetPasswordScreen = () => {
     const returnRoute = useForgotPasswordStore.getState().returnRoute;
     if (returnRoute) {
       useForgotPasswordStore.getState().setReturnRoute(null);
-      router.back();
+      goBack();
     } else {
-      router.replace('/(auth)/landing-screen');
+      replace('/(auth)/landing-screen');
     }
   };
 

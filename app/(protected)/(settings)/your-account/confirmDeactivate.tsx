@@ -1,12 +1,12 @@
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { AnimatedTextInput } from '@/src/modules/settings/components/AnimatedTextInput';
 import { confirmCurrentPassword, deleteAccount } from '@/src/modules/settings/services/yourAccountService';
 import { isPasswordValid } from '@/src/modules/settings/utils/passwordValidation';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -16,6 +16,7 @@ import Toast from 'react-native-toast-message';
 export const ConfirmDeactivateScreen: React.FC = () => {
   const { t } = useTranslation();
   const { theme, isDark } = useTheme();
+  const { goBack, replace } = useNavigation();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const logOut = useAuthStore((state) => state.logout);
 
@@ -58,7 +59,7 @@ export const ConfirmDeactivateScreen: React.FC = () => {
       });
 
       await logOut(true);
-      router.replace('/(auth)/landing-screen');
+      replace('/(auth)/landing-screen');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       Toast.show({
@@ -76,7 +77,7 @@ export const ConfirmDeactivateScreen: React.FC = () => {
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 
       {/* Close Button */}
-      <TouchableOpacity style={styles.closeButton} onPress={() => router.back()} activeOpacity={0.7}>
+      <TouchableOpacity style={styles.closeButton} onPress={() => goBack()} activeOpacity={0.7}>
         <Ionicons name="close" size={theme.typography.sizes.xml} color={theme.colors.text.tertiary} />
       </TouchableOpacity>
 

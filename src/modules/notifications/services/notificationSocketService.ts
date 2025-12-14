@@ -22,7 +22,7 @@ class NotificationSocketService {
   // Mark notifications as seen
   public markSeen(): void {
     socketService.emit(NotificationSocketEvents.MARK_SEEN, {});
-    console.log('[NotificationSocket] Marking notifications as seen');
+    console.warn('[NotificationSocket] Marking notifications as seen');
   }
 
   // -------------------------------------------------------------------------

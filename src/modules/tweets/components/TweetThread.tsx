@@ -3,10 +3,10 @@ import GrokLogo from '@/src/components/icons/GrokLogo';
 import ViewsIcon from '@/src/components/icons/ViewsIcon';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
 import { MoreHorizontal, Trash2 } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -57,13 +57,13 @@ const SingleTweet: React.FC<ITweetProps> = (props) => {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { t } = useTranslation();
-  const router = useRouter();
+  const { navigate } = useNavigation();
 
   const user = useAuthStore((state) => state.user);
   const { menuVisible, menuPosition, moreButtonRef, handleMorePress, setMenuVisible } = useTweetDropDownMenu();
 
   const handleGrokPress = () => {
-    router.push({
+    navigate({
       pathname: '/(protected)/tweet-summary',
       params: { tweetId: tweet.tweetId },
     });
@@ -215,7 +215,7 @@ const TweetThread: React.FC<ITweetProps> = (props) => {
   if (props.tweet.replies) {
     return (
       <View style={styles.conversationContainer}>
-        <View style={{ position: 'relative', paddingBottom: theme.spacing.lg }}>
+        <View style={[styles.relativeContainer, { paddingBottom: theme.spacing.lg }]}>
           <SingleTweet {...props} />
           <View style={styles.conversationSeparator} />
         </View>
@@ -234,7 +234,7 @@ const TweetThread: React.FC<ITweetProps> = (props) => {
   ) {
     return (
       <View style={styles.conversationContainer}>
-        <View style={{ position: 'relative', paddingBottom: theme.spacing.lg, gap: theme.spacing.lg }}>
+        <View style={[styles.relativeContainerWithGap, { paddingBottom: theme.spacing.lg, gap: theme.spacing.lg }]}>
           {props.tweet.conversationTweet.tweetId === props.tweet.parentTweet.tweetId ? (
             <SingleTweet {...props} tweet={props.tweet.conversationTweet} />
           ) : (
@@ -324,5 +324,11 @@ const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       alignItems: 'center',
       gap: theme.spacing.xs,
+    },
+    relativeContainer: {
+      position: 'relative',
+    },
+    relativeContainerWithGap: {
+      position: 'relative',
     },
   });

@@ -1,11 +1,11 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { getWhoToFollow } from '@/src/modules/explore/services/exploreService';
 import { IExploreUser } from '@/src/modules/explore/types';
 import FollowButton from '@/src/modules/user_list/components/FollowButton';
 import UserListItem from '@/src/modules/user_list/components/UserListItem';
 import { IUser } from '@/src/types/user';
-import { useRouter } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -76,7 +76,7 @@ const mapExploreUserToUser = (user: IExploreUser): IUser => ({
 export default function WhoToFollowScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const router = useRouter();
+  const { navigate, goBack } = useNavigation();
   const insets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -115,17 +115,17 @@ export default function WhoToFollowScreen() {
 
   const handleUserPress = useCallback(
     (user: IUser) => {
-      router.push({
+      navigate({
         pathname: '/(protected)/(profile)/[id]',
         params: { id: user.id },
       });
     },
-    [router],
+    [navigate],
   );
 
   const handleBack = useCallback(() => {
-    router.back();
-  }, [router]);
+    goBack();
+  }, [goBack]);
 
   const renderItem = useCallback(
     ({ item }: { item: IExploreUser }) => {

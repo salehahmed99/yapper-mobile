@@ -2,10 +2,10 @@ import AccountIcon from '@/src/components/icons/AccountIcon';
 import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { IUser } from '@/src/types/user';
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
 import { Search } from 'lucide-react-native';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,11 +20,12 @@ const UserSuggestionsList: React.FC<IUserSuggestionsListProps> = (props) => {
   const { onSelect, users, onCloseModal, keyword } = props;
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { navigate } = useNavigation();
   const styles = useMemo(() => createListStyles(theme), [theme]);
 
   const navigateToSearch = () => {
     onCloseModal();
-    router.push({ pathname: '/(protected)/search/search-suggestions', params: { query: keyword } });
+    navigate({ pathname: '/(protected)/search/search-suggestions', params: { query: keyword } });
   };
   if (users.length === 0) {
     return (

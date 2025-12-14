@@ -1,5 +1,5 @@
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { IUser } from '@/src/types/user';
-import { useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import { IExploreTrending, ITrendItem } from '../types';
 import { useExploreData } from './useExploreData';
@@ -24,7 +24,7 @@ export interface UseExploreReturn {
 }
 
 const useExplore = (): UseExploreReturn => {
-  const router = useRouter();
+  const { navigate } = useNavigation();
 
   // Use react-query for For You data
   const exploreQuery = useExploreData(true);
@@ -33,36 +33,36 @@ const useExplore = (): UseExploreReturn => {
   const handleTrendingPress = useCallback(
     (trending: IExploreTrending | ITrendItem) => {
       const query = 'text' in trending ? trending.text : trending.hashtag;
-      router.push({
+      navigate({
         pathname: '/(protected)/search/search-results' as any,
         params: { query },
       });
     },
-    [router],
+    [navigate],
   );
 
   const handleUserPress = useCallback(
     (user: IUser) => {
-      router.push({
+      navigate({
         pathname: '/(protected)/(profile)/[id]',
         params: { id: user.id },
       });
     },
-    [router],
+    [navigate],
   );
 
   const handleShowMoreUsers = useCallback(() => {
-    router.push('/(protected)/(explore)/who-to-follow' as any);
-  }, [router]);
+    navigate('/(protected)/(explore)/who-to-follow' as any);
+  }, [navigate]);
 
   const handleCategoryShowMore = useCallback(
     (categoryId: string, categoryName: string) => {
-      router.push({
+      navigate({
         pathname: '/(protected)/(explore)/category-posts' as any,
         params: { categoryId, categoryName },
       });
     },
-    [router],
+    [navigate],
   );
 
   return {

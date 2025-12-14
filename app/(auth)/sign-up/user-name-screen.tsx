@@ -1,14 +1,15 @@
+import { useNavigation } from '@/src/hooks/useNavigation';
+import UserNameScreenShared from '@/src/modules/auth/components/shared/UserNameScreenShared';
 import { useSignUpStore } from '@/src/modules/auth/store/useSignUpStore';
 import { updateUserName } from '@/src/services/userService';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { router } from 'expo-router';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
-import UserNameScreenShared from '@/src/modules/auth/components/shared/UserNameScreenShared';
 
 const UserNameScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { navigate, replace } = useNavigation();
 
   // Zustand store
   const email = useSignUpStore((state) => state.email);
@@ -19,15 +20,15 @@ const UserNameScreen: React.FC = () => {
   // Redirect if no email or usernames (user shouldn't be here)
   useEffect(() => {
     if (!email || !userNames || userNames.length === 0) {
-      router.replace('/(auth)/sign-up/create-account-screen');
+      replace('/(auth)/sign-up/create-account-screen');
     }
-  }, [email, userNames]);
+  }, [email, userNames, replace]);
 
   const handleNext = async (username: string) => {
     const userNamesParam = useSignUpStore.getState().userNames;
     if (username === userNamesParam[0]) {
       setSkipRedirect(false);
-      router.replace('/(protected)');
+      replace('/(protected)');
       return;
     }
 
@@ -39,12 +40,12 @@ const UserNameScreen: React.FC = () => {
       text2: t('auth.signUp.userName.success.yourUsername', { username }),
     });
     setSkipRedirect(false);
-    router.replace('/(protected)');
+    replace('/(protected)');
   };
 
   const handleSkip = () => {
     setSkipRedirect(false);
-    router.push('/(protected)');
+    navigate('/(protected)');
   };
 
   return (

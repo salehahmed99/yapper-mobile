@@ -1,7 +1,7 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
 import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ITweet } from '../types';
@@ -15,13 +15,14 @@ interface IParentTweetProps {
 const ParentTweet: React.FC<IParentTweetProps> = (props) => {
   const { tweet } = props;
   const { theme } = useTheme();
+  const { navigate } = useNavigation();
   const styles = useMemo(() => createStyles(theme), [theme]);
   return (
     <Pressable
       style={styles.container}
       accessibilityLabel="tweet_container_parent"
       onPress={() => {
-        router.push({
+        navigate({
           pathname: '/(protected)/tweets/[tweetId]',
           params: {
             tweetId: tweet.tweetId,

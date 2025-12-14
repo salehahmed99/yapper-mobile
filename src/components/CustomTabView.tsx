@@ -107,7 +107,7 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
         Animated.timing(indicatorWidth.current, { toValue: tabWidth, duration: 200, useNativeDriver: false }),
       ]).start();
     }
-  }, [index, measures, layout.width, scrollable, routes.length]);
+  }, [index, measures, layout.width, scrollable, routes.length, isRTL]);
 
   const renderTabBar = () => {
     if (scrollable) {

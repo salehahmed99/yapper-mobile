@@ -1,19 +1,20 @@
 import CountryPicker, { Country } from '@/src/components/CountryPicker';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { router } from 'expo-router';
 import React, { useMemo } from 'react';
 import { StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const EditCountryScreen: React.FC = () => {
   const user = useAuthStore((state) => state.user);
+  const { navigate, goBack } = useNavigation();
 
   const initialCountry = user?.country ? { name: user.country } : null;
 
   const handleCountrySelect = (country: Country) => {
-    router.push({
+    navigate({
       pathname: '/(protected)/(settings)/your-account/account-information/confirm-country-change',
       params: { country: country.name },
     });
@@ -33,7 +34,7 @@ export const EditCountryScreen: React.FC = () => {
           initialCountry={initialCountry}
           onSelect={handleCountrySelect}
           showBackButton={true}
-          onBack={() => router.back()}
+          onBack={() => goBack()}
           placeholder="Search"
         />
       </View>

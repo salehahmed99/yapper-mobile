@@ -86,7 +86,7 @@ const BottomToolBar: React.FC<IBottomToolBarProps> = (props) => {
       scale.value = withSpring(1);
     }
     previousRemainingCharacters.current = remainingCharacters;
-  }, [remainingCharacters]);
+  }, [remainingCharacters, scale]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],

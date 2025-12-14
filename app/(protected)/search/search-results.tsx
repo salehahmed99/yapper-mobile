@@ -1,6 +1,7 @@
 import { Theme } from '@/src/constants/theme';
 import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import CustomTabView, { TabConfig } from '@/src/modules/profile/components/CustomTabView';
 import SearchInput from '@/src/modules/search/components/SearchInput';
 import { useSearchPosts } from '@/src/modules/search/hooks/useSearchPosts';
@@ -10,7 +11,7 @@ import TweetList from '@/src/modules/tweets/components/TweetList';
 import FollowButton from '@/src/modules/user_list/components/FollowButton';
 import UserListItem from '@/src/modules/user_list/components/UserListItem';
 import { IUser } from '@/src/types/user';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import React, { createContext, memo, useCallback, useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
@@ -148,7 +149,8 @@ const LatestTab: React.FC<{ activeTabKey?: string }> = memo(({ activeTabKey }) =
 const UsersTab: React.FC<{ activeTabKey?: string }> = memo(({ activeTabKey }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const router = useRouter();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const { navigate } = useNavigation();
   const { query, username } = useSearchResultsContext();
   const { data, isLoading, isRefetching, isFetchingNextPage, hasNextPage, refetch, fetchNextPage } = useSearchUsers({
     query,
@@ -160,12 +162,12 @@ const UsersTab: React.FC<{ activeTabKey?: string }> = memo(({ activeTabKey }) =>
 
   const handleUserPress = useCallback(
     (user: IUser) => {
-      router.push({
+      navigate({
         pathname: '/(protected)/(profile)/[id]',
         params: { id: user.id },
       });
     },
-    [router],
+    [navigate],
   );
 
   const renderItem = useCallback(
@@ -177,7 +179,7 @@ const UsersTab: React.FC<{ activeTabKey?: string }> = memo(({ activeTabKey }) =>
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={styles.loadingContainer}>
         <ActivityIndicator color={theme.colors.text.link} />
       </View>
     );
@@ -192,7 +194,7 @@ const UsersTab: React.FC<{ activeTabKey?: string }> = memo(({ activeTabKey }) =>
       data={users}
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
-      ListFooterComponent={() => <View style={{ height: 120 }} />}
+      ListFooterComponent={() => <View style={styles.listFooter} />}
       refreshControl={
         <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={theme.colors.text.link} />
       }
@@ -206,7 +208,7 @@ const UsersTab: React.FC<{ activeTabKey?: string }> = memo(({ activeTabKey }) =>
 export default function SearchResultsScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const router = useRouter();
+  const { navigate } = useNavigation();
   const params = useLocalSearchParams<{ query: string; username?: string }>();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -221,18 +223,18 @@ export default function SearchResultsScreen() {
   }, [query]);
 
   const handleSearchFocus = useCallback(() => {
-    router.push({
+    navigate({
       pathname: '/(protected)/search/search-suggestions' as any,
       params: { query: query, ...(username && { username }) },
     });
-  }, [router, query, username]);
+  }, [navigate, query, username]);
 
   const handleClear = useCallback(() => {
-    router.push({
+    navigate({
       pathname: '/(protected)/search/search-suggestions' as any,
       params: { query: '', ...(username && { username }) },
     });
-  }, [router, username]);
+  }, [navigate, username]);
 
   const contextValue = useMemo(() => ({ query: activeQuery, username }), [activeQuery, username]);
 
@@ -271,5 +273,13 @@ const createStyles = (theme: Theme) =>
     container: {
       flex: 1,
       backgroundColor: theme.colors.background.primary,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    listFooter: {
+      height: 120,
     },
   });

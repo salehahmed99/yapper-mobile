@@ -95,7 +95,7 @@ export default function ChatBubble({
           <Text style={[styles.replyName, isOwn ? styles.ownReplyName : styles.otherReplyName]} numberOfLines={1}>
             {replyMessageSenderName || 'Unknown'}
           </Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+          <View style={styles.replyRow}>
             {!!replyMessage.imageUrl && (
               <ImageIcon size={12} color={isOwn ? theme.colors.text.secondary : theme.colors.text.secondary} />
             )}
@@ -107,12 +107,8 @@ export default function ChatBubble({
                 styles.replyText,
                 isOwn ? styles.ownReplyText : styles.otherReplyText,
                 hasImage && styles.imageCaption,
-                {
-                  paddingEnd:
-                    replyMessage.imageUrl || replyMessage.messageType === 'voice' || replyMessage.voiceNoteUrl
-                      ? theme.spacing.md
-                      : 0,
-                },
+                (replyMessage.imageUrl || replyMessage.messageType === 'voice' || replyMessage.voiceNoteUrl) &&
+                  styles.replyTextWithPadding,
               ]}
               numberOfLines={2}
             >
@@ -334,5 +330,13 @@ const createStyles = (theme: Theme) =>
     },
     voiceBubble: {
       minWidth: 200,
+    },
+    replyRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+    },
+    replyTextWithPadding: {
+      paddingEnd: theme.spacing.md,
     },
   });

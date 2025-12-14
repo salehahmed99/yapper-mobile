@@ -1,12 +1,12 @@
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { changeLanguage } from '@/src/i18n';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { changeLanguage as changeLanguageBackend } from '@/src/modules/settings/services/languagesService';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { router } from 'expo-router';
 import { Check } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +28,7 @@ const LANGUAGES: Language[] = [
 export const LanguagesScreen: React.FC = () => {
   const { i18n, t } = useTranslation();
   const setLanguage = useAuthStore((state) => state.setLanguage);
+  const { goBack } = useNavigation();
   const [selectedLanguage, setSelectedLanguage] = useState<string>(i18n.language || 'en');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,12 +37,12 @@ export const LanguagesScreen: React.FC = () => {
   };
 
   const handleSkip = () => {
-    router.back();
+    goBack();
   };
 
   const handleNext = async () => {
     if (selectedLanguage === i18n.language) {
-      router.back();
+      goBack();
       return;
     }
 
@@ -62,7 +63,7 @@ export const LanguagesScreen: React.FC = () => {
         text2: t('settings.languages.updated_message'),
       });
 
-      router.back();
+      goBack();
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       Toast.show({
@@ -86,7 +87,7 @@ export const LanguagesScreen: React.FC = () => {
           barStyle={isDark ? 'light-content' : 'dark-content'}
           backgroundColor={theme.colors.background.primary}
         />
-        <TopBar onBackPress={() => router.back()} showExitButton={false} />
+        <TopBar onBackPress={() => goBack()} showExitButton={false} />
 
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
           <View style={styles.content}>

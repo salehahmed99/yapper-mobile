@@ -1,6 +1,7 @@
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import ResetPassword from '@/src/modules/auth/components/forgetPassword/ResetPassword';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
@@ -8,7 +9,6 @@ import { passwordSchema } from '@/src/modules/auth/schemas/schemas';
 import { resetPassword } from '@/src/modules/auth/services/forgetPasswordService';
 import { useForgotPasswordStore } from '@/src/modules/auth/store/useForgetPasswordStore';
 import { ButtonOptions } from '@/src/modules/auth/utils/enums';
-import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, StyleSheet, View } from 'react-native';
@@ -17,6 +17,7 @@ import Toast from 'react-native-toast-message';
 const ResetPasswordScreen = () => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { replace, goBack } = useNavigation();
 
   const styles = React.useMemo(() => createStyles(theme), [theme]);
 
@@ -34,9 +35,9 @@ const ResetPasswordScreen = () => {
   // Redirect if no token
   useEffect(() => {
     if (!identifier || !resetToken) {
-      router.replace('/(auth)/forgot-password/find-account');
+      replace('/(auth)/forgot-password/find-account');
     }
-  }, [identifier, resetToken]);
+  }, [identifier, resetToken, replace]);
 
   useEffect(() => {
     const passwordsMatch = newPassword === confirmPassword;
@@ -87,7 +88,7 @@ const ResetPasswordScreen = () => {
           text1: t('auth.forgotPassword.successTitle'),
           text2: t('auth.forgotPassword.successDescription'),
         });
-        router.replace('/(auth)/forgot-password/success');
+        replace('/(auth)/forgot-password/success');
       } else {
         Toast.show({
           type: 'error',
@@ -105,16 +106,16 @@ const ResetPasswordScreen = () => {
   };
 
   const handleBack = () => {
-    router.replace('/(auth)/forgot-password/verify-code');
+    replace('/(auth)/forgot-password/verify-code');
   };
 
   const handleTopBarBackPress = () => {
     const returnRoute = useForgotPasswordStore.getState().returnRoute;
     if (returnRoute) {
       useForgotPasswordStore.getState().setReturnRoute(null);
-      router.back();
+      goBack();
     } else {
-      router.replace('/(auth)/landing-screen');
+      replace('/(auth)/landing-screen');
     }
   };
 

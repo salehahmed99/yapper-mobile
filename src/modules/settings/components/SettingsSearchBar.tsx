@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
+import { Ionicons } from '@expo/vector-icons';
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface ISettingsSearchBarProps {
   placeholder?: string;
@@ -13,13 +13,14 @@ interface ISettingsSearchBarProps {
 export const SettingsSearchBar: React.FC<ISettingsSearchBarProps> = ({ placeholder }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { navigate } = useNavigation();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const searchPlaceholder = placeholder || t('settings.search.placeholder');
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.searchBox}
-        onPress={() => router.push('/(protected)/(settings)/search')}
+        onPress={() => navigate('/(protected)/(settings)/search')}
         activeOpacity={0.7}
         accessibilityLabel="Search settings"
         testID="Search_settings"

@@ -1,14 +1,16 @@
-import React, { useMemo } from 'react';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@/src/hooks/useNavigation';
+import UserNameScreenShared from '@/src/modules/auth/components/shared/UserNameScreenShared';
 import { updateUserName } from '@/src/services/userService';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import UserNameScreenShared from '@/src/modules/auth/components/shared/UserNameScreenShared';
+import { useLocalSearchParams } from 'expo-router';
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const UserNameScreen: React.FC = () => {
   const { t } = useTranslation();
   const { userNames: userNamesParam } = useLocalSearchParams();
   const setSkipRedirect = useAuthStore((state) => state.setSkipRedirect);
+  const { navigate } = useNavigation();
 
   // Parse userNames from params
   const availableUsernames = useMemo(() => {
@@ -35,7 +37,7 @@ const UserNameScreen: React.FC = () => {
 
   const handleSkip = () => {
     setSkipRedirect(false);
-    router.push('/(protected)');
+    navigate('/(protected)');
   };
 
   return (

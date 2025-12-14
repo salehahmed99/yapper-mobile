@@ -5,8 +5,8 @@ import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { useAuthStore } from '@/src/store/useAuthStore';
 
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { IUser } from '@/src/types/user';
-import { router } from 'expo-router';
 import React, { useMemo } from 'react';
 import TweetContainer from '../../tweets/containers/TweetContainer';
 import { ITweet } from '../../tweets/types';
@@ -20,6 +20,7 @@ const NotificationContainer = (props: INotificationContainerProps) => {
   const { notification } = props;
 
   const { theme } = useTheme();
+  const { navigate } = useNavigation();
 
   const currentUser = useAuthStore((state) => state.user);
 
@@ -28,13 +29,13 @@ const NotificationContainer = (props: INotificationContainerProps) => {
   }, [notification, theme]);
 
   const handleAvatarPress = (userId: string) => {
-    router.push({ pathname: '/(protected)/(profile)/[id]', params: { id: userId } });
+    navigate({ pathname: '/(protected)/(profile)/[id]', params: { id: userId } });
   };
 
   const handleNotificationPress = () => {
     if (notification.type === 'follow') {
       if (notificationData.users.length === 1) {
-        router.push({
+        navigate({
           pathname: '/(protected)/(profile)/[id]',
           params: { id: notificationData.users[0].id },
         });
@@ -43,7 +44,7 @@ const NotificationContainer = (props: INotificationContainerProps) => {
       // this means that the type is either like or repost
       if (notificationData.tweets.length === 1) {
         // navigate to tweet details screen
-        router.push({
+        navigate({
           pathname: '/(protected)/tweets/[tweetId]',
           params: { tweetId: notificationData.tweets[0].tweetId },
         });

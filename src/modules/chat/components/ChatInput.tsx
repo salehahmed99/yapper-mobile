@@ -230,13 +230,14 @@ export default function ChatInput({
         <View style={styles.replyBanner}>
           <View style={styles.replyBannerContent}>
             <Text style={styles.replyBannerLabel}>Replying to {replyingTo.senderName}</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <View style={styles.replyRow}>
               {replyingTo.hasImage && <ImageIcon size={14} color={theme.colors.text.secondary} />}
               {replyingTo.hasVoice && <Mic size={14} color={theme.colors.text.secondary} />}
               <Text
                 style={[
                   styles.replyBannerText,
-                  { flex: 1, paddingEnd: replyingTo.hasImage || replyingTo.hasVoice ? theme.spacing.sm : 0 },
+                  styles.replyBannerTextFlex,
+                  (replyingTo.hasImage || replyingTo.hasVoice) && styles.replyBannerTextWithPadding,
                 ]}
                 numberOfLines={1}
               >
@@ -536,5 +537,16 @@ const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.accent.bookmark,
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    replyRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+    },
+    replyBannerTextFlex: {
+      flex: 1,
+    },
+    replyBannerTextWithPadding: {
+      paddingEnd: theme.spacing.sm,
     },
   });

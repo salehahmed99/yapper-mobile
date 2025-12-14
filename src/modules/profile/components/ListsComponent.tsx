@@ -1,6 +1,6 @@
+import { useNavigation } from '@/src/hooks/useNavigation';
 import FollowButton from '@/src/modules/user_list/components/FollowButton';
 import { IUser } from '@/src/types/user';
-import { useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
@@ -22,7 +22,7 @@ interface UserListRouteProps {
 }
 
 const UserListRoute = ({ type, userId }: UserListRouteProps) => {
-  const router = useRouter();
+  const { navigate } = useNavigation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const currentUser = useAuthStore((state) => state.user);
@@ -31,7 +31,7 @@ const UserListRoute = ({ type, userId }: UserListRouteProps) => {
 
   const handleUserPress = (user: IUser) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    router.push(`/(profile)/${user.id}` as any);
+    navigate(`/(profile)/${user.id}` as any);
   };
 
   const handleFollowPress = (_user: IUser) => {};

@@ -1,5 +1,6 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import useSpacing from '@/src/hooks/useSpacing';
 import ChatHeader from '@/src/modules/chat/components/ChatHeader';
 import ChatInput from '@/src/modules/chat/components/ChatInput';
@@ -7,7 +8,7 @@ import ChatMessagesList from '@/src/modules/chat/components/ChatMessagesList';
 import EmojiPickerSheet from '@/src/modules/chat/components/EmojiPickerSheet';
 import { useChatConversation } from '@/src/modules/chat/hooks/useChatConversation';
 import { useQueryClient } from '@tanstack/react-query';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -24,7 +25,7 @@ import {
 export default function ChatConversationPage() {
   const params = useLocalSearchParams<{ id: string; name?: string; username?: string; avatarUrl?: string }>();
   const { id: chatId } = params;
-  const router = useRouter();
+  const { navigate, goBack } = useNavigation();
   const { theme } = useTheme();
   const { top, bottom } = useSpacing();
   const headerPadding = top - theme.ui.appBarHeight - theme.ui.tabViewHeight;
@@ -84,12 +85,12 @@ export default function ChatConversationPage() {
         : bottom;
 
   const handleBack = () => {
-    router.back();
+    goBack();
   };
 
   const handleProfilePress = () => {
     if (sender?.id) {
-      router.push({
+      navigate({
         pathname: '/(protected)/(profile)/[id]',
         params: { id: sender.id },
       });

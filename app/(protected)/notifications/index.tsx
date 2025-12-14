@@ -40,30 +40,30 @@ const NotificationsScreen = () => {
     if (notifications.length === 0 && notificationsQuery.hasNextPage) {
       notificationsQuery.fetchNextPage();
     }
-  }, [notifications.length, notificationsQuery.hasNextPage]);
+  }, [notifications.length, notificationsQuery]);
   const mentions = React.useMemo(() => {
     return mentionsQuery.data?.pages.flatMap((page) => page.notifications) ?? [];
   }, [mentionsQuery.data]);
 
   const onNotificationsRefresh = React.useCallback(() => {
     notificationsQuery.refetch();
-  }, [notificationsQuery.refetch]);
+  }, [notificationsQuery]);
 
   const onMentionsRefresh = React.useCallback(() => {
     mentionsQuery.refetch();
-  }, [mentionsQuery.refetch]);
+  }, [mentionsQuery]);
 
   const onNotificationsEndReached = React.useCallback(() => {
     if (notificationsQuery.hasNextPage && !notificationsQuery.isFetchingNextPage) {
       notificationsQuery.fetchNextPage();
     }
-  }, [notificationsQuery.hasNextPage, notificationsQuery.isFetchingNextPage, notificationsQuery.fetchNextPage]);
+  }, [notificationsQuery]);
 
   const onMentionsEndReached = React.useCallback(() => {
     if (mentionsQuery.hasNextPage && !mentionsQuery.isFetchingNextPage) {
       mentionsQuery.fetchNextPage();
     }
-  }, [mentionsQuery.hasNextPage, mentionsQuery.isFetchingNextPage, mentionsQuery.fetchNextPage]);
+  }, [mentionsQuery]);
 
   const { top, bottom } = useMargins();
 

@@ -1,12 +1,13 @@
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import PasswordInput from '@/src/modules/auth/components/shared/PasswordInput';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { passwordSchema } from '@/src/modules/auth/schemas/schemas';
 import { confirmCurrentPassword } from '@/src/modules/settings/services/yourAccountService';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StatusBar, StyleSheet, Text, View } from 'react-native';
@@ -16,6 +17,7 @@ import Toast from 'react-native-toast-message';
 export const VerifyPasswordScreen: React.FC = () => {
   const { t } = useTranslation();
   const { returnTo } = useLocalSearchParams<{ returnTo?: string }>();
+  const { navigate, goBack } = useNavigation();
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -46,9 +48,9 @@ export const VerifyPasswordScreen: React.FC = () => {
         // Navigate to the return destination or back
         if (returnTo) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          router.push(returnTo as any);
+          navigate(returnTo as any);
         } else {
-          router.back();
+          goBack();
         }
       } else {
         Toast.show({
@@ -70,7 +72,7 @@ export const VerifyPasswordScreen: React.FC = () => {
   };
 
   const handleCancel = () => {
-    router.back();
+    goBack();
   };
 
   const { theme, isDark } = useTheme();

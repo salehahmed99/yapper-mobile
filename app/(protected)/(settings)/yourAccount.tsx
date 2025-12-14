@@ -1,11 +1,11 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { SettingsSection } from '@/src/modules/settings/components/SettingsSection';
 import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
 import { getYourAccountData } from '@/src/modules/settings/components/settingsConfig';
 import { ISettingsItem } from '@/src/modules/settings/types/types';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { router } from 'expo-router';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
@@ -16,10 +16,11 @@ export const YourAccountScreen: React.FC = () => {
   const YOUR_ACCOUNT_DATA = useMemo(() => getYourAccountData(t), [t]);
   const user = useAuthStore((state) => state.user);
   const { theme, isDark } = useTheme();
+  const { navigate, goBack } = useNavigation();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const handleItemPress = (item: ISettingsItem) => {
-    router.push(`/(protected)/(settings)/your-account/${item.route}`);
+    navigate(`/(protected)/(settings)/your-account/${item.route}`);
   };
 
   return (
@@ -33,7 +34,7 @@ export const YourAccountScreen: React.FC = () => {
         <SettingsTopBar
           title={t('settings.your_account.title')}
           subtitle={`@${user?.username}`}
-          onBackPress={() => router.back()}
+          onBackPress={() => goBack()}
         />
 
         {/* Description */}

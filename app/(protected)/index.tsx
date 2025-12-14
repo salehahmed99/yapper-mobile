@@ -38,23 +38,23 @@ export default function HomeScreen() {
 
   const onForYouRefresh = React.useCallback(() => {
     forYouQuery.refetch();
-  }, [forYouQuery.refetch]);
+  }, [forYouQuery]);
 
   const onForYouEndReached = React.useCallback(() => {
     if (forYouQuery.hasNextPage && !forYouQuery.isFetchingNextPage) {
       forYouQuery.fetchNextPage();
     }
-  }, [forYouQuery.hasNextPage, forYouQuery.isFetchingNextPage, forYouQuery.fetchNextPage]);
+  }, [forYouQuery]);
 
   const onFollowingRefresh = React.useCallback(() => {
     followingQuery.refetch();
-  }, [followingQuery.refetch]);
+  }, [followingQuery]);
 
   const onFollowingEndReached = React.useCallback(() => {
     if (followingQuery.hasNextPage && !followingQuery.isFetchingNextPage) {
       followingQuery.fetchNextPage();
     }
-  }, [followingQuery.hasNextPage, followingQuery.isFetchingNextPage, followingQuery.fetchNextPage]);
+  }, [followingQuery]);
 
   const { addPostMutation } = useTweetActions();
 

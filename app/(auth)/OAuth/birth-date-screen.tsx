@@ -1,6 +1,7 @@
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import i18n from '@/src/i18n';
 import AuthInput from '@/src/modules/auth/components/shared/AuthInput';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
@@ -10,7 +11,7 @@ import { userBirthDateSchema } from '@/src/modules/auth/schemas/schemas';
 import { OAuthStep1, OAuthStep2 } from '@/src/modules/auth/services/authService';
 import { changeUserLanguage } from '@/src/modules/auth/services/signUpService';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BackHandler, StyleSheet, View } from 'react-native';
@@ -20,6 +21,7 @@ const BirthDateScreen = () => {
   const [birthDate, setBirthDate] = useState('');
   const [isNextEnabled, setIsNextEnabled] = useState(true);
   const { theme } = useTheme();
+  const { replace } = useNavigation();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -32,14 +34,14 @@ const BirthDateScreen = () => {
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
-        router.replace('/(auth)/landing-screen');
+        replace('/(auth)/landing-screen');
         return true;
       };
 
       const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
 
       return () => subscription.remove();
-    }, []),
+    }, [replace]),
   );
 
   const onNextPress = async () => {
@@ -75,7 +77,7 @@ const BirthDateScreen = () => {
         text1: t('auth.birthDate.successToast'),
       });
 
-      router.replace({
+      replace({
         pathname: '/(auth)/OAuth/user-name-screen',
         params: {
           sessionToken: _sessionToken,

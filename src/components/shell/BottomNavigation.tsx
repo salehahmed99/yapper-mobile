@@ -1,9 +1,10 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { useNotificationStore } from '@/src/store/useNotificationStore';
 import { useUnreadMessagesStore } from '@/src/store/useUnreadMessagesStore';
 import { BlurView } from 'expo-blur';
-import { usePathname, useRouter } from 'expo-router';
+import { usePathname } from 'expo-router';
 import { Bell, Home, Mail, Search } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +32,7 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
   const { activeTab, setActiveTab, scrollY } = useUiShell();
-  const router = useRouter();
+  const { replace } = useNavigation();
   const pathname = usePathname();
   const unreadChatIds = useUnreadMessagesStore((state) => state.unreadChatIds);
   const unreadMessagesCount = unreadChatIds.size;
@@ -65,7 +66,7 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
     }
     setActiveTab(item.key);
     // If navigating to the same path, replace so we don't stack; otherwise replace to navigate
-    router.replace(item.path as unknown as Parameters<typeof router.replace>[0]);
+    replace(item.path);
   };
 
   // Interpolate opacity based on scrollY: at y=0 -> 0.85, at y=300 -> 0.4

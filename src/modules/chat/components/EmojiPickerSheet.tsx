@@ -104,7 +104,7 @@ export default function EmojiPickerSheet({ onSelect, onClose }: EmojiPickerSheet
             scrollEnabled={true}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
-            style={{ flex: 1 }}
+            style={styles.flatList}
             keyExtractor={keyExtractor}
             ListFooterComponent={<View style={{ height: theme.spacing.xxxxxl }} />}
           />
@@ -167,5 +167,8 @@ const createStyles = (theme: Theme) =>
     },
     emojiText: {
       fontSize: 28,
+    },
+    flatList: {
+      flex: 1,
     },
   });

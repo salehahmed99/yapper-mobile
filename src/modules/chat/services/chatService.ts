@@ -274,7 +274,7 @@ export const uploadVoiceNote = async (voiceUri: string, durationSeconds: number)
         'Content-Type': 'multipart/form-data',
       },
     });
-    console.log('Voice note uploaded:', response.data);
+    console.warn('Voice note uploaded:', response.data);
 
     return {
       voiceNoteUrl: response.data.data.voiceNoteUrl,

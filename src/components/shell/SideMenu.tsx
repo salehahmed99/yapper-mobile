@@ -2,10 +2,10 @@ import ThemeSettingsSheet from '@/src/components/shell/ThemeSettingsSheet';
 import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import useNavigation from '@/src/hooks/useNavigation';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
-import { usePathname, useRouter } from 'expo-router';
 import { Bell, Bookmark, HelpCircle, MessageCircle, MoonStar, Search, Settings, User } from 'lucide-react-native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -34,22 +34,15 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const { t, i18n } = useTranslation();
-  const router = useRouter();
+  const { navigate } = useNavigation();
   const { isSideMenuOpen, closeSideMenu } = useUiShell();
-  const pathname = usePathname();
   const insets = useSafeAreaInsets();
   const [isThemeSheetVisible, setIsThemeSheetVisible] = React.useState(false);
   const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
 
-  function navigate(path: string) {
-    // If already on target path, just close menu
-    if (pathname === path) {
-      closeSideMenu();
-      return;
-    }
-    closeSideMenu();
-    router.push(path as unknown as Parameters<typeof router.push>[0]);
-  }
+  const handleNavigate = (path: string) => {
+    navigate(path, closeSideMenu);
+  };
 
   React.useEffect(() => {
     if (isSideMenuOpen) {
@@ -89,7 +82,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
           {/* Profile + other accounts in one row */}
           <View style={styles.profileAndAccountsRow}>
             <TouchableOpacity
-              onPress={() => navigate('/(profile)/Profile/')}
+              onPress={() => handleNavigate('/(profile)/Profile/')}
               accessibilityLabel="sidemenu_profile_button"
               testID="sidemenu_profile_button"
               accessibilityRole="button"
@@ -148,7 +141,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             {/* Menu tiles */}
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(protected)/explore')}
+              onPress={() => handleNavigate('/(protected)/explore')}
               accessibilityLabel="sidemenu_explore_button"
               testID="sidemenu_explore_button"
             >
@@ -157,7 +150,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(protected)/notifications')}
+              onPress={() => handleNavigate('/(protected)/notifications')}
               accessibilityLabel="sidemenu_notifications_button"
               testID="sidemenu_notifications_button"
             >
@@ -166,7 +159,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(protected)/messages')}
+              onPress={() => handleNavigate('/(protected)/messages')}
               accessibilityLabel="sidemenu_messages_button"
               testID="sidemenu_messages_button"
             >
@@ -175,7 +168,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(profile)/Profile/')}
+              onPress={() => handleNavigate('/(profile)/Profile/')}
               accessibilityLabel="sidemenu_profile_menu_button"
               testID="sidemenu_profile_menu_button"
             >
@@ -184,7 +177,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(protected)/bookmarks')}
+              onPress={() => handleNavigate('/(protected)/bookmarks')}
               accessibilityLabel="sidemenu_bookmarks_button"
               testID="sidemenu_bookmarks_button"
             >
@@ -193,7 +186,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(protected)/(settings)/settingsScreen')}
+              onPress={() => handleNavigate('/(protected)/(settings)/settingsScreen')}
               accessibilityLabel="sidemenu_settings_button"
               testID="sidemenu_settings_button"
             >
@@ -206,7 +199,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             {/* Utility links */}
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(protected)/help')}
+              onPress={() => handleNavigate('/(protected)/help')}
               accessibilityLabel="sidemenu_help_button"
               testID="sidemenu_help_button"
             >
