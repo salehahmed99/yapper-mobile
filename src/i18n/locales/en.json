@@ -1,6 +1,7 @@
 {
   "common": {
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "ok": "OK"
   },
   "home": {
     "title": "Home Screen",
@@ -512,7 +513,9 @@
       "bioPlaceholder": "Add a bio to your profile",
       "countryPlaceholder": "Add your country",
       "websitePlaceholder": "Add your website",
-      "birthdayPlaceholder": "Add your date of birth"
+      "birthdayPlaceholder": "Add your date of birth",
+      "ageError": "Age Restriction",
+      "ageErrorMessage": "You must be at least 13 years old to use this service."
     },
     "actions": {
       "edit": "Edit",

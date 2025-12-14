@@ -63,6 +63,7 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
   }, [visible, imageUri, bannerUri]);
 
   const handleAvatarChange = () => {
+    const isDefaultAvatar = localAvatarUri === DEFAULT_AVATAR_URL;
     showImagePickerOptions(
       true,
       (uri) => {
@@ -73,10 +74,12 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
         setLocalAvatarUri(DEFAULT_AVATAR_URL);
         setNewAvatarUri(DEFAULT_AVATAR_URL);
       },
+      !isDefaultAvatar,
     );
   };
 
   const handleBannerChange = () => {
+    const isDefaultBanner = localBannerUri === DEFAULT_BANNER_URL;
     showImagePickerOptions(
       false,
       (uri) => {
@@ -87,10 +90,27 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
         setLocalBannerUri(DEFAULT_BANNER_URL);
         setNewCoverUri(DEFAULT_BANNER_URL);
       },
+      !isDefaultBanner,
     );
   };
 
   const handleDateConfirm = (date: Date) => {
+    // Calculate age
+    const today = new Date();
+    let age = today.getFullYear() - date.getFullYear();
+    const monthDiff = today.getMonth() - date.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < date.getDate())) {
+      age--;
+    }
+
+    // Validate minimum age of 13
+    if (age < 13) {
+      Alert.alert(t('profile.editModal.ageError'), t('profile.editModal.ageErrorMessage'), [{ text: t('common.ok') }]);
+      setDatePickerVisible(false);
+      return;
+    }
+
     const formattedDate = date.toISOString().split('T')[0];
     setUpdatedUser({ ...updatedUser, birthday: formattedDate });
     setDatePickerVisible(false);
@@ -223,6 +243,7 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
         {/* Banner */}
         <TouchableOpacity onPress={handleBannerChange} testID="profile_edit_modal_banner_button">
           <Image
+            key={localBannerUri}
             source={{ uri: localBannerUri }}
             style={editModalStyles.banner}
             testID="profile_edit_modal_banner_image"
@@ -236,6 +257,7 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
           <View style={editModalStyles.avatarContainer}>
             <TouchableOpacity onPress={handleAvatarChange} testID="profile_edit_modal_avatar_button">
               <Image
+                key={localAvatarUri}
                 source={{
                   uri: localAvatarUri,
                 }}

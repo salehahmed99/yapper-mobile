@@ -85,10 +85,13 @@ export const showImagePickerOptions = (
   isAvatar: boolean,
   onImageSelected: (uri: string) => void,
   onImageDeleted: () => void,
+  showDelete: boolean = true,
 ) => {
-  const options = ['Choose from Library', 'Take Picture', 'Delete Image', 'Cancel'];
-  const destructiveButtonIndex = 2;
-  const cancelButtonIndex = 3;
+  const options = showDelete
+    ? ['Choose from Library', 'Take Picture', 'Delete Image', 'Cancel']
+    : ['Choose from Library', 'Take Picture', 'Cancel'];
+  const destructiveButtonIndex = showDelete ? 2 : undefined;
+  const cancelButtonIndex = showDelete ? 3 : 2;
 
   const handleLibraryPick = async () => {
     const uri = await pickImageFromLibrary(isAvatar);
@@ -116,38 +119,43 @@ export const showImagePickerOptions = (
           handleLibraryPick();
         } else if (buttonIndex === 1) {
           handleTakePicture();
-        } else if (buttonIndex === 2) {
+        } else if (showDelete && buttonIndex === 2) {
           onImageDeleted();
         }
       },
     );
   } else {
-    Alert.alert(
-      'Change Image',
-      'Choose an option',
-      [
-        {
-          text: 'Choose from Library',
-          onPress: handleLibraryPick,
-        },
-        {
-          text: 'Take Picture',
-          onPress: handleTakePicture,
-        },
-        {
-          text: 'Delete Image',
-          onPress: onImageDeleted,
-          style: 'destructive',
-        },
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-      ],
+    const alertButtons: Array<{
+      text: string;
+      onPress?: () => void;
+      style?: 'default' | 'cancel' | 'destructive';
+    }> = [
       {
-        cancelable: true,
-        onDismiss: () => {},
+        text: 'Choose from Library',
+        onPress: handleLibraryPick,
       },
-    );
+      {
+        text: 'Take Picture',
+        onPress: handleTakePicture,
+      },
+    ];
+
+    if (showDelete) {
+      alertButtons.push({
+        text: 'Delete Image',
+        onPress: onImageDeleted,
+        style: 'destructive',
+      });
+    }
+
+    alertButtons.push({
+      text: 'Cancel',
+      style: 'cancel',
+    });
+
+    Alert.alert('Change Image', 'Choose an option', alertButtons, {
+      cancelable: true,
+      onDismiss: () => {},
+    });
   }
 };

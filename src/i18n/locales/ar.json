@@ -1,6 +1,7 @@
 {
   "common": {
-    "loading": "جاري التحميل..."
+    "loading": "جاري التحميل...",
+    "ok": "حسناً"
   },
   "home": {
     "title": "الشاشة الرئيسية",
@@ -514,7 +515,9 @@
       "bioPlaceholder": "أضف سيرة ذاتية لملفك الشخصي",
       "locationPlaceholder": "أضف موقعك",
       "websitePlaceholder": "أضف موقعك الإلكتروني",
-      "birthdayPlaceholder": "أضف تاريخ ميلادك"
+      "birthdayPlaceholder": "أضف تاريخ ميلادك",
+      "ageError": "قيد العمر",
+      "ageErrorMessage": "يجب أن يكون عمرك 13 عامًا على الأقل لاستخدام هذه الخدمة."
     },
     "actions": {
       "edit": "تعديل",
