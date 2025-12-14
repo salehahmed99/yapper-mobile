@@ -12,13 +12,23 @@ import { useUiShell } from '../../context/UiShellContext';
 interface IAppBarProps {
   title?: string;
   children?: React.ReactNode;
-  rightElement?: React.ReactNode;
   tabView?: React.ReactNode;
+  rightElement?: React.ReactNode;
+  leftElement?: React.ReactNode;
   hideRightElement?: boolean;
+  hideLeftElement?: boolean;
 }
 
 const AppBar: React.FC<IAppBarProps> = (props) => {
-  const { title, children, rightElement, tabView, hideRightElement = false } = props;
+  const {
+    title,
+    children,
+    rightElement,
+    leftElement,
+    tabView,
+    hideRightElement = false,
+    hideLeftElement = false,
+  } = props;
   const { theme } = useTheme();
   const user = useAuthStore((state) => state.user);
   const styles = createStyles(theme);
@@ -37,27 +47,31 @@ const AppBar: React.FC<IAppBarProps> = (props) => {
       {appBarVisible ? (
         <>
           <View style={styles.headerContainer}>
-            <View style={styles.sideContainer}>
-              {!isSideMenuOpen ? (
-                <Pressable
-                  onPress={toggleSideMenu}
-                  accessibilityLabel={t('accessibility.openMenu')}
-                  testID="appbar_menu_button"
-                  accessibilityRole="button"
-                  style={styles.avatarButton}
-                >
-                  <View style={styles.avatarBackground}>
-                    <Image
-                      source={{ uri: user?.avatarUrl || DEFAULT_AVATAR_URL }}
-                      style={styles.avatar}
-                      resizeMode="cover"
-                    />
-                  </View>
-                </Pressable>
-              ) : (
-                <View style={styles.avatarButton} />
-              )}
-            </View>
+            {!hideLeftElement && (
+              <View style={styles.sideContainer}>
+                {leftElement ? (
+                  leftElement
+                ) : !isSideMenuOpen ? (
+                  <Pressable
+                    onPress={toggleSideMenu}
+                    accessibilityLabel={t('accessibility.openMenu')}
+                    testID="appbar_menu_button"
+                    accessibilityRole="button"
+                    style={styles.avatarButton}
+                  >
+                    <View style={styles.avatarBackground}>
+                      <Image
+                        source={{ uri: user?.avatarUrl || DEFAULT_AVATAR_URL }}
+                        style={styles.avatar}
+                        resizeMode="cover"
+                      />
+                    </View>
+                  </Pressable>
+                ) : (
+                  <View style={styles.avatarButton} />
+                )}
+              </View>
+            )}
 
             <View style={styles.center}>
               {children ? (

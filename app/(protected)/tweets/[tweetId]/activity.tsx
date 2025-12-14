@@ -1,4 +1,5 @@
-import { ThemedText } from '@/src/components/ThemedText';
+import CustomTabView from '@/src/components/CustomTabView';
+import AppBar from '@/src/components/shell/AppBar';
 import { Theme } from '@/src/constants/theme';
 import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
@@ -21,6 +22,7 @@ export default function TweetActivityScreen() {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { t } = useTranslation();
+  const { top } = useSpacing();
   const { navigate, goBack } = useNavigation();
   const { tweetId, ownerId } = useLocalSearchParams<{ tweetId: string; ownerId?: string }>();
   const { bottom } = useSpacing();
@@ -109,27 +111,31 @@ export default function TweetActivityScreen() {
   return (
     <MediaViewerProvider>
       <View style={styles.container}>
-        <View style={styles.header}>
-          <View style={styles.headerContent}>
-            <TouchableOpacity onPress={() => goBack()} accessibilityLabel="back_button" style={styles.backButton}>
-              <ChevronLeft size={24} color={theme.colors.text.primary} />
-            </TouchableOpacity>
-            <ThemedText style={styles.title}>{t('tweetActivity.title')}</ThemedText>
-            <View style={styles.placeholder} />
-          </View>
+        <View style={styles.appBarWrapper}>
+          <AppBar
+            title={t('tweetActivity.title')}
+            leftElement={
+              <TouchableOpacity onPress={() => goBack()} accessibilityLabel="back_button" style={styles.backButton}>
+                <ChevronLeft size={24} color={theme.colors.text.primary} />
+              </TouchableOpacity>
+            }
+            tabView={
+              <CustomTabView routes={routes} index={activeIndex} onIndexChange={setActiveIndex} scrollable={false} />
+            }
+          />
         </View>
         <View style={styles.tabsOuterContainer} {...panResponder.panHandlers}>
           <Animated.View
             style={[styles.tabsInnerContainer, { width: screenWidth * routes.length, transform: [{ translateX }] }]}
           >
-            <View style={[styles.tabPage, { width: screenWidth }]}>
+            <View style={[styles.tabPage, { width: screenWidth, paddingTop: top }]}>
               <RepostsTab />
             </View>
-            <View style={[styles.tabPage, { width: screenWidth }]}>
+            <View style={[styles.tabPage, { width: screenWidth, paddingTop: top }]}>
               <QuotesTab />
             </View>
             {isTweetOwner && (
-              <View style={[styles.tabPage, { width: screenWidth }]}>
+              <View style={[styles.tabPage, { width: screenWidth, paddingTop: top }]}>
                 <LikersTab />
               </View>
             )}
@@ -147,35 +153,19 @@ const createStyles = (theme: Theme) =>
     container: {
       flex: 1,
       backgroundColor: theme.colors.background.primary,
-      paddingTop: theme.spacing.xxxxl,
     },
-    header: {
-      backgroundColor: theme.colors.background.primary,
-      borderBottomWidth: theme.borderWidth.thin / 2,
-      borderBottomColor: theme.colors.border,
-    },
-    headerContent: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      height: theme.ui.appBarHeight,
-      paddingHorizontal: theme.spacing.md,
+    appBarWrapper: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      zIndex: 1,
     },
     backButton: {
       width: theme.ui.sideContainerWidth,
       height: theme.ui.sideContainerWidth,
       alignItems: 'center',
       justifyContent: 'center',
-    },
-    title: {
-      flex: 1,
-      fontSize: theme.typography.sizes.lg,
-      fontFamily: theme.typography.fonts.bold,
-      color: theme.colors.text.primary,
-      textAlign: 'center',
-    },
-    placeholder: {
-      width: theme.ui.sideContainerWidth,
     },
     tabsOuterContainer: {
       flex: 1,

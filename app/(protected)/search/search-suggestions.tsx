@@ -119,6 +119,7 @@ export default function SearchSuggestionsScreen() {
     <View style={styles.container}>
       <View style={styles.appBarWrapper}>
         <AppBar
+          hideLeftElement={true}
           children={
             <SearchInput
               value={query}

@@ -46,7 +46,7 @@ export function useNavigation() {
       // Reset pending navigation after a short delay (300ms should be enough for navigation to start)
       navigationTimeoutRef.current = setTimeout(() => {
         pendingNavigationRef.current = null;
-      }, 300);
+      }, 500);
 
       // Navigate to the new path
       router.push(path as any);

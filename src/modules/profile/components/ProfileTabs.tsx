@@ -327,10 +327,10 @@ const ProfileTabs = React.memo(({ userId }: ProfileTabsProps) => {
 
   const routes = useMemo(
     () => [
-      { key: 'tweets', title: t('profile.tabs.tweets') },
+      { key: 'posts', title: t('profile.tabs.posts') },
       {
-        key: 'tweetsReplies',
-        title: t('profile.tabs.tweetsReplies'),
+        key: 'replies',
+        title: t('profile.tabs.replies'),
       },
       { key: 'media', title: t('profile.tabs.media') },
       ...(isOwnProfile
@@ -356,7 +356,7 @@ const ProfileTabs = React.memo(({ userId }: ProfileTabsProps) => {
 
   return (
     <>
-      <CustomTabView routes={routes} index={activeIndex} onIndexChange={setActiveIndex} scrollable={true} />
+      <CustomTabView routes={routes} index={activeIndex} onIndexChange={setActiveIndex} scrollable={false} />
       <View style={styles.tabsOuterContainer} {...panResponder.panHandlers}>
         <Animated.View
           style={[styles.tabsInnerContainer, { width: screenWidth * routes.length, transform: [{ translateX }] }]}

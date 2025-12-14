@@ -493,6 +493,17 @@ export const useTweetActions = () => {
         removeTweetFromInfiniteCache(oldData, variables.tweetId),
       );
 
+      queryClient.setQueriesData(
+        { queryKey: bookmarksQueryKey, exact: false },
+        (oldData: InfiniteData<IBookmarks> | undefined) => {
+          if (!oldData) return oldData;
+          return removeTweetFromInfiniteCache(
+            oldData as unknown as InfiniteData<ITweets>,
+            variables.tweetId,
+          ) as unknown as InfiniteData<IBookmarks>;
+        },
+      );
+
       // Navigate back if the current screen is the tweet details screen
       if (pathname.includes(variables.tweetId)) {
         goBack();
@@ -505,10 +516,12 @@ export const useTweetActions = () => {
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
       queryClient.invalidateQueries({ queryKey: repliesQueryKey });
+      queryClient.invalidateQueries({ queryKey: bookmarksQueryKey });
     },
 
     onSuccess: (_, variables) => {
       queryClient.removeQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
+      queryClient.invalidateQueries({ queryKey: bookmarksQueryKey, refetchType: 'active' });
     },
   });
 

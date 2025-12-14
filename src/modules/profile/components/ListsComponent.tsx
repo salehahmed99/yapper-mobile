@@ -115,7 +115,7 @@ export default function ListsComponent({ initialTab, userId }: ListsComponentPro
 
   return (
     <>
-      <CustomTabView routes={routes} index={activeIndex} onIndexChange={setActiveIndex} scrollable={!isOwnProfile} />
+      <CustomTabView routes={routes} index={activeIndex} onIndexChange={setActiveIndex} scrollable={false} />
       <View style={styles.tabsOuterContainer} {...panResponder.panHandlers}>
         <Animated.View
           style={[styles.tabsInnerContainer, { width: screenWidth * routes.length, transform: [{ translateX }] }]}
