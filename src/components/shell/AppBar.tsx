@@ -14,10 +14,11 @@ interface IAppBarProps {
   children?: React.ReactNode;
   rightElement?: React.ReactNode;
   tabView?: React.ReactNode;
+  hideRightElement?: boolean;
 }
 
 const AppBar: React.FC<IAppBarProps> = (props) => {
-  const { title, children, rightElement, tabView } = props;
+  const { title, children, rightElement, tabView, hideRightElement = false } = props;
   const { theme } = useTheme();
   const user = useAuthStore((state) => state.user);
   const styles = createStyles(theme);
@@ -68,7 +69,7 @@ const AppBar: React.FC<IAppBarProps> = (props) => {
               )}
             </View>
 
-            <View style={styles.sideContainer}>{rightElement}</View>
+            {!hideRightElement && <View style={styles.sideContainer}>{rightElement}</View>}
           </View>
           {tabView && <View style={styles.tabContainer}>{tabView}</View>}
         </>
@@ -86,7 +87,7 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       paddingHorizontal: theme.spacing.md,
       backgroundColor: theme.colors.background.primary + 'DF',
-      borderBottomWidth: 1,
+      borderBottomWidth: 0.5,
       borderBottomColor: theme.colors.border,
     },
     headerContainer: {
@@ -137,6 +138,7 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       justifyContent: 'center',
       flexDirection: 'row',
+      paddingHorizontal: theme.spacing.md,
     },
     sideContainer: { width: theme.ui.sideContainerWidth, alignItems: 'center', justifyContent: 'center' },
     avatarButton: {

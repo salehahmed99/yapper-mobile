@@ -1,8 +1,11 @@
+import CustomTabView from '@/src/components/CustomTabView';
+import AppBar from '@/src/components/shell/AppBar';
 import { Theme } from '@/src/constants/theme';
 import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
 import { useNavigation } from '@/src/hooks/useNavigation';
-import CustomTabView, { TabConfig } from '@/src/modules/profile/components/CustomTabView';
+import useSpacing from '@/src/hooks/useSpacing';
+import { useSwipeableTabsGeneric } from '@/src/hooks/useSwipeableTabsGeneric';
 import SearchInput from '@/src/modules/search/components/SearchInput';
 import { useSearchPosts } from '@/src/modules/search/hooks/useSearchPosts';
 import { useSearchUsers } from '@/src/modules/search/hooks/useSearchUsers';
@@ -12,9 +15,10 @@ import FollowButton from '@/src/modules/user_list/components/FollowButton';
 import UserListItem from '@/src/modules/user_list/components/UserListItem';
 import { IUser } from '@/src/types/user';
 import { useLocalSearchParams } from 'expo-router';
+import { X } from 'lucide-react-native';
 import React, { createContext, memo, useCallback, useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Animated, FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 
 // Context for sharing search params with tab components
 interface SearchResultsContextType {
@@ -209,11 +213,13 @@ export default function SearchResultsScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { navigate } = useNavigation();
+  const { top } = useSpacing();
   const params = useLocalSearchParams<{ query: string; username?: string }>();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [query, setQuery] = useState(params.query || '');
   const [activeQuery, setActiveQuery] = useState(params.query || '');
+  const [activeIndex, setActiveIndex] = useState(0);
   const username = params.username || undefined;
 
   const handleSubmit = useCallback(() => {
@@ -238,29 +244,76 @@ export default function SearchResultsScreen() {
 
   const contextValue = useMemo(() => ({ query: activeQuery, username }), [activeQuery, username]);
 
-  const tabs: TabConfig[] = useMemo(
+  const routes = useMemo(
     () => [
-      { key: 'posts', title: t('search.tabs.posts', 'Posts'), component: PostsTab },
-      { key: 'media', title: t('search.tabs.media', 'Media'), component: MediaTab },
-      { key: 'latest', title: t('search.tabs.latest', 'Latest'), component: LatestTab },
-      { key: 'users', title: t('search.tabs.users', 'Users'), component: UsersTab },
+      { key: 'posts', title: t('search.tabs.posts', 'Posts') },
+      { key: 'media', title: t('search.tabs.media', 'Media') },
+      { key: 'latest', title: t('search.tabs.latest', 'Latest') },
+      { key: 'users', title: t('search.tabs.users', 'Users') },
     ],
     [t],
   );
+
+  const activeTabKey = routes[activeIndex]?.key;
+
+  const { translateX, panResponder, screenWidth } = useSwipeableTabsGeneric({
+    tabCount: routes.length,
+    currentIndex: activeIndex,
+    onIndexChange: setActiveIndex,
+    swipeEnabled: true,
+  });
 
   return (
     <View style={styles.container}>
       <SearchResultsContext.Provider value={contextValue}>
         <MediaViewerProvider>
-          <SearchInput
-            value={query}
-            onChangeText={setQuery}
-            onSubmit={handleSubmit}
-            onFocus={handleSearchFocus}
-            onClear={handleClear}
-            autoFocus={false}
-          />
-          <CustomTabView tabs={tabs} scrollEnabled={true} lazy={true} />
+          <View style={styles.appBarWrapper}>
+            <AppBar
+              children={
+                <SearchInput
+                  value={query}
+                  onChangeText={setQuery}
+                  onSubmit={handleSubmit}
+                  onFocus={handleSearchFocus}
+                  autoFocus={false}
+                />
+              }
+              rightElement={
+                query.length > 0 ? (
+                  <Pressable
+                    onPress={handleClear}
+                    accessibilityLabel={t('search.clear', 'Clear')}
+                    accessibilityRole="button"
+                    style={styles.clearButton}
+                    testID="search_clear_button"
+                  >
+                    <X size={20} color={theme.colors.text.secondary} />
+                  </Pressable>
+                ) : null
+              }
+              tabView={
+                <CustomTabView routes={routes} index={activeIndex} onIndexChange={setActiveIndex} scrollable={true} />
+              }
+            />
+          </View>
+          <View style={styles.tabsOuterContainer} {...panResponder.panHandlers}>
+            <Animated.View
+              style={[styles.tabsInnerContainer, { width: screenWidth * routes.length, transform: [{ translateX }] }]}
+            >
+              <View style={[styles.tabPage, { width: screenWidth, paddingTop: top }]}>
+                <PostsTab activeTabKey={activeTabKey} />
+              </View>
+              <View style={[styles.tabPage, { width: screenWidth, paddingTop: top }]}>
+                <MediaTab activeTabKey={activeTabKey} />
+              </View>
+              <View style={[styles.tabPage, { width: screenWidth, paddingTop: top }]}>
+                <LatestTab activeTabKey={activeTabKey} />
+              </View>
+              <View style={[styles.tabPage, { width: screenWidth, paddingTop: top }]}>
+                <UsersTab activeTabKey={activeTabKey} />
+              </View>
+            </Animated.View>
+          </View>
           <MediaViewerModal />
         </MediaViewerProvider>
       </SearchResultsContext.Provider>
@@ -274,6 +327,13 @@ const createStyles = (theme: Theme) =>
       flex: 1,
       backgroundColor: theme.colors.background.primary,
     },
+    appBarWrapper: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      zIndex: 1,
+    },
     loadingContainer: {
       flex: 1,
       justifyContent: 'center',
@@ -281,5 +341,22 @@ const createStyles = (theme: Theme) =>
     },
     listFooter: {
       height: 120,
+    },
+    tabsOuterContainer: {
+      flex: 1,
+      overflow: 'hidden',
+    },
+    tabsInnerContainer: {
+      flex: 1,
+      flexDirection: 'row',
+    },
+    tabPage: {
+      flex: 1,
+    },
+    clearButton: {
+      width: 40,
+      height: 40,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
   });

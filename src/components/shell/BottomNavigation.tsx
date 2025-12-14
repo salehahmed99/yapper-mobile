@@ -32,7 +32,7 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
   const { activeTab, setActiveTab, scrollY } = useUiShell();
-  const { replace } = useNavigation();
+  const { dismissTo } = useNavigation();
   const pathname = usePathname();
   const unreadChatIds = useUnreadMessagesStore((state) => state.unreadChatIds);
   const unreadMessagesCount = unreadChatIds.size;
@@ -47,26 +47,9 @@ const BottomNavigation: React.FC<IBottomNavigationProps> = (props) => {
     }
   }, [pathname, activeTab, setActiveTab]);
 
-  // Helper to normalize path by removing route group segments like (protected)
-  const normalizePath = (path: string) => {
-    // Remove segments that match (*) pattern (route groups)
-    return path.replace(/\/\([^)]+\)/g, '').replace(/^$/, '/');
-  };
-
   const onPress = (item: (typeof items)[number]) => {
-    // Normalize both paths to compare without route group prefixes
-    const normalizedItemPath = normalizePath(item.path);
-    const normalizedPathname = normalizePath(pathname);
-
-    const isCurrentRoute = normalizedPathname === normalizedItemPath;
-
-    if (activeTab === item.key && isCurrentRoute) {
-      // Already on this tab/route, do nothing
-      return;
-    }
     setActiveTab(item.key);
-    // If navigating to the same path, replace so we don't stack; otherwise replace to navigate
-    replace(item.path);
+    dismissTo(item.path);
   };
 
   // Interpolate opacity based on scrollY: at y=0 -> 0.85, at y=300 -> 0.4

@@ -43,8 +43,6 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
-      borderTopWidth: theme.borderWidth.thin / 2,
-      borderTopColor: theme.colors.border,
     },
     sectionTitle: {
       fontSize: theme.typography.sizes.lg,

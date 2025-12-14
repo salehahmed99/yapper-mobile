@@ -4,7 +4,7 @@ import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
 import { useNavigation } from '@/src/hooks/useNavigation';
 import useSpacing from '@/src/hooks/useSpacing';
-import CustomTabView, { TabConfig } from '@/src/modules/profile/components/CustomTabView';
+import { useSwipeableTabsGeneric } from '@/src/hooks/useSwipeableTabsGeneric';
 import MediaViewerModal from '@/src/modules/tweets/components/MediaViewerModal';
 import TweetQuotesList from '@/src/modules/tweets/components/TweetQuotesList';
 import FollowButton from '@/src/modules/user_list/components/FollowButton';
@@ -13,9 +13,9 @@ import { useAuthStore } from '@/src/store/useAuthStore';
 import { IUser } from '@/src/types/user';
 import { useLocalSearchParams } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Animated, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function TweetActivityScreen() {
   const { theme } = useTheme();
@@ -35,6 +35,8 @@ export default function TweetActivityScreen() {
 
   const currentUserId = user?.id ?? null;
   const isTweetOwner = ownerId ? ownerId === currentUserId : false;
+
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const handleUserPress = useCallback(
     (selectedUser: IUser) => {
@@ -86,16 +88,23 @@ export default function TweetActivityScreen() {
     [tweetId, handleUserPress],
   );
 
-  const tabs: TabConfig[] = useMemo(() => {
-    const base: TabConfig[] = [
-      { key: 'reposts', title: t('tweetActivity.tabs.reposts'), component: RepostsTab },
-      { key: 'quotes', title: t('tweetActivity.tabs.quotes'), component: QuotesTab },
+  const routes = useMemo(() => {
+    const base = [
+      { key: 'reposts', title: t('tweetActivity.tabs.reposts') },
+      { key: 'quotes', title: t('tweetActivity.tabs.quotes') },
     ];
     if (isTweetOwner) {
-      base.push({ key: 'likers', title: t('tweetActivity.tabs.likers'), component: LikersTab });
+      base.push({ key: 'likers', title: t('tweetActivity.tabs.likers') });
     }
     return base;
-  }, [t, isTweetOwner, RepostsTab, QuotesTab, LikersTab]);
+  }, [t, isTweetOwner]);
+
+  const { translateX, panResponder, screenWidth } = useSwipeableTabsGeneric({
+    tabCount: routes.length,
+    currentIndex: activeIndex,
+    onIndexChange: setActiveIndex,
+    swipeEnabled: true,
+  });
 
   return (
     <MediaViewerProvider>
@@ -109,7 +118,23 @@ export default function TweetActivityScreen() {
             <View style={styles.placeholder} />
           </View>
         </View>
-        <CustomTabView tabs={tabs} scrollEnabled={false} />
+        <View style={styles.tabsOuterContainer} {...panResponder.panHandlers}>
+          <Animated.View
+            style={[styles.tabsInnerContainer, { width: screenWidth * routes.length, transform: [{ translateX }] }]}
+          >
+            <View style={[styles.tabPage, { width: screenWidth }]}>
+              <RepostsTab />
+            </View>
+            <View style={[styles.tabPage, { width: screenWidth }]}>
+              <QuotesTab />
+            </View>
+            {isTweetOwner && (
+              <View style={[styles.tabPage, { width: screenWidth }]}>
+                <LikersTab />
+              </View>
+            )}
+          </Animated.View>
+        </View>
         <View style={{ height: bottom }} />
         <MediaViewerModal />
       </View>
@@ -151,5 +176,16 @@ const createStyles = (theme: Theme) =>
     },
     placeholder: {
       width: theme.ui.sideContainerWidth,
+    },
+    tabsOuterContainer: {
+      flex: 1,
+      overflow: 'hidden',
+    },
+    tabsInnerContainer: {
+      flex: 1,
+      flexDirection: 'row',
+    },
+    tabPage: {
+      flex: 1,
     },
   });

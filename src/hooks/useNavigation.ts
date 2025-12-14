@@ -104,10 +104,22 @@ export function useNavigation() {
     }
   }, [router]);
 
+  const dismissTo = useCallback(
+    (path: string | { pathname: string; params?: Record<string, any> }) => {
+      // Dismiss all modals/screens from stack first
+      if (router.canDismiss()) {
+        router.dismissAll();
+      }
+      router.dismissTo(path as any);
+    },
+    [router],
+  );
+
   return {
     navigate,
     replace,
     goBack,
+    dismissTo,
     isCurrentRoute,
     pathname,
     router,
