@@ -5,7 +5,7 @@ export function useNavigation() {
   const router = useRouter();
   const pathname = usePathname();
   const pendingNavigationRef = useRef<string | null>(null);
-  const navigationTimeoutRef = useRef<number | null>(null);
+  const navigationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const normalizePath = useCallback((path: string) => {
     return path.replace(/\/\([^)]+\)/g, '').replace(/^$/, '/');
