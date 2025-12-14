@@ -1,11 +1,12 @@
+import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import React from 'react';
-import { Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { TweetSegment } from '../utils/tweetParser';
 
 interface ITweetContentProps {
   segments: TweetSegment[];
-  onMentionPress?: (userId: string) => void;
+  onMentionPress?: (username: string) => void;
   onHashtagPress?: (hashtag: string) => void;
 }
 
@@ -17,19 +18,20 @@ interface ITweetContentProps {
 const TweetContent: React.FC<ITweetContentProps> = ({ segments, onMentionPress, onHashtagPress }) => {
   const { theme } = useTheme();
 
-  // Internal styles using theme
-  const mentionStyle = {
-    color: theme.colors.accent.bookmark,
-  };
+  const styles = createStyles(theme);
 
   return (
-    <>
+    <Text>
       {segments.map((segment, index) => {
         // 1. Render Mentions
         if (segment.type === 'mention') {
           return (
-            <Text key={`mention-${index}`} style={mentionStyle} onPress={() => onMentionPress?.(segment.mention.id)}>
-              @{segment.mention.username}
+            <Text
+              key={`mention-${index}-${segment.username}`}
+              style={styles.mention}
+              onPress={() => onMentionPress?.(segment.username)}
+            >
+              @{segment.username}
             </Text>
           );
         }
@@ -37,17 +39,36 @@ const TweetContent: React.FC<ITweetContentProps> = ({ segments, onMentionPress, 
         // 2. Render Hashtags
         if (segment.type === 'hashtag') {
           return (
-            <Text key={`hashtag-${index}`} style={mentionStyle} onPress={() => onHashtagPress?.(segment.hashtag)}>
+            <Text
+              key={`hashtag-${index}-${segment.hashtag}`}
+              style={styles.mention}
+              onPress={() => onHashtagPress?.(segment.hashtag)}
+            >
               {segment.hashtag}
             </Text>
           );
         }
 
         // 3. Render Plain Text
-        return <Text key={`text-${index}`}>{segment.content}</Text>;
+        return (
+          <Text key={`text-${index}`} style={styles.text}>
+            {segment.content}
+          </Text>
+        );
       })}
-    </>
+    </Text>
   );
 };
 
 export default TweetContent;
+
+const createStyles = (theme: Theme) => {
+  return StyleSheet.create({
+    mention: {
+      color: theme.colors.accent.bookmark,
+    },
+    text: {
+      color: theme.colors.text.primary,
+    },
+  });
+};

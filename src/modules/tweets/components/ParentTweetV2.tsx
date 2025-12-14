@@ -35,11 +35,7 @@ const ParentTweetV2: React.FC<IParentTweetV2Props> = (props) => {
         <View style={styles.userInfo}>
           <UserInfoRow tweet={tweet} />
         </View>
-        <View style={styles.tweetContent}>
-          <Text style={styles.tweetText}>
-            <TweetContent segments={segments} />
-          </Text>
-        </View>
+        <TweetContent segments={segments} />
         <View style={styles.replyingToContainer}>
           <Text style={styles.replyingToText}>
             {t('tweets.replyingTo')} <Text style={styles.username}>@{tweet.user.username}</Text>

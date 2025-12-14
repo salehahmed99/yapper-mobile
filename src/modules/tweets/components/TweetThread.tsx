@@ -37,7 +37,7 @@ interface ITweetProps {
   onShare: () => void;
   isVisible?: boolean;
   showThread: boolean;
-  onMentionPress: (userId: string) => void;
+  onMentionPress: (username: string) => void;
   onHashtagPress: (hashtag: string) => void;
 }
 
@@ -169,11 +169,7 @@ const SingleTweet: React.FC<ITweetProps> = (props) => {
               </Pressable>
             </View>
           )}
-          <View style={styles.tweetContent}>
-            <Text style={styles.tweetText} accessibilityLabel="tweet_content_text" testID="tweet_content_text">
-              <TweetContent segments={segments} onMentionPress={onMentionPress} onHashtagPress={onHashtagPress} />
-            </Text>
-          </View>
+          <TweetContent segments={segments} onMentionPress={onMentionPress} onHashtagPress={onHashtagPress} />
           <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} />
 
           {(tweet.postType === 'quote' || tweet.type === 'quote') && tweet.parentTweet && (

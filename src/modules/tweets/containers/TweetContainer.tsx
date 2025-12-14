@@ -69,14 +69,13 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
     ]);
   };
 
-  const handleMentionPress = (userId: string) => {
-    // router.push({
-    //   pathname: '/(protected)/(profile)/[id]',
-    //   params: {
-    //     id: userId,
-    //   },
-    // });
-    console.log(userId);
+  const handleMentionPress = (username: string) => {
+    router.push({
+      pathname: '/(protected)/(profile)/[id]',
+      params: {
+        id: username,
+      },
+    });
   };
 
   const handleHashtagPress = (hashtag: string) => {

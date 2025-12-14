@@ -27,7 +27,7 @@ interface IFullTweetProps {
   onBookmark: (tweetId: string, isBookmarked: boolean) => void;
   onViewPostInteractions: (tweetId: string, ownerId: string) => void;
   onShare: () => void;
-  onMentionPress: (userId: string) => void;
+  onMentionPress: (username: string) => void;
   onHashtagPress: (hashtag: string) => void;
 }
 
@@ -102,11 +102,7 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
         </View>
       </View>
 
-      <View style={styles.contentSection}>
-        <Text style={styles.tweetText} accessibilityLabel="full_tweet_content_text" testID="full_tweet_content_text">
-          <TweetContent segments={segments} onMentionPress={onMentionPress} onHashtagPress={onHashtagPress} />
-        </Text>
-      </View>
+      <TweetContent segments={segments} onMentionPress={onMentionPress} onHashtagPress={onHashtagPress} />
 
       {(tweet.images.length > 0 || tweet.videos.length > 0) && (
         <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} />
@@ -254,7 +250,7 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       gap: theme.spacing.sm,
     },
-    contentSection: {},
+
     tweetText: {
       color: theme.colors.text.primary,
       fontFamily: theme.typography.fonts.regular,

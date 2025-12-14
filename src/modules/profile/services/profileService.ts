@@ -6,6 +6,7 @@ import {
   IGetFollowingListResponse,
   IGetMyUserResponse,
   IGetUserByIdResponse,
+  IGetUserByUsernameResponse,
   IUserLikesParams,
   IUserLikesResponse,
   IUserMediaParams,
@@ -36,6 +37,47 @@ export const getUserById = async (userId: string): Promise<IGetUserByIdResponse>
   try {
     const response = await api.get(`/users/${userId}`);
     return response.data.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    if (error.response) {
+      throw new Error(error.response.data.message || 'An error occurred while fetching user data.');
+    }
+    throw error;
+  }
+};
+
+export const getUserByUsername = async (username: string): Promise<IGetUserByIdResponse> => {
+  try {
+    const response = await api.get<IGetUserByUsernameResponse>(`/users/by/username/${username}`);
+    const userData = response.data.data;
+
+    // Map the response to IGetUserByIdResponse format
+    return {
+      userId: userData.userId,
+      name: userData.name,
+      username: userData.username,
+      bio: userData.bio,
+      avatarUrl: userData.avatarUrl,
+      coverUrl: userData.coverUrl,
+      country: userData.country,
+      createdAt: userData.createdAt,
+      followersCount: userData.followersCount,
+      followingCount: userData.followingCount,
+      isFollower: userData.isFollower,
+      isFollowing: userData.isFollowing,
+      isMuted: userData.isMuted,
+      isBlocked: userData.isBlocked,
+      topMutualFollowers: userData.topMutualFollowers.map((f) => ({
+        userId: '',
+        name: f.name,
+        username: '',
+        avatarUrl: f.avatarUrl || '',
+      })),
+      mutualFollowersCount: userData.mutualFollowersCount,
+    };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.code === 'ERR_NETWORK') {

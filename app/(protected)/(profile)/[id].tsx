@@ -5,7 +5,16 @@ import { useLocalSearchParams } from 'expo-router';
 export default function UserProfile() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const currentUser = useAuthStore((state) => state.user);
-  const isOwnProfile = currentUser?.id === id;
 
-  return <ProfileContainer userId={id} isOwnProfile={isOwnProfile} />;
+  // Detect if id is a UUID or username
+  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+  const isOwnProfile = currentUser?.id === id || currentUser?.username === id;
+
+  return (
+    <ProfileContainer
+      userId={isUUID ? id : undefined}
+      username={!isUUID ? id : undefined}
+      isOwnProfile={isOwnProfile}
+    />
+  );
 }

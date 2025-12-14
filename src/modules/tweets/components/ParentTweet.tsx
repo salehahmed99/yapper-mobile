@@ -3,7 +3,7 @@ import { useTheme } from '@/src/context/ThemeContext';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import React, { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { ITweet } from '../types';
 import { parseTweetBody } from '../utils/tweetParser';
 import TweetContent from './TweetContent';
@@ -43,12 +43,7 @@ const ParentTweet: React.FC<IParentTweetProps> = (props) => {
         />
         <UserInfoRow tweet={tweet} />
       </View>
-      <View style={styles.tweetContent}>
-        <Text style={styles.tweetText}>
-          <TweetContent segments={segments} />
-        </Text>
-      </View>
-
+      <TweetContent segments={segments} />
       {/* Tweet Media */}
       {(tweet.images.length > 0 || tweet.videos.length > 0) && (
         <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} />

@@ -1,5 +1,3 @@
-import { IMention } from '../types';
-
 /**
  * Parses text from react-native-controlled-mentions format
  * Input format: "{@}[username](userId)"
@@ -29,10 +27,10 @@ export const getActualTextLength = (text: string): number => {
 // Union type for the three possible segments
 export type TweetSegment =
   | { type: 'text'; content: string }
-  | { type: 'mention'; mention: IMention }
+  | { type: 'mention'; username: string }
   | { type: 'hashtag'; hashtag: string };
 
-export const parseTweetBody = (content: string, mentions: IMention[] | undefined = []): TweetSegment[] => {
+export const parseTweetBody = (content: string, mentions: string[] | undefined = []): TweetSegment[] => {
   /**
    * Regex Explanation:
    * 1. (\u200B\$\(\d+\)\u200C) -> Matches your backend mention format
@@ -49,12 +47,12 @@ export const parseTweetBody = (content: string, mentions: IMention[] | undefined
     if (part.startsWith('\u200B') && part.endsWith('\u200C')) {
       const match = part.match(/\d+/);
       const index = match ? parseInt(match[0], 10) : -1;
-      const user = mentions[index];
+      const username = mentions[index];
 
-      if (user) {
+      if (username) {
         return {
           type: 'mention',
-          mention: user,
+          username: username,
         };
       }
     }

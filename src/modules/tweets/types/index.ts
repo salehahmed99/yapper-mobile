@@ -2,10 +2,6 @@ import { IApiResponse } from '@/src/types/api';
 import { IUser } from '@/src/types/user';
 
 export type TweetType = 'tweet' | 'reply' | 'repost' | 'quote';
-interface IMention {
-  id: string;
-  username: string;
-}
 interface ITweet {
   tweetId: string;
   type: TweetType;
@@ -14,7 +10,7 @@ interface ITweet {
   conversationTweet?: ITweet;
   replies?: ITweet[];
   content: string;
-  mentions: IMention[]; // Array of mentioned usernames
+  mentions: string[]; // Array of mentioned usernames
   images: string[];
   videos: string[];
   likesCount: number;
@@ -106,7 +102,6 @@ type ITweetSummaryResponse = IApiResponse<ITweetSummary>;
 export {
   IBookmarks,
   IBookmarksResponse,
-  IMention,
   IQuotesResponse,
   IReplies,
   IRepliesResponse,
