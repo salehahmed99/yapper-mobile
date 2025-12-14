@@ -46,7 +46,7 @@ export function useNavigation() {
       // Reset pending navigation after a short delay (300ms should be enough for navigation to start)
       navigationTimeoutRef.current = setTimeout(() => {
         pendingNavigationRef.current = null;
-      }, 300);
+      }, 500);
 
       // Navigate to the new path
       router.push(path as any);
@@ -104,10 +104,22 @@ export function useNavigation() {
     }
   }, [router]);
 
+  const dismissTo = useCallback(
+    (path: string | { pathname: string; params?: Record<string, any> }) => {
+      // Dismiss all modals/screens from stack first
+      if (router.canDismiss()) {
+        router.dismissAll();
+      }
+      router.dismissTo(path as any);
+    },
+    [router],
+  );
+
   return {
     navigate,
     replace,
     goBack,
+    dismissTo,
     isCurrentRoute,
     pathname,
     router,

@@ -15,6 +15,8 @@ type UserListProps = UserListQuery & {
   autoLoad?: boolean;
   onUserPress?: (user: IUser) => void;
   renderAction?: (user: IUser) => React.ReactNode;
+  topSpacing?: number;
+  bottomSpacing?: number;
 };
 
 const createStyles = (theme: Theme) =>
@@ -62,7 +64,7 @@ const createStyles = (theme: Theme) =>
   });
 
 const UserList: React.FC<UserListProps> = (props) => {
-  const { onUserPress, renderAction, autoLoad = true } = props;
+  const { onUserPress, renderAction, autoLoad = true, topSpacing, bottomSpacing } = props;
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);

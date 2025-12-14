@@ -41,7 +41,7 @@ export default function ChatInput({
   value,
   onChangeText,
   onSend,
-  placeholder = 'Start a new message',
+  placeholder,
   style,
   replyingTo,
   onCancelReply,
@@ -49,6 +49,7 @@ export default function ChatInput({
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const { t } = useTranslation();
+  const placeholderText = placeholder ?? t('messages.input.placeholder');
   const [previewUri, setPreviewUri] = useState<string | null>(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -321,7 +322,7 @@ export default function ChatInput({
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
-              placeholder={placeholder}
+              placeholder={placeholderText}
               placeholderTextColor={theme.colors.text.secondary}
               value={value}
               onChangeText={onChangeText}

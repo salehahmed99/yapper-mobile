@@ -484,8 +484,8 @@
     "joined": "Joined",
     "noBio": "No bio available",
     "tabs": {
-      "tweets": "Tweets",
-      "tweetsReplies": "Tweets & Replies",
+      "posts": "Posts",
+      "replies": "Replies",
       "media": "Media",
       "likes": "Likes"
     },
@@ -495,8 +495,8 @@
       "followersYouKnow": "Followers You Know"
     },
     "placeholders": {
-      "tweets": "No tweets yet.",
-      "tweetsReplies": "No tweets and replies yet.",
+      "posts": "No posts yet.",
+      "replies": "No replies yet.",
       "media": "No media yet.",
       "likes": "No likes yet."
     },
