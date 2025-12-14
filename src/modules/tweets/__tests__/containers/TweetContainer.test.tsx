@@ -69,6 +69,7 @@ describe('TweetContainer', () => {
     images: [],
     videos: [],
     type: 'tweet',
+    mentions: [],
   };
 
   it('should render Tweet component when tweet prop is provided', () => {

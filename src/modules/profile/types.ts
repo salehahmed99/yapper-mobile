@@ -60,6 +60,34 @@ interface IGetUserByIdResponse {
 
 export { IGetUserByIdResponse, IUserProfile };
 
+interface IGetUserByUsernameData {
+  userId: string;
+  name: string;
+  username: string;
+  bio: string;
+  avatarUrl: string;
+  coverUrl: string | null;
+  country: string | null;
+  createdAt: string;
+  birthDate: string | null;
+  followersCount: number;
+  followingCount: number;
+  isFollower: boolean;
+  isFollowing: boolean;
+  isMuted: boolean;
+  isBlocked: boolean;
+  topMutualFollowers: { name: string; avatarUrl: string | null }[];
+  mutualFollowersCount: string;
+}
+
+interface IGetUserByUsernameResponse {
+  data: IGetUserByUsernameData;
+  count: number;
+  message: string;
+}
+
+export { IGetUserByUsernameData, IGetUserByUsernameResponse };
+
 interface IFollowerUser {
   userId: string;
   name: string;

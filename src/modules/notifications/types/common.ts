@@ -38,6 +38,7 @@ export interface INotificationTweetApi {
   tweetId: string;
   type: TweetType;
   parentTweet?: INotificationTweetApi;
+  mentions: string[];
   content: string;
   images: string[];
   videos: string[];

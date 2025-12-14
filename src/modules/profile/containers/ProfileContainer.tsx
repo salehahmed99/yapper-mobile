@@ -10,7 +10,7 @@ import { useAuthStore } from '../../../store/useAuthStore';
 import ProfileHeader from '../components/ProfileHeader';
 import ProfileTabs from '../components/ProfileTabs';
 import { ProfilePostsProvider, useProfilePosts } from '../context/ProfilePostsContext';
-import { getUserById } from '../services/profileService';
+import { getUserById, getUserByUsername } from '../services/profileService';
 import { createContainerStyles } from '../styles/container-style';
 import { createHeaderStyles } from '../styles/profile-header-styles';
 import { IUserProfile } from '../types';
@@ -19,11 +19,12 @@ LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollV
 
 type ProfileContainerProps = {
   userId?: string;
+  username?: string;
   isOwnProfile?: boolean;
 };
 const PROFILE_HEADER_HEIGHT = 420;
 
-function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainerProps) {
+function ProfileContainerInner({ userId, username, isOwnProfile = true }: ProfileContainerProps) {
   const { theme } = useTheme();
   const containerStyles = useMemo(() => createContainerStyles(theme), [theme]);
   const headerStyles = useMemo(() => createHeaderStyles(theme), [theme]);
@@ -67,8 +68,9 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    if (!isOwnProfile && userId) {
-      getUserById(userId)
+    if (!isOwnProfile && (userId || username)) {
+      const fetchUser = userId ? getUserById(userId) : getUserByUsername(username!);
+      fetchUser
         .then((data) => {
           const mappedUser: IUserProfile = {
             id: data.userId,
@@ -99,7 +101,7 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
           console.error('Error fetching user for animated header:', error);
         });
     }
-  }, [userId, isOwnProfile, profileUser?.isBlocked]);
+  }, [userId, username, isOwnProfile, profileUser?.isBlocked]);
 
   useEffect(() => {
     if (isOwnProfile) {
@@ -156,8 +158,8 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
     try {
       if (isOwnProfile) {
         await fetchAndUpdateUser();
-      } else if (userId) {
-        const data = await getUserById(userId);
+      } else if (userId || username) {
+        const data = userId ? await getUserById(userId) : await getUserByUsername(username!);
         const mappedUser: IUserProfile = {
           id: data.userId,
           email: '',
@@ -236,7 +238,7 @@ function ProfileContainerInner({ userId, isOwnProfile = true }: ProfileContainer
         >
           <ProfileHeader
             key={refreshKey}
-            userId={userId}
+            userId={userId || profileUser?.id}
             isOwnProfile={isOwnProfile}
             onBlockStateChange={handleBlockStateChange}
           />

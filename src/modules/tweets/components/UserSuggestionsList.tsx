@@ -43,7 +43,9 @@ const UserSuggestionsList: React.FC<IUserSuggestionsListProps> = (props) => {
     <FlashList
       style={styles.container}
       data={users}
-      renderItem={({ item }) => <UserSuggestionItem user={item} onSelect={() => onSelect(item)} />}
+      renderItem={({ item }) => (
+        <UserSuggestionItem user={item} onSelect={() => onSelect({ id: item.id, name: item.username || '' })} />
+      )}
       keyboardShouldPersistTaps="handled"
       ItemSeparatorComponent={() => <View style={styles.separator} />}
     />

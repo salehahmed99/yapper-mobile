@@ -5,6 +5,8 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 import { ITweet } from '../types';
+import { parseTweetBody } from '../utils/tweetParser';
+import TweetContent from './TweetContent';
 import UserInfoRow from './UserInfoRow';
 
 interface IParentTweetV2Props {
@@ -15,6 +17,8 @@ const ParentTweetV2: React.FC<IParentTweetV2Props> = (props) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const segments = useMemo(() => parseTweetBody(tweet.content, tweet.mentions), [tweet.content, tweet.mentions]);
+
   return (
     <View style={styles.container} accessibilityLabel="tweet_container_parent">
       <View style={styles.avatarColumn}>
@@ -31,9 +35,7 @@ const ParentTweetV2: React.FC<IParentTweetV2Props> = (props) => {
         <View style={styles.userInfo}>
           <UserInfoRow tweet={tweet} />
         </View>
-        <View style={styles.tweetContent}>
-          <Text style={styles.tweetText}>{tweet.content}</Text>
-        </View>
+        <TweetContent segments={segments} />
         <View style={styles.replyingToContainer}>
           <Text style={styles.replyingToText}>
             {t('tweets.replyingTo')} <Text style={styles.username}>@{tweet.user.username}</Text>

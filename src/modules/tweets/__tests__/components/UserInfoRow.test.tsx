@@ -32,6 +32,7 @@ describe('UserInfoRow', () => {
     images: [],
     videos: [],
     type: 'tweet',
+    mentions: [],
   };
 
   it('should render user info correctly', () => {

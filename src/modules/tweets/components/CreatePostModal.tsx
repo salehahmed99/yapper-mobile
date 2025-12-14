@@ -17,6 +17,7 @@ import { Keyboard, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet
 import { TriggersConfig, useMentions } from 'react-native-controlled-mentions';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import UserSuggestionsListContainer from '../containers/UserSuggestionsListContainer';
+import { getActualTextLength, parseMentionsFromText } from '../utils/tweetParser';
 import ParentTweet from './ParentTweet';
 import ParentTweetV2 from './ParentTweetV2';
 
@@ -74,7 +75,8 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
     }
   }, [visible]);
 
-  const characterCount = tweetText.length;
+  // Use actual text length (without mention metadata) for character count
+  const characterCount = getActualTextLength(tweetText);
   const remainingCharacters = MAX_TWEET_LENGTH - characterCount;
   const progressPercentage = (characterCount / MAX_TWEET_LENGTH) * 100;
   const canPost = characterCount > 0 && characterCount <= MAX_TWEET_LENGTH;
@@ -87,13 +89,15 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
   };
 
   const handlePost = async () => {
+    // Parse mentions from the text
+    const content = parseMentionsFromText(tweetText);
     const mediaUris = media.map((m) => m.uri);
     if (type === 'tweet' && onPost) {
-      onPost(tweetText, mediaUris);
+      onPost(content, mediaUris);
     } else if (type === 'quote' && onPostQuote) {
-      onPostQuote(tweet!.tweetId, tweetText, mediaUris);
+      onPostQuote(tweet!.tweetId, content, mediaUris);
     } else if (type === 'reply' && onPostReply) {
-      onPostReply(tweet!.tweetId, tweetText, mediaUris);
+      onPostReply(tweet!.tweetId, content, mediaUris);
     }
     resetTweetState();
     onClose();
