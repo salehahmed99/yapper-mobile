@@ -87,7 +87,7 @@ const PostsRoute = ({ userId, activeTabKey }: { userId: string; activeTabKey?: s
   if (posts.length === 0) {
     return (
       <View style={styles.page} testID="posts_route_empty">
-        <Text style={styles.placeholderText}>{t('profile.placeholders.tweets')}</Text>
+        <Text style={styles.placeholderText}>{t('profile.placeholders.posts')}</Text>
       </View>
     );
   }
@@ -155,7 +155,7 @@ const RepliesRoute = ({ userId, activeTabKey }: { userId: string; activeTabKey?:
   if (replies.length === 0) {
     return (
       <View style={styles.page} testID="replies_route_empty">
-        <Text style={styles.placeholderText}>{t('profile.placeholders.tweetsReplies')}</Text>
+        <Text style={styles.placeholderText}>{t('profile.placeholders.replies')}</Text>
       </View>
     );
   }
