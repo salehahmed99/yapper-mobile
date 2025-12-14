@@ -25,7 +25,6 @@ import UserInfoRow from './UserInfoRow';
 interface ITweetProps {
   tweet: ITweet;
   onDeletePress: (tweetId: string) => void;
-  onTweetPress: (tweetId: string) => void;
   onAvatarPress: (userId: string) => void;
   onReply: (tweetId: string, content: string) => void;
   onQuote: (tweetId: string, content: string) => void;
@@ -50,7 +49,6 @@ const SingleTweet: React.FC<ITweetProps> = (props) => {
     onShare,
     onDeletePress,
     isVisible = true,
-    onTweetPress,
     onAvatarPress,
     showThread,
   } = props;
@@ -76,6 +74,16 @@ const SingleTweet: React.FC<ITweetProps> = (props) => {
   const handleQuotePress = () => {
     setCreatePostType('quote');
     setIsCreatePostModalVisible(true);
+  };
+
+  const handleTweetPress = () => {
+    router.push({
+      pathname: '/(protected)/tweets/[tweetId]',
+      params: {
+        tweetId: tweet.tweetId,
+        tweetUserId: tweet.user.id,
+      },
+    });
   };
 
   const [isCreatePostModalVisible, setIsCreatePostModalVisible] = useState(false);
@@ -105,11 +113,7 @@ const SingleTweet: React.FC<ITweetProps> = (props) => {
     });
   }
   return (
-    <Pressable
-      accessibilityLabel="tweet_container_main"
-      testID="tweet_container_main"
-      onPress={() => onTweetPress(tweet.tweetId)}
-    >
+    <Pressable accessibilityLabel="tweet_container_main" testID="tweet_container_main" onPress={handleTweetPress}>
       {tweet.repostedBy && tweet.postType !== 'reply' && (
         <RepostIndicator repostById={tweet.repostedBy?.id} repostedByName={tweet.repostedBy?.name} />
       )}

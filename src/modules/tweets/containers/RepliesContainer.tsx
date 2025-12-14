@@ -2,6 +2,7 @@ import useMargins from '@/src/hooks/useSpacing';
 import React, { useCallback, useMemo } from 'react';
 import TweetList from '../components/TweetList';
 import { useReplies } from '../hooks/useReplies';
+import TweetContainer from './TweetContainer';
 
 const RepliesContainer = ({ tweetId }: { tweetId: string }) => {
   const repliesQuery = useReplies(tweetId);
@@ -35,6 +36,7 @@ const RepliesContainer = ({ tweetId }: { tweetId: string }) => {
       isFetchingNextPage={repliesQuery.isFetchingNextPage}
       topSpacing={0}
       bottomSpacing={bottom}
+      listHeaderComponent={<TweetContainer tweetId={tweetId} showThread={false} />}
     />
   );
 };

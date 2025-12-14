@@ -68,14 +68,6 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
       },
     ]);
   };
-  const handleTweetPress = (tweetId: string) => {
-    router.push({
-      pathname: '/(protected)/tweets/[tweetId]',
-      params: {
-        tweetId: tweetId,
-      },
-    });
-  };
 
   const handleAvatarPress = (userId: string) => {
     // Don't navigate if already on this profile or if it's the current user's own profile
@@ -107,7 +99,6 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
           <>
             <FullTweet
               tweet={fetchedTweet}
-              onDeletePress={handleDeletePress}
               onAvatarPress={handleAvatarPress}
               onReply={handleReply}
               onQuote={handleQuote}
@@ -129,7 +120,6 @@ const TweetContainer: React.FC<TweetContainerProps> = (props) => {
         <TweetThread
           tweet={props.tweet}
           onDeletePress={handleDeletePress}
-          onTweetPress={handleTweetPress}
           onAvatarPress={handleAvatarPress}
           onReply={handleReply}
           onQuote={handleQuote}

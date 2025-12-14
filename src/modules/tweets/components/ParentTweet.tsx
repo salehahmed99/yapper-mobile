@@ -25,6 +25,7 @@ const ParentTweet: React.FC<IParentTweetProps> = (props) => {
           pathname: '/(protected)/tweets/[tweetId]',
           params: {
             tweetId: tweet.tweetId,
+            tweetUserId: tweet.user.id,
           },
         });
       }}
