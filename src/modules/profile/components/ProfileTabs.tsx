@@ -47,7 +47,7 @@ const PostsRoute = ({ userId, activeTabKey }: { userId: string; activeTabKey?: s
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const isActive = activeTabKey === 'tweets';
+  const isActive = activeTabKey === 'posts';
   const { posts, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage, refetch } = useUserPostsData(
     userId,
     isActive,
@@ -115,7 +115,7 @@ const RepliesRoute = ({ userId, activeTabKey }: { userId: string; activeTabKey?:
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const isActive = activeTabKey === 'tweetsReplies';
+  const isActive = activeTabKey === 'replies';
   const { replies, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage, refetch } = useUserRepliesData(
     userId,
     isActive,
