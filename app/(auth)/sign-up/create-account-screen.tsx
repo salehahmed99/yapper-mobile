@@ -47,7 +47,7 @@ const CreateAccountScreen = () => {
 
   const onchangeName = (text: string) => {
     setName(filterAsciiOnly(text));
-    setIsValidName(text.trim().length <= 50 ? true : false);
+    setIsValidName(text.trim().length <= 25 ? true : false);
   };
 
   const isFormValid =
@@ -144,7 +144,7 @@ const CreateAccountScreen = () => {
             onChange={onchangeName}
             type="text"
             status="success"
-            showCheck={isValidName && name.length > 0}
+            showCheck={isValidName}
             errorMessage={t('auth.signUp.createAccount.nameError', { count: name.length })}
           />
 

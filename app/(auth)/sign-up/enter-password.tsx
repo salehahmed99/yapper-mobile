@@ -42,8 +42,8 @@ const EnterPasswordScreen = () => {
   }, [email, verificationToken, replace]);
 
   // Validation
-  const isPasswordValid = password.length >= 8 ? passwordSchema.safeParse(password).success : true;
-  const isFormValid = password.length >= 8 && isPasswordValid && !isLoading;
+  const isPasswordValid = passwordSchema.safeParse(password).success;
+  const isFormValid = passwordSchema.safeParse(password).success && isPasswordValid && !isLoading;
 
   const onNextPress = async () => {
     if (!isFormValid) {

@@ -41,7 +41,7 @@ const ResetPasswordScreen = () => {
 
   useEffect(() => {
     const passwordsMatch = newPassword === confirmPassword;
-    const passwordLengthValid = newPassword.length >= 8;
+    const passwordLengthValid = passwordSchema.safeParse(newPassword).success;
     setIsNextEnabled(passwordsMatch && passwordLengthValid);
   }, [newPassword, confirmPassword]);
 
