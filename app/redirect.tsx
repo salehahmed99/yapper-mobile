@@ -14,13 +14,13 @@ export default function RedirectScreen() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (pathname === '/redirect' && !hasNavigated.current) {
+        hasNavigated.current = true;
         replace('/(auth)/landing-screen');
       }
     }, 15000); // 15 seconds timeout
 
     return () => {
       clearTimeout(timeout);
-      hasNavigated.current = true;
     };
   }, [pathname, replace]);
 

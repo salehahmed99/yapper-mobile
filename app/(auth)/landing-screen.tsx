@@ -7,8 +7,9 @@ import OAuthHeadLine from '@/src/modules/auth/components/oAuth/OAuthHeadLine';
 import OAuthLegalText from '@/src/modules/auth/components/oAuth/OAuthLegalText';
 import { githubSignIn, googleSignIn } from '@/src/modules/auth/services/authService';
 import { useAuthStore } from '@/src/store/useAuthStore';
+import { useFocusEffect } from 'expo-router';
 import React, { useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { BackHandler, StyleSheet, View } from 'react-native';
 
 const LandingScreen: React.FC = () => {
   const { theme } = useTheme();
@@ -18,6 +19,20 @@ const LandingScreen: React.FC = () => {
   const { navigate, replace } = useNavigation();
 
   const styles = useMemo(() => createStyles(theme), [theme]);
+
+  // Handle hardware back button to exit app instead of going back
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        BackHandler.exitApp();
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => subscription.remove();
+    }, []),
+  );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const completeOauthLogin = async (userData: any) => {
