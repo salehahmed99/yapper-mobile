@@ -499,15 +499,6 @@ export const useTweetActions = () => {
       await queryClient.cancelQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
       await queryClient.cancelQueries({ queryKey: repliesQueryKey });
 
-      // Optimistically update the cache
-      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
-        removeTweetFromInfiniteCache(oldData, variables.tweetId),
-      );
-
-      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: profileTweetsQueryKey }, (oldData) =>
-        removeTweetFromInfiniteCache(oldData, variables.tweetId),
-      );
-
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: repliesQueryKey }, (oldData) =>
         removeTweetFromInfiniteCache(oldData, variables.tweetId),
       );
@@ -540,7 +531,8 @@ export const useTweetActions = () => {
 
     onSuccess: (_, variables) => {
       queryClient.removeQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
-      queryClient.invalidateQueries({ queryKey: bookmarksQueryKey, refetchType: 'active' });
+      queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
+      queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
     },
   });
 

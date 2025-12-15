@@ -7,7 +7,7 @@ import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
 import { useNavigation } from '@/src/hooks/useNavigation';
 import MediaViewerModal from '@/src/modules/tweets/components/MediaViewerModal';
-import RepliesContainer from '@/src/modules/tweets/containers/RepliesContainer';
+import FullTweetContainer from '@/src/modules/tweets/containers/FullTweetContainer';
 import { useTweetActions } from '@/src/modules/tweets/hooks/useTweetActions';
 import useTweetDropDownMenu from '@/src/modules/tweets/hooks/useTweetDropDownMenu';
 import { useAuthStore } from '@/src/store/useAuthStore';
@@ -128,7 +128,7 @@ const TweetDetailsScreen = () => {
           items={menuItems}
           position={menuPosition}
         />
-        <RepliesContainer tweetId={tweetId} />
+        <FullTweetContainer tweetId={tweetId} />
         <MediaViewerModal />
       </View>
     </MediaViewerProvider>
