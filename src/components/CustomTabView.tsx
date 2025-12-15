@@ -73,14 +73,17 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
   const indicatorStart = React.useRef(new Animated.Value(0));
   const indicatorWidth = React.useRef(new Animated.Value(0));
   const scrollRef = React.useRef<ScrollView | null>(null);
+  const [scrollContentWidth, setScrollContentWidth] = React.useState(0);
 
   // animate indicator when index or measures change
   React.useEffect(() => {
     const m = measures[index];
 
     if (m) {
-      // Use measured dimensions when available (covers both scrollable and non-scrollable)
-      const indicatorPosition = isRTL ? layout.width - m.x - m.width : m.x;
+      // For scrollable: use scroll content width for RTL conversion
+      // For non-scrollable: use layout width for RTL conversion
+      const widthForRTL = scrollable && scrollContentWidth > 0 ? scrollContentWidth : layout.width;
+      const indicatorPosition = isRTL ? widthForRTL - m.x - m.width : m.x;
       Animated.parallel([
         Animated.timing(indicatorStart.current, { toValue: indicatorPosition, duration: 200, useNativeDriver: false }),
         Animated.timing(indicatorWidth.current, { toValue: m.width, duration: 200, useNativeDriver: false }),
@@ -120,6 +123,7 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.tabBarScrollable}
+            onContentSizeChange={(width) => setScrollContentWidth(width)}
           >
             {routes.map((route, i) => {
               const opacity = index === i ? 1 : 0.4;
@@ -157,12 +161,7 @@ const CustomTabView: React.FC<CustomTabViewProps> = ({
             })}
             <Animated.View
               pointerEvents="none"
-              style={[
-                styles.indicator,
-                isRTL
-                  ? { right: indicatorStart.current, width: indicatorWidth.current }
-                  : { left: indicatorStart.current, width: indicatorWidth.current },
-              ]}
+              style={[styles.indicator, { left: indicatorStart.current, width: indicatorWidth.current }]}
             />
           </ScrollView>
         </View>
@@ -242,6 +241,7 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       paddingHorizontal: theme.spacing.md,
       justifyContent: 'flex-start',
+      flexGrow: 1,
     },
     tabBarNonScrollable: {
       flexDirection: 'row',
