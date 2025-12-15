@@ -199,3 +199,104 @@ export const updateTweetQuotesCache = (
     }),
   };
 };
+
+/**
+ * Remove tweet from explore cache
+ */
+export const removeTweetFromExploreCache = (
+  oldData: IExploreResponse | undefined,
+  tweetId: string,
+): IExploreResponse | undefined => {
+  if (!oldData?.data?.forYou) return oldData;
+
+  return {
+    ...oldData,
+    data: {
+      ...oldData.data,
+      forYou: oldData.data.forYou.map((category) => {
+        const tweets = category.tweets || category.posts || [];
+        const filteredTweets = tweets.filter((tweet) => tweet.tweetId !== tweetId);
+
+        if (category.tweets) {
+          return { ...category, tweets: filteredTweets };
+        }
+        if (category.posts) {
+          return { ...category, posts: filteredTweets };
+        }
+        return category;
+      }),
+    },
+  };
+};
+
+/**
+ * Remove tweet from category posts infinite cache
+ */
+export const removeTweetFromCategoryPostsCache = (
+  oldData: InfiniteData<ICategoryTweetsResponse> | undefined,
+  tweetId: string,
+): InfiniteData<ICategoryTweetsResponse> | undefined => {
+  if (!oldData?.pages) return oldData;
+
+  return {
+    ...oldData,
+    pages: oldData.pages.map((page) => {
+      if (!page?.data?.tweets) return page;
+
+      return {
+        ...page,
+        data: {
+          ...page.data,
+          tweets: page.data.tweets.filter((tweet) => tweet.tweetId !== tweetId),
+        },
+      };
+    }),
+  };
+};
+
+/**
+ * Remove tweet from search posts infinite cache
+ */
+export const removeTweetFromSearchPostsCache = (
+  oldData: InfiniteData<ISearchPostsResponse> | undefined,
+  tweetId: string,
+): InfiniteData<ISearchPostsResponse> | undefined => {
+  if (!oldData?.pages) return oldData;
+
+  return {
+    ...oldData,
+    pages: oldData.pages.map((page) => {
+      if (!page?.data?.data) return page;
+
+      return {
+        ...page,
+        data: {
+          ...page.data,
+          data: page.data.data.filter((tweet) => tweet.tweetId !== tweetId),
+        },
+      };
+    }),
+  };
+};
+
+/**
+ * Remove tweet from tweet-quotes infinite cache
+ */
+export const removeTweetFromQuotesCache = (
+  oldData: InfiniteData<{ data: ITweet[]; count?: number; nextCursor?: string; hasMore: boolean }> | undefined,
+  tweetId: string,
+): InfiniteData<{ data: ITweet[]; count?: number; nextCursor?: string; hasMore: boolean }> | undefined => {
+  if (!oldData?.pages) return oldData;
+
+  return {
+    ...oldData,
+    pages: oldData.pages.map((page) => {
+      if (!page?.data) return page;
+
+      return {
+        ...page,
+        data: page.data.filter((tweet) => tweet.tweetId !== tweetId),
+      };
+    }),
+  };
+};

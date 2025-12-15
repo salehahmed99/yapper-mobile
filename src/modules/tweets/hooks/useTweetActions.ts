@@ -16,7 +16,11 @@ import {
 } from '../services/tweetService';
 import { IBookmarks, ITweet, ITweets } from '../types';
 import {
+  removeTweetFromCategoryPostsCache,
+  removeTweetFromExploreCache,
   removeTweetFromInfiniteCache,
+  removeTweetFromQuotesCache,
+  removeTweetFromSearchPostsCache,
   updateCategoryPostsCache,
   updateExploreCache,
   updateSearchPostsCache,
@@ -498,6 +502,10 @@ export const useTweetActions = () => {
       await queryClient.cancelQueries({ queryKey: profileTweetsQueryKey });
       await queryClient.cancelQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
       await queryClient.cancelQueries({ queryKey: repliesQueryKey });
+      await queryClient.cancelQueries({ queryKey: ['tweet-quotes'] });
+      await queryClient.cancelQueries({ queryKey: ['searchPosts'] });
+      await queryClient.cancelQueries({ queryKey: ['explore', 'forYou'] });
+      await queryClient.cancelQueries({ queryKey: ['categoryPosts'] });
 
       // Optimistically update the cache
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
@@ -523,6 +531,23 @@ export const useTweetActions = () => {
         },
       );
 
+      // Optimistically remove from search, explore, categoryPosts, and quotes caches
+      queryClient.setQueriesData<InfiniteData<any>>({ queryKey: ['searchPosts'] }, (oldData) =>
+        removeTweetFromSearchPostsCache(oldData, variables.tweetId),
+      );
+
+      queryClient.setQueryData<IExploreResponse>(['explore', 'forYou'], (oldData) =>
+        removeTweetFromExploreCache(oldData, variables.tweetId),
+      );
+
+      queryClient.setQueriesData<InfiniteData<ICategoryTweetsResponse>>({ queryKey: ['categoryPosts'] }, (oldData) =>
+        removeTweetFromCategoryPostsCache(oldData, variables.tweetId),
+      );
+
+      queryClient.setQueriesData<InfiniteData<any>>({ queryKey: ['tweet-quotes'] }, (oldData) =>
+        removeTweetFromQuotesCache(oldData, variables.tweetId),
+      );
+
       // Navigate back if the current screen is the tweet details screen
       if (pathname.includes(variables.tweetId)) {
         goBack();
@@ -536,11 +561,19 @@ export const useTweetActions = () => {
       queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
       queryClient.invalidateQueries({ queryKey: repliesQueryKey });
       queryClient.invalidateQueries({ queryKey: bookmarksQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['tweet-quotes'] });
+      queryClient.invalidateQueries({ queryKey: ['searchPosts'] });
+      queryClient.invalidateQueries({ queryKey: ['explore', 'forYou'] });
+      queryClient.invalidateQueries({ queryKey: ['categoryPosts'] });
     },
 
     onSuccess: (_, variables) => {
       queryClient.removeQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
       queryClient.invalidateQueries({ queryKey: bookmarksQueryKey, refetchType: 'active' });
+      queryClient.invalidateQueries({ queryKey: ['tweet-quotes'] });
+      queryClient.invalidateQueries({ queryKey: ['searchPosts'] });
+      queryClient.invalidateQueries({ queryKey: ['explore', 'forYou'] });
+      queryClient.invalidateQueries({ queryKey: ['categoryPosts'] });
     },
   });
 

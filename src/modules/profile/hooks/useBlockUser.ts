@@ -1,6 +1,7 @@
 import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { IExploreResponse, IWhoToFollowResponse } from '../../explore/types';
+import { ISearchUsersMappedPageData } from '../../search/types';
 import { ITweet, ITweets } from '../../tweets/types';
 import { blockUser, unblockUser } from '../services/profileService';
 import { updateUserStateInTweetsCache } from '../utils/profileCacheUtils';
@@ -53,6 +54,29 @@ export const useBlockUser = (initialBlockState: boolean = false) => {
     };
   };
 
+  // Helper to remove user from searchUsers cache
+  const removeFromSearchUsersCache = (
+    oldData: InfiniteData<ISearchUsersMappedPageData> | undefined,
+    userId: string,
+  ): InfiniteData<ISearchUsersMappedPageData> | undefined => {
+    if (!oldData?.pages) return oldData;
+
+    return {
+      ...oldData,
+      pages: oldData.pages.map((page) => {
+        if (!page?.data?.data) return page;
+
+        return {
+          ...page,
+          data: {
+            ...page.data,
+            data: page.data.data.filter((user) => user.id !== userId),
+          },
+        };
+      }),
+    };
+  };
+
   const blockMutation = useMutation({
     mutationFn: async (variables: BlockMutationVariables) => {
       return variables.isBlocked ? unblockUser(variables.userId) : blockUser(variables.userId);
@@ -63,6 +87,7 @@ export const useBlockUser = (initialBlockState: boolean = false) => {
       await queryClient.cancelQueries({ queryKey: ['tweets'] });
       await queryClient.cancelQueries({ queryKey: ['explore', 'forYou'] });
       await queryClient.cancelQueries({ queryKey: ['whoToFollow'] });
+      await queryClient.cancelQueries({ queryKey: ['searchUsers'] });
 
       setIsBlocked(!variables.isBlocked);
 
@@ -84,6 +109,11 @@ export const useBlockUser = (initialBlockState: boolean = false) => {
         queryClient.setQueriesData<IWhoToFollowResponse>({ queryKey: ['whoToFollow'] }, (oldData) =>
           removeFromWhoToFollowCache(oldData, variables.userId),
         );
+
+        // Remove blocked user from search users cache
+        queryClient.setQueriesData<InfiniteData<ISearchUsersMappedPageData>>({ queryKey: ['searchUsers'] }, (oldData) =>
+          removeFromSearchUsersCache(oldData, variables.userId),
+        );
       }
     },
     onSuccess: (data, variables) => {
@@ -99,6 +129,7 @@ export const useBlockUser = (initialBlockState: boolean = false) => {
       queryClient.invalidateQueries({ queryKey: ['userList'] });
       queryClient.invalidateQueries({ queryKey: ['explore', 'forYou'] });
       queryClient.invalidateQueries({ queryKey: ['whoToFollow'] });
+      queryClient.invalidateQueries({ queryKey: ['searchUsers'] });
     },
   });
 

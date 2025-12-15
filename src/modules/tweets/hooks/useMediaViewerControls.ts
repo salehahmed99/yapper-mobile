@@ -133,6 +133,10 @@ export function useMediaViewerControls({
   };
 
   const formatTime = (timeInSeconds: number) => {
+    // Show placeholder if time is invalid (NaN, Infinity, negative, or 0 for duration)
+    if (!Number.isFinite(timeInSeconds) || timeInSeconds < 0) {
+      return '--:--';
+    }
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = Math.floor(timeInSeconds % 60);
     return `${minutes}:${String(seconds).padStart(2, '0')}`;
