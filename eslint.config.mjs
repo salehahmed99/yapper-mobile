@@ -27,6 +27,9 @@ export default [
       '.prettierrc.js',
       '.prettierignore',
       '__mocks__/**',
+      'coverage/**',
+      '.scannerwork/**',
+      'sonar-project.properties',
     ],
   },
 
