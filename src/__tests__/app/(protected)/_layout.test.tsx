@@ -36,7 +36,7 @@ describe('ProtectedLayout', () => {
       selector({ isInitialized: true, user: null }),
     );
     render(<ProtectedLayout />);
-    expect(Redirect).toHaveBeenCalledWith({ href: '/(auth)/landing-screen' }, {});
+    expect(Redirect).toHaveBeenCalledWith({ href: '/(auth)/landing-screen' }, undefined);
   });
 
   it('should render content if authenticated', () => {

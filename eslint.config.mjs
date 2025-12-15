@@ -26,6 +26,7 @@ export default [
       'scripts/**',
       '.prettierrc.js',
       '.prettierignore',
+      '__mocks__/**',
     ],
   },
 

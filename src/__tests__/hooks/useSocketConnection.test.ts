@@ -19,6 +19,10 @@ jest.mock('@/src/store/useAuthStore', () => ({
 describe('useSocketConnection', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    Object.defineProperty(AppState, 'currentState', {
+      get: jest.fn(() => 'active'),
+      configurable: true,
+    });
   });
 
   it('should connect when initialized and authenticated', () => {

@@ -5,14 +5,17 @@ import { useChatSocketListeners } from '@/src/modules/chat/hooks/useChatSocketLi
 import { render, screen } from '@testing-library/react-native';
 import { usePathname, useSegments } from 'expo-router';
 import React from 'react';
-import { View } from 'react-native';
 
 // Mocks
-jest.mock('expo-router', () => ({
-  useSegments: jest.fn(),
-  usePathname: jest.fn(),
-  Stack: () => <View testID="mock-stack" />,
-}));
+jest.mock('expo-router', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return {
+    useSegments: jest.fn(),
+    usePathname: jest.fn(),
+    Stack: () => React.createElement(View, { testID: 'mock-stack' }),
+  };
+});
 
 jest.mock('@/src/hooks/useSocketConnection', () => ({
   useSocketConnection: jest.fn(),

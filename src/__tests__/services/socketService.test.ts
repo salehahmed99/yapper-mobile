@@ -1,28 +1,37 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { socketService } from '@/src/services/socketService';
+import { SocketService } from '@/src/services/socketService';
 import { getToken } from '@/src/utils/secureStorage';
 import { io } from 'socket.io-client';
 
-// Mock socket.io-client
-jest.mock('socket.io-client');
+// Mock socket.io-client with factory
+jest.mock('socket.io-client', () => ({
+  io: jest.fn(),
+}));
+
+const mockIo = io as unknown as jest.Mock;
+
 // Mock secure storage
 jest.mock('@/src/utils/secureStorage');
 
-// Mock console to avoid noise
-const consoleSpy = {
-  log: jest.spyOn(console, 'log').mockImplementation(),
-  warn: jest.spyOn(console, 'warn').mockImplementation(),
-  error: jest.spyOn(console, 'error').mockImplementation(),
-};
-
 describe('SocketService', () => {
+  let socketService: SocketService;
   let mockSocket: any;
+  let consoleSpy: any;
+
+  beforeAll(() => {
+    consoleSpy = {
+      log: jest.spyOn(console, 'log').mockImplementation(),
+      warn: jest.spyOn(console, 'warn').mockImplementation(),
+      error: jest.spyOn(console, 'error').mockImplementation(),
+    };
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
 
   beforeEach(() => {
-    jest.clearAllMocks();
-
-    // Reset singleton instance manually if possible, or just re-mock behavior
-    // Since it's a singleton export, we rely on the implementation using the mocked io()
+    jest.clearAllMocks(); // Clears spy calls
 
     mockSocket = {
       connected: false,
@@ -33,15 +42,10 @@ describe('SocketService', () => {
       off: jest.fn(),
     };
 
-    (io as unknown as jest.Mock).mockReturnValue(mockSocket);
+    mockIo.mockReturnValue(mockSocket);
     (getToken as jest.Mock).mockResolvedValue('mock-token');
 
-    // Reset internal state of socketService by disconnecting if connected
-    socketService.disconnect();
-  });
-
-  afterAll(() => {
-    jest.restoreAllMocks();
+    socketService = new SocketService();
   });
 
   describe('connect', () => {
@@ -50,7 +54,8 @@ describe('SocketService', () => {
       const socket = await socketService.connect();
 
       expect(getToken).toHaveBeenCalled();
-      expect(io).toHaveBeenCalledWith(
+      expect(getToken).toHaveBeenCalled();
+      expect(mockIo).toHaveBeenCalledWith(
         expect.any(String),
         expect.objectContaining({
           auth: { token: 'mock-token' },
@@ -68,7 +73,7 @@ describe('SocketService', () => {
       // Second connect should just return it
       await socketService.connect();
       expect(getToken).toHaveBeenCalledTimes(1); // Should not accept new token
-      expect(io).toHaveBeenCalledTimes(1);
+      expect(mockIo).toHaveBeenCalledTimes(1);
     });
 
     it('should return null if no token', async () => {
@@ -79,7 +84,7 @@ describe('SocketService', () => {
     });
 
     it('should handle connection error', async () => {
-      (io as unknown as jest.Mock).mockImplementation(() => {
+      mockIo.mockImplementation(() => {
         throw new Error('Connection failed');
       });
       await socketService.connect();
@@ -112,7 +117,7 @@ describe('SocketService', () => {
     it('should warn if not connected', () => {
       socketService.disconnect();
       socketService.emit('test_event', {});
-      expect(consoleSpy.warn).toHaveBeenCalledWith(expect.stringContaining('Socket not connected'));
+      expect(consoleSpy.warn).toHaveBeenCalledWith(expect.stringContaining('Socket not connected'), expect.anything());
     });
   });
 
@@ -124,8 +129,9 @@ describe('SocketService', () => {
 
       expect(mockSocket.on).toHaveBeenCalledWith('test_event', expect.any(Function));
 
-      // Simulate event
-      const registeredCallback = mockSocket.on.mock.calls[0][1];
+      // Simulate event - find the call for 'test_event'
+      const call = mockSocket.on.mock.calls.find((args: any[]) => args[0] === 'test_event');
+      const registeredCallback = call[1];
       registeredCallback('data');
       expect(callback).toHaveBeenCalledWith('data');
     });

@@ -5,14 +5,9 @@ import React from 'react';
 
 // Mocks
 // Just render children for animated/scroll views if needed, keeping simple
-jest.mock('react-native/Libraries/Animated/Animated', () => {
-  const ActualAnimated = jest.requireActual('react-native/Libraries/Animated/Animated');
-  return {
-    ...ActualAnimated,
-    timing: () => ({ start: jest.fn() }),
-    parallel: () => ({ start: jest.fn() }),
-  };
-});
+// Mocks
+// Just render children for animated/scroll views if needed, keeping simple
+// Global Animated mocks from jest.setup.ts are sufficient
 
 const renderWithTheme = (component: React.ReactElement) => {
   return render(<ThemeProvider>{component}</ThemeProvider>);

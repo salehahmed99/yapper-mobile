@@ -7,9 +7,14 @@ import React from 'react';
 import { View } from 'react-native';
 
 // Mocks
-jest.mock('expo-blur', () => ({
-  BlurView: ({ children, style }: { children: React.ReactNode; style: any }) => <View style={style}>{children}</View>,
-}));
+jest.mock('expo-blur', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return {
+    BlurView: ({ children, style }: { children: React.ReactNode; style: any }) =>
+      React.createElement(View, { style, testID: 'blur-view' }, children),
+  };
+});
 
 jest.mock('@/src/store/useAuthStore', () => ({
   useAuthStore: jest.fn(),

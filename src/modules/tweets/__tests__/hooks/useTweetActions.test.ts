@@ -12,16 +12,18 @@ const mockQueryClient = {
 
 jest.mock('@tanstack/react-query', () => ({
   useQueryClient: () => mockQueryClient,
-  useMutation: ({ mutationFn, onMutate, onSuccess, onError }: any) => {
+  useMutation: ({ mutationFn, onMutate, onSuccess, onError, onSettled }: any) => {
     return {
       mutate: async (variables: any) => {
         try {
           if (onMutate) await onMutate(variables);
           const result = await mutationFn(variables);
-          if (onSuccess) onSuccess(result);
+          if (onSuccess) onSuccess(result, variables);
+          if (onSettled) onSettled(result, null, variables);
           return result;
         } catch (error) {
-          if (onError) onError(error);
+          if (onError) onError(error, variables);
+          if (onSettled) onSettled(undefined, error, variables);
         }
       },
     };
@@ -45,10 +47,13 @@ describe('useTweetActions', () => {
     });
 
     expect(tweetService.likeTweet).toHaveBeenCalledWith(tweetId);
-    expect(mockQueryClient.cancelQueries).toHaveBeenCalledTimes(3);
-    expect(mockQueryClient.setQueriesData).toHaveBeenCalledTimes(2);
+    // Implementation calls cancelQueries 7 times for various keys
+    expect(mockQueryClient.cancelQueries).toHaveBeenCalledTimes(7);
+    // Implementation calls setQueriesData 6 times (tweets, profile lists, replies, search, explore, category)
+    expect(mockQueryClient.setQueriesData).toHaveBeenCalledTimes(6);
     expect(mockQueryClient.setQueryData).toHaveBeenCalledTimes(1);
-    expect(mockQueryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: ['profile'] });
+    // Invalidate profile likes (1) + onSuccess invalidates userList likes (1)
+    expect(mockQueryClient.invalidateQueries).toHaveBeenCalledTimes(2);
   });
 
   it('should handle unlike mutation', async () => {

@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@/src/context/ThemeContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import CreatePostModal from '../../components/CreatePostModal';
@@ -35,8 +36,31 @@ jest.mock('@/src/store/useAuthStore', () => ({
   useAuthStore: jest.fn(() => ({ user: { avatarUrl: 'url' } })),
 }));
 
+jest.mock('react-native-controlled-mentions', () => ({
+  useMentions: jest.fn(({ value, onChange }) => ({
+    textInputProps: {
+      value,
+      onChangeText: onChange,
+    },
+    triggers: {
+      mention: {},
+    },
+  })),
+}));
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: false },
+    mutations: { retry: false },
+  },
+});
+
 const renderWithTheme = (component: React.ReactElement) => {
-  return render(<ThemeProvider>{component}</ThemeProvider>);
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>{component}</ThemeProvider>
+    </QueryClientProvider>,
+  );
 };
 
 describe('CreatePostModal', () => {

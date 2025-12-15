@@ -41,7 +41,12 @@ jest.mock('@/src/components/home/HomeTabView', () => {
 });
 jest.mock('@/src/components/shell/AppBar', () => {
   const { View } = require('react-native');
-  return ({ children }: any) => <View testID="app_bar">{children}</View>;
+  return ({ children, tabView }: any) => (
+    <View testID="app_bar">
+      {children}
+      {tabView}
+    </View>
+  );
 });
 
 const renderWithTheme = (component: React.ReactElement) => {

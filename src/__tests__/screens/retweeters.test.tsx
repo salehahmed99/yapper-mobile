@@ -52,8 +52,21 @@ const mockUsers: IUser[] = [
   },
 ];
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: false },
+    mutations: { retry: false },
+  },
+});
+
 const renderWithTheme = (component: React.ReactElement) => {
-  return render(<ThemeProvider>{component}</ThemeProvider>);
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>{component}</ThemeProvider>
+    </QueryClientProvider>,
+  );
 };
 
 describe('RetweetersScreen', () => {

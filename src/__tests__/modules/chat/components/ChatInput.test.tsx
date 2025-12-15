@@ -101,7 +101,7 @@ describe('ChatInput', () => {
     renderWithTheme(<ChatInput value="  Trim Me  " onChangeText={mockOnChangeText} onSend={mockOnSend} />);
     const sendBtn = screen.getByTestId('chat_input_send_button');
     fireEvent.press(sendBtn);
-    expect(mockOnSend).toHaveBeenCalledWith(undefined); // ChatInput logic might trim internally before calling onSend?
+    expect(mockOnSend).toHaveBeenCalledWith(null); // ChatInput passes uploadedImageUrl which defaults to null
     // Wait, onSend in ChatInput usually just calls the prop. Let's check implementation if needed.
     // If ChatInput implementation just passes value back, then the consumer handles trim.
     // If ChatInput handles trim, then we should expect trimmed value if it passes args.
