@@ -5,7 +5,7 @@ import { useNavigation } from '@/src/hooks/useNavigation';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import PasswordInput from '@/src/modules/auth/components/shared/PasswordInput';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
-import { passwordSchema } from '@/src/modules/auth/schemas/schemas';
+import { passwordLogInSchema } from '@/src/modules/auth/schemas/schemas';
 import { confirmCurrentPassword } from '@/src/modules/settings/services/yourAccountService';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useMemo, useState } from 'react';
@@ -22,7 +22,7 @@ export const VerifyPasswordScreen: React.FC = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const isPasswordValid = passwordSchema.safeParse(password).success;
+  const isPasswordValid = passwordLogInSchema.safeParse(password).success;
 
   const handleVerify = async () => {
     if (!password.trim()) {
@@ -78,7 +78,7 @@ export const VerifyPasswordScreen: React.FC = () => {
   const { theme, isDark } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const isFormValid = password.length > 0 && !isLoading;
+  const isFormValid = password.length >= 8 && !isLoading;
 
   return (
     <SafeAreaView style={styles.safeArea}>
