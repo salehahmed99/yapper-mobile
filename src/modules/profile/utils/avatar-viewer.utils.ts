@@ -4,17 +4,28 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 type Origin = { x: number; y: number; width: number; height: number };
 
-export const calculateOpeningAnimation = (origin: Origin) => {
-  const originCenterX = origin.x + origin.width / 2;
-  const originCenterY = origin.y + origin.height / 2;
+export const calculateOpeningAnimation = (origin: Origin, isBanner = false) => {
   const screenCenterX = SCREEN_WIDTH / 2;
   const screenCenterY = SCREEN_HEIGHT / 2;
 
-  const initialTranslateX = originCenterX - screenCenterX;
-  const initialTranslateY = originCenterY - screenCenterY;
+  let initialTranslateX: number;
+  let initialTranslateY: number;
+  let initialScale: number;
 
-  const targetSize = SCREEN_WIDTH;
-  const initialScale = origin.width / targetSize;
+  if (isBanner) {
+    // For banner: full width, centered horizontally
+    const originCenterY = origin.y + origin.height / 2;
+    initialTranslateX = 0;
+    initialTranslateY = originCenterY - screenCenterY;
+    initialScale = 1;
+  } else {
+    // For avatar: center-based calculation
+    const originCenterX = origin.x + origin.width / 2;
+    const originCenterY = origin.y + origin.height / 2;
+    initialTranslateX = originCenterX - screenCenterX;
+    initialTranslateY = originCenterY - screenCenterY;
+    initialScale = origin.width / SCREEN_WIDTH;
+  }
 
   return {
     initialTranslateX,

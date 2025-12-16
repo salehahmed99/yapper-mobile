@@ -246,7 +246,7 @@ describe('useAuthStore', () => {
   describe('logout', () => {
     it('should logout and clear state', async () => {
       useAuthStore.setState({ user: mappedUser, token: 'token' });
-      await useAuthStore.getState().logout();
+      await useAuthStore.getState().logout(false);
 
       expect(tokenRefreshService.stop).toHaveBeenCalled();
       expect(SecureStorage.deleteToken).toHaveBeenCalled();
@@ -262,7 +262,7 @@ describe('useAuthStore', () => {
       (AuthService.logout as jest.Mock).mockRejectedValue(new Error('Logout failed'));
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-      await useAuthStore.getState().logout();
+      await useAuthStore.getState().logout(false);
 
       expect(consoleSpy).toHaveBeenCalledWith('Logout error:', expect.any(Error));
       expect(useAuthStore.getState().user).toBeNull();
