@@ -3,13 +3,11 @@ import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import BottomToolBar from '@/src/modules/tweets/components/BottomToolBar';
 import CreatePostHeader from '@/src/modules/tweets/components/CreatePostHeader';
-import ReplyRestrictionModal from '@/src/modules/tweets/components/ReplyRestrictionModal';
-import ReplyRestrictionSelector from '@/src/modules/tweets/components/ReplyRestrictionSelector';
 import TweetMediaPicker from '@/src/modules/tweets/components/TweetMediaPicker';
 import { ITweet } from '@/src/modules/tweets/types';
 import { MediaAsset, pickMediaFromLibrary, showCameraOptions } from '@/src/modules/tweets/utils/tweetMediaPicker.utils';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Image } from 'expo-image';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -43,7 +41,7 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
   const { user } = useAuthStore();
 
   const [tweetText, setTweetText] = useState('');
-  const [replyRestriction, setReplyRestriction] = useState<number>(0);
+  // const [replyRestriction, setReplyRestriction] = useState<number>(0);
   const triggersConfig: TriggersConfig<'mention'> = useMemo(() => {
     return {
       mention: {
@@ -62,7 +60,7 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
     triggersConfig,
   });
   const [media, setMedia] = useState<MediaAsset[]>([]);
-  const replyRestrictionModalRef = useRef<BottomSheetModal>(null);
+  // const replyRestrictionModalRef = useRef<BottomSheetModal>(null);
 
   const textInputRef = useRef<TextInput>(null);
 
@@ -71,7 +69,7 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
     if (!visible) {
       setTweetText('');
       setMedia([]);
-      setReplyRestriction(0);
+      // setReplyRestriction(0);
     }
   }, [visible]);
 
@@ -85,7 +83,7 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
   const resetTweetState = () => {
     setTweetText('');
     setMedia([]);
-    setReplyRestriction(0);
+    // setReplyRestriction(0);
   };
 
   const handlePost = async () => {
@@ -124,15 +122,15 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
     setMedia((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleOpenReplyModal = () => {
-    Keyboard.dismiss();
-    replyRestrictionModalRef.current?.present();
-  };
+  // const handleOpenReplyModal = () => {
+  //   Keyboard.dismiss();
+  //   replyRestrictionModalRef.current?.present();
+  // };
 
-  const handleSelectReplyRestriction = (option: number) => {
-    setReplyRestriction(option);
-    textInputRef.current?.focus();
-  };
+  // const handleSelectReplyRestriction = (option: number) => {
+  //   setReplyRestriction(option);
+  //   textInputRef.current?.focus();
+  // };
 
   const handleClosePostModal = () => {
     resetTweetState();
@@ -194,7 +192,7 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
               <UserSuggestionsListContainer {...triggers.mention} onCloseModal={onClose} />
             </ScrollView>
 
-            <ReplyRestrictionSelector selectedOption={replyRestriction} onPress={handleOpenReplyModal} />
+            {/* <ReplyRestrictionSelector selectedOption={replyRestriction} onPress={handleOpenReplyModal} /> */}
 
             <BottomToolBar
               remainingCharacters={remainingCharacters}
@@ -204,11 +202,11 @@ const CreatePostModal: React.FC<ICreatePostModalProps> = (props) => {
               mediaCount={media.length}
             />
 
-            <ReplyRestrictionModal
+            {/* <ReplyRestrictionModal
               bottomSheetRef={replyRestrictionModalRef}
               selectedOption={replyRestriction}
               onSelect={handleSelectReplyRestriction}
-            />
+            /> */}
           </KeyboardAvoidingView>
         </View>
       </BottomSheetModalProvider>

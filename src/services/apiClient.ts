@@ -40,7 +40,7 @@ api.interceptors.response.use(
 
     // Handle 401/403 errors (but skip logout endpoints since token might be expired)
     if (
-      (status === 401 || status === 403) &&
+      status === 401 &&
       requestUrl &&
       !requestUrl.includes('/login') &&
       !requestUrl.includes('/refresh') &&
