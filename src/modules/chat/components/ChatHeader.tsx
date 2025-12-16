@@ -7,12 +7,12 @@ import { useTranslation } from 'react-i18next';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface ChatHeaderProps {
-  name: string;
-  username: string;
-  avatarUrl?: string;
-  onBack: () => void;
-  onInfo?: () => void;
-  onProfilePress?: () => void;
+  readonly name: string;
+  readonly username: string;
+  readonly avatarUrl?: string;
+  readonly onBack: () => void;
+  readonly onInfo?: () => void;
+  readonly onProfilePress?: () => void;
 }
 
 export default function ChatHeader({ name, username, avatarUrl, onBack, onInfo, onProfilePress }: ChatHeaderProps) {

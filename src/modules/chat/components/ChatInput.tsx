@@ -68,11 +68,9 @@ export default function ChatInput({
       timerRef.current = setInterval(() => {
         setRecordingDuration((prev) => prev + 1);
       }, 1000);
-    } else {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
+    } else if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
     }
 
     return () => {
@@ -225,6 +223,19 @@ export default function ChatInput({
   const isRecording = recorderState.isRecording;
   const hasVoicePreview = !!voicePreviewUri;
 
+  // Get reply message display text
+  const getReplyMessageText = () => {
+    if (replyingTo?.hasVoice && !replyingTo?.content) {
+      return 'Voice message';
+    }
+    if (replyingTo?.hasImage && !replyingTo?.content) {
+      return 'Photo';
+    }
+    return replyingTo?.content;
+  };
+
+  const replyMessageText = replyingTo ? getReplyMessageText() : '';
+
   return (
     <View style={[styles.container, style]} testID="chat_input_container">
       {replyingTo && (
@@ -242,11 +253,7 @@ export default function ChatInput({
                 ]}
                 numberOfLines={1}
               >
-                {replyingTo.hasVoice && !replyingTo.content
-                  ? 'Voice message'
-                  : replyingTo.hasImage && !replyingTo.content
-                    ? 'Photo'
-                    : replyingTo.content}
+                {replyMessageText}
               </Text>
             </View>
           </View>

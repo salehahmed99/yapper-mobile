@@ -110,7 +110,6 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             <TouchableOpacity
               onPress={() => {
                 closeSideMenu();
-                // navigate("/(profile)/Lists?tab=following",closeSideMenu);
               }}
               accessibilityLabel="sidemenu_following_button"
               testID="sidemenu_following_button"
@@ -122,7 +121,6 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             <TouchableOpacity
               onPress={() => {
                 closeSideMenu();
-                // navigate("/(profile)/Lists?tab=followers", closeSideMenu);
               }}
               accessibilityLabel="sidemenu_followers_button"
               testID="sidemenu_followers_button"

@@ -150,6 +150,11 @@ const LatestTab: React.FC<{ activeTabKey?: string }> = memo(({ activeTabKey }) =
   );
 });
 
+// List footer component for users tab
+const UserListFooter = memo(({ styles }: { styles: ReturnType<typeof createStyles> }) => (
+  <View style={styles.listFooter} />
+));
+
 const UsersTab: React.FC<{ activeTabKey?: string }> = memo(({ activeTabKey }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -198,7 +203,7 @@ const UsersTab: React.FC<{ activeTabKey?: string }> = memo(({ activeTabKey }) =>
       data={users}
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
-      ListFooterComponent={() => <View style={styles.listFooter} />}
+      ListFooterComponent={<UserListFooter styles={styles} />}
       refreshControl={
         <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={theme.colors.text.link} />
       }
@@ -269,15 +274,6 @@ export default function SearchResultsScreen() {
         <MediaViewerProvider>
           <View style={styles.appBarWrapper}>
             <AppBar
-              children={
-                <SearchInput
-                  value={query}
-                  onChangeText={setQuery}
-                  onSubmit={handleSubmit}
-                  onFocus={handleSearchFocus}
-                  autoFocus={false}
-                />
-              }
               rightElement={
                 query.length > 0 ? (
                   <Pressable
@@ -294,7 +290,15 @@ export default function SearchResultsScreen() {
               tabView={
                 <CustomTabView routes={routes} index={activeIndex} onIndexChange={setActiveIndex} scrollable={true} />
               }
-            />
+            >
+              <SearchInput
+                value={query}
+                onChangeText={setQuery}
+                onSubmit={handleSubmit}
+                onFocus={handleSearchFocus}
+                autoFocus={false}
+              />
+            </AppBar>
           </View>
           <View style={styles.tabsOuterContainer} {...panResponder.panHandlers}>
             <Animated.View

@@ -50,7 +50,9 @@ const AppBar: React.FC<IAppBarProps> = (props) => {
             {!hideLeftElement && (
               <View style={styles.sideContainer}>
                 {leftElement ??
-                  (!isSideMenuOpen ? (
+                  (isSideMenuOpen ? (
+                    <View style={styles.avatarButton} />
+                  ) : (
                     <Pressable
                       onPress={toggleSideMenu}
                       accessibilityLabel={t('accessibility.openMenu')}
@@ -66,8 +68,6 @@ const AppBar: React.FC<IAppBarProps> = (props) => {
                         />
                       </View>
                     </Pressable>
-                  ) : (
-                    <View style={styles.avatarButton} />
                   ))}
               </View>
             )}
