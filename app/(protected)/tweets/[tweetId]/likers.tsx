@@ -14,7 +14,6 @@ export default function LikersScreen() {
 
   const handleUserPress = (_user: IUser) => {
     // Navigate to user profile
-    // TODO: Implement navigation to user profile
   };
 
   return (

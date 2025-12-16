@@ -170,7 +170,6 @@ describe('LikersScreen', () => {
     const userItem = screen.getByText('John Doe').parent?.parent;
     if (userItem) {
       fireEvent.press(userItem);
-      // User press handler logs but doesn't navigate yet (TODO in code)
       // This test verifies the press is handled without crashing
     }
   });

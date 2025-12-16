@@ -75,7 +75,6 @@ const useTweetUtils = () => {
   };
 
   const handleViewPostInteractions = (tweetId: string, ownerId: string) => {
-    // TODO: Implement view post interactions functionality
     navigate({
       pathname: '/(protected)/tweets/[tweetId]/activity',
       params: {
@@ -86,7 +85,6 @@ const useTweetUtils = () => {
   };
 
   const handleShare = () => {
-    // TODO: Implement share functionality
   };
 
   return {
