@@ -527,10 +527,19 @@ export const useTweetActions = () => {
       queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
       queryClient.invalidateQueries({ queryKey: repliesQueryKey });
       queryClient.invalidateQueries({ queryKey: bookmarksQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['tweet-quotes'] });
+      queryClient.invalidateQueries({ queryKey: ['searchPosts'] });
+      queryClient.invalidateQueries({ queryKey: ['explore', 'forYou'] });
+      queryClient.invalidateQueries({ queryKey: ['categoryPosts'] });
     },
 
     onSuccess: (_, variables) => {
       queryClient.removeQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
+      queryClient.invalidateQueries({ queryKey: bookmarksQueryKey, refetchType: 'active' });
+      queryClient.invalidateQueries({ queryKey: ['tweet-quotes'] });
+      queryClient.invalidateQueries({ queryKey: ['searchPosts'] });
+      queryClient.invalidateQueries({ queryKey: ['explore', 'forYou'] });
+      queryClient.invalidateQueries({ queryKey: ['categoryPosts'] });
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
     },
