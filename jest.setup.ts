@@ -125,6 +125,28 @@ jest.mock('expo-updates', () => ({
 }));
 
 // ----------------------------
+// Mock expo-image
+// ----------------------------
+jest.mock('expo-image', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+
+  const Image = React.forwardRef((props: any, ref: any) => {
+    return React.createElement(View, {
+      ...props,
+      ref,
+      testID: props.testID || 'expo-image',
+    });
+  });
+  Image.displayName = 'Image';
+
+  return {
+    Image,
+    ImageBackground: Image,
+  };
+});
+
+// ----------------------------
 // Mock expo-router
 // ----------------------------
 jest.mock('expo-router', () => ({
