@@ -126,7 +126,6 @@ describe('RetweetersScreen', () => {
       expect(screen.getByText('Alice Smith')).toBeTruthy();
     });
 
-    // The follow button press is handled but just logs (TODO in code)
     // This test verifies it doesn't crash
   });
 

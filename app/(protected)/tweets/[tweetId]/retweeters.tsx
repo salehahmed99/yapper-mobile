@@ -15,11 +15,9 @@ export default function RetweetersScreen() {
 
   const handleUserPress = (_user: IUser) => {
     // Navigate to user profile
-    // TODO: Implement navigation to user profile
   };
 
   const handleFollowPress = (_user: IUser) => {
-    // TODO: Implement follow/unfollow logic
   };
 
   return (

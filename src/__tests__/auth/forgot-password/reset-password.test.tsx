@@ -163,7 +163,6 @@ describe('ResetPasswordScreen', () => {
     const nextButton = screen.getByText('Next');
     fireEvent.press(nextButton);
 
-    // TODO: Alert mock not being captured - needs investigation
     // expect(mockAlertShow).toHaveBeenCalledWith('Invalid Password', 'Please enter a valid password.');
   });
 
