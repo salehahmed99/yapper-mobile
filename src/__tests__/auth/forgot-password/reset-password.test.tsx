@@ -10,6 +10,7 @@ import ResetPasswordScreen from '../../../../app/(auth)/forgot-password/reset-pa
 // Mock Alert before importing it
 const mockAlertShow = jest.fn();
 jest.mock('react-native/Libraries/Alert/Alert', () => ({
+  alert: mockAlertShow,
   default: {
     alert: mockAlertShow,
   },

@@ -13,6 +13,20 @@ const renderWithTheme = (component: React.ReactElement) => {
   return render(<ThemeProvider>{component}</ThemeProvider>);
 };
 
+// Mock icons
+jest.mock('@/src/components/icons/RepostIcon', () => 'RepostIcon');
+
+// Mock i18next
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, options?: any) => {
+      if (key === 'tweets.repost.repostedByYou') return 'You reposted';
+      if (key === 'tweets.repost.repostedBy') return `${options?.name} reposted`;
+      return key;
+    },
+  }),
+}));
+
 describe('RepostIndicator', () => {
   it('should render "You reposted" when current user reposted', () => {
     (useAuthStore as unknown as jest.Mock).mockReturnValue({ id: 'user1' });

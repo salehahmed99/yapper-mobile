@@ -250,7 +250,7 @@ export default function ChatInput({
               </Text>
             </View>
           </View>
-          <TouchableOpacity style={styles.replyBannerClose} onPress={onCancelReply}>
+          <TouchableOpacity style={styles.replyBannerClose} onPress={onCancelReply} testID="reply_preview_close_button">
             <X color={theme.colors.text.secondary} size={20} />
           </TouchableOpacity>
         </View>

@@ -41,6 +41,13 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# coverage
+coverage/
+*.lcov
+
+# SonarQube
+.scannerwork/
+
 app-example
 
 # generated native folders

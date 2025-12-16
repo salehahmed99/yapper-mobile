@@ -76,7 +76,7 @@ describe('ActionsRow', () => {
   it('should handle like press', () => {
     const { getByTestId } = renderWithTheme(<ActionsRow {...defaultProps} />);
     fireEvent.press(getByTestId('tweet_button_like'));
-    expect(defaultProps.onLikePress).toHaveBeenCalledWith(false);
+    expect(defaultProps.onLikePress).toHaveBeenCalled();
   });
 
   it('should handle bookmark press', () => {

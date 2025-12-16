@@ -507,15 +507,6 @@ export const useTweetActions = () => {
       await queryClient.cancelQueries({ queryKey: ['explore', 'forYou'] });
       await queryClient.cancelQueries({ queryKey: ['categoryPosts'] });
 
-      // Optimistically update the cache
-      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: tweetsQueryKey }, (oldData) =>
-        removeTweetFromInfiniteCache(oldData, variables.tweetId),
-      );
-
-      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: profileTweetsQueryKey }, (oldData) =>
-        removeTweetFromInfiniteCache(oldData, variables.tweetId),
-      );
-
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: repliesQueryKey }, (oldData) =>
         removeTweetFromInfiniteCache(oldData, variables.tweetId),
       );
@@ -574,6 +565,8 @@ export const useTweetActions = () => {
       queryClient.invalidateQueries({ queryKey: ['searchPosts'] });
       queryClient.invalidateQueries({ queryKey: ['explore', 'forYou'] });
       queryClient.invalidateQueries({ queryKey: ['categoryPosts'] });
+      queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
+      queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
     },
   });
 

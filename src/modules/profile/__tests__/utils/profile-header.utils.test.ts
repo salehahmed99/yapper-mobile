@@ -2,12 +2,7 @@ import { findNodeHandle, UIManager } from 'react-native';
 import { ImageOrigin, measureComponentPosition, openImageViewer } from '../../utils/profile-header.utils';
 
 // Mock React Native modules
-jest.mock('react-native', () => ({
-  findNodeHandle: jest.fn(),
-  UIManager: {
-    measureInWindow: jest.fn(),
-  },
-}));
+// Global mocks from jest.setup.ts are sufficient and this local mock overrides them incorrectly
 
 describe('profile-header.utils', () => {
   beforeEach(() => {
@@ -22,6 +17,7 @@ describe('profile-header.utils', () => {
       const mockCallback = jest.fn();
 
       (findNodeHandle as jest.Mock).mockReturnValue(mockHandle);
+
       (UIManager.measureInWindow as jest.Mock).mockImplementation((handle, callback) => {
         callback(mockOrigin.x, mockOrigin.y, mockOrigin.width, mockOrigin.height);
       });

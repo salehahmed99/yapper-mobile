@@ -30,10 +30,10 @@ jest.mock('expo-router', () => ({
 }));
 
 // Mock components
-jest.mock('../../components/Tweet', () => {
+jest.mock('../../components/TweetThread', () => {
   const { Pressable, Text } = require('react-native');
   return (props: any) => (
-    <Pressable onPress={() => props.onTweetPress(props.tweet.tweetId)} testID="tweet-component">
+    <Pressable onPress={() => props.onTweetPress(props.tweet.tweetId)} testID="tweet-thread-component">
       <Text>{props.tweet.content}</Text>
     </Pressable>
   );
@@ -79,7 +79,7 @@ describe('TweetContainer', () => {
 
   it('should render FullTweet component when tweetId prop is provided', () => {
     // Since QueryWrapper mock calls children with a dummy tweet
-    const { getByTestId } = render(<TweetContainer tweetId="1" showThread={false} />);
+    const { getByTestId } = render(<TweetContainer tweet={mockTweet} showThread={false} />);
     expect(getByTestId('full-tweet-component')).toBeTruthy();
   });
 });

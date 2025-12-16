@@ -7,7 +7,7 @@ const SOCKET_PATH = process.env.EXPO_PUBLIC_SOCKET_PATH;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SocketCallback = (...args: any[]) => void;
 
-class SocketService {
+export class SocketService {
   private socket: Socket | null = null;
   private listeners: Map<string, SocketCallback[]> = new Map();
   private debugMode = false;

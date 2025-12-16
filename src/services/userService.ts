@@ -5,6 +5,8 @@ import { ILoginResponse } from '../modules/auth/types';
 export const updateUserName = async (newUsername: string): Promise<ILoginResponse> => {
   try {
     const res = await api.post('/auth/update-username', { username: newUsername });
+    const { useAuthStore } = await import('../store/useAuthStore');
+    useAuthStore.getState().setUserName(newUsername);
     return res.data;
   } catch (error) {
     throw new Error(extractErrorMessage(error));

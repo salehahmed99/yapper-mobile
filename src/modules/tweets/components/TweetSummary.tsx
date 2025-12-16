@@ -9,6 +9,8 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTweet } from '../hooks/useTweet';
 import { useTweetSummary } from '../hooks/useTweetSummary';
+import { parseTweetBody } from '../utils/tweetParser';
+import TweetContent from './TweetContent';
 
 interface TweetSummaryProps {
   tweetId: string;
@@ -119,6 +121,8 @@ export default function TweetSummary({ tweetId, onBack }: TweetSummaryProps) {
     );
   };
 
+  const segments = parseTweetBody(tweet.content, tweet.mentions);
+
   return (
     <SafeAreaView style={styles.container} testID="tweet_summary_screen">
       {/* Header */}
@@ -158,9 +162,7 @@ export default function TweetSummary({ tweetId, onBack }: TweetSummaryProps) {
               </Text>
             </View>
           </View>
-          <Text style={styles.tweetText} testID="tweet_content" accessibilityLabel={`Tweet: ${tweet.content}`}>
-            {tweet.content}
-          </Text>
+          <TweetContent segments={segments} />
         </View>
 
         {/* Analysis Section */}
