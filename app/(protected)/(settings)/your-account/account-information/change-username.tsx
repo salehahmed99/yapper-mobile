@@ -3,7 +3,7 @@ import { useTheme } from '@/src/context/ThemeContext';
 import { useNavigation } from '@/src/hooks/useNavigation';
 import { usernameSchema } from '@/src/modules/auth/schemas/schemas';
 import { SettingsTopBar } from '@/src/modules/settings/components/SettingsTopBar';
-import { changeUsername } from '@/src/modules/settings/services/yourAccountService';
+import { updateUserName } from '@/src/services/userService';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
@@ -72,7 +72,7 @@ export const ChangeUsernameScreen: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const response = await changeUsername(newUsername);
+      const response = await updateUserName(newUsername);
       if (!response) {
         Toast.show({
           type: 'error',
