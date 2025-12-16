@@ -5,7 +5,9 @@ import { Image } from 'expo-image';
 import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { DEFAULT_AVATAR_URI } from '../../profile/utils/edit-profile.utils';
+import TweetContent from '../../tweets/components/TweetContent';
 import { formatTweetDate } from '../../tweets/utils/formatTweetDate';
+import { parseTweetBody } from '../../tweets/utils/tweetParser';
 
 interface INotificationProps {
   users: IUser[];
@@ -13,13 +15,16 @@ interface INotificationProps {
   title: string;
   body?: string;
   icon: React.ReactNode;
+  mentions?: string[];
   onPress: () => void;
   onAvatarPress: (userId: string) => void;
 }
 const Notification: React.FC<INotificationProps> = (props) => {
-  const { users, createdAt, title, body, icon, onPress, onAvatarPress } = props;
+  const { users, createdAt, title, body, icon, mentions, onPress, onAvatarPress } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const segments = useMemo(() => parseTweetBody(body!, mentions), [body, mentions]);
+
   return (
     <Pressable
       style={styles.container}
@@ -58,7 +63,7 @@ const Notification: React.FC<INotificationProps> = (props) => {
         </Text>
         {body && (
           <Text style={styles.body} accessibilityLabel="notification_body" testID="notification_body">
-            {body}
+            <TweetContent segments={segments} />
           </Text>
         )}
       </View>

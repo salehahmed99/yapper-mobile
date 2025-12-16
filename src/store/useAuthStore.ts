@@ -124,7 +124,7 @@ export const useAuthStore = create<IAuthState>((set) => ({
         await AsyncStorage.setItem('app-language', user.language);
       }
     } catch (err) {
-      console.error('Login error:', err);
+      console.log('Login error:', err);
       set({ user: null, token: null });
       return; // Don't connect socket if login failed
     }
@@ -167,7 +167,7 @@ export const useAuthStore = create<IAuthState>((set) => ({
         await AsyncStorage.setItem('app-language', data.language);
       }
     } catch (err) {
-      console.error('Failed to fetch user:', err);
+      console.log('Failed to fetch user:', err);
     }
   },
   setUserName: (newUsername: string) =>
@@ -209,7 +209,7 @@ export const useAuthStore = create<IAuthState>((set) => ({
       await logout();
       await deleteRefreshToken();
     } catch (err) {
-      console.error('Logout error:', err);
+      console.log('Logout error:', err);
     } finally {
       set({ user: null, token: null });
     }

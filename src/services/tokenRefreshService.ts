@@ -76,7 +76,7 @@ class TokenRefreshService {
 
       return null;
     } catch {
-      // console.error('Token refresh failed:', err);
+      // console.log('Token refresh failed:', err);
       return null;
     }
   }

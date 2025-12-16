@@ -191,8 +191,8 @@ export const useTweetActions = () => {
     },
 
     onError: (error: any, variables) => {
-      console.error('Error updating like status:', error);
-      console.error('Like error response:', error?.response?.data);
+      console.log('Error updating like status:', error);
+      console.log('Like error response:', error?.response?.data);
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
@@ -270,7 +270,7 @@ export const useTweetActions = () => {
     },
 
     onError: (error, variables) => {
-      console.error('Error updating repost status:', error);
+      console.log('Error updating repost status:', error);
 
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
@@ -385,7 +385,7 @@ export const useTweetActions = () => {
     },
 
     onError: (error, variables) => {
-      console.error('Error updating bookmark status:', error);
+      console.log('Error updating bookmark status:', error);
 
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
@@ -443,7 +443,7 @@ export const useTweetActions = () => {
       queryClient.invalidateQueries({ queryKey: repliesQueryKey });
     },
     onError: (error, variables) => {
-      console.error('Error replying to tweet:', error);
+      console.log('Error replying to tweet:', error);
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
@@ -477,7 +477,7 @@ export const useTweetActions = () => {
       });
     },
     onError: (error, variables) => {
-      console.error('Error quoting tweet:', error);
+      console.log('Error quoting tweet:', error);
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
@@ -521,7 +521,7 @@ export const useTweetActions = () => {
     },
     onError: (error, variables) => {
       // Error deleting tweet
-      console.error('Error deleting tweet:', error);
+      console.log('Error deleting tweet:', error);
       queryClient.invalidateQueries({ queryKey: tweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: profileTweetsQueryKey });
       queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });

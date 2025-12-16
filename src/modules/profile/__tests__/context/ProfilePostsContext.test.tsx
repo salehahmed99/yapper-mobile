@@ -17,15 +17,15 @@ describe('ProfilePostsContext', () => {
 
   describe('useProfilePosts', () => {
     it('should throw error when used outside of provider', () => {
-      // Suppress console.error for this test
-      const originalError = console.error;
-      console.error = jest.fn();
+      // Suppress console.log for this test
+      const originalError = console.log;
+      console.log = jest.fn();
 
       expect(() => {
         renderHook(() => useProfilePosts());
       }).toThrow('useProfilePosts must be used within ProfilePostsProvider');
 
-      console.error = originalError;
+      console.log = originalError;
     });
 
     it('should provide context value when used within provider', () => {

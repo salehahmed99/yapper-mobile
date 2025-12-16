@@ -103,7 +103,7 @@ export const uploadMediaFiles = async (mediaUris: string[]): Promise<{ images: s
         images.push(imageUrl);
       }
     } catch (error) {
-      console.error('Error uploading media:', uri, error);
+      console.log('Error uploading media:', uri, error);
       throw error;
     }
   }

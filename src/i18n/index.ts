@@ -27,7 +27,7 @@ const loadStoredLanguage = async () => {
     const storedLanguage = await AsyncStorage.getItem(STORED_LANGUAGE_KEY);
     return storedLanguage || getDeviceLanguage();
   } catch (error) {
-    console.error('Error loading stored language:', error);
+    console.log('Error loading stored language:', error);
     return getDeviceLanguage();
   }
 };
@@ -50,7 +50,7 @@ export const changeLanguage = async (language: string) => {
       await Updates.reloadAsync();
     }
   } catch (error) {
-    console.error('Error changing language:', error);
+    console.log('Error changing language:', error);
     throw error;
   }
 };

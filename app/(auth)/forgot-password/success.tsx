@@ -49,7 +49,7 @@ const SuccessResetPasswordScreen = () => {
         replace('/(protected)');
       }
     } catch (error) {
-      console.error('Auto-login failed:', error);
+      console.log('Auto-login failed:', error);
       Toast.show({
         type: 'info',
         text1: 'Password Reset Successful',

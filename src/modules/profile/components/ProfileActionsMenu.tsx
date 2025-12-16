@@ -45,7 +45,7 @@ const ProfileActionsMenu: React.FC<IProfileActionsMenuProps> = ({
       await onMute();
       setIsMuted(!isMuted);
     } catch (error) {
-      console.error('Error toggling mute:', error);
+      console.log('Error toggling mute:', error);
     } finally {
       setIsMuteLoading(false);
     }
@@ -58,7 +58,7 @@ const ProfileActionsMenu: React.FC<IProfileActionsMenuProps> = ({
       await onBlock();
       setIsBlocked(!isBlocked);
     } catch (error) {
-      console.error('Error toggling block:', error);
+      console.log('Error toggling block:', error);
     }
   };
 

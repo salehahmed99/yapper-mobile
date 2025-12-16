@@ -98,6 +98,7 @@ const NotificationContainer = (props: INotificationContainerProps) => {
       icon={notificationData.icon}
       onAvatarPress={handleAvatarPress}
       onPress={handleNotificationPress}
+      mentions={notificationData.mentions}
     />
   );
 };
@@ -144,6 +145,7 @@ const getNotificationDisplayData = (notification: INotification, theme: Theme) =
         icon: <LikeIcon size={theme.iconSizes.lg} stroke={theme.colors.accent.like} filled={true} />,
         title: formatInteractionTitle(notification.likers, notification.tweets.length, 'liked'),
         body: notification.tweets[notification.tweets.length - 1]?.content || '',
+        mentions: notification.tweets[notification.tweets.length - 1]?.mentions || [],
         tweets: notification.tweets,
       };
     case 'repost':
@@ -152,6 +154,7 @@ const getNotificationDisplayData = (notification: INotification, theme: Theme) =
         icon: <RepostIcon size={theme.iconSizes.lg} stroke={theme.colors.accent.repost} />,
         title: formatInteractionTitle(notification.reposters, notification.tweets.length, 'reposted'),
         body: notification.tweets[notification.tweets.length - 1]?.content || '',
+        mentions: notification.tweets[notification.tweets.length - 1]?.mentions || [],
         tweets: notification.tweets,
       };
     default:

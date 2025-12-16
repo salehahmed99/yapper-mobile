@@ -112,7 +112,7 @@ export default function ProfileHeader({
           if (data.coverUrl) setBannerUri(data.coverUrl);
         })
         .catch((error) => {
-          console.error('Error fetching user:', error);
+          console.log('Error fetching user:', error);
         })
         .finally(() => {
           setLoading(false);
@@ -185,7 +185,7 @@ export default function ProfileHeader({
         };
         setProfileUser(mappedUser);
       } catch (error) {
-        console.error('Error refreshing user data after follow:', error);
+        console.log('Error refreshing user data after follow:', error);
       }
     }
   };

@@ -22,7 +22,7 @@ export default function MuteAndBlockContainer() {
           setBlockedCount(data.blockedCount);
           setMutedCount(data.mutedCount);
         } catch (error) {
-          console.error('Error fetching user relations:', error);
+          console.log('Error fetching user relations:', error);
         } finally {
           setIsLoading(false);
         }

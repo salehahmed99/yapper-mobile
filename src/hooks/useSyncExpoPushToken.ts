@@ -28,7 +28,7 @@ const useSyncExpoPushToken = () => {
           console.warn('Push token already up to date.');
         }
       } catch (error) {
-        console.error('Error syncing push token:', error);
+        console.log('Error syncing push token:', error);
       }
     };
 

@@ -4,7 +4,7 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
 function handleRegistrationError(errorMessage: string) {
-  console.error(errorMessage);
+  console.log(errorMessage);
 }
 
 export async function registerForPushNotificationsAsync() {

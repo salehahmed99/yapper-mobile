@@ -18,7 +18,7 @@ export const saveToken = async (token: string): Promise<void> => {
   try {
     await SecureStore.setItemAsync(TOKEN_KEY, token);
   } catch (error) {
-    console.error('Failed to save token to secure storage:', error);
+    console.log('Failed to save token to secure storage:', error);
     throw new Error('Failed to save authentication token');
   }
 };
@@ -31,7 +31,7 @@ export const getToken = async (): Promise<string | null> => {
   try {
     return await SecureStore.getItemAsync(TOKEN_KEY);
   } catch (error) {
-    console.error('Failed to retrieve token from secure storage:', error);
+    console.log('Failed to retrieve token from secure storage:', error);
     return null;
   }
 };
@@ -43,7 +43,7 @@ export const deleteToken = async (): Promise<void> => {
   try {
     await SecureStore.deleteItemAsync(TOKEN_KEY);
   } catch (error) {
-    console.error('Failed to delete token from secure storage:', error);
+    console.log('Failed to delete token from secure storage:', error);
     throw new Error('Failed to delete authentication token');
   }
 };
@@ -60,7 +60,7 @@ export const saveRefreshToken = async (refreshToken: string): Promise<void> => {
   try {
     await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshToken);
   } catch (error) {
-    console.error('Failed to save refresh token to secure storage:', error);
+    console.log('Failed to save refresh token to secure storage:', error);
     throw new Error('Failed to save refresh token');
   }
 };
@@ -73,7 +73,7 @@ export const getRefreshToken = async (): Promise<string | null> => {
   try {
     return await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
   } catch (error) {
-    console.error('Failed to retrieve refresh token from secure storage:', error);
+    console.log('Failed to retrieve refresh token from secure storage:', error);
     return null;
   }
 };
@@ -85,7 +85,7 @@ export const deleteRefreshToken = async (): Promise<void> => {
   try {
     await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
   } catch (error) {
-    console.error('Failed to delete refresh token from secure storage:', error);
+    console.log('Failed to delete refresh token from secure storage:', error);
     throw new Error('Failed to delete refresh token');
   }
 };

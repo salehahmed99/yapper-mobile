@@ -525,11 +525,11 @@ jest
 // ----------------------------
 // Suppress specific console warnings during tests
 // ----------------------------
-const originalError = console.error;
+const originalError = console.log;
 const originalWarn = console.warn;
 
 beforeAll(() => {
-  console.error = (...args: unknown[]) => {
+  console.log = (...args: unknown[]) => {
     const [message] = args;
     if (
       typeof message === 'string' &&
@@ -551,6 +551,6 @@ beforeAll(() => {
 });
 
 afterAll(() => {
-  console.error = originalError;
+  console.log = originalError;
   console.warn = originalWarn;
 });

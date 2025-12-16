@@ -59,7 +59,7 @@ export class SocketService {
       this.socket.connect();
       return this.socket;
     } catch (error) {
-      console.error('SocketService: Connection error:', error);
+      console.log('SocketService: Connection error:', error);
       return null;
     } finally {
       this.isConnecting = false;

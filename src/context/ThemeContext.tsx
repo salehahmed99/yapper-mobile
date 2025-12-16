@@ -1,7 +1,7 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useColorScheme } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
   avatarSizes,
@@ -64,7 +64,7 @@ export const ThemeProvider: React.FC<IThemeProviderProps> = (props) => {
 
         setIsInitialized(true);
       } catch (error) {
-        console.error('Failed to load theme preferences:', error);
+        console.log('Failed to load theme preferences:', error);
         setIsInitialized(true);
       }
     };
@@ -85,7 +85,7 @@ export const ThemeProvider: React.FC<IThemeProviderProps> = (props) => {
     try {
       await AsyncStorage.setItem(THEME_STORAGE_KEY, newIsDark ? 'dark' : 'light');
     } catch (error) {
-      console.error('Failed to save theme preference:', error);
+      console.log('Failed to save theme preference:', error);
     }
   };
 
@@ -94,7 +94,7 @@ export const ThemeProvider: React.FC<IThemeProviderProps> = (props) => {
     try {
       await AsyncStorage.setItem(THEME_STORAGE_KEY, dark ? 'dark' : 'light');
     } catch (error) {
-      console.error('Failed to save theme preference:', error);
+      console.log('Failed to save theme preference:', error);
     }
   };
 
@@ -108,7 +108,7 @@ export const ThemeProvider: React.FC<IThemeProviderProps> = (props) => {
         await AsyncStorage.setItem(THEME_STORAGE_KEY, systemColorScheme === 'dark' ? 'dark' : 'light');
       }
     } catch (error) {
-      console.error('Failed to save device settings preference:', error);
+      console.log('Failed to save device settings preference:', error);
     }
   };
 

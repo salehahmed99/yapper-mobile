@@ -167,7 +167,7 @@ export default function ChatInput({
       await audioRecorder.prepareToRecordAsync();
       audioRecorder.record();
     } catch (error) {
-      console.error('Failed to start recording:', error);
+      console.log('Failed to start recording:', error);
       showToast('Failed to start recording. Please try again.');
     }
   };
@@ -180,7 +180,7 @@ export default function ChatInput({
         setVoicePreviewUri(uri);
       }
     } catch (error) {
-      console.error('Failed to stop recording:', error);
+      console.log('Failed to stop recording:', error);
       showToast('Failed to stop recording. Please try again.');
     }
   };
@@ -209,7 +209,7 @@ export default function ChatInput({
       setVoicePreviewUri(null);
       setRecordingDuration(0);
     } catch (error) {
-      console.error('Failed to upload voice note:', error);
+      console.log('Failed to upload voice note:', error);
       showToast('Failed to send voice note. Please try again.');
     } finally {
       setIsUploadingVoice(false);

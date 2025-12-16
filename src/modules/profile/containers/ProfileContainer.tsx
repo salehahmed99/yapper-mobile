@@ -98,7 +98,7 @@ function ProfileContainerInner({ userId, username, isOwnProfile = true }: Profil
           if (data.coverUrl) setBannerUri(data.coverUrl);
         })
         .catch((error) => {
-          console.error('Error fetching user for animated header:', error);
+          console.log('Error fetching user for animated header:', error);
         });
     }
   }, [userId, username, isOwnProfile, profileUser?.isBlocked]);
@@ -188,7 +188,7 @@ function ProfileContainerInner({ userId, username, isOwnProfile = true }: Profil
       setRefreshKey((prev) => prev + 1);
       triggerRefresh();
     } catch (error) {
-      console.error('Error refreshing profile:', error);
+      console.log('Error refreshing profile:', error);
     } finally {
       setRefreshing(false);
     }

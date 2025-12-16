@@ -16,7 +16,7 @@ export const useSocketConnection = () => {
       try {
         await socketService.connect();
       } catch (error) {
-        console.error('[useSocketConnection] Connection failed:', error);
+        console.log('[useSocketConnection] Connection failed:', error);
       }
     };
 

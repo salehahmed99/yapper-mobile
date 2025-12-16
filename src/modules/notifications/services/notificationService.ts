@@ -8,7 +8,7 @@ export const registerDeviceForPushNotifications = async (deviceToken: string) =>
     });
     return response.data;
   } catch (error) {
-    console.error('Failed to register device for push notifications', error);
+    console.log('Failed to register device for push notifications', error);
     return null;
   }
 };

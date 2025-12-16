@@ -87,7 +87,7 @@ const ReCaptcha = forwardRef<ReCaptchaRef, ReCaptchaProps>(
             break;
         }
       } catch (error) {
-        console.error('Error parsing message from WebView:', error);
+        console.log('Error parsing message from WebView:', error);
         setLoading(false);
         onError?.('Failed to parse reCAPTCHA response');
       }
@@ -166,7 +166,7 @@ const ReCaptcha = forwardRef<ReCaptchaRef, ReCaptchaProps>(
     function sendMessage(data) {
       try {
         window.ReactNativeWebView.postMessage(JSON.stringify(data));
-      } catch (e) { console.error('Failed to send message:', e); }
+      } catch (e) { console.log('Failed to send message:', e); }
     }
     
     function onloadCallback() {
@@ -273,7 +273,7 @@ const ReCaptcha = forwardRef<ReCaptchaRef, ReCaptchaProps>(
               originWhitelist={['*']}
               onError={(syntheticEvent) => {
                 const { nativeEvent } = syntheticEvent;
-                console.error('WebView error:', nativeEvent);
+                console.log('WebView error:', nativeEvent);
                 setLoading(false);
                 onError?.('Failed to load reCAPTCHA');
               }}

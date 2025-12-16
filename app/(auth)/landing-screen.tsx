@@ -58,7 +58,7 @@ const LandingScreen: React.FC = () => {
       completeOauthLogin(userData);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      // console.error('Google login failed:', error);
+      // console.log('Google login failed:', error);
     } finally {
       setLoading(false);
     }
@@ -71,7 +71,7 @@ const LandingScreen: React.FC = () => {
       completeOauthLogin(userData);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      // console.error('GitHub login failed:', error);
+      // console.log('GitHub login failed:', error);
     } finally {
       setLoading(false);
     }

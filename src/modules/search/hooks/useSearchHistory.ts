@@ -24,7 +24,7 @@ const useSearchHistory = (): UseSearchHistoryReturn => {
           setSearchHistory(JSON.parse(stored));
         }
       } catch (error) {
-        console.error('Error loading search history:', error);
+        console.log('Error loading search history:', error);
       } finally {
         setIsLoading(false);
       }
@@ -38,7 +38,7 @@ const useSearchHistory = (): UseSearchHistoryReturn => {
     try {
       await AsyncStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
     } catch (error) {
-      console.error('Error saving search history:', error);
+      console.log('Error saving search history:', error);
     }
   }, []);
 
@@ -75,7 +75,7 @@ const useSearchHistory = (): UseSearchHistoryReturn => {
       await AsyncStorage.removeItem(SEARCH_HISTORY_KEY);
       setSearchHistory([]);
     } catch (error) {
-      console.error('Error clearing search history:', error);
+      console.log('Error clearing search history:', error);
     }
   }, []);
 
