@@ -85,6 +85,19 @@ export default function ChatBubble({
   const hasText = !!message.content?.trim();
   const hasVoice = message.messageType === 'voice' && !!message.voiceNoteUrl;
 
+  // Determine reply message display text
+  const getReplyMessageText = () => {
+    if ((replyMessage?.messageType === 'voice' || replyMessage?.voiceNoteUrl) && !replyMessage?.content) {
+      return t('messages.bubble.voiceMessage');
+    }
+    if (!!replyMessage?.imageUrl && !replyMessage?.content) {
+      return t('messages.bubble.photo');
+    }
+    return replyMessage?.content;
+  };
+
+  const replyMessageText = useMemo(() => getReplyMessageText(), [replyMessage, t]);
+
   return (
     <View
       style={[styles.container, isOwn ? styles.ownContainer : styles.otherContainer]}
@@ -100,7 +113,7 @@ export default function ChatBubble({
               <ImageIcon size={12} color={isOwn ? theme.colors.text.secondary : theme.colors.text.secondary} />
             )}
             {(replyMessage.messageType === 'voice' || !!replyMessage.voiceNoteUrl) && (
-              <Mic size={12} color={isOwn ? theme.colors.text.secondary : theme.colors.text.secondary} />
+              <Mic size={12} color={theme.colors.text.secondary} />
             )}
             <Text
               style={[
@@ -112,11 +125,7 @@ export default function ChatBubble({
               ]}
               numberOfLines={2}
             >
-              {(replyMessage.messageType === 'voice' || replyMessage.voiceNoteUrl) && !replyMessage.content
-                ? t('messages.bubble.voiceMessage')
-                : !!replyMessage.imageUrl && !replyMessage.content
-                  ? t('messages.bubble.photo')
-                  : replyMessage.content}
+              {replyMessageText}
             </Text>
           </View>
         </View>

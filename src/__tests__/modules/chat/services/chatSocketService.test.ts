@@ -22,7 +22,7 @@ describe('chatSocketService', () => {
     });
 
     it('sendMessage should emit SEND_MESSAGE', () => {
-      chatSocketService.sendMessage('chat1', 'hello', 'text');
+      chatSocketService.sendMessage({ chatId: 'chat1', content: 'hello', messageType: 'text' });
       expect(socketService.emit).toHaveBeenCalledWith(ChatSocketEvents.SEND_MESSAGE, {
         chat_id: 'chat1',
         message: expect.objectContaining({ content: 'hello', message_type: 'text' }),

@@ -123,12 +123,13 @@ export default function ExplorePage() {
       <View style={styles.container}>
         <View style={styles.appBarWrapper}>
           <AppBar
-            children={<ExploreSearchBar />}
             tabView={
               <CustomTabView routes={routes} index={activeIndex} onIndexChange={setActiveIndex} scrollable={true} />
             }
             hideRightElement={true}
-          />
+          >
+            <ExploreSearchBar />
+          </AppBar>
         </View>
         <View style={styles.tabsOuterContainer} {...panResponder.panHandlers}>
           <Animated.View

@@ -47,7 +47,7 @@ const CreateAccountScreen = () => {
 
   const onchangeName = (text: string) => {
     setName(filterAsciiOnly(text));
-    setIsValidName(text.trim().length <= 25 && text.trim().length >= 3 ? true : false);
+    setIsValidName(text.trim().length <= 25 && text.trim().length >= 3);
   };
 
   const isFormValid =

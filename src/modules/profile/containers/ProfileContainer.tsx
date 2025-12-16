@@ -18,9 +18,9 @@ import { IUserProfile } from '../types';
 LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
 
 type ProfileContainerProps = {
-  userId?: string;
-  username?: string;
-  isOwnProfile?: boolean;
+  readonly userId?: string;
+  readonly username?: string;
+  readonly isOwnProfile?: boolean;
 };
 const PROFILE_HEADER_HEIGHT = 420;
 
