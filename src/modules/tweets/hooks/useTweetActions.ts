@@ -16,11 +16,7 @@ import {
 } from '../services/tweetService';
 import { IBookmarks, ITweet, ITweets } from '../types';
 import {
-  removeTweetFromCategoryPostsCache,
-  removeTweetFromExploreCache,
   removeTweetFromInfiniteCache,
-  removeTweetFromQuotesCache,
-  removeTweetFromSearchPostsCache,
   updateCategoryPostsCache,
   updateExploreCache,
   updateSearchPostsCache,
@@ -502,10 +498,6 @@ export const useTweetActions = () => {
       await queryClient.cancelQueries({ queryKey: profileTweetsQueryKey });
       await queryClient.cancelQueries({ queryKey: ['tweet', { tweetId: variables.tweetId }] });
       await queryClient.cancelQueries({ queryKey: repliesQueryKey });
-      await queryClient.cancelQueries({ queryKey: ['tweet-quotes'] });
-      await queryClient.cancelQueries({ queryKey: ['searchPosts'] });
-      await queryClient.cancelQueries({ queryKey: ['explore', 'forYou'] });
-      await queryClient.cancelQueries({ queryKey: ['categoryPosts'] });
 
       queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: repliesQueryKey }, (oldData) =>
         removeTweetFromInfiniteCache(oldData, variables.tweetId),
@@ -520,23 +512,6 @@ export const useTweetActions = () => {
             variables.tweetId,
           ) as unknown as InfiniteData<IBookmarks>;
         },
-      );
-
-      // Optimistically remove from search, explore, categoryPosts, and quotes caches
-      queryClient.setQueriesData<InfiniteData<any>>({ queryKey: ['searchPosts'] }, (oldData) =>
-        removeTweetFromSearchPostsCache(oldData, variables.tweetId),
-      );
-
-      queryClient.setQueryData<IExploreResponse>(['explore', 'forYou'], (oldData) =>
-        removeTweetFromExploreCache(oldData, variables.tweetId),
-      );
-
-      queryClient.setQueriesData<InfiniteData<ICategoryTweetsResponse>>({ queryKey: ['categoryPosts'] }, (oldData) =>
-        removeTweetFromCategoryPostsCache(oldData, variables.tweetId),
-      );
-
-      queryClient.setQueriesData<InfiniteData<any>>({ queryKey: ['tweet-quotes'] }, (oldData) =>
-        removeTweetFromQuotesCache(oldData, variables.tweetId),
       );
 
       // Navigate back if the current screen is the tweet details screen
