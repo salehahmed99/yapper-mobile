@@ -34,6 +34,7 @@ export default function AuthLayout() {
         <Stack.Screen name="forgot-password/success" options={{ title: 'Success' }} />
         <Stack.Screen name="forgot-password/verify-code" options={{ title: 'Verify Code' }} />
         <Stack.Screen name="OAuth/birth-date-screen" options={{ title: 'Birth Date' }} />
+        <Stack.Screen name="OAuth/interests-selection" options={{ title: 'Select Interests' }} />
         <Stack.Screen name="OAuth/user-name-screen" options={{ title: 'Choose Username' }} />
         // Sign Up Screens
         <Stack.Screen name="sign-up/create-account-screen" options={{ title: 'Create Account' }} />
