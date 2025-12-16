@@ -3,17 +3,8 @@ import EnterPasswordScreen from '@/app/(auth)/sign-up/enter-password';
 import { Theme } from '@/src/constants/theme';
 import { signUpStep3 } from '@/src/modules/auth/services/signUpService';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { router } from 'expo-router';
 import React from 'react';
 import Toast from 'react-native-toast-message';
-
-// Mock expo-router
-jest.mock('expo-router', () => ({
-  router: {
-    replace: jest.fn(),
-    push: jest.fn(),
-  },
-}));
 
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
@@ -198,14 +189,14 @@ describe('EnterPasswordScreen', () => {
       mockEmail = '';
       render(<EnterPasswordScreen />);
 
-      expect(router.replace).toHaveBeenCalledWith('/(auth)/sign-up/create-account-screen');
+      expect(global.mockReplace).toHaveBeenCalledWith('/(auth)/sign-up/create-account-screen');
     });
 
     it('should redirect to create account screen if no verification token', () => {
       mockVerificationToken = '';
       render(<EnterPasswordScreen />);
 
-      expect(router.replace).toHaveBeenCalledWith('/(auth)/sign-up/create-account-screen');
+      expect(global.mockReplace).toHaveBeenCalledWith('/(auth)/sign-up/create-account-screen');
     });
   });
 
@@ -295,7 +286,7 @@ describe('EnterPasswordScreen', () => {
           text1: 'Account created',
           text2: 'Welcome to Yapper!',
         });
-        expect(router.replace).toHaveBeenCalledWith('/(auth)/sign-up/upload-photo');
+        expect(global.mockReplace).toHaveBeenCalledWith('/(auth)/sign-up/upload-photo');
       });
     });
 

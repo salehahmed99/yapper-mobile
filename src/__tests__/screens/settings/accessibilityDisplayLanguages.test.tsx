@@ -5,29 +5,10 @@ jest.mock('expo-localization', () => ({
   getLocales: () => [{ regionCode: 'US' }],
 }));
 
-// Mock expo-router BEFORE importing anything that uses it
-const mockBack = jest.fn();
-const mockPush = jest.fn();
-jest.mock('expo-router', () => ({
-  router: {
-    back: mockBack,
-    push: mockPush,
-  },
-  useRouter: () => ({
-    back: mockBack,
-    push: mockPush,
-  }),
-}));
-
 import { Theme } from '@/src/constants/theme';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import React from 'react';
 import { AccessibilityDisplayLanguagesScreen } from '../../../../app/(protected)/(settings)/accessibility-display-languages/index';
-
-// Re-mock the router after import
-import { router } from 'expo-router';
-jest.mocked(router).back = mockBack;
-jest.mocked(router).push = mockPush;
 
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
@@ -182,7 +163,9 @@ describe('AccessibilityDisplayLanguagesScreen', () => {
       const languagesItem = getByTestId('accessibility-item-languages');
       fireEvent.press(languagesItem);
 
-      expect(mockPush).toHaveBeenCalledWith('/(protected)/(settings)/accessibility-display-languages/languages');
+      expect(global.mockNavigate).toHaveBeenCalledWith(
+        '/(protected)/(settings)/accessibility-display-languages/languages',
+      );
     });
 
     it('should go back when back button is pressed', () => {
@@ -191,7 +174,7 @@ describe('AccessibilityDisplayLanguagesScreen', () => {
       const topBar = getByTestId('settings-top-bar');
       topBar.props.onBackPress?.();
 
-      expect(mockBack).toHaveBeenCalled();
+      expect(global.mockGoBack).toHaveBeenCalled();
     });
   });
 

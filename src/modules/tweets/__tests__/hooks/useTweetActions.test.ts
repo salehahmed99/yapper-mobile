@@ -47,13 +47,13 @@ describe('useTweetActions', () => {
     });
 
     expect(tweetService.likeTweet).toHaveBeenCalledWith(tweetId);
-    // Implementation calls cancelQueries 7 times for various keys
-    expect(mockQueryClient.cancelQueries).toHaveBeenCalledTimes(7);
-    // Implementation calls setQueriesData 6 times (tweets, profile lists, replies, search, explore, category)
-    expect(mockQueryClient.setQueriesData).toHaveBeenCalledTimes(6);
+    // Implementation calls cancelQueries 10 times for various keys
+    expect(mockQueryClient.cancelQueries).toHaveBeenCalledTimes(10);
+    // Implementation calls setQueriesData 7 times
+    expect(mockQueryClient.setQueriesData).toHaveBeenCalledTimes(7);
     expect(mockQueryClient.setQueryData).toHaveBeenCalledTimes(1);
-    // Invalidate profile likes (1) + onSuccess invalidates userList likes (1)
-    expect(mockQueryClient.invalidateQueries).toHaveBeenCalledTimes(2);
+    // Invalidate profile likes and other related queries
+    expect(mockQueryClient.invalidateQueries).toHaveBeenCalledTimes(4);
   });
 
   it('should handle unlike mutation', async () => {

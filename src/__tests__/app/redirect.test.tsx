@@ -1,16 +1,8 @@
 import RedirectScreen from '@/app/redirect';
 import { ThemeProvider } from '@/src/context/ThemeContext';
 import { render, waitFor } from '@testing-library/react-native';
-import { router } from 'expo-router';
+import { usePathname } from 'expo-router';
 import React from 'react';
-
-// Mocks
-jest.mock('expo-router', () => ({
-  usePathname: jest.fn(() => '/redirect'),
-  router: {
-    replace: jest.fn(),
-  },
-}));
 
 jest.mock('@/src/components/ActivityLoader', () => {
   const { View } = require('react-native');
@@ -22,7 +14,15 @@ const renderWithTheme = (component: React.ReactElement) => {
 };
 
 describe('RedirectScreen', () => {
-  jest.useFakeTimers();
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (usePathname as jest.Mock).mockReturnValue('/redirect');
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
 
   it('should redirect after timeout', async () => {
     renderWithTheme(<RedirectScreen />);
@@ -31,7 +31,7 @@ describe('RedirectScreen', () => {
     jest.runAllTimers();
 
     await waitFor(() => {
-      expect(router.replace).toHaveBeenCalledWith('/(auth)/landing-screen');
+      expect(global.mockReplace).toHaveBeenCalledWith('/(auth)/landing-screen');
     });
   });
 });

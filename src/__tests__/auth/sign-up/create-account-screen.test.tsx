@@ -3,17 +3,8 @@ import CreateAccountScreen from '@/app/(auth)/sign-up/create-account-screen';
 import { Theme } from '@/src/constants/theme';
 import { signUpStep1 } from '@/src/modules/auth/services/signUpService';
 import { render, waitFor } from '@testing-library/react-native';
-import { router } from 'expo-router';
 import React from 'react';
 import Toast from 'react-native-toast-message';
-
-// Mock expo-router
-jest.mock('expo-router', () => ({
-  router: {
-    back: jest.fn(),
-    push: jest.fn(),
-  },
-}));
 
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
@@ -195,7 +186,7 @@ describe('CreateAccountScreen', () => {
         expect(mockSetName).toHaveBeenCalled();
         expect(mockSetEmail).toHaveBeenCalled();
         expect(mockSetDateOfBirth).toHaveBeenCalled();
-        expect(router.push).toHaveBeenCalledWith('/(auth)/sign-up/verify-code');
+        expect(global.mockNavigate).toHaveBeenCalledWith('/(auth)/sign-up/verify-code');
         expect(Toast.show).toHaveBeenCalledWith({
           type: 'success',
           text1: 'Code sent',

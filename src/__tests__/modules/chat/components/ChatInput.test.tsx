@@ -67,7 +67,7 @@ describe('ChatInput', () => {
     const sendBtn = screen.getByTestId('chat_input_send_button');
     fireEvent.press(sendBtn);
 
-    expect(mockOnSend).toHaveBeenCalledWith('http://remote/img.jpg');
+    expect(mockOnSend).toHaveBeenCalledWith('http://remote/img.jpg', null, null);
   });
 
   it('should show reply banner', () => {
@@ -101,12 +101,7 @@ describe('ChatInput', () => {
     renderWithTheme(<ChatInput value="  Trim Me  " onChangeText={mockOnChangeText} onSend={mockOnSend} />);
     const sendBtn = screen.getByTestId('chat_input_send_button');
     fireEvent.press(sendBtn);
-    expect(mockOnSend).toHaveBeenCalledWith(null); // ChatInput passes uploadedImageUrl which defaults to null
-    // Wait, onSend in ChatInput usually just calls the prop. Let's check implementation if needed.
-    // If ChatInput implementation just passes value back, then the consumer handles trim.
-    // If ChatInput handles trim, then we should expect trimmed value if it passes args.
-    // Based on previous mocks, onSend takes (imageUrl?) or just triggers.
-    // Let's assume consumer handles logic for now, but if ChatInput disables button based on trimmed length, that's testable.
+    expect(mockOnSend).toHaveBeenCalledWith(null, null, null);
   });
 
   it('should not send if only whitespace', () => {

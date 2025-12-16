@@ -2,18 +2,9 @@
 import UserNameScreen from '@/app/(auth)/sign-up/user-name-screen';
 import { Theme } from '@/src/constants/theme';
 import { updateUserName } from '@/src/services/userService';
-import { render, waitFor, fireEvent } from '@testing-library/react-native';
-import { router } from 'expo-router';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import Toast from 'react-native-toast-message';
-
-// Mock expo-router
-jest.mock('expo-router', () => ({
-  router: {
-    replace: jest.fn(),
-    push: jest.fn(),
-  },
-}));
 
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
@@ -245,13 +236,13 @@ describe('UserNameScreen', () => {
     it('should redirect to create account if missing email', () => {
       mockEmail = '';
       render(<UserNameScreen />);
-      expect(router.replace).toHaveBeenCalledWith('/(auth)/sign-up/create-account-screen');
+      expect(global.mockReplace).toHaveBeenCalledWith('/(auth)/sign-up/create-account-screen');
     });
 
     it('should redirect to create account if missing usernames', () => {
       mockUserNames = [];
       render(<UserNameScreen />);
-      expect(router.replace).toHaveBeenCalledWith('/(auth)/sign-up/create-account-screen');
+      expect(global.mockReplace).toHaveBeenCalledWith('/(auth)/sign-up/create-account-screen');
     });
 
     it('should navigate to protected route when skip is pressed', async () => {
@@ -260,7 +251,7 @@ describe('UserNameScreen', () => {
 
       fireEvent.press(skipButton);
 
-      expect(router.push).toHaveBeenCalledWith('/(protected)');
+      expect(global.mockNavigate).toHaveBeenCalledWith('/(protected)');
     });
   });
 
@@ -284,7 +275,7 @@ describe('UserNameScreen', () => {
           text2: 'Your username is newusername',
         });
         expect(mockSetSkipRedirect).toHaveBeenCalledWith(false);
-        expect(router.replace).toHaveBeenCalledWith('/(protected)');
+        expect(global.mockReplace).toHaveBeenCalledWith('/(protected)');
       });
     });
 
@@ -300,7 +291,7 @@ describe('UserNameScreen', () => {
       await waitFor(() => {
         expect(updateUserName).not.toHaveBeenCalled();
         expect(mockSetSkipRedirect).toHaveBeenCalledWith(false);
-        expect(router.replace).toHaveBeenCalledWith('/(protected)');
+        expect(global.mockReplace).toHaveBeenCalledWith('/(protected)');
       });
     });
 

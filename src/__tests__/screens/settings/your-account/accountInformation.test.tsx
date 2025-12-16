@@ -5,33 +5,10 @@ jest.mock('expo-localization', () => ({
   getLocales: () => [{ regionCode: 'US' }],
 }));
 
-// Mock expo-router BEFORE importing anything that uses it
-const mockBack = jest.fn();
-const mockPush = jest.fn();
-const mockReplace = jest.fn();
-jest.mock('expo-router', () => ({
-  router: {
-    back: mockBack,
-    push: mockPush,
-    replace: mockReplace,
-  },
-  useRouter: () => ({
-    back: mockBack,
-    push: mockPush,
-    replace: mockReplace,
-  }),
-}));
-
 import { Theme } from '@/src/constants/theme';
 import { fireEvent, render, screen } from '@testing-library/react-native';
-import { router } from 'expo-router';
 import React from 'react';
 import { AccountInformationScreen } from '../../../../../app/(protected)/(settings)/your-account/AccountInformation';
-
-// Re-mock router
-jest.mocked(router).back = mockBack;
-jest.mocked(router).push = mockPush;
-jest.mocked(router).replace = mockReplace;
 
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
@@ -176,7 +153,7 @@ describe('AccountInformationScreen', () => {
       const topBar = getByTestId('settings-top-bar');
       topBar.props.onBackPress?.();
 
-      expect(mockBack).toHaveBeenCalled();
+      expect(global.mockGoBack).toHaveBeenCalled();
     });
 
     it('should navigate to change username when username field is pressed', () => {
@@ -185,7 +162,7 @@ describe('AccountInformationScreen', () => {
       const usernameField = getByTestId('Username');
       fireEvent.press(usernameField);
 
-      expect(mockPush).toHaveBeenCalledWith(expect.stringContaining('account-information/change-username'));
+      expect(global.mockNavigate).toHaveBeenCalledWith(expect.stringContaining('account-information/change-username'));
     });
 
     it('should navigate to verify password for email update', () => {
@@ -194,7 +171,7 @@ describe('AccountInformationScreen', () => {
       const emailField = getByTestId('Email_address');
       fireEvent.press(emailField);
 
-      expect(mockPush).toHaveBeenCalledWith(
+      expect(global.mockNavigate).toHaveBeenCalledWith(
         expect.objectContaining({
           pathname: expect.stringContaining('verify-password'),
         }),
