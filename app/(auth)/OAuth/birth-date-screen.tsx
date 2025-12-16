@@ -78,7 +78,7 @@ const BirthDateScreen = () => {
       });
 
       replace({
-        pathname: '/(auth)/OAuth/user-name-screen',
+        pathname: '/(auth)/OAuth/interests-selection',
         params: {
           sessionToken: _sessionToken,
           userNames: JSON.stringify(res.data.usernames),
