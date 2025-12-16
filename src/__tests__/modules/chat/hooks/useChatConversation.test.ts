@@ -147,7 +147,6 @@ describe('useChatConversation', () => {
 
   it('should send message', () => {
     const { result } = renderHook(() => useChatConversation({ chatId: CHAT_ID }));
-
     act(() => {
       result.current.handleTextChange('Hello');
     });
@@ -156,7 +155,14 @@ describe('useChatConversation', () => {
       result.current.handleSend();
     });
 
-    expect(chatSocketService.sendMessage).toHaveBeenCalledWith(CHAT_ID, 'Hello', 'text', null, null, true);
+    expect(chatSocketService.sendMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        chatId: CHAT_ID,
+        content: 'Hello',
+        messageType: 'text',
+        isFirstMessage: true,
+      }),
+    );
     expect(result.current.inputText).toBe(''); // Should clear input
   });
 
@@ -203,6 +209,7 @@ describe('useChatConversation', () => {
       content: 'reply to me',
       senderName: 'User 1',
       hasImage: false,
+      hasVoice: false,
     });
 
     act(() => {

@@ -70,7 +70,7 @@ export const useSwipeableTabsGeneric = ({
         onStartShouldSetPanResponder: (evt) => {
           if (!swipeEnabled) return false;
           touchStartXRef.current = evt.nativeEvent.pageX;
-          return false;
+          return true;
         },
         onMoveShouldSetPanResponder: (evt, gestureState: PanResponderGestureState) => {
           if (!swipeEnabled) return false;
@@ -80,11 +80,8 @@ export const useSwipeableTabsGeneric = ({
           const threshold = drawerEdgeThresholdRef.current;
 
           // Exclude drawer edge zone
-          if (isRTLRef.current) {
-            if (startX > sw - threshold) return false;
-          } else {
-            if (startX < threshold) return false;
-          }
+          const isStartInDrawerZone = isRTLRef.current ? startX > sw - threshold : startX < threshold;
+          if (isStartInDrawerZone) return false;
 
           // Only capture horizontal swipes
           return Math.abs(dx) > Math.abs(dy) * 1.5 && Math.abs(dx) > 15;

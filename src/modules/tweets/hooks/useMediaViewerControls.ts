@@ -61,7 +61,7 @@ export function useMediaViewerControls({
 
     const timeoutId = setTimeout(() => {
       try {
-        if (initialTime && !isNaN(initialTime) && initialTime > 0) {
+        if (initialTime && !Number.isNaN(initialTime) && initialTime > 0) {
           player.currentTime = initialTime;
         }
         player.play();

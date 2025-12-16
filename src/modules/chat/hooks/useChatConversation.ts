@@ -292,7 +292,7 @@ export function useChatConversation({ chatId }: UseChatConversationOptions): Use
                   ? {
                       ...r,
                       reactedByMe: isFromCurrentUser ? true : r.reactedByMe,
-                      reactedByOther: !isFromCurrentUser ? true : r.reactedByOther,
+                      reactedByOther: isFromCurrentUser ? r.reactedByOther : true,
                     }
                   : r,
               );
@@ -347,7 +347,7 @@ export function useChatConversation({ chatId }: UseChatConversationOptions): Use
                 return {
                   ...r,
                   reactedByMe: isFromCurrentUser ? false : r.reactedByMe,
-                  reactedByOther: !isFromCurrentUser ? false : r.reactedByOther,
+                  reactedByOther: isFromCurrentUser ? r.reactedByOther : false,
                 };
               }
               return r;
@@ -441,26 +441,36 @@ export function useChatConversation({ chatId }: UseChatConversationOptions): Use
     [chatId, isTyping],
   );
 
+  const getMessageType = (voiceNoteUrl?: string | null): IChatMessageItem['messageType'] => {
+    if (voiceNoteUrl) {
+      return 'voice';
+    }
+    if (replyingTo) {
+      return 'reply';
+    }
+    return 'text';
+  };
+
   const handleSend = useCallback(
     (imageUrl?: string | null, voiceNoteUrl?: string | null, voiceNoteDuration?: string | null) => {
       // For voice notes, we send even without text content
       if ((!inputText.trim() && !imageUrl && !voiceNoteUrl) || !chatId) return;
 
       const content = inputText.trim();
-      const messageType = voiceNoteUrl ? 'voice' : replyingTo ? 'reply' : 'text';
+      const messageType = getMessageType(voiceNoteUrl);
       const replyToId = replyingTo?.messageId || null;
       const isFirstMessage = messages.length === 0;
 
-      chatSocketService.sendMessage(
+      chatSocketService.sendMessage({
         chatId,
         content,
         messageType,
-        replyToId,
-        imageUrl || null,
+        replyTo: replyToId,
+        imageUrl: imageUrl || null,
         isFirstMessage,
-        voiceNoteUrl || null,
-        voiceNoteDuration || null,
-      );
+        voiceNoteUrl: voiceNoteUrl || null,
+        voiceNoteDuration: voiceNoteDuration || null,
+      });
 
       if (isTyping) {
         setIsTyping(false);

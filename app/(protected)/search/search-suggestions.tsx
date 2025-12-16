@@ -120,15 +120,6 @@ export default function SearchSuggestionsScreen() {
       <View style={styles.appBarWrapper}>
         <AppBar
           hideLeftElement={true}
-          children={
-            <SearchInput
-              value={query}
-              onChangeText={setQuery}
-              onSubmit={handleSubmit}
-              autoFocus
-              placeholder={placeholder}
-            />
-          }
           rightElement={
             query.length > 0 ? (
               <Pressable
@@ -142,7 +133,15 @@ export default function SearchSuggestionsScreen() {
               </Pressable>
             ) : null
           }
-        />
+        >
+          <SearchInput
+            value={query}
+            onChangeText={setQuery}
+            onSubmit={handleSubmit}
+            autoFocus
+            placeholder={placeholder}
+          />
+        </AppBar>
       </View>
 
       {isLoading && query.length > 0 && (

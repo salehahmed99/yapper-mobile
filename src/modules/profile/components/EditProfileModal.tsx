@@ -138,9 +138,6 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
 
       if (newAvatarUri) {
         if (newAvatarUri === DEFAULT_AVATAR_URL) {
-          if (user?.avatarUrl && user.avatarUrl !== DEFAULT_AVATAR_URL) {
-            // await deleteAvatar(user.avatarUrl);
-          }
           avatarUrl = null;
         } else if (newAvatarUri.startsWith('file://') || newAvatarUri.startsWith('content://')) {
           const uploadResponse = await uploadAvatar(newAvatarUri);
@@ -150,9 +147,6 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
 
       if (newCoverUri) {
         if (newCoverUri === DEFAULT_BANNER_URL) {
-          if (user?.coverUrl && user.coverUrl !== DEFAULT_BANNER_URL) {
-            // await deleteCover(user.coverUrl);
-          }
           coverUrl = null;
         } else if (newCoverUri.startsWith('file://') || newCoverUri.startsWith('content://')) {
           const uploadResponse = await uploadCover(newCoverUri);

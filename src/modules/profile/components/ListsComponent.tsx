@@ -99,7 +99,7 @@ export default function ListsComponent({ initialTab, userId }: ListsComponentPro
   const getInitialIndex = () => {
     if (initialTab) {
       const index = routes.findIndex((route) => route.key.toLowerCase() === initialTab.toLowerCase());
-      return index !== -1 ? index : 0;
+      return Math.max(index, 0);
     }
     return 0;
   };

@@ -2,18 +2,9 @@
 import VerifyCodeScreen from '@/app/(auth)/sign-up/verify-code';
 import { Theme } from '@/src/constants/theme';
 import { resendVerificationCode, verifySignUpOTP } from '@/src/modules/auth/services/signUpService';
-import { render, waitFor, fireEvent } from '@testing-library/react-native';
-import { router } from 'expo-router';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import Toast from 'react-native-toast-message';
-
-// Mock expo-router
-jest.mock('expo-router', () => ({
-  router: {
-    replace: jest.fn(),
-    push: jest.fn(),
-  },
-}));
 
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
@@ -178,7 +169,7 @@ describe('VerifyCodeScreen', () => {
       mockEmail = '';
       render(<VerifyCodeScreen />);
 
-      expect(router.replace).toHaveBeenCalledWith('/(auth)/sign-up/create-account-screen');
+      expect(global.mockReplace).toHaveBeenCalledWith('/(auth)/sign-up/create-account-screen');
     });
 
     it('should navigate to landing screen when back button on top bar is pressed', () => {
@@ -187,7 +178,7 @@ describe('VerifyCodeScreen', () => {
 
       fireEvent(topBar, 'onBackPress');
 
-      expect(router.replace).toHaveBeenCalledWith('/(auth)/landing-screen');
+      expect(global.mockReplace).toHaveBeenCalledWith('/(auth)/landing-screen');
     });
 
     it('should navigate to create account screen when back button is pressed', () => {
@@ -196,7 +187,7 @@ describe('VerifyCodeScreen', () => {
 
       bottomBar.props.leftButton.onPress();
 
-      expect(router.replace).toHaveBeenCalledWith('/(auth)/sign-up/create-account-screen');
+      expect(global.mockReplace).toHaveBeenCalledWith('/(auth)/sign-up/create-account-screen');
     });
   });
 
@@ -259,7 +250,7 @@ describe('VerifyCodeScreen', () => {
         });
         expect(mockSetVerificationToken).toHaveBeenCalledWith('123456');
         expect(mockSetUserNames).toHaveBeenCalledWith(['user1', 'user2']);
-        expect(router.push).toHaveBeenCalledWith('/(auth)/sign-up/enter-password');
+        expect(global.mockNavigate).toHaveBeenCalledWith('/(auth)/sign-up/enter-password');
       });
     });
 

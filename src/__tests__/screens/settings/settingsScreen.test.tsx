@@ -5,30 +5,59 @@ jest.mock('expo-localization', () => ({
   getLocales: () => [{ regionCode: 'US' }],
 }));
 
-// Mock expo-router BEFORE importing anything that uses it
-const mockPush = jest.fn();
+// Mock navigation functions
+const mockNavigate = jest.fn();
 const mockReplace = jest.fn();
+
+// Mock useNavigation BEFORE importing anything that uses it
+jest.mock('@/src/hooks/useNavigation', () => ({
+  __esModule: true,
+  default: () => ({
+    navigate: mockNavigate,
+    replace: mockReplace,
+    goBack: jest.fn(),
+    dismissTo: jest.fn(),
+    isCurrentRoute: jest.fn(),
+    pathname: '/',
+    router: {
+      push: jest.fn(),
+      replace: jest.fn(),
+      back: jest.fn(),
+    },
+  }),
+  useNavigation: () => ({
+    navigate: mockNavigate,
+    replace: mockReplace,
+    goBack: jest.fn(),
+    dismissTo: jest.fn(),
+    isCurrentRoute: jest.fn(),
+    pathname: '/',
+    router: {
+      push: jest.fn(),
+      replace: jest.fn(),
+      back: jest.fn(),
+    },
+  }),
+}));
+
+// Mock expo-router BEFORE importing anything that uses it
 jest.mock('expo-router', () => ({
   router: {
-    push: mockPush,
-    replace: mockReplace,
+    push: jest.fn(),
+    replace: jest.fn(),
     back: jest.fn(),
   },
   useRouter: () => ({
-    push: mockPush,
-    replace: mockReplace,
+    push: jest.fn(),
+    replace: jest.fn(),
   }),
+  usePathname: () => '/',
 }));
 
 import { Theme } from '@/src/constants/theme';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import { router } from 'expo-router';
 import React from 'react';
 import { SettingsScreen } from '../../../../app/(protected)/(settings)/settingsScreen';
-
-// Re-mock the router after import to ensure it's properly patched
-jest.mocked(router).push = mockPush;
-jest.mocked(router).replace = mockReplace;
 
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
@@ -224,7 +253,7 @@ describe('SettingsScreen', () => {
       fireEvent.press(accountItem);
 
       await waitFor(() => {
-        expect(mockPush).toHaveBeenCalledWith('/(protected)/(settings)/your-account');
+        expect(mockNavigate).toHaveBeenCalledWith('/(protected)/(settings)/your-account');
       });
     });
 
@@ -235,7 +264,7 @@ describe('SettingsScreen', () => {
       fireEvent.press(helpItem);
 
       await waitFor(() => {
-        expect(mockPush).toHaveBeenCalledWith('/(protected)/(settings)/help');
+        expect(mockNavigate).toHaveBeenCalledWith('/(protected)/(settings)/help');
       });
     });
 
@@ -246,7 +275,7 @@ describe('SettingsScreen', () => {
       fireEvent.press(accessibilityItem);
 
       await waitFor(() => {
-        expect(mockPush).toHaveBeenCalledWith('/(protected)/(settings)/accessibility-display-languages');
+        expect(mockNavigate).toHaveBeenCalledWith('/(protected)/(settings)/accessibility-display-languages');
       });
     });
 

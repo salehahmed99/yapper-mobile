@@ -30,7 +30,22 @@ export default function MessageItem({ chat, onPress }: MessageItemProps) {
 
     const hasImage = !!lastMessage.imageUrl;
     const hasVoice = lastMessage.messageType === 'voice' || !!lastMessage.voiceNoteUrl;
-    const content = lastMessage.content || (hasVoice ? 'Voice message' : hasImage ? 'Photo' : '');
+
+    // Determine content text based on message type
+    const getContentText = () => {
+      if (lastMessage.content) {
+        return lastMessage.content;
+      }
+      if (hasVoice) {
+        return 'Voice message';
+      }
+      if (hasImage) {
+        return 'Photo';
+      }
+      return '';
+    };
+
+    const content = getContentText();
 
     return (
       <View style={styles.previewContainer}>

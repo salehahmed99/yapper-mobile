@@ -2,6 +2,7 @@ import AppShell from '@/src/components/shell/AppShell';
 import { ThemeProvider } from '@/src/context/ThemeContext';
 import { useSocketConnection } from '@/src/hooks/useSocketConnection';
 import { useChatSocketListeners } from '@/src/modules/chat/hooks/useChatSocketListeners';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react-native';
 import { usePathname, useSegments } from 'expo-router';
 import React from 'react';
@@ -29,7 +30,12 @@ jest.mock('@/src/components/shell/BottomNavigation', () => 'BottomNavigation');
 jest.mock('@/src/components/shell/SideMenu', () => 'SideMenu');
 
 const renderWithTheme = (component: React.ReactElement) => {
-  return render(<ThemeProvider>{component}</ThemeProvider>);
+  const queryClient = new QueryClient();
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>{component}</ThemeProvider>
+    </QueryClientProvider>,
+  );
 };
 
 describe('AppShell', () => {

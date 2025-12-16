@@ -5,7 +5,6 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { Animated } from 'react-native';
 import 'react-native-gesture-handler/jestSetup';
-
 // ----------------------------
 // Mock react-native-gesture-handler manually to avoid I18nManager issues
 // ----------------------------
@@ -149,6 +148,9 @@ jest.mock('expo-image', () => {
 // ----------------------------
 // Mock expo-router
 // ----------------------------
+const mockUseLocalSearchParams = jest.fn(() => ({}));
+const mockUsePathname = jest.fn(() => '/');
+
 jest.mock('expo-router', () => ({
   router: {
     push: jest.fn(),
@@ -164,10 +166,10 @@ jest.mock('expo-router', () => ({
     navigate: jest.fn(),
     setParams: jest.fn(),
   }),
-  useLocalSearchParams: () => ({}),
+  useLocalSearchParams: mockUseLocalSearchParams,
   useGlobalSearchParams: () => ({}),
   useSegments: () => [],
-  usePathname: () => '/',
+  usePathname: mockUsePathname,
   useFocusEffect: jest.fn((callback: () => void) => {
     // Call the callback immediately in tests
     if (callback) callback();
@@ -177,6 +179,46 @@ jest.mock('expo-router', () => ({
   Tabs: ({ children }: any) => children,
   Slot: ({ children }: any) => children,
 }));
+
+// Export for use in tests
+global.mockUseLocalSearchParams = mockUseLocalSearchParams;
+
+// ----------------------------
+// Mock useNavigation hook
+// ----------------------------
+const mockNavigate = jest.fn();
+const mockReplace = jest.fn();
+const mockGoBack = jest.fn();
+const mockDismissTo = jest.fn();
+const mockIsCurrentRoute = jest.fn();
+
+jest.mock('@/src/hooks/useNavigation', () => {
+  const mockNavigation = () => ({
+    navigate: mockNavigate,
+    replace: mockReplace,
+    goBack: mockGoBack,
+    dismissTo: mockDismissTo,
+    isCurrentRoute: mockIsCurrentRoute,
+    pathname: '/',
+    router: {
+      push: jest.fn(),
+      replace: jest.fn(),
+      back: jest.fn(),
+    },
+  });
+
+  return {
+    __esModule: true,
+    default: mockNavigation,
+    useNavigation: mockNavigation,
+  };
+});
+
+// Export mocks for use in tests
+global.mockNavigate = mockNavigate;
+global.mockReplace = mockReplace;
+global.mockGoBack = mockGoBack;
+global.mockDismissTo = mockDismissTo;
 
 // ----------------------------
 // Mock i18next
@@ -272,6 +314,142 @@ jest.mock('expo-auth-session', () => ({
 jest.mock('expo-web-browser', () => ({
   maybeCompleteAuthSession: jest.fn(),
   openAuthSessionAsync: jest.fn(),
+}));
+
+// ----------------------------
+// Mock expo-modules-core
+// ----------------------------
+jest.mock('expo-modules-core', () => ({
+  EventEmitter: jest.fn(),
+  NativeModule: jest.fn(),
+}));
+
+// ----------------------------
+// Mock expo-constants
+// ----------------------------
+jest.mock('expo-constants', () => ({
+  __esModule: true,
+  default: {
+    expoConfig: {
+      extra: {},
+    },
+    manifest: {
+      extra: {},
+    },
+  },
+}));
+
+// ----------------------------
+// Mock expo-device
+// ----------------------------
+jest.mock('expo-device', () => ({
+  osName: 'Android',
+  osVersion: '12.0',
+  deviceName: 'Test Device',
+  modelName: 'Test Model',
+  isDevice: false,
+  brand: 'TestBrand',
+  designName: 'Test Design',
+  deviceYearClass: 2021,
+  manufacturer: 'TestManufacturer',
+  getDeviceTypeAsync: jest.fn().mockResolvedValue('phone'),
+  platformApiLevel: 31,
+  totalMemory: 4000000000,
+}));
+
+// ----------------------------
+
+// ----------------------------
+// Mock expo-notifications
+// ----------------------------
+jest.mock('expo-notifications', () => ({
+  requestPermissionsAsync: jest.fn().mockResolvedValue({ granted: true }),
+  getPermissionsAsync: jest.fn().mockResolvedValue({ granted: true }),
+  getLastNotificationResponseAsync: jest.fn().mockResolvedValue(null),
+  setNotificationHandler: jest.fn(),
+  setNotificationCategoryAsync: jest.fn(),
+  getAllScheduledNotificationsAsync: jest.fn().mockResolvedValue([]),
+  scheduleNotificationAsync: jest.fn(),
+  dismissAllNotificationsAsync: jest.fn(),
+  dismissNotificationAsync: jest.fn(),
+  addNotificationResponseReceivedListener: jest.fn(() => ({ remove: jest.fn() })),
+  addNotificationReceivedListener: jest.fn(() => ({ remove: jest.fn() })),
+  removeNotificationSubscription: jest.fn(),
+}));
+
+// ----------------------------
+// Mock expo-audio
+// ----------------------------
+jest.mock('expo-audio', () => ({
+  Recording: jest.fn(() => ({
+    startAsync: jest.fn(),
+    stopAndUnloadAsync: jest.fn(),
+    getURI: jest.fn(),
+    getDurationAsync: jest.fn(),
+  })),
+  Sound: jest.fn(() => ({
+    loadAsync: jest.fn(),
+    playAsync: jest.fn(),
+    pauseAsync: jest.fn(),
+    stopAsync: jest.fn(),
+    unloadAsync: jest.fn(),
+  })),
+  RecordingPresets: {
+    HIGH_QUALITY: {
+      android: {
+        outputFormat: 2,
+        audioEncoder: 3,
+        audioEncodingBitRate: 128000,
+        numberOfChannels: 2,
+        sampleRate: 44100,
+      },
+      ios: {
+        outputFormat: 'aac',
+        audioQuality: 'high',
+        bitRate: 128000,
+        channels: 2,
+        sampleRate: 44100,
+      },
+    },
+    LOW_QUALITY: {
+      android: {
+        outputFormat: 2,
+        audioEncoder: 3,
+        audioEncodingBitRate: 64000,
+        numberOfChannels: 1,
+        sampleRate: 22050,
+      },
+      ios: {
+        outputFormat: 'aac',
+        audioQuality: 'low',
+        bitRate: 64000,
+        channels: 1,
+        sampleRate: 22050,
+      },
+    },
+  },
+  useAudioRecorder: jest.fn(() => ({
+    record: jest.fn(),
+    stop: jest.fn(),
+    pause: jest.fn(),
+    resume: jest.fn(),
+  })),
+  useAudioRecorderState: jest.fn(() => ({
+    isRecording: false,
+    durationMillis: 0,
+  })),
+  requestRecordingPermissionsAsync: jest.fn(() => Promise.resolve({ granted: true })),
+  setAudioModeAsync: jest.fn(() => Promise.resolve()),
+  useAudioPlayer: jest.fn(() => ({
+    play: jest.fn(),
+    pause: jest.fn(),
+    stop: jest.fn(),
+  })),
+  useAudioPlayerStatus: jest.fn(() => ({
+    isPlaying: false,
+    durationMillis: 0,
+    positionMillis: 0,
+  })),
 }));
 
 // Mock Alert

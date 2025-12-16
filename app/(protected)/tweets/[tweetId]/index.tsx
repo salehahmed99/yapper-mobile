@@ -52,7 +52,6 @@ const TweetDetailsScreen = () => {
   };
 
   const handleViewPostInteractions = (tweetId: string, ownerId: string) => {
-    // TODO: Implement view post interactions functionality
     navigate({
       pathname: '/(protected)/tweets/[tweetId]/activity',
       params: {
@@ -85,7 +84,6 @@ const TweetDetailsScreen = () => {
     <MediaViewerProvider>
       <View style={styles.container}>
         <AppBar
-          children={<Text style={styles.appBarTitle}>{t('tweets.full_tweet.title')}</Text>}
           leftElement={
             <Pressable
               onPress={() => goBack()}
@@ -122,7 +120,9 @@ const TweetDetailsScreen = () => {
               </Pressable>
             </View>
           }
-        />
+        >
+          <Text style={styles.appBarTitle}>{t('tweets.full_tweet.title')}</Text>
+        </AppBar>
         <DropdownMenu
           visible={menuVisible}
           onClose={() => setMenuVisible(false)}

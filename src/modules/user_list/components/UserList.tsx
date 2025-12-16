@@ -15,8 +15,6 @@ type UserListProps = UserListQuery & {
   autoLoad?: boolean;
   onUserPress?: (user: IUser) => void;
   renderAction?: (user: IUser) => React.ReactNode;
-  topSpacing?: number;
-  bottomSpacing?: number;
 };
 
 const createStyles = (theme: Theme) =>

@@ -11,10 +11,6 @@ export default function UserProfile() {
   const isOwnProfile = currentUser?.id === id || currentUser?.username === id;
 
   return (
-    <ProfileContainer
-      userId={isUUID ? id : undefined}
-      username={!isUUID ? id : undefined}
-      isOwnProfile={isOwnProfile}
-    />
+    <ProfileContainer userId={isUUID ? id : undefined} username={isUUID ? undefined : id} isOwnProfile={isOwnProfile} />
   );
 }

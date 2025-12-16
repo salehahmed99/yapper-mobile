@@ -10,7 +10,7 @@ export interface UseExploreReturn {
   exploreData: ReturnType<typeof useExploreData>['data'] | undefined;
   forYouLoading: boolean;
   forYouError: Error | null;
-  refetchForYou: () => void;
+  refetchForYou: () => Promise<any>;
   isRefetchingForYou: boolean;
 
   // Trending tabs state

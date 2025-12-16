@@ -3,7 +3,7 @@ import { ThemeProvider } from '@/src/context/ThemeContext';
 import { UiShellProvider, useUiShell } from '@/src/context/UiShellContext';
 import { useUnreadMessagesStore } from '@/src/store/useUnreadMessagesStore';
 import { fireEvent, render, screen } from '@testing-library/react-native';
-import { usePathname, useRouter } from 'expo-router';
+import { usePathname } from 'expo-router';
 import React from 'react';
 import { Animated } from 'react-native';
 
@@ -47,11 +47,8 @@ const renderWithProviders = (component: React.ReactElement) => {
 };
 
 describe('BottomNavigation', () => {
-  const mockReplace = jest.fn();
-
   beforeEach(() => {
     jest.clearAllMocks();
-    (useRouter as jest.Mock).mockReturnValue({ replace: mockReplace });
     (usePathname as jest.Mock).mockReturnValue('/(protected)');
 
     (useUiShell as jest.Mock).mockReturnValue({
@@ -70,7 +67,6 @@ describe('BottomNavigation', () => {
 
     expect(screen.getByTestId('bottom_nav_home')).toBeTruthy();
     expect(screen.getByTestId('bottom_nav_search')).toBeTruthy();
-    expect(screen.getByTestId('bottom_nav_grok')).toBeTruthy();
     expect(screen.getByTestId('bottom_nav_notifications')).toBeTruthy();
     expect(screen.getByTestId('bottom_nav_messages')).toBeTruthy();
   });
@@ -82,7 +78,7 @@ describe('BottomNavigation', () => {
     fireEvent.press(screen.getByTestId('bottom_nav_search'));
 
     expect(mockSetActiveTab).toHaveBeenCalledWith('search');
-    expect(mockReplace).toHaveBeenCalledWith('/(protected)/explore');
+    expect(global.mockDismissTo).toHaveBeenCalledWith('/(protected)/explore');
   });
 
   it('should show unread messages badge', () => {

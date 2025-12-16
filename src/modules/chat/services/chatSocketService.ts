@@ -45,6 +45,17 @@ export interface ILeaveChatPayload {
   chat_id: string;
 }
 
+export interface ISendMessageParams {
+  chatId: string;
+  content: string;
+  messageType?: MessageType;
+  replyTo?: string | null;
+  imageUrl?: string | null;
+  isFirstMessage?: boolean;
+  voiceNoteUrl?: string | null;
+  voiceNoteDuration?: string | null;
+}
+
 export interface ISendMessagePayload {
   chat_id: string;
   message: {
@@ -234,16 +245,18 @@ class ChatSocketService {
   }
 
   // Send a message in a chat
-  public sendMessage(
-    chatId: string,
-    content: string,
-    messageType: MessageType = 'text',
-    replyTo: string | null = null,
-    imageUrl: string | null = null,
-    isFirstMessage: boolean = false,
-    voiceNoteUrl: string | null = null,
-    voiceNoteDuration: string | null = null,
-  ): void {
+  public sendMessage(params: ISendMessageParams): void {
+    const {
+      chatId,
+      content,
+      messageType = 'text',
+      replyTo = null,
+      imageUrl = null,
+      isFirstMessage = false,
+      voiceNoteUrl = null,
+      voiceNoteDuration = null,
+    } = params;
+
     const payload: ISendMessagePayload = {
       chat_id: chatId,
       message: {

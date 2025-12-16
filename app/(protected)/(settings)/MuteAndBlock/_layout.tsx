@@ -5,6 +5,18 @@ import { Stack } from 'expo-router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+const MuteAndBlockHeaderComponent = ({ username, title }: { username: string; title: string }) => (
+  <MuteAndBlockHeader username={username} title={title} />
+);
+
+const MutedAccountsHeaderComponent = ({ username, title }: { username: string; title: string }) => (
+  <MuteAndBlockHeader username={username} title={title} />
+);
+
+const BlockedAccountsHeaderComponent = ({ username, title }: { username: string; title: string }) => (
+  <MuteAndBlockHeader username={username} title={title} />
+);
+
 export default function MuteAndBlockLayout() {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -36,7 +48,7 @@ export default function MuteAndBlockLayout() {
       headerShown: true,
       headerBackVisible: true,
       headerBackTitle: '',
-      headerTitle: () => <MuteAndBlockHeader username={username} title={t('settings.mute_block.title')} />,
+      headerTitle: () => <MuteAndBlockHeaderComponent username={username} title={t('settings.mute_block.title')} />,
       headerTitleAlign: 'center' as const,
     }),
     [username, t],
@@ -48,7 +60,9 @@ export default function MuteAndBlockLayout() {
       headerBackVisible: true,
       headerBackTitle: '',
       headerBackTitleVisible: false,
-      headerTitle: () => <MuteAndBlockHeader username={username} title={t('settings.mute_block.muted_accounts')} />,
+      headerTitle: () => (
+        <MutedAccountsHeaderComponent username={username} title={t('settings.mute_block.muted_accounts')} />
+      ),
       headerTitleAlign: 'center' as const,
     }),
     [username, t],
@@ -60,7 +74,9 @@ export default function MuteAndBlockLayout() {
       headerBackVisible: true,
       headerBackTitle: '',
       headerBackTitleVisible: false,
-      headerTitle: () => <MuteAndBlockHeader username={username} title={t('settings.mute_block.blocked_accounts')} />,
+      headerTitle: () => (
+        <BlockedAccountsHeaderComponent username={username} title={t('settings.mute_block.blocked_accounts')} />
+      ),
       headerTitleAlign: 'center' as const,
     }),
     [username, t],
