@@ -93,6 +93,7 @@ export const showImagePickerOptions = (
   const destructiveButtonIndex = showDelete ? 2 : undefined;
   const cancelButtonIndex = showDelete ? 3 : 2;
 
+  console.log('DEBUG: showImagePickerOptions called. Platform.OS:', Platform.OS);
   const handleLibraryPick = async () => {
     const uri = await pickImageFromLibrary(isAvatar);
     if (uri) {
