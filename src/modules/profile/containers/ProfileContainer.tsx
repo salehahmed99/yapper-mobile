@@ -91,7 +91,7 @@ function ProfileContainerInner({ userId, username, isOwnProfile = true }: Profil
             isMuted: data.isMuted,
             isBlocked: data.isBlocked,
             topMutualFollowers: data.topMutualFollowers,
-            mutualFollowersCount: parseInt(data.mutualFollowersCount, 10) || 0,
+            mutualFollowersCount: Number.parseInt(data.mutualFollowersCount, 10) || 0,
             birthDate: '',
           };
           setProfileUser(mappedUser);
@@ -179,7 +179,7 @@ function ProfileContainerInner({ userId, username, isOwnProfile = true }: Profil
           isMuted: data.isMuted,
           isBlocked: data.isBlocked,
           topMutualFollowers: data.topMutualFollowers,
-          mutualFollowersCount: parseInt(data.mutualFollowersCount, 10) || 0,
+          mutualFollowersCount: Number.parseInt(data.mutualFollowersCount, 10) || 0,
           birthDate: '',
         };
         setProfileUser(mappedUser);

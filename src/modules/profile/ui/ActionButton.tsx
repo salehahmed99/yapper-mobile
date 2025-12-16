@@ -16,7 +16,7 @@ const ActionButton: React.FC<Props> = ({ onPress, title, style, textStyle, testI
       style={[styles.btn, style]}
       onPress={onPress}
       testID={testID}
-      accessibilityLabel={testID || `action_button_${title.toLowerCase().replace(/\s+/g, '_')}`}
+      accessibilityLabel={testID || `action_button_${title.toLowerCase().replaceAll(/\s+/g, '_')}`}
     >
       <Text style={[styles.text, textStyle]}>{title}</Text>
     </TouchableOpacity>

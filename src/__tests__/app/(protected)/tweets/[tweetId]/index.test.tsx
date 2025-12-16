@@ -103,7 +103,7 @@ describe('TweetDetailScreen Logic', () => {
   });
 
   it('should handle reply to tweet', () => {
-    let canReply = true;
+    const canReply = true;
     expect(canReply).toBe(true);
   });
 

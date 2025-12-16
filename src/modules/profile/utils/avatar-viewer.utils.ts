@@ -4,7 +4,7 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 type Origin = { x: number; y: number; width: number; height: number };
 
-export const calculateOpeningAnimation = (origin: Origin, isBanner: boolean) => {
+export const calculateOpeningAnimation = (origin: Origin) => {
   const originCenterX = origin.x + origin.width / 2;
   const originCenterY = origin.y + origin.height / 2;
   const screenCenterX = SCREEN_WIDTH / 2;
@@ -13,7 +13,7 @@ export const calculateOpeningAnimation = (origin: Origin, isBanner: boolean) => 
   const initialTranslateX = originCenterX - screenCenterX;
   const initialTranslateY = originCenterY - screenCenterY;
 
-  const targetSize = isBanner ? SCREEN_WIDTH : SCREEN_WIDTH;
+  const targetSize = SCREEN_WIDTH;
   const initialScale = origin.width / targetSize;
 
   return {

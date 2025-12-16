@@ -133,11 +133,15 @@ export const showImagePickerOptions = (
     }> = [
       {
         text: 'Choose from Library',
-        onPress: handleLibraryPick,
+        onPress: () => {
+          handleLibraryPick();
+        },
       },
       {
         text: 'Take Picture',
-        onPress: handleTakePicture,
+        onPress: () => {
+          handleTakePicture();
+        },
       },
     ];
 

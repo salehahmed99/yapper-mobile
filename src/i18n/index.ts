@@ -15,7 +15,7 @@ export const toLocalizedNumber = (value: string): string => {
 
   // 2. If Arabic, apply the digit mapping on top of the formatted string
   if (currentLang.startsWith('ar')) {
-    return value.replace(/\d/g, (d) => arabicDigits[parseInt(d)]);
+    return value.replaceAll(/\d/g, (d) => arabicDigits[Number.parseInt(d)]);
   }
 
   return value;

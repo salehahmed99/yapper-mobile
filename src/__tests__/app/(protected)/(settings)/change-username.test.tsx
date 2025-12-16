@@ -74,10 +74,7 @@ describe('ChangeUsernameScreen Logic', () => {
   });
 
   it('should handle save username request', () => {
-    let savedUsername = '';
-    const saveUsername = async (username: string) => {
-      savedUsername = username;
-    };
+    const savedUsername = '';
 
     expect(savedUsername).toBe('');
   });

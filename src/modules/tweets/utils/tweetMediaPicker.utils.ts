@@ -184,11 +184,15 @@ export const showCameraOptions = async (onMediaSelected: (media: MediaAsset | nu
     Alert.alert('Capture Media', 'Choose what to capture', [
       {
         text: 'Take Photo',
-        onPress: handleTakePhoto,
+        onPress: () => {
+          handleTakePhoto();
+        },
       },
       {
         text: 'Take Video',
-        onPress: handleTakeVideo,
+        onPress: () => {
+          handleTakeVideo();
+        },
       },
       {
         text: 'Cancel',
@@ -247,15 +251,21 @@ export const showMediaPickerOptions = async (onMediaSelected: (media: MediaAsset
     Alert.alert('Add Media', 'Choose where to get media from', [
       {
         text: 'Choose from Library',
-        onPress: handleLibraryPick,
+        onPress: () => {
+          handleLibraryPick();
+        },
       },
       {
         text: 'Take Photo',
-        onPress: handleTakePhoto,
+        onPress: () => {
+          handleTakePhoto();
+        },
       },
       {
         text: 'Take Video',
-        onPress: handleTakeVideo,
+        onPress: () => {
+          handleTakeVideo();
+        },
       },
       {
         text: 'Cancel',

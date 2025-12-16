@@ -3,7 +3,7 @@
 // Format a timestamp for display in chat bubbles (e.g., "3:45 PM")
 export function formatMessageTime(dateString: string): string {
   const date = new Date(dateString);
-  if (isNaN(date.getTime())) return '';
+  if (Number.isNaN(date.getTime())) return '';
   return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 }
 
@@ -13,7 +13,7 @@ export function formatRelativeTime(dateString: string | null | undefined): strin
     return '';
   }
   const date = new Date(dateString);
-  if (isNaN(date.getTime())) {
+  if (Number.isNaN(date.getTime())) {
     return '';
   }
   const now = new Date();

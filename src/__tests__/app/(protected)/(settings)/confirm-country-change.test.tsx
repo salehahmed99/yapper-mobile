@@ -84,10 +84,7 @@ describe('ConfirmCountryChangeScreen Logic', () => {
   });
 
   it('should submit country change on confirm', () => {
-    let isSubmitted = false;
-    const submitCountryChange = async () => {
-      isSubmitted = true;
-    };
+    const isSubmitted = false;
 
     expect(isSubmitted).toBe(false);
   });

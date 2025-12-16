@@ -4,7 +4,6 @@ import * as forgetPasswordService from '@/src/modules/auth/services/forgetPasswo
 import { useForgotPasswordStore } from '@/src/modules/auth/store/useForgetPasswordStore';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import React from 'react';
-import { Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
 import ResetPasswordScreen from '../../../../app/(auth)/forgot-password/reset-password';
 
@@ -42,9 +41,6 @@ jest.mock('@/src/hooks/useNavigation', () => ({
     },
   }),
 }));
-
-// Get the mocked Alert from react-native
-const mockAlertShow = (Alert as any).alert as jest.Mock;
 
 // Mock expo-localization
 jest.mock('expo-localization', () => ({

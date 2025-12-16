@@ -12,7 +12,7 @@ export const parseMentionsFromText = (text: string): string => {
   const mentionRegex = /\{@\}\[([^\]]+)\]\([^)]+\)/g;
 
   // Replace each mention with @username format
-  return text.replace(mentionRegex, (_, username) => `@${username}`);
+  return text.replaceAll(mentionRegex, (_, username) => `@${username}`);
 };
 
 /**
@@ -46,7 +46,7 @@ export const parseTweetBody = (content: string, mentions: string[] | undefined =
     // A. Handle Mentions (Your existing logic)
     if (part.startsWith('\u200B') && part.endsWith('\u200C')) {
       const match = part.match(/\d+/);
-      const index = match ? parseInt(match[0], 10) : -1;
+      const index = match ? Number.parseInt(match[0], 10) : -1;
       const username = mentions[index];
 
       if (username) {

@@ -8,7 +8,7 @@ export function useNavigation() {
   const navigationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const normalizePath = useCallback((path: string) => {
-    return path.replace(/\/\([^)]+\)/g, '').replace(/^$/, '/');
+    return path.replaceAll(/\/\([^)]+\)/g, '').replace(/^$/, '/');
   }, []);
 
   const navigate = useCallback(

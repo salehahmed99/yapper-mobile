@@ -1,7 +1,7 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useColorScheme } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
   avatarSizes,
@@ -27,9 +27,9 @@ interface ThemeContextType {
   theme: Theme;
   isDark: boolean;
   useDeviceSettings: boolean;
-  toggleTheme: () => void;
-  setThemeMode: (dark: boolean) => void;
-  setUseDeviceSettings: (use: boolean) => void;
+  toggleTheme: () => Promise<void>;
+  setThemeMode: (dark: boolean) => Promise<void>;
+  setUseDeviceSettings: (use: boolean) => Promise<void>;
 }
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 

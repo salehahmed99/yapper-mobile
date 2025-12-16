@@ -92,6 +92,8 @@ describe('useNotificationSocketListeners', () => {
   });
 
   it('should handle newest count updates', () => {
+    renderHook(() => useNotificationSocketListeners());
+
     const handler = (notificationSocketService.onNewestCount as jest.Mock).mock.calls[0][0];
     handler({ newest_count: 5 });
 

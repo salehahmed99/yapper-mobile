@@ -9,8 +9,6 @@ describe('MuteAndBlockLayout', () => {
         text: { primary: '#000000' },
       },
     };
-
-    const username = 'testuser';
     const createScreenOptions = (theme: any) => ({
       contentStyle: {
         backgroundColor: theme.colors.background.primary,
@@ -86,9 +84,8 @@ describe('MuteAndBlockLayout', () => {
 
   it('should handle screen options for nested screens', () => {
     const username = 'testuser';
-    const title = 'Mute & Block';
 
-    const createOptionsForScreen = (screenName: string, username: string, title: string) => ({
+    const createOptionsForScreen = (screenName: string, username: string) => ({
       headerShown: true,
       headerBackVisible: true,
       headerBackTitle: '',
@@ -97,9 +94,9 @@ describe('MuteAndBlockLayout', () => {
       headerTitleAlign: 'center' as const,
     });
 
-    const muteAndBlockOptions = createOptionsForScreen('MuteAndBlock', username, title);
-    const mutedOptions = createOptionsForScreen('Muted Accounts', username, title);
-    const blockedOptions = createOptionsForScreen('Blocked Accounts', username, title);
+    const muteAndBlockOptions = createOptionsForScreen('MuteAndBlock', username);
+    const mutedOptions = createOptionsForScreen('Muted Accounts', username);
+    const blockedOptions = createOptionsForScreen('Blocked Accounts', username);
 
     expect(muteAndBlockOptions.headerShown).toBe(true);
     expect(muteAndBlockOptions.headerBackVisible).toBe(true);
@@ -118,7 +115,7 @@ describe('MuteAndBlockLayout', () => {
       headerBackTitleVisible: false,
     };
 
-    screens.forEach((screenName) => {
+    screens.forEach(() => {
       expect(baseOptions.headerShown).toBe(true);
       expect(baseOptions.headerBackVisible).toBe(true);
       expect(baseOptions.headerShadowVisible).toBe(false);

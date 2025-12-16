@@ -26,7 +26,6 @@ jest.mock('expo-blur', () => {
 });
 
 // Mock UiShellContext methods
-const mockCloseSideMenu = jest.fn();
 jest.mock('@/src/context/UiShellContext', () => {
   const original = jest.requireActual('@/src/context/UiShellContext');
   return {

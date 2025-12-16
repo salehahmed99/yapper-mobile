@@ -9,7 +9,7 @@ jest.mock('@tanstack/react-query', () => ({
 
 // Mock the tweet service
 jest.mock('../../services/tweetService', () => ({
-  getBookmarks: jest.fn((filters) =>
+  getBookmarks: jest.fn(() =>
     Promise.resolve({
       data: [],
       pagination: { nextCursor: undefined },

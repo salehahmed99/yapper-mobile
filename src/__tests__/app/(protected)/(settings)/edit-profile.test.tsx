@@ -10,7 +10,7 @@ describe('EditProfileScreen Logic', () => {
   });
 
   it('should initialize name input field', () => {
-    let name = 'John Doe';
+    const name = 'John Doe';
     expect(name).toBeTruthy();
   });
 
@@ -89,16 +89,16 @@ describe('EditProfileScreen Logic', () => {
   });
 
   it('should show save button when changes made', () => {
-    const originalName = 'John';
-    let currentName = 'Jane';
+    const originalName: string = 'John';
+    const currentName: string = 'Jane';
     const hasChanges = originalName !== currentName;
 
     expect(hasChanges).toBe(true);
   });
 
   it('should disable save button when no changes', () => {
-    const originalName = 'John';
-    let currentName = 'John';
+    const originalName: string = 'John';
+    const currentName: string = 'John';
     const hasChanges = originalName !== currentName;
     const canSave = hasChanges;
 
@@ -117,10 +117,7 @@ describe('EditProfileScreen Logic', () => {
   });
 
   it('should handle profile save request', () => {
-    let savedProfile = null;
-    const saveProfile = async (profile: any) => {
-      savedProfile = profile;
-    };
+    const savedProfile = null;
 
     expect(savedProfile).toBeNull();
   });

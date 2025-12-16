@@ -74,17 +74,6 @@ describe('TweetActivityScreen Logic', () => {
     expect(navigatedTo.params.id).toBe('user123');
   });
 
-  it('should fetch current user data', () => {
-    let userData: any = null;
-    const user = { id: 'user123', name: 'John Doe' };
-
-    const fetchAndUpdateUser = async () => {
-      userData = user;
-    };
-
-    expect(userData).toBeNull();
-  });
-
   it('should configure activity tabs', () => {
     const tabs = [
       { name: 'Likes', key: 'likes' },
@@ -99,7 +88,6 @@ describe('TweetActivityScreen Logic', () => {
   });
 
   it('should handle swipeable tabs navigation', () => {
-    const tabCount = 3;
     let currentIndex = 0;
 
     const onIndexChange = (index: number) => {
