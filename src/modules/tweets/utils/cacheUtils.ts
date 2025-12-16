@@ -86,7 +86,6 @@ export const removeTweetFromInfiniteCache = (oldData: InfiniteData<ITweets> | un
           if (tweet.parentTweet && tweet.parentTweet.tweetId === tweetId) {
             updatedTweet = { ...updatedTweet, parentTweet: undefined };
           }
-
           return updatedTweet;
         })
         .filter((tweet: ITweet) => tweet.tweetId !== tweetId),
