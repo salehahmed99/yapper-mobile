@@ -2,7 +2,8 @@ import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { FlashList } from '@shopify/flash-list';
 import { useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, RefreshControl, StyleSheet, View, ViewToken } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, RefreshControl, StyleSheet, Text, View, ViewToken } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TweetContainer from '../containers/TweetContainer';
 import { ITweet } from '../types';
@@ -37,6 +38,7 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
     listHeaderComponent: ListHeaderComponent,
   } = props;
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [visibleTweetIds, setVisibleTweetIds] = useState<Set<string>>(new Set());
@@ -80,6 +82,14 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
     );
   };
 
+  const renderEmptyComponent = () => {
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyText}>{t('home.emptyList')}</Text>
+      </View>
+    );
+  };
+
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -118,6 +128,7 @@ const TweetList: React.FC<ITweetListProps> = (props) => {
       testID="tweet_list_feed"
       ListHeaderComponent={renderHeader}
       ListFooterComponent={renderFooter}
+      ListEmptyComponent={renderEmptyComponent}
       onEndReached={onEndReached}
       onEndReachedThreshold={onEndReachedThreshold ?? 0.5}
       removeClippedSubviews={false}
@@ -150,6 +161,20 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       justifyContent: 'center',
       width: '100%',
+    },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 60,
+      paddingHorizontal: 20,
+      borderWidth: 1,
+      borderColor: 'red',
+    },
+    emptyText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.typography.sizes.md,
+      textAlign: 'center',
     },
     list: {
       flex: 1,
