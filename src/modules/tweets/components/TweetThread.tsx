@@ -116,8 +116,8 @@ const SingleTweet: React.FC<ITweetProps> = (props) => {
     menuItems.push({
       label: t('tweets.deletePost'),
       onPress: () => onDeletePress(tweet.tweetId),
-      icon: <Trash2 size={theme.iconSizes.md} stroke={theme.colors.accent.like} />,
-      textColor: theme.colors.accent.like,
+      icon: <Trash2 size={theme.iconSizes.md} stroke={theme.colors.error} />,
+      textColor: theme.colors.error,
     });
   }
 

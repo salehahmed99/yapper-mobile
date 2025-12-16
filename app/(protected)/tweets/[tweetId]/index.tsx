@@ -77,8 +77,8 @@ const TweetDetailsScreen = () => {
     menuItems.push({
       label: t('tweets.deletePost'),
       onPress: () => handleDeletePress(tweetId),
-      icon: <Trash2 size={theme.iconSizes.md} stroke={theme.colors.accent.like} />,
-      textColor: theme.colors.accent.like,
+      icon: <Trash2 size={theme.iconSizes.md} stroke={theme.colors.error} />,
+      textColor: theme.colors.error,
     });
   }
   return (
