@@ -250,7 +250,7 @@ describe('BirthDateScreen', () => {
       });
 
       expect(global.mockReplace).toHaveBeenCalledWith({
-        pathname: '/(auth)/OAuth/user-name-screen',
+        pathname: '/(auth)/OAuth/interests-selection',
         params: {
           sessionToken: mockSessionToken,
           userNames: JSON.stringify(mockUsernames),

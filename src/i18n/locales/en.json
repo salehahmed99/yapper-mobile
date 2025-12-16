@@ -115,6 +115,7 @@
   },
   "notifications": {
     "title": "Notifications",
+    "emptyState": "Nothing to see here — yet",
     "tabs": {
       "all": "All",
       "mentions": "Mentions"
@@ -457,7 +458,7 @@
     "tabs": {
       "reposts": "Reposts",
       "quotes": "Quotes",
-      "likers": "Likers"
+      "likers": "Liked by"
     }
   },
   "tweetSummary": {

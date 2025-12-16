@@ -121,6 +121,7 @@
   },
   "notifications": {
     "title": "الإشعارات",
+    "emptyState": "لا يوجد شيء هنا — بعد",
     "tabs": {
       "all": "الكل",
       "mentions": "الإشارات"
