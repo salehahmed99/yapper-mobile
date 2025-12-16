@@ -5,30 +5,10 @@ jest.mock('expo-localization', () => ({
   getLocales: () => [{ regionCode: 'US' }],
 }));
 
-// Mock expo-router BEFORE importing anything that uses it
-const mockBack = jest.fn();
-const mockPush = jest.fn();
-jest.mock('expo-router', () => ({
-  router: {
-    back: mockBack,
-    push: mockPush,
-    replace: jest.fn(),
-  },
-  useRouter: () => ({
-    back: mockBack,
-    push: mockPush,
-  }),
-}));
-
 import { Theme } from '@/src/constants/theme';
 import { fireEvent, render, screen } from '@testing-library/react-native';
-import { router } from 'expo-router';
 import React from 'react';
 import { YourAccountScreen } from '../../../../app/(protected)/(settings)/yourAccount';
-
-// Re-mock the router after import to ensure it's properly patched
-jest.mocked(router).back = mockBack;
-jest.mocked(router).push = mockPush;
 
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
@@ -203,7 +183,7 @@ describe('YourAccountScreen', () => {
       const accountInfoItem = getByTestId('account-item-account-info');
       fireEvent.press(accountInfoItem);
 
-      expect(mockPush).toHaveBeenCalledWith('/(protected)/(settings)/your-account/account-information');
+      expect(global.mockNavigate).toHaveBeenCalledWith('/(protected)/(settings)/your-account/account-information');
     });
 
     it('should navigate to change-password when item is pressed', () => {
@@ -212,7 +192,7 @@ describe('YourAccountScreen', () => {
       const changePasswordItem = getByTestId('account-item-change-password');
       fireEvent.press(changePasswordItem);
 
-      expect(mockPush).toHaveBeenCalledWith('/(protected)/(settings)/your-account/changePassword');
+      expect(global.mockNavigate).toHaveBeenCalledWith('/(protected)/(settings)/your-account/changePassword');
     });
 
     it('should navigate to deactivate-account when item is pressed', () => {
@@ -221,7 +201,7 @@ describe('YourAccountScreen', () => {
       const deactivateItem = getByTestId('account-item-deactivate-account');
       fireEvent.press(deactivateItem);
 
-      expect(mockPush).toHaveBeenCalledWith('/(protected)/(settings)/your-account/deactivateAccount');
+      expect(global.mockNavigate).toHaveBeenCalledWith('/(protected)/(settings)/your-account/deactivateAccount');
     });
 
     it('should go back when back button is pressed', () => {
@@ -230,7 +210,7 @@ describe('YourAccountScreen', () => {
       const topBar = getByTestId('settings-top-bar');
       topBar.props.onBackPress?.();
 
-      expect(mockBack).toHaveBeenCalled();
+      expect(global.mockGoBack).toHaveBeenCalled();
     });
   });
 

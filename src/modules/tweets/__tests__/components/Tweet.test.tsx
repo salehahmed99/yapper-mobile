@@ -4,6 +4,38 @@ import React from 'react';
 import TweetThread from '../../components/TweetThread';
 import { ITweet } from '../../types';
 
+// Mock useNavigation hook
+const mockNavigate = jest.fn();
+jest.mock('@/src/hooks/useNavigation', () => ({
+  __esModule: true,
+  default: () => ({
+    navigate: mockNavigate,
+    replace: jest.fn(),
+    goBack: jest.fn(),
+    dismissTo: jest.fn(),
+    isCurrentRoute: jest.fn(),
+    pathname: '/',
+    router: {
+      push: jest.fn(),
+      replace: jest.fn(),
+      back: jest.fn(),
+    },
+  }),
+  useNavigation: () => ({
+    navigate: mockNavigate,
+    replace: jest.fn(),
+    goBack: jest.fn(),
+    dismissTo: jest.fn(),
+    isCurrentRoute: jest.fn(),
+    pathname: '/',
+    router: {
+      push: jest.fn(),
+      replace: jest.fn(),
+      back: jest.fn(),
+    },
+  }),
+}));
+
 // Mock child components
 jest.mock('../../components/ActionsRow', () => 'ActionsRow');
 jest.mock('../../components/ParentTweet', () => 'ParentTweet');
@@ -56,7 +88,6 @@ describe('Tweet', () => {
     onBookmark: jest.fn(),
     onShare: jest.fn(),
     openSheet: jest.fn(),
-    onTweetPress: jest.fn(),
     onAvatarPress: jest.fn(),
     onDeletePress: jest.fn(),
     onReply: jest.fn(),
@@ -66,6 +97,10 @@ describe('Tweet', () => {
     onHashtagPress: jest.fn(),
   };
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should render tweet content', () => {
     const { getByText } = renderWithTheme(<TweetThread {...defaultProps} />);
     expect(getByText('test content')).toBeTruthy();
@@ -74,7 +109,13 @@ describe('Tweet', () => {
   it('should handle tweet press', () => {
     const { getByTestId } = renderWithTheme(<TweetThread {...defaultProps} />);
     fireEvent.press(getByTestId('tweet_container_main'));
-    expect(defaultProps.onTweetPress).toHaveBeenCalledWith('1');
+    expect(mockNavigate).toHaveBeenCalledWith({
+      pathname: '/(protected)/tweets/[tweetId]',
+      params: {
+        tweetId: '1',
+        tweetUserId: '1',
+      },
+    });
   });
 
   it('should handle avatar press', () => {

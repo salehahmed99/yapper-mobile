@@ -3,23 +3,8 @@ import BirthDateScreen from '@/app/(auth)/OAuth/birth-date-screen';
 import { Theme } from '@/src/constants/theme';
 import { OAuthStep1, OAuthStep2 } from '@/src/modules/auth/services/authService';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { router } from 'expo-router';
 import React from 'react';
 import Toast from 'react-native-toast-message';
-
-// Mock expo-router
-const mockUseLocalSearchParams = jest.fn();
-
-jest.mock('expo-router', () => ({
-  router: {
-    replace: jest.fn(),
-    back: jest.fn(),
-  },
-  useLocalSearchParams: () => mockUseLocalSearchParams(),
-  useFocusEffect: jest.fn((callback: () => void) => {
-    if (callback) callback();
-  }),
-}));
 
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
@@ -155,7 +140,7 @@ describe('BirthDateScreen', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseLocalSearchParams.mockReturnValue({
+    global.mockUseLocalSearchParams.mockReturnValue({
       sessionToken: mockSessionToken,
     });
   });
@@ -264,7 +249,7 @@ describe('BirthDateScreen', () => {
         text1: 'Account created successfully',
       });
 
-      expect(router.replace).toHaveBeenCalledWith({
+      expect(global.mockReplace).toHaveBeenCalledWith({
         pathname: '/(auth)/OAuth/user-name-screen',
         params: {
           sessionToken: mockSessionToken,
@@ -327,7 +312,7 @@ describe('BirthDateScreen', () => {
         });
       });
 
-      expect(router.replace).not.toHaveBeenCalled();
+      expect(global.mockReplace).not.toHaveBeenCalled();
       expect(mockLoginUser).not.toHaveBeenCalled();
     });
 
@@ -354,7 +339,7 @@ describe('BirthDateScreen', () => {
         });
       });
 
-      expect(router.replace).not.toHaveBeenCalled();
+      expect(global.mockReplace).not.toHaveBeenCalled();
       expect(mockLoginUser).not.toHaveBeenCalled();
     });
   });
@@ -393,7 +378,7 @@ describe('BirthDateScreen', () => {
       });
 
       await waitFor(() => {
-        expect(router.replace).toHaveBeenCalled();
+        expect(global.mockReplace).toHaveBeenCalled();
       });
 
       expect(queryByTestId('activity-loader')).toBeNull();
@@ -433,7 +418,7 @@ describe('BirthDateScreen', () => {
       });
 
       await waitFor(() => {
-        expect(router.replace).toHaveBeenCalled();
+        expect(global.mockReplace).toHaveBeenCalled();
       });
 
       const updatedBottomBar = getByTestId('bottom-bar');

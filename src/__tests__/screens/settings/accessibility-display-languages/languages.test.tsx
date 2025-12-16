@@ -5,28 +5,10 @@ jest.mock('expo-localization', () => ({
   getLocales: () => [{ regionCode: 'US' }],
 }));
 
-// Mock expo-router BEFORE importing
-const mockBack = jest.fn();
-const mockPush = jest.fn();
-jest.mock('expo-router', () => ({
-  router: {
-    back: mockBack,
-    push: mockPush,
-  },
-  useRouter: () => ({
-    back: mockBack,
-    push: mockPush,
-  }),
-}));
-
 import { Theme } from '@/src/constants/theme';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import { router } from 'expo-router';
 import React from 'react';
 import { LanguagesScreen } from '../../../../../app/(protected)/(settings)/accessibility-display-languages/languages';
-
-jest.mocked(router).back = mockBack;
-jest.mocked(router).push = mockPush;
 
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
@@ -240,7 +222,7 @@ describe('LanguagesScreen', () => {
       const topBar = getByTestId('top-bar');
       topBar.props.onBackPress?.();
 
-      expect(mockBack).toHaveBeenCalled();
+      expect(global.mockGoBack).toHaveBeenCalled();
     });
 
     it('should handle skip action', async () => {
@@ -250,7 +232,7 @@ describe('LanguagesScreen', () => {
       const skipButton = screen.queryByText('Skip');
       if (skipButton) {
         fireEvent.press(skipButton);
-        expect(mockBack).toHaveBeenCalled();
+        expect(global.mockGoBack).toHaveBeenCalled();
       }
     });
 
@@ -266,7 +248,7 @@ describe('LanguagesScreen', () => {
         if (nextButton) {
           fireEvent.press(nextButton);
           await waitFor(() => {
-            expect(mockBack).toHaveBeenCalled();
+            expect(global.mockGoBack).toHaveBeenCalled();
           });
         }
       }

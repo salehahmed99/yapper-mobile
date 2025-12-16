@@ -11,7 +11,8 @@ jest.mock('@/src/modules/chat/hooks/useChatConversation', () => ({
 
 jest.mock('expo-router', () => ({
   useLocalSearchParams: () => ({ id: 'c1', name: 'User 1' }),
-  useRouter: () => ({ back: jest.fn() }),
+  useRouter: () => ({ back: jest.fn(), push: jest.fn() }),
+  usePathname: () => '/(protected)/messages/c1',
 }));
 
 jest.mock('@/src/modules/chat/components/ChatHeader', () => {

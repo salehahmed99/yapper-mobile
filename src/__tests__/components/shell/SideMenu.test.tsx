@@ -3,7 +3,6 @@ import { ThemeProvider } from '@/src/context/ThemeContext';
 import { UiShellProvider, useUiShell } from '@/src/context/UiShellContext';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { fireEvent, render, screen } from '@testing-library/react-native';
-import { useRouter } from 'expo-router';
 import React from 'react';
 import { Animated } from 'react-native';
 
@@ -46,7 +45,6 @@ const renderWithProviders = (component: React.ReactElement) => {
 
 describe('SideMenu', () => {
   const mockAnim = new Animated.Value(0);
-  const mockPush = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -55,10 +53,12 @@ describe('SideMenu', () => {
         user: { name: 'Test User', username: 'testuser', following: 10, followers: 20 },
       }),
     );
-    (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
     (useUiShell as jest.Mock).mockReturnValue({
       isSideMenuOpen: true,
-      closeSideMenu: mockCloseSideMenu,
+      closeSideMenu: jest.fn((cb) => {
+        // Call the callback if provided
+        if (cb) cb();
+      }),
     });
   });
 
@@ -74,8 +74,8 @@ describe('SideMenu', () => {
     renderWithProviders(<SideMenu anim={mockAnim} />);
     const profileBtn = screen.getByTestId('sidemenu_profile_button');
     fireEvent.press(profileBtn);
-    expect(mockCloseSideMenu).toHaveBeenCalled();
-    expect(mockPush).toHaveBeenCalledWith('/(profile)/Profile/');
+    // Component calls navigate with the route and a callback function
+    expect(global.mockNavigate).toHaveBeenCalledWith('/(profile)/Profile/', expect.any(Function));
   });
 
   it('should navigate to valid routes', () => {
@@ -83,11 +83,14 @@ describe('SideMenu', () => {
 
     // Check Explore
     fireEvent.press(screen.getByTestId('sidemenu_explore_button'));
-    expect(mockPush).toHaveBeenCalledWith('/(protected)/explore');
+    expect(global.mockNavigate).toHaveBeenCalledWith('/(protected)/explore', expect.any(Function));
+
+    // Clear mocks for next check
+    jest.clearAllMocks();
 
     // Check Messages
     fireEvent.press(screen.getByTestId('sidemenu_messages_button'));
-    expect(mockPush).toHaveBeenCalledWith('/(protected)/messages');
+    expect(global.mockNavigate).toHaveBeenCalledWith('/(protected)/messages', expect.any(Function));
   });
 
   it('should toggle theme settings', () => {

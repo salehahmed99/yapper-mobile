@@ -156,7 +156,7 @@ describe('useChatConversation', () => {
       result.current.handleSend();
     });
 
-    expect(chatSocketService.sendMessage).toHaveBeenCalledWith(CHAT_ID, 'Hello', 'text', null, null, true);
+    expect(chatSocketService.sendMessage).toHaveBeenCalledWith(CHAT_ID, 'Hello', 'text', null, null, true, null, null);
     expect(result.current.inputText).toBe(''); // Should clear input
   });
 
@@ -203,6 +203,7 @@ describe('useChatConversation', () => {
       content: 'reply to me',
       senderName: 'User 1',
       hasImage: false,
+      hasVoice: false,
     });
 
     act(() => {

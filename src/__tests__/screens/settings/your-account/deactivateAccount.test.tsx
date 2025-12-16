@@ -5,28 +5,10 @@ jest.mock('expo-localization', () => ({
   getLocales: () => [{ regionCode: 'US' }],
 }));
 
-// Mock expo-router BEFORE importing
-const mockBack = jest.fn();
-const mockPush = jest.fn();
-jest.mock('expo-router', () => ({
-  router: {
-    back: mockBack,
-    push: mockPush,
-  },
-  useRouter: () => ({
-    back: mockBack,
-    push: mockPush,
-  }),
-}));
-
 import { Theme } from '@/src/constants/theme';
 import { fireEvent, render, screen } from '@testing-library/react-native';
-import { router } from 'expo-router';
 import React from 'react';
 import { DeactivateAccountScreen } from '../../../../../app/(protected)/(settings)/your-account/deactivateAccount';
-
-jest.mocked(router).back = mockBack;
-jest.mocked(router).push = mockPush;
 
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
@@ -179,7 +161,7 @@ describe('DeactivateAccountScreen', () => {
       const topBar = getByTestId('settings-top-bar');
       topBar.props.onBackPress?.();
 
-      expect(mockBack).toHaveBeenCalled();
+      expect(global.mockGoBack).toHaveBeenCalled();
     });
 
     it('should navigate to confirmation screen when deactivate button is pressed', () => {
@@ -188,7 +170,7 @@ describe('DeactivateAccountScreen', () => {
       const deactivateButton = getByTestId('deactivate-button');
       fireEvent.press(deactivateButton);
 
-      expect(mockPush).toHaveBeenCalledWith(expect.stringContaining('confirmDeactivate'));
+      expect(global.mockNavigate).toHaveBeenCalledWith(expect.stringContaining('confirmDeactivate'));
     });
   });
 

@@ -5,28 +5,10 @@ jest.mock('expo-localization', () => ({
   getLocales: () => [{ regionCode: 'US' }],
 }));
 
-// Mock expo-router BEFORE importing
-const mockBack = jest.fn();
-const mockPush = jest.fn();
-jest.mock('expo-router', () => ({
-  router: {
-    back: mockBack,
-    push: mockPush,
-  },
-  useRouter: () => ({
-    back: mockBack,
-    push: mockPush,
-  }),
-}));
-
 import { Theme } from '@/src/constants/theme';
 import { fireEvent, render, screen } from '@testing-library/react-native';
-import { router } from 'expo-router';
 import React from 'react';
 import { ChangePasswordScreen } from '../../../../../app/(protected)/(settings)/your-account/changePassword';
-
-jest.mocked(router).back = mockBack;
-jest.mocked(router).push = mockPush;
 
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
@@ -255,7 +237,7 @@ describe('ChangePasswordScreen', () => {
       const topBar = getByTestId('settings-top-bar');
       topBar.props.onBackPress?.();
 
-      expect(mockBack).toHaveBeenCalled();
+      expect(global.mockGoBack).toHaveBeenCalled();
     });
 
     it('should navigate to forgot password when link is pressed', () => {
@@ -264,7 +246,7 @@ describe('ChangePasswordScreen', () => {
       const forgotPasswordLink = screen.queryByText('Forgot password?');
       if (forgotPasswordLink) {
         fireEvent.press(forgotPasswordLink);
-        expect(mockPush).toHaveBeenCalled();
+        expect(global.mockNavigate).toHaveBeenCalled();
       }
     });
   });
