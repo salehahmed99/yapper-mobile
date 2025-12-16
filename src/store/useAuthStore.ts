@@ -42,90 +42,65 @@ export const useAuthStore = create<IAuthState>((set) => ({
   /** Initialize auth on app start */
   initializeAuth: async () => {
     let authSuccessful = false;
-    const token = await getToken();
-    const refreshToken = await getRefreshToken();
-
-    if (token) {
-      try {
-        set({ token });
-        const data = await getMyUser();
-        set({ user: mapUser(data) });
-
-        // Sync language
-        if (data.language && data.language !== i18n.language) {
-          await changeLanguage(data.language);
-          await AsyncStorage.setItem('app-language', data.language);
-        }
-
-        if (refreshToken) {
-          tokenRefreshService.start();
-        }
-        authSuccessful = true; // Auth succeeded with existing token
-      } catch {
-        // Token invalid, try refresh if available
-        if (refreshToken) {
-          try {
-            const newToken = await tokenRefreshService.refreshToken();
-
-            if (newToken) {
-              await saveToken(newToken);
-              set({ token: newToken });
-
-              const data = await getMyUser();
-              set({ user: mapUser(data) });
-
-              if (data.language && data.language !== i18n.language) {
-                await changeLanguage(data.language);
-                await AsyncStorage.setItem('app-language', data.language);
-              }
-
-              tokenRefreshService.start();
-              authSuccessful = true;
-            } else {
-              await deleteRefreshToken();
-              set({ user: null, token: null });
-            }
-          } catch {
-            await deleteToken();
-            await deleteRefreshToken();
-            set({ user: null, token: null });
-          }
-        } else {
-          await deleteToken();
-          set({ user: null, token: null });
-        }
-      }
-    } else if (refreshToken) {
-      try {
-        const newToken = await tokenRefreshService.refreshToken();
-
-        if (!newToken) {
-          await deleteRefreshToken();
-          set({ user: null, token: null });
-        } else {
-          await saveToken(newToken);
-          set({ token: newToken });
-
+    try {
+      const token = await getToken();
+      const refreshToken = await getRefreshToken();
+      if (token) {
+        try {
+          set({ token });
           const data = await getMyUser();
           set({ user: mapUser(data) });
 
+          // Sync language
           if (data.language && data.language !== i18n.language) {
             await changeLanguage(data.language);
             await AsyncStorage.setItem('app-language', data.language);
           }
 
-          tokenRefreshService.start();
-          authSuccessful = true; // Auth succeeded with refreshed token
+          if (refreshToken) {
+            tokenRefreshService.start();
+          }
+          authSuccessful = true; // Auth succeeded with existing token
+        } catch {
+          await deleteToken();
+          await deleteRefreshToken();
+          set({ user: null, token: null });
         }
-      } catch {
-        await deleteToken();
-        await deleteRefreshToken();
-        set({ user: null, token: null });
+      } else if (refreshToken) {
+        try {
+          const newToken = await tokenRefreshService.refreshToken();
+
+          if (!newToken) {
+            await deleteRefreshToken();
+            set({ user: null, token: null });
+          } else {
+            await saveToken(newToken);
+            set({ token: newToken });
+
+            const data = await getMyUser();
+            set({ user: mapUser(data) });
+
+            if (data.language && data.language !== i18n.language) {
+              await changeLanguage(data.language);
+              await AsyncStorage.setItem('app-language', data.language);
+            }
+
+            tokenRefreshService.start();
+            authSuccessful = true; // Auth succeeded with refreshed token
+          }
+        } catch {
+          await deleteToken();
+          await deleteRefreshToken();
+          set({ user: null, token: null });
+        }
       }
+    } catch {
+      await deleteToken();
+      await deleteRefreshToken();
+      set({ user: null, token: null });
+    } finally {
+      set({ isInitialized: true });
     }
-
-    set({ isInitialized: true });
-
     if (authSuccessful) {
       try {
         await socketService.connect();
