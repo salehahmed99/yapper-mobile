@@ -1,7 +1,7 @@
-import { renderHook } from '@testing-library/react-native';
-import { useQueryClient } from '@tanstack/react-query';
-import { useNotificationSocketListeners } from '../../hooks/useNotificationSocketListeners';
 import { useNotificationStore } from '@/src/store/useNotificationStore';
+import { useQueryClient } from '@tanstack/react-query';
+import { renderHook } from '@testing-library/react-native';
+import { useNotificationSocketListeners } from '../../hooks/useNotificationSocketListeners';
 import { notificationSocketService } from '../../services/notificationSocketService';
 
 // Mock the notification socket service
@@ -92,8 +92,6 @@ describe('useNotificationSocketListeners', () => {
   });
 
   it('should handle newest count updates', () => {
-    const { result } = renderHook(() => useNotificationSocketListeners());
-
     const handler = (notificationSocketService.onNewestCount as jest.Mock).mock.calls[0][0];
     handler({ newest_count: 5 });
 
@@ -225,8 +223,7 @@ describe('useNotificationSocketListeners', () => {
 
     const handleFollow = (notificationSocketService.onFollow as jest.Mock).mock.calls[0][0];
     const handleLike = (notificationSocketService.onLike as jest.Mock).mock.calls[0][0];
-    const handleNewestCount = (notificationSocketService.onNewestCount as jest.Mock).mock
-      .calls[0][0];
+    const handleNewestCount = (notificationSocketService.onNewestCount as jest.Mock).mock.calls[0][0];
 
     handleFollow({ action: 'add', user_id: '1' });
     handleLike({ action: 'add', tweet_id: 'tweet1' });

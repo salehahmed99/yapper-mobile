@@ -155,12 +155,14 @@ describe('useChatConversation', () => {
       result.current.handleSend();
     });
 
-    expect(chatSocketService.sendMessage).toHaveBeenCalledWith(expect.objectContaining({
-      chatId: CHAT_ID,
-      content: 'Hello',
-      messageType: 'text',
-      isFirstMessage: true,
-    }));
+    expect(chatSocketService.sendMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        chatId: CHAT_ID,
+        content: 'Hello',
+        messageType: 'text',
+        isFirstMessage: true,
+      }),
+    );
     expect(result.current.inputText).toBe(''); // Should clear input
   });
 

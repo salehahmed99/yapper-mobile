@@ -84,8 +84,7 @@ const useTweetUtils = () => {
     });
   };
 
-  const handleShare = () => {
-  };
+  const handleShare = () => {};
 
   return {
     handleDeletePress,

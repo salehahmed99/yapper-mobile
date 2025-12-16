@@ -36,9 +36,8 @@ jest.mock('expo-router', () => ({
 import UserProfile from '@/app/(protected)/(profile)/[id]';
 
 // Force module evaluation for coverage tracking
-const componentModule = require('@/app/(protected)/(profile)/[id]');
 
-// Also test the UUID regex logic directly  
+// Also test the UUID regex logic directly
 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 describe('UserProfile Screen', () => {

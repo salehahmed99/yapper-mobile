@@ -5,7 +5,6 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { Animated } from 'react-native';
 import 'react-native-gesture-handler/jestSetup';
-
 // ----------------------------
 // Mock react-native-gesture-handler manually to avoid I18nManager issues
 // ----------------------------
