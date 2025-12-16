@@ -67,6 +67,19 @@ export interface ISearchUsersResponse {
   message: string;
 }
 
+// Type for the mapped search users page (after mapSearchUserToUser is applied)
+export interface ISearchUsersMappedPageData {
+  data: {
+    data: IUser[];
+    pagination: {
+      nextCursor: string | null;
+      hasMore: boolean;
+    };
+  };
+  count: number;
+  message: string;
+}
+
 // Search Query Params
 export interface ISearchSuggestionsParams {
   query: string;
