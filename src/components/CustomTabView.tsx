@@ -247,6 +247,8 @@ const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       height: theme.ui.tabViewHeight,
       alignItems: 'center',
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
     },
     tabItem: {
       justifyContent: 'center',

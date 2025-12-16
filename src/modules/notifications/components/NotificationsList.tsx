@@ -2,7 +2,8 @@ import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { FlashList } from '@shopify/flash-list';
 import { useMemo, useRef } from 'react';
-import { ActivityIndicator, RefreshControl, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import NotificationContainer from '../containers/NotificationContainer';
 import { INotification } from '../types';
@@ -34,6 +35,7 @@ const NotificationsList: React.FC<INotificationsListProps> = (props) => {
     useCustomRefreshIndicator = false,
   } = props;
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -76,6 +78,12 @@ const NotificationsList: React.FC<INotificationsListProps> = (props) => {
     );
   };
 
+  const renderEmpty = () => (
+    <View style={styles.emptyState} testID="notifications_empty_state">
+      <Text style={styles.emptyText}>{t('notifications.emptyState')}</Text>
+    </View>
+  );
+
   if (isLoading) {
     return (
       <View style={styles.loadingContainer} accessibilityLabel="notifications_loading" testID="notifications_loading">
@@ -106,6 +114,7 @@ const NotificationsList: React.FC<INotificationsListProps> = (props) => {
       testID="notifications_list_feed"
       ListHeaderComponent={renderHeader}
       ListFooterComponent={renderFooter}
+      ListEmptyComponent={renderEmpty}
       onEndReached={onEndReached}
       onEndReachedThreshold={onEndReachedThreshold ?? 0.5}
       removeClippedSubviews={false}
@@ -137,6 +146,17 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       justifyContent: 'center',
       width: '100%',
+    },
+    emptyState: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 40,
+    },
+    emptyText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.typography.sizes.md,
+      fontFamily: theme.typography.fonts.regular,
     },
     list: {
       flex: 1,
