@@ -1,13 +1,15 @@
+import CountryPicker, { Country } from '@/src/components/CountryPicker';
 import { DEFAULT_AVATAR_URL, DEFAULT_BANNER_URL } from '@/src/constants/defaults';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { StatusBar } from 'expo-status-bar';
 import React, { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Alert, Image, Modal, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Modal, Text, TouchableOpacity, View } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useTheme } from '../../../context/ThemeContext';
-import { deleteAvatar, deleteCover, updateUserProfile, uploadAvatar, uploadCover } from '../services/profileService';
+import { updateUserProfile, uploadAvatar, uploadCover } from '../services/profileService';
 import { createEditModalStyles } from '../styles/edit-modal-styles';
 import Input from '../ui/Input';
 import { showImagePickerOptions } from '../utils/edit-profile.utils';
@@ -45,6 +47,7 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
   const [newAvatarUri, setNewAvatarUri] = useState<string | null>(null);
   const [newCoverUri, setNewCoverUri] = useState<string | null>(null);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+  const [isCountryPickerVisible, setCountryPickerVisible] = useState(false);
 
   const [localAvatarUri, setLocalAvatarUri] = useState(imageUri);
   const [localBannerUri, setLocalBannerUri] = useState(bannerUri);
@@ -60,6 +63,7 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
   }, [visible, imageUri, bannerUri]);
 
   const handleAvatarChange = () => {
+    const isDefaultAvatar = localAvatarUri === DEFAULT_AVATAR_URL;
     showImagePickerOptions(
       true,
       (uri) => {
@@ -70,10 +74,12 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
         setLocalAvatarUri(DEFAULT_AVATAR_URL);
         setNewAvatarUri(DEFAULT_AVATAR_URL);
       },
+      !isDefaultAvatar,
     );
   };
 
   const handleBannerChange = () => {
+    const isDefaultBanner = localBannerUri === DEFAULT_BANNER_URL;
     showImagePickerOptions(
       false,
       (uri) => {
@@ -84,10 +90,27 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
         setLocalBannerUri(DEFAULT_BANNER_URL);
         setNewCoverUri(DEFAULT_BANNER_URL);
       },
+      !isDefaultBanner,
     );
   };
 
   const handleDateConfirm = (date: Date) => {
+    // Calculate age
+    const today = new Date();
+    let age = today.getFullYear() - date.getFullYear();
+    const monthDiff = today.getMonth() - date.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < date.getDate())) {
+      age--;
+    }
+
+    // Validate minimum age of 13
+    if (age < 13) {
+      Alert.alert(t('profile.editModal.ageError'), t('profile.editModal.ageErrorMessage'), [{ text: t('common.ok') }]);
+      setDatePickerVisible(false);
+      return;
+    }
+
     const formattedDate = date.toISOString().split('T')[0];
     setUpdatedUser({ ...updatedUser, birthday: formattedDate });
     setDatePickerVisible(false);
@@ -95,6 +118,11 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
 
   const handleDateCancel = () => {
     setDatePickerVisible(false);
+  };
+
+  const handleCountrySelect = (country: Country) => {
+    setUpdatedUser({ ...updatedUser, country: country.name });
+    setCountryPickerVisible(false);
   };
 
   const handleSave = async () => {
@@ -111,7 +139,7 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
       if (newAvatarUri) {
         if (newAvatarUri === DEFAULT_AVATAR_URL) {
           if (user?.avatarUrl && user.avatarUrl !== DEFAULT_AVATAR_URL) {
-            await deleteAvatar(user.avatarUrl);
+            // await deleteAvatar(user.avatarUrl);
           }
           avatarUrl = null;
         } else if (newAvatarUri.startsWith('file://') || newAvatarUri.startsWith('content://')) {
@@ -123,7 +151,7 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
       if (newCoverUri) {
         if (newCoverUri === DEFAULT_BANNER_URL) {
           if (user?.coverUrl && user.coverUrl !== DEFAULT_BANNER_URL) {
-            await deleteCover(user.coverUrl);
+            // await deleteCover(user.coverUrl);
           }
           coverUrl = null;
         } else if (newCoverUri.startsWith('file://') || newCoverUri.startsWith('content://')) {
@@ -176,7 +204,24 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
     >
       {/* Header buttons */}
       <View style={editModalStyles.buttonContainer} testID="profile_edit_modal_header">
-        <TouchableOpacity onPress={onClose} disabled={isSaving} testID="profile_edit_modal_cancel_button">
+        <TouchableOpacity
+          onPress={() => {
+            if (user) {
+              setUpdatedUser({
+                name: user.name || '',
+                bio: user.bio || '',
+                country: user.country || '',
+                website: '',
+                birthday: user.birthDate || '',
+              });
+              setLocalAvatarUri(imageUri);
+              setLocalBannerUri(bannerUri);
+            }
+            onClose();
+          }}
+          disabled={isSaving}
+          testID="profile_edit_modal_cancel_button"
+        >
           <Text style={editModalStyles.buttonsText}>{t('profile.editModal.cancel')}</Text>
         </TouchableOpacity>
 
@@ -198,9 +243,12 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
         {/* Banner */}
         <TouchableOpacity onPress={handleBannerChange} testID="profile_edit_modal_banner_button">
           <Image
+            key={localBannerUri}
             source={{ uri: localBannerUri }}
             style={editModalStyles.banner}
             testID="profile_edit_modal_banner_image"
+            cachePolicy="memory-disk"
+            priority="high"
           />
         </TouchableOpacity>
 
@@ -209,11 +257,14 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
           <View style={editModalStyles.avatarContainer}>
             <TouchableOpacity onPress={handleAvatarChange} testID="profile_edit_modal_avatar_button">
               <Image
+                key={localAvatarUri}
                 source={{
                   uri: localAvatarUri,
                 }}
                 style={editModalStyles.avatar}
                 testID="profile_edit_modal_avatar_image"
+                cachePolicy="memory-disk"
+                priority="high"
               />
 
               {/* Dark overlay + camera icon */}
@@ -250,26 +301,20 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
             />
 
             {/* Location Input */}
-            <Input
-              testID="profile_edit_modal_country_input"
-              label={t('profile.editModal.country')}
-              value={updatedUser.country}
-              setValue={(value) => setUpdatedUser({ ...updatedUser, country: value })}
-              style={editModalStyles.inputContainer}
-              inputStyle={editModalStyles.input}
-              placeholder={t('profile.editModal.countryPlaceholder')}
-            />
-
-            {/* Website Input */}
-            <Input
-              testID="profile_edit_modal_website_input"
-              label={t('profile.editModal.website')}
-              value={updatedUser.website}
-              setValue={(value) => setUpdatedUser({ ...updatedUser, website: value })}
-              style={editModalStyles.inputContainer}
-              inputStyle={editModalStyles.input}
-              placeholder={t('profile.editModal.websitePlaceholder')}
-            />
+            <View style={editModalStyles.inputContainer}>
+              <Text style={editModalStyles.label}>{t('profile.editModal.country')}</Text>
+              <TouchableOpacity testID="profile_edit_modal_country_input" onPress={() => setCountryPickerVisible(true)}>
+                <Text
+                  style={{
+                    color: updatedUser.country ? theme.colors.text.link : theme.colors.text.secondary,
+                    fontWeight: theme.typography.weights.semiBold,
+                    fontSize: theme.typography.sizes.sm,
+                  }}
+                >
+                  {updatedUser.country || t('profile.editModal.countryPlaceholder')}
+                </Text>
+              </TouchableOpacity>
+            </View>
 
             {/* Birthday Input */}
             <View style={editModalStyles.inputContainer}>
@@ -300,6 +345,20 @@ const EditProfileModal: React.FC<IEditProfileModalProps> = ({
         date={updatedUser.birthday ? new Date(updatedUser.birthday) : new Date()}
         maximumDate={new Date()}
       />
+
+      <Modal
+        visible={isCountryPickerVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setCountryPickerVisible(false)}
+      >
+        <CountryPicker
+          onSelect={handleCountrySelect}
+          onBack={() => setCountryPickerVisible(false)}
+          showBackButton={true}
+          initialCountry={updatedUser.country ? { name: updatedUser.country } : null}
+        />
+      </Modal>
 
       <StatusBar style="light" />
     </Modal>

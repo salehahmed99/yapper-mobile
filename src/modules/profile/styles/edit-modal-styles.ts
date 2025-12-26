@@ -73,12 +73,18 @@ export const createEditModalStyles = (theme: Theme) =>
       color: theme.colors.text.link,
       fontWeight: theme.typography.weights.semiBold,
       fontSize: theme.typography.sizes.sm,
+      textAlign: 'left',
+      flex: 1,
+      writingDirection: 'ltr',
     },
     inputMultiline: {
       color: theme.colors.text.link,
       fontWeight: theme.typography.weights.semiBold,
       fontSize: theme.typography.sizes.sm,
       height: theme.spacing.xxxl + theme.spacing.xl,
+      textAlign: 'left',
+      flex: 1,
+      writingDirection: 'ltr',
     },
     banner: {
       width: '100%',

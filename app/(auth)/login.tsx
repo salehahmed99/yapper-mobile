@@ -1,5 +1,5 @@
+import { useNavigation } from '@/src/hooks/useNavigation';
 import * as Localization from 'expo-localization';
-import { router } from 'expo-router';
 import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -43,6 +43,7 @@ const LoginScreen = () => {
   // ============================================
   // Hooks & Constants
   // ============================================
+  const { replace } = useNavigation();
   const defaultCountry = Localization.getLocales()[0]?.regionCode || 'US';
   const loginUser = useAuthStore((state) => state.loginUser);
   const setSkipRedirect = useAuthStore((state) => state.setSkipRedirect);
@@ -98,11 +99,11 @@ const LoginScreen = () => {
   };
 
   const handleBack = () => {
-    router.replace('/(auth)/landing-screen');
+    replace('/(auth)/landing-screen');
   };
 
   const handleForgotPassword = () => {
-    router.replace('/(auth)/forgot-password/find-account');
+    replace('/(auth)/forgot-password/find-account');
   };
 
   // ============================================
@@ -191,7 +192,7 @@ const LoginScreen = () => {
         text2: t('auth.login.success.welcomeBack'),
       });
       setSkipRedirect(false);
-      await loginUser(data.data.user, data.data.accessToken);
+      await loginUser(data.data.user, data.data.accessToken, data.data.refreshToken);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

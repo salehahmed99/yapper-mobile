@@ -33,9 +33,11 @@ describe('ActionsRow', () => {
     viewsCount: 100,
     isLiked: false,
     isReposted: false,
+    isBookmarked: false,
     images: [],
     videos: [],
     type: 'tweet',
+    mentions: [],
   };
 
   const defaultProps = {
@@ -74,7 +76,7 @@ describe('ActionsRow', () => {
   it('should handle like press', () => {
     const { getByTestId } = renderWithTheme(<ActionsRow {...defaultProps} />);
     fireEvent.press(getByTestId('tweet_button_like'));
-    expect(defaultProps.onLikePress).toHaveBeenCalledWith(false);
+    expect(defaultProps.onLikePress).toHaveBeenCalled();
   });
 
   it('should handle bookmark press', () => {

@@ -1,13 +1,12 @@
 import axios from 'axios';
-import { router } from 'expo-router';
 import humps from 'humps';
-import { deleteToken, getToken } from '../utils/secureStorage';
 
 const api = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
 });
 
 api.interceptors.request.use(
@@ -17,7 +16,10 @@ api.interceptors.request.use(
       config.data = humps.decamelizeKeys(config.data);
     }
     config.params = humps.decamelizeKeys(config.params);
-    const token = await getToken();
+
+    const { useAuthStore } = await import('../store/useAuthStore');
+    const token = useAuthStore.getState().token;
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -36,12 +38,14 @@ api.interceptors.response.use(
     const originalRequest = error?.config;
     const requestUrl = originalRequest?.url;
 
-    // Handle 401/403 errors
+    // Handle 401/403 errors (but skip logout endpoints since token might be expired)
     if (
       (status === 401 || status === 403) &&
       requestUrl &&
       !requestUrl.includes('/login') &&
-      !requestUrl.includes('/refresh')
+      !requestUrl.includes('/refresh') &&
+      !requestUrl.includes('/confirm-password') &&
+      !requestUrl.includes('/logout')
     ) {
       if (originalRequest._retry === true) {
         await _handleLogout();
@@ -55,6 +59,7 @@ api.interceptors.response.use(
         const newToken = await tokenRefreshService.refreshToken();
 
         if (newToken) {
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
           return api(originalRequest);
         } else {
           await _handleLogout();
@@ -71,9 +76,10 @@ api.interceptors.response.use(
 );
 
 async function _handleLogout() {
-  await deleteToken();
   const { useAuthStore } = await import('../store/useAuthStore');
-  useAuthStore.getState().logout();
+  useAuthStore.getState().logout(false);
+  // Use dynamic import to avoid circular dependencies
+  const { router } = await import('expo-router');
   router.replace('/(auth)/landing-screen');
 }
 

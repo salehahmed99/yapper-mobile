@@ -1,5 +1,7 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import useSpacing from '@/src/hooks/useSpacing';
+import { useAuthStore } from '@/src/store/useAuthStore';
 import { IUser } from '@/src/types/user';
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +15,8 @@ type UserListProps = UserListQuery & {
   autoLoad?: boolean;
   onUserPress?: (user: IUser) => void;
   renderAction?: (user: IUser) => React.ReactNode;
+  topSpacing?: number;
+  bottomSpacing?: number;
 };
 
 const createStyles = (theme: Theme) =>
@@ -23,7 +27,6 @@ const createStyles = (theme: Theme) =>
     },
     listContent: {
       paddingTop: theme.spacing.xs,
-      paddingBottom: theme.spacing.xxl,
     },
     emptyState: {
       paddingHorizontal: theme.spacing.lg,
@@ -65,6 +68,8 @@ const UserList: React.FC<UserListProps> = (props) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const { bottom } = useSpacing();
+  const currentUser = useAuthStore((state) => state.user);
 
   const { users, loading, refreshing, error, hasNextPage, refresh, loadMore } = useUserList({ ...props, autoLoad });
 
@@ -82,13 +87,12 @@ const UserList: React.FC<UserListProps> = (props) => {
 
   const renderEmpty = () => {
     if (loading) return null;
-
-    return (
-      <View style={styles.emptyState} testID="user_list_empty_state">
-        <Text style={error ? styles.errorText : styles.emptyText} testID="user_list_empty_text">
-          {error || t('userList.emptyState')}
-        </Text>
-        {error && (
+    if (error) {
+      return (
+        <View style={styles.emptyState} testID="user_list_error_state">
+          <Text style={styles.errorText} testID="user_list_error_text">
+            {error}
+          </Text>
           <TouchableOpacity
             style={styles.retryButton}
             onPress={refresh}
@@ -98,19 +102,34 @@ const UserList: React.FC<UserListProps> = (props) => {
           >
             <Text style={styles.retryText}>{t('userList.errorRetry')}</Text>
           </TouchableOpacity>
-        )}
+        </View>
+      );
+    }
+    // Show empty state when no users
+    return (
+      <View style={styles.emptyState} testID="user_list_empty_state">
+        <Text style={styles.emptyText} testID="user_list_empty_text">
+          {t('userList.emptyState')}
+        </Text>
       </View>
     );
   };
 
   const renderFooter = () => {
-    if (!hasNextPage && users.length > 0) return null;
+    const showLoader = loading && !refreshing && (users.length === 0 || hasNextPage);
 
     return (
-      <View style={styles.footer} testID="user_list_footer">
-        {loading && !refreshing && <ActivityIndicator color={theme.colors.text.link} testID="user_list_loader" />}
+      <View style={[styles.footer, { paddingBottom: bottom }]} testID="user_list_footer">
+        {showLoader && <ActivityIndicator color={theme.colors.text.link} testID="user_list_loader" />}
       </View>
     );
+  };
+
+  // Don't render action if the user is the current logged-in user
+  const getActionRenderer = (user: IUser) => {
+    if (!renderAction) return undefined;
+    if (currentUser?.id === user.id) return undefined;
+    return renderAction(user);
   };
 
   return (
@@ -118,7 +137,9 @@ const UserList: React.FC<UserListProps> = (props) => {
       <FlatList
         data={users}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <UserListItem user={item} onPress={onUserPress} renderAction={renderAction} />}
+        renderItem={({ item }) => (
+          <UserListItem user={item} onPress={onUserPress} renderAction={() => getActionRenderer(item)} />
+        )}
         contentContainerStyle={styles.listContent}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={theme.colors.text.link} />

@@ -1,6 +1,7 @@
 import * as ImagePicker from 'expo-image-picker';
 
 import { DEFAULT_AVATAR_URL, DEFAULT_BANNER_URL } from '@/src/constants/defaults';
+// eslint-disable-next-line react-native/split-platform-components
 import { ActionSheetIOS, Alert, Platform } from 'react-native';
 
 export const DEFAULT_AVATAR_URI = DEFAULT_AVATAR_URL;
@@ -28,7 +29,10 @@ export const pickImageFromLibrary = async (isAvatar: boolean): Promise<string | 
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: isAvatar ? [1, 1] : [3, 1],
-      quality: 1,
+      quality: 0.8,
+      allowsMultipleSelection: false,
+      base64: false,
+      exif: false,
     });
 
     if (!result.canceled && result.assets[0]) {
@@ -81,11 +85,15 @@ export const showImagePickerOptions = (
   isAvatar: boolean,
   onImageSelected: (uri: string) => void,
   onImageDeleted: () => void,
+  showDelete: boolean = true,
 ) => {
-  const options = ['Choose from Library', 'Take Picture', 'Delete Image', 'Cancel'];
-  const destructiveButtonIndex = 2;
-  const cancelButtonIndex = 3;
+  const options = showDelete
+    ? ['Choose from Library', 'Take Picture', 'Delete Image', 'Cancel']
+    : ['Choose from Library', 'Take Picture', 'Cancel'];
+  const destructiveButtonIndex = showDelete ? 2 : undefined;
+  const cancelButtonIndex = showDelete ? 3 : 2;
 
+  console.log('DEBUG: showImagePickerOptions called. Platform.OS:', Platform.OS);
   const handleLibraryPick = async () => {
     const uri = await pickImageFromLibrary(isAvatar);
     if (uri) {
@@ -112,38 +120,43 @@ export const showImagePickerOptions = (
           handleLibraryPick();
         } else if (buttonIndex === 1) {
           handleTakePicture();
-        } else if (buttonIndex === 2) {
+        } else if (showDelete && buttonIndex === 2) {
           onImageDeleted();
         }
       },
     );
   } else {
-    Alert.alert(
-      'Change Image',
-      'Choose an option',
-      [
-        {
-          text: 'Choose from Library',
-          onPress: handleLibraryPick,
-        },
-        {
-          text: 'Take Picture',
-          onPress: handleTakePicture,
-        },
-        {
-          text: 'Delete Image',
-          onPress: onImageDeleted,
-          style: 'destructive',
-        },
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-      ],
+    const alertButtons: Array<{
+      text: string;
+      onPress?: () => void;
+      style?: 'default' | 'cancel' | 'destructive';
+    }> = [
       {
-        cancelable: true,
-        onDismiss: () => {},
+        text: 'Choose from Library',
+        onPress: handleLibraryPick,
       },
-    );
+      {
+        text: 'Take Picture',
+        onPress: handleTakePicture,
+      },
+    ];
+
+    if (showDelete) {
+      alertButtons.push({
+        text: 'Delete Image',
+        onPress: onImageDeleted,
+        style: 'destructive',
+      });
+    }
+
+    alertButtons.push({
+      text: 'Cancel',
+      style: 'cancel',
+    });
+
+    Alert.alert('Change Image', 'Choose an option', alertButtons, {
+      cancelable: true,
+      onDismiss: () => {},
+    });
   }
 };

@@ -2,16 +2,17 @@ import ThemeSettingsSheet from '@/src/components/shell/ThemeSettingsSheet';
 import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import useNavigation from '@/src/hooks/useNavigation';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
-import { usePathname, useRouter } from 'expo-router';
-import { Bell, HelpCircle, Home, LogOut, MessageCircle, MoonStar, Search, Settings, User } from 'lucide-react-native';
+import { Bell, Bookmark, HelpCircle, MessageCircle, MoonStar, Search, Settings, User } from 'lucide-react-native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Animated,
   GestureResponderHandlers,
+  I18nManager,
   Image,
   ScrollView,
   StyleSheet,
@@ -32,30 +33,16 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
   const user = useAuthStore((state) => state.user);
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  const { t } = useTranslation();
-  const router = useRouter();
+  const { t, i18n } = useTranslation();
+  const { navigate } = useNavigation();
   const { isSideMenuOpen, closeSideMenu } = useUiShell();
-  const pathname = usePathname();
   const insets = useSafeAreaInsets();
   const [isThemeSheetVisible, setIsThemeSheetVisible] = React.useState(false);
+  const isRTL = i18n.language === 'ar' || I18nManager.isRTL;
 
-  const logout = useAuthStore((state) => state.logout);
-
-  const handleLogout = () => {
-    closeSideMenu();
-    logout();
-    router.replace('/(auth)/landing-screen');
+  const handleNavigate = (path: string) => {
+    navigate(path, closeSideMenu);
   };
-
-  function navigate(path: string) {
-    // If already on target path, just close menu
-    if (pathname === path) {
-      closeSideMenu();
-      return;
-    }
-    closeSideMenu();
-    router.push(path as unknown as Parameters<typeof router.push>[0]);
-  }
 
   React.useEffect(() => {
     if (isSideMenuOpen) {
@@ -76,11 +63,18 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
 
   const overlayBg = `${theme.colors.background.primary}6F`;
 
+  // Calculate drawer position based on RTL
+  // In RTL: drawer comes from the right (end), so we use 'end' positioning
+  // In LTR: drawer comes from the left (start), so we use 'start' positioning
+  const drawerPosition = isRTL
+    ? { end: Animated.subtract(anim, theme.ui.drawerWidth) }
+    : { start: Animated.subtract(anim, theme.ui.drawerWidth) };
+
   return (
     <Animated.View style={styles.root} pointerEvents="box-none">
       <Animated.View
         {...(props.panHandlers ?? {})}
-        style={[styles.drawer, { left: Animated.subtract(anim, theme.ui.drawerWidth), opacity: drawerOpacity }]}
+        style={[styles.drawer, drawerPosition, { opacity: drawerOpacity }]}
         accessibilityElementsHidden={!isSideMenuOpen}
         importantForAccessibility={isSideMenuOpen ? 'yes' : 'no-hide-descendants'}
       >
@@ -88,7 +82,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
           {/* Profile + other accounts in one row */}
           <View style={styles.profileAndAccountsRow}>
             <TouchableOpacity
-              onPress={() => navigate('/(profile)/Profile/')}
+              onPress={() => handleNavigate('/(profile)/Profile/')}
               accessibilityLabel="sidemenu_profile_button"
               testID="sidemenu_profile_button"
               accessibilityRole="button"
@@ -116,25 +110,25 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             <TouchableOpacity
               onPress={() => {
                 closeSideMenu();
-                // router.push("/(profile)/Lists?tab=following");
+                // navigate("/(profile)/Lists?tab=following",closeSideMenu);
               }}
               accessibilityLabel="sidemenu_following_button"
               testID="sidemenu_following_button"
             >
               <Text style={styles.followCount}>
-                <Text style={styles.bold}>{user?.following || 0}</Text> Following
+                <Text style={styles.bold}>{user?.following || 0}</Text> {t('profile.following')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
                 closeSideMenu();
-                // router.push("/(profile)/Lists?tab=followers");
+                // navigate("/(profile)/Lists?tab=followers", closeSideMenu);
               }}
               accessibilityLabel="sidemenu_followers_button"
               testID="sidemenu_followers_button"
             >
               <Text style={styles.followCount}>
-                <Text style={styles.bold}>{user?.followers || 0}</Text> Followers
+                <Text style={styles.bold}>{user?.followers || 0}</Text> {t('profile.followers')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -147,25 +141,16 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             {/* Menu tiles */}
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(protected)')}
-              accessibilityLabel="sidemenu_home_button"
-              testID="sidemenu_home_button"
-            >
-              <Home color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
-              <Text style={styles.menuTileText}>{t('menu.home')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.tile}
-              onPress={() => navigate('/(protected)/search')}
-              accessibilityLabel="sidemenu_search_button"
-              testID="sidemenu_search_button"
+              onPress={() => handleNavigate('/(protected)/explore')}
+              accessibilityLabel="sidemenu_explore_button"
+              testID="sidemenu_explore_button"
             >
               <Search color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
-              <Text style={styles.menuTileText}>{t('menu.search')}</Text>
+              <Text style={styles.menuTileText}>{t('menu.explore')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(protected)/notifications')}
+              onPress={() => handleNavigate('/(protected)/notifications')}
               accessibilityLabel="sidemenu_notifications_button"
               testID="sidemenu_notifications_button"
             >
@@ -174,7 +159,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(protected)/messages')}
+              onPress={() => handleNavigate('/(protected)/messages')}
               accessibilityLabel="sidemenu_messages_button"
               testID="sidemenu_messages_button"
             >
@@ -183,7 +168,7 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(profile)/Profile/')}
+              onPress={() => handleNavigate('/(profile)/Profile/')}
               accessibilityLabel="sidemenu_profile_menu_button"
               testID="sidemenu_profile_menu_button"
             >
@@ -192,7 +177,16 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(protected)/settings')}
+              onPress={() => handleNavigate('/(protected)/bookmarks')}
+              accessibilityLabel="sidemenu_bookmarks_button"
+              testID="sidemenu_bookmarks_button"
+            >
+              <Bookmark color={theme.colors.text.primary} size={theme.iconSizes.iconLarge} />
+              <Text style={styles.menuTileText}>{t('menu.bookmarks')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.tile}
+              onPress={() => handleNavigate('/(protected)/(settings)/settingsScreen')}
               accessibilityLabel="sidemenu_settings_button"
               testID="sidemenu_settings_button"
             >
@@ -205,21 +199,12 @@ const SideMenu: React.FC<ISideMenuProps> = (props) => {
             {/* Utility links */}
             <TouchableOpacity
               style={styles.tile}
-              onPress={() => navigate('/(protected)/help')}
+              onPress={() => handleNavigate('/(protected)/help')}
               accessibilityLabel="sidemenu_help_button"
               testID="sidemenu_help_button"
             >
               <HelpCircle color={theme.colors.text.primary} size={theme.iconSizes.icon} />
               <Text style={styles.tileText}>{t('menu.help')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.tile}
-              onPress={handleLogout}
-              accessibilityLabel="sidemenu_logout_button"
-              testID="sidemenu_logout_button"
-            >
-              <LogOut color={theme.colors.text.primary} size={theme.iconSizes.icon} />
-              <Text style={[styles.tileText]}>{'Logout'}</Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
@@ -265,7 +250,7 @@ const createStyles = (theme: Theme) =>
       top: 0,
       bottom: 0,
       width: theme.ui.drawerWidth,
-      left: 0,
+      start: 0,
       backgroundColor: theme.colors.background.primary,
       paddingTop: theme.spacing.xl,
       paddingHorizontal: theme.spacing.lg,
@@ -298,7 +283,7 @@ const createStyles = (theme: Theme) =>
       width: theme.ui.avatarLarge,
       height: theme.ui.avatarLarge,
       borderRadius: theme.ui.avatarLarge / 2,
-      marginRight: theme.spacing.sm,
+      marginEnd: theme.spacing.sm,
       marginBottom: theme.spacing.sm,
     },
     profileInfo: {
@@ -318,7 +303,7 @@ const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'flex-end',
-      marginLeft: theme.spacing.md,
+      marginStart: theme.spacing.md,
     },
 
     profileAndAccountsRow: {
@@ -335,7 +320,7 @@ const createStyles = (theme: Theme) =>
       width: theme.ui.avatar,
       height: theme.ui.avatar,
       borderRadius: theme.ui.avatar / 2,
-      marginRight: theme.spacing.xs,
+      marginEnd: theme.spacing.xs,
     },
     optionsButton: {
       padding: theme.spacing.xs,
@@ -347,7 +332,7 @@ const createStyles = (theme: Theme) =>
     },
     followCount: {
       color: theme.colors.text.secondary,
-      marginRight: theme.spacing.md,
+      marginEnd: theme.spacing.md,
     },
     bold: {
       fontFamily: theme.typography.fonts.semiBold,
@@ -359,12 +344,12 @@ const createStyles = (theme: Theme) =>
       paddingVertical: theme.spacing.md,
     },
     tileText: {
-      marginLeft: theme.spacing.md,
+      marginStart: theme.spacing.md,
       color: theme.colors.text.primary,
       fontSize: theme.typography.sizes.md,
     },
     menuTileText: {
-      marginLeft: theme.spacing.xl,
+      marginStart: theme.spacing.xl,
       color: theme.colors.text.primary,
       fontSize: theme.typography.sizes.xl,
       fontFamily: theme.typography.fonts.medium,
@@ -388,13 +373,13 @@ const createStyles = (theme: Theme) =>
     },
     bottomOverlay: {
       position: 'absolute',
-      left: 0,
-      right: 0,
+      start: 0,
+      end: 0,
       bottom: 0,
     },
     toggleWrapper: {
       position: 'absolute',
-      left: theme.spacing.md + theme.spacing.sm,
+      start: theme.spacing.md + theme.spacing.sm,
       top: theme.spacing.sm,
     },
     toggleButton: {

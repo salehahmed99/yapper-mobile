@@ -24,6 +24,7 @@ const PasswordForm: React.FC<IPasswordFormProps> = ({
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const isPasswordValid = password.length >= 8;
 
   return (
     <View style={styles.container}>
@@ -39,8 +40,8 @@ const PasswordForm: React.FC<IPasswordFormProps> = ({
         onChangeText={onPasswordChange}
         onToggleVisibility={onTogglePasswordVisibility}
         isVisible={isPasswordVisible}
-        showCheck={true}
-        status="success"
+        showCheck={isPasswordValid}
+        status={'success'}
       />
     </View>
   );

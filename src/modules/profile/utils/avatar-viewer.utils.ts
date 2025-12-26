@@ -110,7 +110,6 @@ export const handleSwipeRelease = (
   if (dy > 100 || vy > 0.5) {
     animateClose(fadeAnim, translateY, onClose);
   } else {
-    // Bounce back
     Animated.parallel([
       Animated.spring(translateY, {
         toValue: 0,

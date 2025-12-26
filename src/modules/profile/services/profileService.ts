@@ -6,6 +6,7 @@ import {
   IGetFollowingListResponse,
   IGetMyUserResponse,
   IGetUserByIdResponse,
+  IGetUserByUsernameResponse,
   IUserLikesParams,
   IUserLikesResponse,
   IUserMediaParams,
@@ -48,11 +49,79 @@ export const getUserById = async (userId: string): Promise<IGetUserByIdResponse>
   }
 };
 
+export const getUserByUsername = async (username: string): Promise<IGetUserByIdResponse> => {
+  try {
+    const response = await api.get<IGetUserByUsernameResponse>(`/users/by/username/${username}`);
+    const userData = response.data.data;
+
+    // Map the response to IGetUserByIdResponse format
+    return {
+      userId: userData.userId,
+      name: userData.name,
+      username: userData.username,
+      bio: userData.bio,
+      avatarUrl: userData.avatarUrl,
+      coverUrl: userData.coverUrl,
+      country: userData.country,
+      createdAt: userData.createdAt,
+      followersCount: userData.followersCount,
+      followingCount: userData.followingCount,
+      isFollower: userData.isFollower,
+      isFollowing: userData.isFollowing,
+      isMuted: userData.isMuted,
+      isBlocked: userData.isBlocked,
+      topMutualFollowers: userData.topMutualFollowers.map((f) => ({
+        userId: '',
+        name: f.name,
+        username: '',
+        avatarUrl: f.avatarUrl || '',
+      })),
+      mutualFollowersCount: userData.mutualFollowersCount,
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    if (error.response) {
+      throw new Error(error.response.data.message || 'An error occurred while fetching user data.');
+    }
+    throw error;
+  }
+};
+
 export const getFollowersList = async ({
   userId,
   cursor = '',
   limit = 20,
   following = false,
+}: IGetFollowersListParams): Promise<IGetFollowersListResponse> => {
+  try {
+    const response = await api.get(`/users/${userId}/followers`, {
+      params: {
+        cursor,
+        limit,
+        following,
+      },
+    });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    if (error.response) {
+      throw new Error(error.response.data.message || 'An error occurred while fetching followers list.');
+    }
+    throw error;
+  }
+};
+
+export const getMutualFollowers = async ({
+  userId,
+  cursor = '',
+  limit = 20,
+  following = true,
 }: IGetFollowersListParams): Promise<IGetFollowersListResponse> => {
   try {
     const response = await api.get(`/users/${userId}/followers`, {
@@ -95,6 +164,54 @@ export const getFollowingList = async ({
     }
     if (error.response) {
       throw new Error(error.response.data.message || 'An error occurred while fetching following list.');
+    }
+    throw error;
+  }
+};
+
+export const getMutedList = async ({
+  cursor = '',
+  limit = 20,
+}: IGetFollowersListParams): Promise<IGetFollowersListResponse> => {
+  try {
+    const response = await api.get('/users/me/muted', {
+      params: {
+        cursor,
+        limit,
+      },
+    });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    if (error.response) {
+      throw new Error(error.response.data.message || 'An error occurred while fetching muted list.');
+    }
+    throw error;
+  }
+};
+
+export const getBlockedList = async ({
+  cursor = '',
+  limit = 20,
+}: IGetFollowersListParams): Promise<IGetFollowersListResponse> => {
+  try {
+    const response = await api.get('/users/me/blocked', {
+      params: {
+        cursor,
+        limit,
+      },
+    });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    if (error.response) {
+      throw new Error(error.response.data.message || 'An error occurred while fetching blocked list.');
     }
     throw error;
   }
@@ -237,14 +354,17 @@ export const updateUserProfile = async (profileData: {
 export const uploadAvatar = async (imageUri: string): Promise<{ imageUrl: string; imageName: string }> => {
   try {
     const formData = new FormData();
-    const filename = imageUri.split('/').pop() || 'avatar.jpg';
-    const match = /\.(\w+)$/.exec(filename);
-    const type = match ? `image/${match[1]}` : 'image/jpeg';
+    let filename = imageUri.split('/').pop() || 'avatar.jpg';
+
+    // Convert HEIC to JPEG filename and type
+    if (filename.toLowerCase().endsWith('.heic') || filename.toLowerCase().endsWith('.heif')) {
+      filename = filename.replace(/\.(heic|heif)$/i, '.jpg');
+    }
 
     formData.append('file', {
       uri: imageUri,
       name: filename,
-      type,
+      type: 'image/jpeg',
     } as unknown as Blob);
 
     const response = await api.post('/users/me/upload-avatar', formData, {
@@ -270,14 +390,17 @@ export const uploadCover = async (imageUri: string): Promise<{ imageUrl: string;
   try {
     const formData = new FormData();
 
-    const filename = imageUri.split('/').pop() || 'cover.jpg';
-    const match = /\.(\w+)$/.exec(filename);
-    const type = match ? `image/${match[1]}` : 'image/jpeg';
+    let filename = imageUri.split('/').pop() || 'cover.jpg';
+
+    // Convert HEIC to JPEG filename and type
+    if (filename.toLowerCase().endsWith('.heic') || filename.toLowerCase().endsWith('.heif')) {
+      filename = filename.replace(/\.(heic|heif)$/i, '.jpg');
+    }
 
     formData.append('file', {
       uri: imageUri,
       name: filename,
-      type,
+      type: 'image/jpeg',
     } as unknown as Blob);
 
     const response = await api.post('/users/me/upload-cover', formData, {
@@ -345,7 +468,7 @@ export const getUserPosts = async ({ userId, cursor, limit = 20 }: IUserPostsPar
     }
 
     const response = await api.get(`/users/${userId}/posts`, { params });
-    return response.data;
+    return response.data.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.code === 'ERR_NETWORK') {
@@ -366,7 +489,7 @@ export const getUserMedia = async ({ userId, cursor, limit = 20 }: IUserMediaPar
     }
 
     const response = await api.get(`/users/${userId}/media`, { params });
-    return response.data;
+    return response.data.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.code === 'ERR_NETWORK') {
@@ -391,7 +514,7 @@ export const getUserLikes = async ({
         limit,
       },
     });
-    return response.data;
+    return response.data.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.code === 'ERR_NETWORK') {
@@ -415,7 +538,7 @@ export const getUserReplies = async ({
     }
 
     const response = await api.get(`/users/${userId}/replies`, { params });
-    return response.data;
+    return response.data.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.code === 'ERR_NETWORK') {
@@ -423,6 +546,22 @@ export const getUserReplies = async ({
     }
     if (error.response) {
       throw new Error(error.response.data.message || 'An error occurred while fetching user replies.');
+    }
+    throw error;
+  }
+};
+
+export const getUserRelations = async (): Promise<{ blockedCount: number; mutedCount: number }> => {
+  try {
+    const response = await api.get('/users/me/relations-count');
+    return response.data.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    if (error.response) {
+      throw new Error(error.response.data.message || 'An error occurred while fetching user relations.');
     }
     throw error;
   }

@@ -1,4 +1,7 @@
 import ActivityLoader from '@/src/components/ActivityLoader';
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import AuthInputScreen from '@/src/modules/auth/components/shared/AuthInput';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import AuthTitle from '@/src/modules/auth/components/shared/Title';
@@ -6,17 +9,15 @@ import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { requestForgetPassword } from '@/src/modules/auth/services/forgetPasswordService';
 import { useForgotPasswordStore } from '@/src/modules/auth/store/useForgetPasswordStore';
 import { ButtonOptions } from '@/src/modules/auth/utils/enums';
-import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { View, StyleSheet } from 'react-native';
-import { Theme } from '@/src/constants/theme';
-import { useTheme } from '@/src/context/ThemeContext';
 
 const FindAccountScreen = () => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { replace, goBack } = useNavigation();
 
   const styles = React.useMemo(() => createStyles(theme), [theme]);
 
@@ -31,9 +32,13 @@ const FindAccountScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isNextEnabled, setIsNextEnabled] = useState(false);
 
-  // Reset store on mount (fresh start)
+  // Reset store on mount (fresh start) but preserve returnRoute
   useEffect(() => {
+    const currentReturnRoute = useForgotPasswordStore.getState().returnRoute;
     reset();
+    if (currentReturnRoute) {
+      useForgotPasswordStore.getState().setReturnRoute(currentReturnRoute);
+    }
   }, [reset]);
 
   useEffect(() => {
@@ -63,7 +68,7 @@ const FindAccountScreen = () => {
           text1: t('auth.forgotPassword.codeSentTitle'),
           text2: t('auth.forgotPassword.codeSentDescription'),
         });
-        router.replace('/(auth)/forgot-password/verify-code');
+        replace('/(auth)/forgot-password/verify-code');
       } else {
         Toast.show({
           type: 'error',
@@ -81,7 +86,13 @@ const FindAccountScreen = () => {
   };
 
   const handleTopBarBackPress = () => {
-    router.replace('/(auth)/landing-screen');
+    const returnRoute = useForgotPasswordStore.getState().returnRoute;
+    if (returnRoute) {
+      useForgotPasswordStore.getState().setReturnRoute(null);
+      goBack();
+    } else {
+      replace('/(auth)/landing-screen');
+    }
   };
 
   return (

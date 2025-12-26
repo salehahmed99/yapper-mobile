@@ -1,23 +1,27 @@
-import { View, StyleSheet } from 'react-native';
-import React, { useMemo, useState } from 'react';
-import { router, useLocalSearchParams } from 'expo-router';
-import TopBar from '@/src/modules/auth/components/shared/TopBar';
-import AuthInput from '@/src/modules/auth/components/shared/AuthInput';
-import { useTheme } from '@/src/context/ThemeContext';
-import { Theme } from '@/src/constants/theme';
-import { useTranslation } from 'react-i18next';
-import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
-import { OAuthStep1, OAuthStep2 } from '@/src/modules/auth/services/authService';
-import Toast from 'react-native-toast-message';
 import ActivityLoader from '@/src/components/ActivityLoader';
-import { useAuthStore } from '@/src/store/useAuthStore';
-import { userBirthDateSchema } from '@/src/modules/auth/schemas/schemas';
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
+import i18n from '@/src/i18n';
+import AuthInput from '@/src/modules/auth/components/shared/AuthInput';
+import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import AuthTitle from '@/src/modules/auth/components/shared/Title';
+import TopBar from '@/src/modules/auth/components/shared/TopBar';
+import { userBirthDateSchema } from '@/src/modules/auth/schemas/schemas';
+import { OAuthStep1, OAuthStep2 } from '@/src/modules/auth/services/authService';
+import { changeUserLanguage } from '@/src/modules/auth/services/signUpService';
+import { useAuthStore } from '@/src/store/useAuthStore';
+import { useFocusEffect, useLocalSearchParams } from 'expo-router';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { BackHandler, StyleSheet, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 const BirthDateScreen = () => {
   const [birthDate, setBirthDate] = useState('');
   const [isNextEnabled, setIsNextEnabled] = useState(true);
   const { theme } = useTheme();
+  const { replace } = useNavigation();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -25,6 +29,20 @@ const BirthDateScreen = () => {
 
   const loginUser = useAuthStore((state) => state.loginUser);
   const setSkipRedirect = useAuthStore((state) => state.setSkipRedirect);
+
+  // Handle hardware back button
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        replace('/(auth)/landing-screen');
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => subscription.remove();
+    }, [replace]),
+  );
 
   const onNextPress = async () => {
     setLoading(true);
@@ -51,15 +69,16 @@ const BirthDateScreen = () => {
         username: res.data.usernames[0],
       });
 
-      await loginUser(secResponse.data.user, secResponse.data.accessToken);
+      await loginUser(secResponse.data.user, secResponse.data.accessToken, secResponse.data.refreshToken);
+      await changeUserLanguage(i18n.language);
 
       Toast.show({
         type: 'success',
         text1: t('auth.birthDate.successToast'),
       });
 
-      router.replace({
-        pathname: '/(auth)/OAuth/user-name-screen',
+      replace({
+        pathname: '/(auth)/OAuth/interests-selection',
         params: {
           sessionToken: _sessionToken,
           userNames: JSON.stringify(res.data.usernames),

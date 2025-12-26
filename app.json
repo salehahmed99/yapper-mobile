@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "yapper-mobile",
+    "name": "yapper",
     "slug": "yapper-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,30 +8,56 @@
     "scheme": "yappermobile",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/yapper.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff",
+      "dark": {
+        "image": "./assets/images/yapper.png",
+        "backgroundColor": "#000000"
+      }
+    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.salehahmed99.yappermobile",
+      "icon": "./assets/images/yapper.png",
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": ["googlechrome", "itms-apps"],
+        "NSMicrophoneUsageDescription": "This app requires microphone access to record audio."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "foregroundImage": "./assets/images/yapper.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.salehahmed99.yappermobile"
+      "package": "com.salehahmed99.yappermobile",
+      "icon": "./assets/images/yapper.png",
+      "splash": {
+        "image": "./assets/images/yapper.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff",
+        "dark": {
+          "image": "./assets/images/yapper.png",
+          "backgroundColor": "#000000"
+        }
+      },
+      "softwareKeyboardLayoutMode": "pan",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "icon": "./assets/images/yapper.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/yapper.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
@@ -40,15 +66,10 @@
           }
         }
       ],
-      [
-        "@react-native-google-signin/google-signin",
-        {
-          "iosUrlScheme": "com.googleusercontent.apps._some_id_here_"
-        }
-      ],
       "expo-font",
       "expo-localization",
-      "expo-video"
+      "expo-video",
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -58,7 +79,8 @@
       "router": {},
       "eas": {
         "projectId": "a7bd163d-ddc7-4226-866c-747e41fcb93a"
-      }
+      },
+      "supportsRTL": true
     },
     "owner": "salehahmed99"
   }

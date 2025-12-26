@@ -1,5 +1,17 @@
 import api from '@/src/services/apiClient';
-import { IQuotesResponse, ISingleTweetResponse, ITweet, ITweetFilters, ITweets, ITweetsResponse } from '../types';
+import {
+  IBookmarks,
+  IBookmarksResponse,
+  IQuotesResponse,
+  IReplies,
+  IRepliesResponse,
+  ISingleTweetResponse,
+  ITweet,
+  ITweetFilters,
+  ITweets,
+  ITweetsResponse,
+  ITweetSummaryResponse,
+} from '../types';
 
 /**
  * Upload a single image file
@@ -111,11 +123,25 @@ export const getFollowing = async (tweetFilters: ITweetFilters): Promise<ITweets
   });
   return response.data.data;
 };
+
+export const getBookmarks = async (filters: { cursor?: string; limit?: number } = {}): Promise<IBookmarks> => {
+  const response = await api.get<IBookmarksResponse>('/tweets/bookmarks', {
+    params: filters,
+  });
+  return response.data.data;
+};
+
 export const getTweetById = async (tweetId: string): Promise<ITweet> => {
   const response = await api.get<ISingleTweetResponse>(`/tweets/${tweetId}`);
   return response.data.data;
 };
 
+export const getTweetReplies = async (tweetId: string, tweetFilters: ITweetFilters): Promise<IReplies> => {
+  const response = await api.get<IRepliesResponse>(`/tweets/${tweetId}/replies`, {
+    params: tweetFilters,
+  });
+  return response.data.data;
+};
 export const likeTweet = async (tweetId: string): Promise<void> => {
   await api.post(`/tweets/${tweetId}/like`);
 };
@@ -161,6 +187,14 @@ export const createTweet = async (content: string, mediaUris?: string[]): Promis
 
 export const deleteTweet = async (tweetId: string): Promise<void> => {
   await api.delete(`/tweets/${tweetId}`);
+};
+
+export const bookmarkTweet = async (tweetId: string): Promise<void> => {
+  await api.post(`/tweets/${tweetId}/bookmark`);
+};
+
+export const unbookmarkTweet = async (tweetId: string): Promise<void> => {
+  await api.delete(`/tweets/${tweetId}/bookmark`);
 };
 
 export const replyToTweet = async (tweetId: string, content: string, mediaUris?: string[]): Promise<ITweet> => {
@@ -225,4 +259,9 @@ export const getTweetQuotes = async (
     params: filters,
   });
   return response.data.data;
+};
+
+export const getTweetSummary = async (tweetId: string): Promise<string> => {
+  const response = await api.get<ITweetSummaryResponse>(`/tweets/${tweetId}/summary`);
+  return response.data.data.summary;
 };

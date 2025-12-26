@@ -40,6 +40,7 @@ export interface IRegisterData {
 
 export type ILoginResponse = IApiResponse<{
   accessToken: string;
+  refreshToken: string;
   user: IUser;
 }>;
 
@@ -144,7 +145,14 @@ export interface ISignUpStep3Response {
   data: {
     accessToken: string;
     user: IUser;
+    refreshToken: string;
   };
+  count: number;
+  message: string;
+}
+
+export interface ICategoryResponse {
+  data: string[];
   count: number;
   message: string;
 }

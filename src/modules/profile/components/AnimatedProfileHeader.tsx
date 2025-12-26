@@ -1,5 +1,5 @@
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { BlurView } from 'expo-blur';
-import { useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -64,7 +64,7 @@ export default function AnimatedProfileHeader({
 }: AnimatedProfileHeaderProps) {
   const { theme, isDark } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const router = useRouter();
+  const { goBack } = useNavigation();
 
   const headerOpacity = scrollY.interpolate({
     inputRange: [200, 350],
@@ -100,11 +100,7 @@ export default function AnimatedProfileHeader({
         <View style={styles.blurContainer}>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => {
-              if (router.canGoBack()) {
-                router.back();
-              }
-            }}
+            onPress={() => goBack()}
             testID="animated_profile_header_back_button"
           >
             <ChevronLeft color="#fff" size={25} />

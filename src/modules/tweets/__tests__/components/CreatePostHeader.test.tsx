@@ -12,8 +12,8 @@ describe('CreatePostHeader', () => {
     const { getByText } = renderWithTheme(
       <CreatePostHeader canPost={false} handleCancel={() => {}} handlePost={() => {}} />,
     );
-    expect(getByText('Cancel')).toBeTruthy();
-    expect(getByText('Post')).toBeTruthy();
+    expect(getByText('tweets.createPost.cancel')).toBeTruthy();
+    expect(getByText('tweets.createPost.post')).toBeTruthy();
   });
 
   it('should handle cancel press', () => {

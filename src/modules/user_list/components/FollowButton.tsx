@@ -4,7 +4,7 @@ import { useFollowUser } from '@/src/modules/profile/hooks/useFollowUser';
 import { IUser } from '@/src/types/user';
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 interface IFollowButtonProps {
   user: IUser;
@@ -23,7 +23,7 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       justifyContent: 'center',
     },
-    // eslint-disable-next-line react-native/no-color-literals
+
     followingButton: {
       backgroundColor: 'transparent',
       borderWidth: theme.borderWidth.thin,
@@ -47,7 +47,7 @@ const FollowButton: React.FC<IFollowButtonProps> = ({ user, onPress }) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   // Use the follow hook
-  const { isFollowing, isLoading, toggleFollow, setIsFollowing } = useFollowUser(user.isFollowing || false);
+  const { isFollowing, toggleFollow, setIsFollowing } = useFollowUser(user.isFollowing || false);
 
   // Sync with user prop changes
   useEffect(() => {
@@ -72,28 +72,18 @@ const FollowButton: React.FC<IFollowButtonProps> = ({ user, onPress }) => {
       style={[styles.followButton, isFollowing && styles.followingButton]}
       onPress={handlePress}
       activeOpacity={0.7}
-      disabled={isLoading}
       testID={`follow_button_${user.id}`}
       accessibilityLabel={
         isFollowing ? `unfollow_${user.username || user.name}` : `follow_${user.username || user.name}`
       }
       accessibilityRole="button"
-      accessibilityState={{ disabled: isLoading }}
     >
-      {isLoading ? (
-        <ActivityIndicator
-          size="small"
-          color={isFollowing ? theme.colors.text.primary : theme.colors.text.inverse}
-          testID={`follow_button_loader_${user.id}`}
-        />
-      ) : (
-        <Text
-          style={[styles.followButtonText, isFollowing && styles.followingButtonText]}
-          testID={`follow_button_text_${user.id}`}
-        >
-          {isFollowing ? t('userList.following') : t('userList.follow')}
-        </Text>
-      )}
+      <Text
+        style={[styles.followButtonText, isFollowing && styles.followingButtonText]}
+        testID={`follow_button_text_${user.id}`}
+      >
+        {isFollowing ? t('userList.following') : t('userList.follow')}
+      </Text>
     </TouchableOpacity>
   );
 };

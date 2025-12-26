@@ -17,22 +17,22 @@ describe('formatTweetDate', () => {
 
   it('should return "now" if less than 1 minute', () => {
     const date = new Date('2023-01-01T11:59:30Z').toISOString();
-    expect(formatTweetDate(date)).toBe('now');
+    expect(formatTweetDate(date)).toBe('tweets.date.now');
   });
 
   it('should return minutes if less than 1 hour', () => {
     const date = new Date('2023-01-01T11:55:00Z').toISOString();
-    expect(formatTweetDate(date)).toBe('5m');
+    expect(formatTweetDate(date)).toBe('5tweets.date.minutesShort');
   });
 
   it('should return hours if less than 24 hours', () => {
     const date = new Date('2023-01-01T09:00:00Z').toISOString();
-    expect(formatTweetDate(date)).toBe('3h');
+    expect(formatTweetDate(date)).toBe('3tweets.date.hoursShort');
   });
 
   it('should return days if less than 7 days', () => {
     const date = new Date('2022-12-30T12:00:00Z').toISOString();
-    expect(formatTweetDate(date)).toBe('2d');
+    expect(formatTweetDate(date)).toBe('2tweets.date.daysShort');
   });
 
   it('should return formatted date if older than 7 days', () => {

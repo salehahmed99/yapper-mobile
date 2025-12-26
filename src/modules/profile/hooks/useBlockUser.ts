@@ -1,50 +1,146 @@
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import Toast from 'react-native-toast-message';
+import { IExploreResponse, IWhoToFollowResponse } from '../../explore/types';
+import { ISearchUsersMappedPageData } from '../../search/types';
+import { ITweet, ITweets } from '../../tweets/types';
 import { blockUser, unblockUser } from '../services/profileService';
+import { updateUserStateInTweetsCache } from '../utils/profileCacheUtils';
+
+interface BlockMutationVariables {
+  userId: string;
+  isBlocked: boolean;
+}
 
 export const useBlockUser = (initialBlockState: boolean = false) => {
   const [isBlocked, setIsBlocked] = useState(initialBlockState);
-  const [isLoading, setIsLoading] = useState(false);
-  const toggleBlock = async (userId: string) => {
-    if (isLoading || !userId) return;
+  const queryClient = useQueryClient();
 
-    setIsLoading(true);
-    const previousState = isBlocked;
+  const toggleBlockState = (tweet: ITweet) => {
+    return {
+      ...tweet,
+      user: {
+        ...tweet.user,
+        isBlocked: !tweet.user.isBlocked,
+      },
+    };
+  };
 
-    // Optimistic update
-    setIsBlocked(!isBlocked);
+  // Helper to remove user from whoToFollow in explore cache
+  const removeFromExploreWhoToFollow = (
+    oldData: IExploreResponse | undefined,
+    userId: string,
+  ): IExploreResponse | undefined => {
+    if (!oldData?.data?.whoToFollow) return oldData;
 
-    try {
-      if (isBlocked) {
-        await unblockUser(userId);
-        Toast.show({
-          type: 'success',
-          text1: 'Unblocked',
-          text2: 'You have unblocked this user',
-        });
-      } else {
-        await blockUser(userId);
-        Toast.show({
-          type: 'success',
-          text1: 'Blocked',
-          text2: 'You have blocked this user',
-        });
+    return {
+      ...oldData,
+      data: {
+        ...oldData.data,
+        whoToFollow: oldData.data.whoToFollow.filter((user) => user.id !== userId),
+      },
+    };
+  };
+
+  // Helper to remove user from dedicated whoToFollow cache
+  const removeFromWhoToFollowCache = (
+    oldData: IWhoToFollowResponse | undefined,
+    userId: string,
+  ): IWhoToFollowResponse | undefined => {
+    if (!oldData?.data) return oldData;
+
+    return {
+      ...oldData,
+      data: oldData.data.filter((user) => user.id !== userId),
+    };
+  };
+
+  // Helper to remove user from searchUsers cache
+  const removeFromSearchUsersCache = (
+    oldData: InfiniteData<ISearchUsersMappedPageData> | undefined,
+    userId: string,
+  ): InfiniteData<ISearchUsersMappedPageData> | undefined => {
+    if (!oldData?.pages) return oldData;
+
+    return {
+      ...oldData,
+      pages: oldData.pages.map((page) => {
+        if (!page?.data?.data) return page;
+
+        return {
+          ...page,
+          data: {
+            ...page.data,
+            data: page.data.data.filter((user) => user.id !== userId),
+          },
+        };
+      }),
+    };
+  };
+
+  const blockMutation = useMutation({
+    mutationFn: async (variables: BlockMutationVariables) => {
+      return variables.isBlocked ? unblockUser(variables.userId) : blockUser(variables.userId);
+    },
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey: ['profile'] });
+      await queryClient.cancelQueries({ queryKey: ['user', variables.userId] });
+      await queryClient.cancelQueries({ queryKey: ['tweets'] });
+      await queryClient.cancelQueries({ queryKey: ['explore', 'forYou'] });
+      await queryClient.cancelQueries({ queryKey: ['whoToFollow'] });
+      await queryClient.cancelQueries({ queryKey: ['searchUsers'] });
+
+      setIsBlocked(!variables.isBlocked);
+
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: ['tweets'] }, (oldData) =>
+        updateUserStateInTweetsCache(oldData, variables.userId, toggleBlockState),
+      );
+
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: ['profile'] }, (oldData) =>
+        updateUserStateInTweetsCache(oldData, variables.userId, toggleBlockState),
+      );
+
+      // Remove blocked user from whoToFollow in explore cache (ForYou tab)
+      if (!variables.isBlocked) {
+        queryClient.setQueryData<IExploreResponse>(['explore', 'forYou'], (oldData) =>
+          removeFromExploreWhoToFollow(oldData, variables.userId),
+        );
+
+        // Remove blocked user from dedicated whoToFollow cache (Show more screen)
+        queryClient.setQueriesData<IWhoToFollowResponse>({ queryKey: ['whoToFollow'] }, (oldData) =>
+          removeFromWhoToFollowCache(oldData, variables.userId),
+        );
+
+        // Remove blocked user from search users cache
+        queryClient.setQueriesData<InfiniteData<ISearchUsersMappedPageData>>({ queryKey: ['searchUsers'] }, (oldData) =>
+          removeFromSearchUsersCache(oldData, variables.userId),
+        );
       }
-    } catch (error) {
-      setIsBlocked(previousState);
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: error instanceof Error ? error.message : 'An error occurred',
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['user', variables.userId] });
+      queryClient.invalidateQueries({ queryKey: ['userList'] });
+    },
+    onError: (error, variables) => {
+      setIsBlocked(variables.isBlocked);
+
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['user', variables.userId] });
+      queryClient.invalidateQueries({ queryKey: ['tweets'] });
+      queryClient.invalidateQueries({ queryKey: ['userList'] });
+      queryClient.invalidateQueries({ queryKey: ['explore', 'forYou'] });
+      queryClient.invalidateQueries({ queryKey: ['whoToFollow'] });
+      queryClient.invalidateQueries({ queryKey: ['searchUsers'] });
+    },
+  });
+
+  const toggleBlock = async (userId: string) => {
+    if (blockMutation.isPending || !userId) return;
+    await blockMutation.mutateAsync({ userId, isBlocked });
   };
 
   return {
     isBlocked,
-    isLoading,
+    isLoading: blockMutation.isPending,
     toggleBlock,
     setIsBlocked,
   };

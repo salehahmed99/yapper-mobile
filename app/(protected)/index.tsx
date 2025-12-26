@@ -5,6 +5,7 @@ import type { Theme } from '@/src/constants/theme';
 import { MediaViewerProvider } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
 import useSpacing from '@/src/hooks/useSpacing';
+import { useSwipableTabs } from '@/src/hooks/useSwipableTabs';
 import CreatePostModal from '@/src/modules/tweets/components/CreatePostModal';
 import Fab from '@/src/modules/tweets/components/Fab';
 import MediaViewerModal from '@/src/modules/tweets/components/MediaViewerModal';
@@ -13,75 +14,60 @@ import { useTweetActions } from '@/src/modules/tweets/hooks/useTweetActions';
 import { useTweets } from '@/src/modules/tweets/hooks/useTweets';
 import { useTweetsFiltersStore } from '@/src/modules/tweets/store/useTweetsFiltersStore';
 import React, { useState } from 'react';
-import { RefreshControl, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { Animated, Platform, StyleSheet, Text, View } from 'react-native';
 
 export default function HomeScreen() {
   const { theme } = useTheme();
   const { top, bottom } = useSpacing();
   const styles = createStyles(theme);
-  // Use a local index for the Home top tabs (For You / Following).
-  // We intentionally do NOT write this into the global `activeTab` state
-  // so the bottom navigation remains correctly highlighted when switching
-  // between these inner tabs.
-  const [homeIndex, setHomeIndex] = useState(0);
 
+  const { t } = useTranslation();
+  const { translateX, tabSwipePanResponder, homeIndex, setHomeIndex, screenWidth } = useSwipableTabs();
   const [isCreatePostModalVisible, setIsCreatePostModalVisible] = useState(false);
 
   const tweetsFilters = useTweetsFiltersStore((state) => state.filters);
   const forYouQuery = useTweets(tweetsFilters, 'for-you');
   const followingQuery = useTweets(tweetsFilters, 'following');
 
-  // Select the active query based on tab index
-  const activeQuery = homeIndex === 0 ? forYouQuery : followingQuery;
+  const forYouTweets = React.useMemo(() => {
+    return forYouQuery.data?.pages.flatMap((page) => page.data) ?? [];
+  }, [forYouQuery.data]);
 
-  // Flatten all pages of tweets into a single array
-  // Only keep the last 50 tweets to prevent excessive memory usage
-  const tweets = React.useMemo(() => {
-    const allTweets = activeQuery.data?.pages.flatMap((page) => page.data) ?? [];
-    // Keep only the last 50 tweets visible to prevent OOM issues with large scrolled lists
-    return allTweets.length > 50 ? allTweets.slice(-50) : allTweets;
-  }, [activeQuery.data]);
+  const followingTweets = React.useMemo(() => {
+    return followingQuery.data?.pages.flatMap((page) => page.data) ?? [];
+  }, [followingQuery.data]);
 
-  const onRefresh = React.useCallback(() => {
-    activeQuery.refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeQuery.refetch]);
+  const onForYouRefresh = React.useCallback(() => {
+    forYouQuery.refetch();
+  }, [forYouQuery]);
 
-  const onEndReached = React.useCallback(() => {
-    if (activeQuery.hasNextPage && !activeQuery.isFetchingNextPage) {
-      activeQuery.fetchNextPage();
+  const onForYouEndReached = React.useCallback(() => {
+    if (forYouQuery.hasNextPage && !forYouQuery.isFetchingNextPage) {
+      forYouQuery.fetchNextPage();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeQuery.hasNextPage, activeQuery.isFetchingNextPage, activeQuery.fetchNextPage]);
+  }, [forYouQuery]);
 
-  const refreshControl = (
-    <RefreshControl
-      refreshing={activeQuery.isRefetching}
-      onRefresh={onRefresh}
-      tintColor={theme.colors.text.primary}
-      colors={[theme.colors.text.primary]}
-    />
-  );
+  const onFollowingRefresh = React.useCallback(() => {
+    followingQuery.refetch();
+  }, [followingQuery]);
 
-  // Render different content based on the selected tab
-  const renderScene = () => {
+  const onFollowingEndReached = React.useCallback(() => {
+    if (followingQuery.hasNextPage && !followingQuery.isFetchingNextPage) {
+      followingQuery.fetchNextPage();
+    }
+  }, [followingQuery]);
+
+  const { addPostMutation } = useTweetActions();
+
+  const renderEmptyComponent = () => {
     return (
-      <View style={styles.tweetContainer}>
-        <TweetList
-          data={tweets}
-          refreshControl={refreshControl}
-          onEndReached={onEndReached}
-          onEndReachedThreshold={0.5}
-          isLoading={activeQuery.isLoading}
-          isFetchingNextPage={activeQuery.isFetchingNextPage}
-          topSpacing={top}
-          bottomSpacing={bottom}
-        />
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyText}>{t('home.emptyList')}</Text>
       </View>
     );
   };
 
-  const { addPostMutation } = useTweetActions('dummyId');
   return (
     <View style={styles.container}>
       <MediaViewerProvider>
@@ -92,7 +78,41 @@ export default function HomeScreen() {
           />
         </View>
         <MediaViewerModal />
-        {renderScene()}
+        {/* Swipeable tab container */}
+        <View style={styles.tabsOuterContainer} {...tabSwipePanResponder.panHandlers}>
+          <Animated.View style={[styles.tabsInnerContainer, { width: screenWidth * 2, transform: [{ translateX }] }]}>
+            <View style={[styles.tabPage, { width: screenWidth }]}>
+              <TweetList
+                data={forYouTweets}
+                onRefresh={onForYouRefresh}
+                refreshing={forYouQuery.isRefetching}
+                onEndReached={onForYouEndReached}
+                onEndReachedThreshold={0.5}
+                isLoading={forYouQuery.isLoading}
+                isFetchingNextPage={forYouQuery.isFetchingNextPage}
+                useCustomRefreshIndicator={Platform.OS === 'ios'}
+                topSpacing={top}
+                bottomSpacing={bottom}
+                listEmptyComponent={renderEmptyComponent}
+              />
+            </View>
+            <View style={[styles.tabPage, { width: screenWidth }]}>
+              <TweetList
+                data={followingTweets}
+                onRefresh={onFollowingRefresh}
+                refreshing={followingQuery.isRefetching}
+                onEndReached={onFollowingEndReached}
+                onEndReachedThreshold={0.5}
+                isLoading={followingQuery.isLoading}
+                isFetchingNextPage={followingQuery.isFetchingNextPage}
+                useCustomRefreshIndicator={Platform.OS === 'ios'}
+                topSpacing={top}
+                bottomSpacing={bottom}
+                listEmptyComponent={renderEmptyComponent}
+              />
+            </View>
+          </Animated.View>
+        </View>
         <Fab onPress={() => setIsCreatePostModalVisible(true)} />
         <CreatePostModal
           visible={isCreatePostModalVisible}
@@ -118,7 +138,27 @@ const createStyles = (theme: Theme) =>
       right: 0,
       zIndex: 1,
     },
-    tweetContainer: {
+    tabsOuterContainer: {
       flex: 1,
+      overflow: 'hidden',
+    },
+    tabsInnerContainer: {
+      flex: 1,
+      flexDirection: 'row',
+    },
+    tabPage: {
+      flex: 1,
+    },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 60,
+      paddingHorizontal: 20,
+    },
+    emptyText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.typography.sizes.md,
+      textAlign: 'center',
     },
   });

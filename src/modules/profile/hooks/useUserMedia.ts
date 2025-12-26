@@ -8,12 +8,11 @@ export const useUserMedia = (userId: string, enabled: boolean = true) => {
   return useInfiniteQuery({
     queryKey: profileQueryKeys.userMedia(userId),
     queryFn: async ({ pageParam }) => {
-      const response = await getUserMedia({
+      return await getUserMedia({
         userId,
         cursor: pageParam,
         limit: PROFILE_QUERY_CONFIG.pagination.defaultLimit,
       });
-      return response.data;
     },
     initialPageParam: '',
     getNextPageParam: (lastPage) => {
@@ -30,10 +29,7 @@ export const useUserMedia = (userId: string, enabled: boolean = true) => {
 export const useUserMediaData = (userId: string, enabled: boolean = true) => {
   const query = useUserMedia(userId, enabled);
 
-  const media: ITweet[] = useMemo(
-    () => query.data?.pages.flatMap((page) => page.data as ITweet[]) ?? [],
-    [query.data?.pages],
-  );
+  const media: ITweet[] = useMemo(() => query.data?.pages.flatMap((page) => page.data) ?? [], [query.data?.pages]);
 
   return {
     ...query,

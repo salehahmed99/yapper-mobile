@@ -1,12 +1,7 @@
-import BookmarkIcon from '@/src/components/icons/BookmarkIcon';
-import LikeIcon from '@/src/components/icons/LikeIcon';
-import ReplyIcon from '@/src/components/icons/ReplyIcon';
-import RepostIcon from '@/src/components/icons/RepostIcon';
-import ShareIcon from '@/src/components/icons/ShareIcon';
-import ViewsIcon from '@/src/components/icons/ViewsIcon';
 import { Theme } from '@/src/constants/theme';
 import { useMediaViewer } from '@/src/context/MediaViewerContext';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import {
   AVATAR_SIZE,
   BOTTOM_AVATAR_SIZE,
@@ -24,10 +19,9 @@ import { useMediaViewerControls } from '@/src/modules/tweets/hooks/useMediaViewe
 import { useTweet } from '@/src/modules/tweets/hooks/useTweet';
 import { useTweetActions } from '@/src/modules/tweets/hooks/useTweetActions';
 import { MediaItem, MediaViewerContentProps } from '@/src/modules/tweets/types/mediaViewer';
+import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useFocusEffect } from '@react-navigation/native';
-import { useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
 import { VideoView } from 'expo-video';
 import { ArrowLeft, Pause, Play, Volume2, VolumeX } from 'lucide-react-native';
 import React, { useMemo, useRef, useState } from 'react';
@@ -43,8 +37,11 @@ import {
   View,
   ViewToken,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { EdgeInsets, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import ActionsRow from './ActionsRow';
 import CreatePostModal from './CreatePostModal';
+import RepostOptionsModal from './RepostOptionsModal';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -66,11 +63,13 @@ function MediaViewerContent({
   onClose,
   theme,
 }: MediaViewerContentProps) {
-  const styles = useMemo(() => createStyles(theme), [theme]);
-  const queryClient = useQueryClient();
-  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const styles = useMemo(() => createStyles(theme, insets), [theme, insets]);
+  const { navigate } = useNavigation();
+  const { likeMutation, repostMutation, replyToPostMutation, quotePostMutation, bookmarkMutation } = useTweetActions();
+
+  // Fetch tweet data from the query cache - this ensures we always have the latest state
   const { data: tweet } = useTweet(tweetId);
-  const { likeMutation, repostMutation, replyToPostMutation } = useTweetActions(tweetId);
 
   const allMedia = useMemo((): MediaItem[] => {
     const items: MediaItem[] = [];
@@ -88,15 +87,12 @@ function MediaViewerContent({
 
   const [currentIndex, setCurrentIndex] = useState(mediaIndex);
   const [showUI, setShowUI] = useState(true);
-  const [isLiked, setIsLiked] = useState(tweet?.isLiked ?? false);
-  const [isReposted, setIsReposted] = useState(tweet?.isReposted ?? false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [likesCount, setLikesCount] = useState(tweet?.likesCount ?? 0);
-  const [repostsCount, setRepostsCount] = useState(tweet?.repostsCount ?? 0);
   const [isCreatePostModalVisible, setIsCreatePostModalVisible] = useState(false);
   const [createPostType, setCreatePostType] = useState<'tweet' | 'quote' | 'reply'>('tweet');
   const [isScreenFocused, setIsScreenFocused] = useState(true);
   const flatListRef = useRef<FlatList>(null);
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const wasPlayingBeforeModal = useRef(false);
   const uiOpacity = useRef(new Animated.Value(1)).current;
 
   const currentMedia = allMedia[currentIndex];
@@ -136,15 +132,6 @@ function MediaViewerContent({
     }
   };
 
-  React.useEffect(() => {
-    if (tweet) {
-      setIsLiked(tweet.isLiked);
-      setIsReposted(tweet.isReposted);
-      setLikesCount(tweet.likesCount);
-      setRepostsCount(tweet.repostsCount);
-    }
-  }, [tweet]);
-
   useFocusEffect(
     React.useCallback(() => {
       setIsScreenFocused(true);
@@ -171,6 +158,9 @@ function MediaViewerContent({
   }, [isScreenFocused, isVideo, player]);
 
   const toggleUI = () => {
+    // Dismiss bottom sheet if it's open
+    bottomSheetModalRef.current?.dismiss();
+
     const newShowUI = !showUI;
     setShowUI(newShowUI);
     Animated.timing(uiOpacity, {
@@ -182,46 +172,70 @@ function MediaViewerContent({
 
   const handleLikePress = () => {
     if (!tweet) return;
-    likeMutation.mutate(
-      { tweetId, isLiked: tweet.isLiked },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId }] });
-        },
-      },
-    );
+    likeMutation.mutate({ tweetId, isLiked: tweet.isLiked });
   };
 
   const handleRepostPress = () => {
+    bottomSheetModalRef.current?.present();
+  };
+
+  const handleRepost = () => {
     if (!tweet) return;
-    repostMutation.mutate(
-      { tweetId, isReposted: tweet.isReposted },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['tweet', { tweetId }] });
-        },
-      },
-    );
+    repostMutation.mutate({ tweetId, isReposted: tweet.isReposted });
+  };
+
+  const handleQuotePress = () => {
+    wasPlayingBeforeModal.current = player?.playing ?? false;
+    player?.pause();
+    setCreatePostType('quote');
+    setIsCreatePostModalVisible(true);
+  };
+
+  const handleQuote = (tweetId: string, content: string, mediaUris?: string[]) => {
+    quotePostMutation.mutate({ tweetId, content, mediaUris });
   };
 
   const handleReplyPress = () => {
+    wasPlayingBeforeModal.current = player?.playing ?? false;
+    player?.pause();
     setCreatePostType('reply');
     setIsCreatePostModalVisible(true);
   };
 
-  const handleReply = (content: string, mediaUris?: string[]) => {
-    replyToPostMutation.mutate({ content, mediaUris });
+  const handleCloseCreatePostModal = () => {
+    setIsCreatePostModalVisible(false);
+    if (wasPlayingBeforeModal.current && isVideo) {
+      player?.play();
+    }
+    wasPlayingBeforeModal.current = false;
+  };
+
+  const handleReply = (tweetId: string, content: string, mediaUris?: string[]) => {
+    replyToPostMutation.mutate({ tweetId, content, mediaUris });
   };
 
   const handleBookmarkPress = () => {
-    setIsBookmarked(!isBookmarked);
+    if (!tweet) return;
+    bookmarkMutation.mutate({ tweetId, isBookmarked: tweet.isBookmarked });
   };
 
   const handleUserProfilePress = () => {
     if (!tweet?.user?.id) return;
-    router.push({
+    navigate({
       pathname: '/(protected)/(profile)/[id]',
       params: { id: tweet.user.id },
+    });
+  };
+
+  const handleViewInteractionsPress = () => {
+    if (!tweet?.user?.id) return;
+    player?.pause();
+    navigate({
+      pathname: '/(protected)/tweets/[tweetId]/activity',
+      params: {
+        tweetId: tweetId,
+        ownerId: tweet.user.id,
+      },
     });
   };
 
@@ -252,373 +266,265 @@ function MediaViewerContent({
   };
 
   return (
-    <>
-      <Modal visible animationType="fade" statusBarTranslucent onRequestClose={handleClose}>
-        <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-          <Pressable style={styles.containerPressable} onPress={toggleUI} accessibilityRole="button">
-            <StatusBar barStyle="light-content" backgroundColor={theme.colors.modal.background} />
+    <Modal visible animationType="fade" statusBarTranslucent onRequestClose={handleClose}>
+      <GestureHandlerRootView style={styles.gestureRoot}>
+        <BottomSheetModalProvider>
+          <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+            <Pressable style={styles.containerPressable} onPress={toggleUI} accessibilityRole="button">
+              <StatusBar barStyle="light-content" backgroundColor={theme.colors.modal.background} />
 
-            <FlatList
-              ref={flatListRef}
-              data={allMedia}
-              renderItem={renderItem}
-              keyExtractor={(item) => `${item.type}-${item.index}`}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              initialScrollIndex={mediaIndex}
-              getItemLayout={(_, index) => ({
-                length: SCREEN_WIDTH,
-                offset: SCREEN_WIDTH * index,
-                index,
-              })}
-              onViewableItemsChanged={onViewableItemsChanged}
-              viewabilityConfig={viewabilityConfig}
-              snapToAlignment="center"
-              decelerationRate="fast"
-              removeClippedSubviews={false}
-              windowSize={3}
-              maxToRenderPerBatch={2}
-              initialNumToRender={1}
-              updateCellsBatchingPeriod={50}
-              disableIntervalMomentum
-              snapToInterval={SCREEN_WIDTH}
-              scrollEventThrottle={16}
-            />
+              <FlatList
+                ref={flatListRef}
+                data={allMedia}
+                renderItem={renderItem}
+                keyExtractor={(item) => `${item.type}-${item.index}`}
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                initialScrollIndex={mediaIndex}
+                getItemLayout={(_, index) => ({
+                  length: SCREEN_WIDTH,
+                  offset: SCREEN_WIDTH * index,
+                  index,
+                })}
+                onViewableItemsChanged={onViewableItemsChanged}
+                viewabilityConfig={viewabilityConfig}
+                snapToAlignment="center"
+                decelerationRate="fast"
+                removeClippedSubviews={false}
+                windowSize={3}
+                maxToRenderPerBatch={2}
+                initialNumToRender={1}
+                updateCellsBatchingPeriod={50}
+                disableIntervalMomentum
+                snapToInterval={SCREEN_WIDTH}
+                scrollEventThrottle={16}
+              />
 
-            {/* Top Bar */}
-            <Animated.View style={[styles.topBar, { opacity: uiOpacity }]} pointerEvents={showUI ? 'box-none' : 'none'}>
-              <SafeAreaView edges={['top']} style={styles.safeArea} pointerEvents="box-none">
-                <View style={styles.topBarContent} pointerEvents="auto">
-                  <Pressable onPress={handleClose} style={styles.iconButton} accessibilityLabel="back_button">
-                    <ArrowLeft size={theme.iconSizes.lg} color={theme.colors.modal.iconColor} />
-                  </Pressable>
-
-                  {allMedia[currentIndex]?.type === 'image' && (
-                    <Pressable
-                      style={styles.topBarCenter}
-                      onPress={handleUserProfilePress}
-                      accessibilityLabel="media_view_profile"
-                      accessibilityRole="button"
-                    >
-                      {tweet?.user?.avatarUrl && (
-                        <Image source={{ uri: tweet.user.avatarUrl }} style={styles.avatar} cachePolicy="memory-disk" />
-                      )}
-                      <View style={styles.userInfo}>
-                        <Text style={styles.accountText} numberOfLines={1}>
-                          {tweet?.user?.name || 'Loading...'}
-                        </Text>
-                        <Text style={styles.handleText} numberOfLines={1}>
-                          @{tweet?.user?.username || '...'}
-                        </Text>
-                      </View>
-                    </Pressable>
-                  )}
-                </View>
-              </SafeAreaView>
-            </Animated.View>
-
-            {allMedia[currentIndex]?.type === 'video' && (
+              {/* Top Bar */}
               <Animated.View
-                style={[styles.actionsBar, { opacity: uiOpacity }]}
+                style={[styles.topBar, { opacity: uiOpacity }]}
                 pointerEvents={showUI ? 'box-none' : 'none'}
               >
-                <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
-                  <View style={styles.actionsRow} pointerEvents="auto">
-                    <Pressable onPress={handleReplyPress} style={styles.actionItem} hitSlop={15}>
-                      <ReplyIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
-                      {tweet?.repliesCount ? (
-                        <Text style={[styles.actionCount, { color: theme.colors.text.secondary }]}>
-                          {tweet.repliesCount}
-                        </Text>
-                      ) : null}
+                <SafeAreaView edges={['top']} style={styles.safeArea} pointerEvents="box-none">
+                  <View style={styles.topBarContent} pointerEvents="auto">
+                    <Pressable onPress={handleClose} style={styles.iconButton} accessibilityLabel="back_button">
+                      <ArrowLeft size={theme.iconSizes.lg} color={theme.colors.modal.iconColor} />
                     </Pressable>
-                    <Pressable onPress={handleRepostPress} style={styles.actionItem} hitSlop={15}>
-                      <RepostIcon
-                        size={theme.iconSizesAlt.sm}
-                        stroke={isReposted ? theme.colors.accent.repost : theme.colors.text.secondary}
-                        strokeWidth={0}
-                      />
-                      {repostsCount ? (
-                        <Text
-                          style={[
-                            styles.actionCount,
-                            { color: isReposted ? theme.colors.accent.repost : theme.colors.text.secondary },
-                          ]}
-                        >
-                          {repostsCount}
-                        </Text>
-                      ) : null}
-                    </Pressable>
-                    <Pressable onPress={handleLikePress} style={styles.actionItem} hitSlop={15}>
-                      <LikeIcon
-                        size={theme.iconSizesAlt.sm}
-                        stroke={isLiked ? theme.colors.accent.like : theme.colors.text.secondary}
-                        filled={isLiked}
-                        strokeWidth={0}
-                      />
-                      {likesCount ? (
-                        <Text
-                          style={[
-                            styles.actionCount,
-                            { color: isLiked ? theme.colors.accent.like : theme.colors.text.secondary },
-                          ]}
-                        >
-                          {likesCount}
-                        </Text>
-                      ) : null}
-                    </Pressable>
-                    <Pressable onPress={() => console.warn('Views')} style={styles.actionItem} hitSlop={15}>
-                      <ViewsIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
-                      {tweet?.viewsCount ? (
-                        <Text style={[styles.actionCount, { color: theme.colors.text.secondary }]}>
-                          {tweet.viewsCount}
-                        </Text>
-                      ) : null}
-                    </Pressable>
-                    <Pressable onPress={handleBookmarkPress} style={styles.actionItem} hitSlop={15}>
-                      <BookmarkIcon
-                        size={theme.iconSizesAlt.sm}
-                        stroke={isBookmarked ? theme.colors.accent.bookmark : theme.colors.text.secondary}
-                        filled={isBookmarked}
-                        strokeWidth={0}
-                      />
-                    </Pressable>
-                    <Pressable onPress={() => console.warn('Share')} style={styles.actionItem} hitSlop={15}>
-                      <ShareIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
-                    </Pressable>
-                  </View>
-                </SafeAreaView>
-              </Animated.View>
-            )}
 
-            {allMedia[currentIndex]?.type === 'video' && (
-              <Animated.View
-                style={[styles.bottomUserInfo, { opacity: uiOpacity }]}
-                pointerEvents={showUI ? 'box-none' : 'none'}
-              >
-                <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
-                  <View style={styles.userInfoContent} pointerEvents="auto">
-                    <Pressable
-                      style={styles.bottomUserRow}
-                      onPress={handleUserProfilePress}
-                      accessibilityLabel="media_video_profile"
-                      accessibilityRole="button"
-                    >
-                      {tweet?.user?.avatarUrl && (
-                        <Image
-                          source={{ uri: tweet.user.avatarUrl }}
-                          style={styles.bottomAvatar}
-                          cachePolicy="memory-disk"
-                        />
-                      )}
-                      <View style={styles.bottomUserText}>
-                        <View style={styles.bottomUserNames}>
-                          <Text style={styles.bottomUserName} numberOfLines={1}>
+                    {!isVideo && (
+                      <Pressable
+                        style={styles.topBarCenter}
+                        onPress={handleUserProfilePress}
+                        accessibilityLabel="media_view_profile"
+                        accessibilityRole="button"
+                      >
+                        {tweet?.user?.avatarUrl && (
+                          <Image
+                            source={{ uri: tweet.user.avatarUrl }}
+                            style={styles.avatar}
+                            cachePolicy="memory-disk"
+                          />
+                        )}
+                        <View style={styles.userInfo}>
+                          <Text style={styles.accountText} numberOfLines={1}>
                             {tweet?.user?.name || 'Loading...'}
                           </Text>
-                          <Text style={styles.bottomUserHandle} numberOfLines={1}>
+                          <Text style={styles.handleText} numberOfLines={1}>
                             @{tweet?.user?.username || '...'}
                           </Text>
                         </View>
-                      </View>
-                    </Pressable>
-                    {tweet?.content && (
-                      <Text style={styles.bottomTweetText} numberOfLines={2}>
-                        {tweet.content}
-                      </Text>
+                      </Pressable>
                     )}
                   </View>
                 </SafeAreaView>
               </Animated.View>
-            )}
 
-            {allMedia[currentIndex]?.type === 'image' && (
+              {/* Actions Row - shown for both video and image */}
               <Animated.View
-                style={[styles.bottomBar, { opacity: uiOpacity }]}
+                style={[isVideo ? styles.actionsBar : styles.bottomBar, { opacity: uiOpacity }]}
                 pointerEvents={showUI ? 'box-none' : 'none'}
               >
                 <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
-                  <View style={styles.actionsRow} pointerEvents="auto">
-                    <Pressable onPress={handleReplyPress} style={styles.actionItem} hitSlop={15}>
-                      <ReplyIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
-                      {tweet?.repliesCount ? (
-                        <Text style={[styles.actionCount, { color: theme.colors.text.secondary }]}>
-                          {tweet.repliesCount}
-                        </Text>
-                      ) : null}
-                    </Pressable>
-                    <Pressable onPress={handleRepostPress} style={styles.actionItem} hitSlop={15}>
-                      <RepostIcon
-                        size={theme.iconSizesAlt.sm}
-                        stroke={isReposted ? theme.colors.accent.repost : theme.colors.text.secondary}
-                        strokeWidth={0}
-                      />
-                      {repostsCount ? (
-                        <Text
-                          style={[
-                            styles.actionCount,
-                            { color: isReposted ? theme.colors.accent.repost : theme.colors.text.secondary },
-                          ]}
-                        >
-                          {repostsCount}
-                        </Text>
-                      ) : null}
-                    </Pressable>
-                    <Pressable onPress={handleLikePress} style={styles.actionItem} hitSlop={15}>
-                      <LikeIcon
-                        size={theme.iconSizesAlt.sm}
-                        stroke={isLiked ? theme.colors.accent.like : theme.colors.text.secondary}
-                        filled={isLiked}
-                        strokeWidth={0}
-                      />
-                      {likesCount ? (
-                        <Text
-                          style={[
-                            styles.actionCount,
-                            { color: isLiked ? theme.colors.accent.like : theme.colors.text.secondary },
-                          ]}
-                        >
-                          {likesCount}
-                        </Text>
-                      ) : null}
-                    </Pressable>
-                    <Pressable onPress={() => console.warn('Views')} style={styles.actionItem} hitSlop={15}>
-                      <ViewsIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
-                      {tweet?.viewsCount ? (
-                        <Text style={[styles.actionCount, { color: theme.colors.text.secondary }]}>
-                          {tweet.viewsCount}
-                        </Text>
-                      ) : null}
-                    </Pressable>
-                    <Pressable onPress={handleBookmarkPress} style={styles.actionItem} hitSlop={15}>
-                      <BookmarkIcon
-                        size={theme.iconSizesAlt.sm}
-                        stroke={isBookmarked ? theme.colors.accent.bookmark : theme.colors.text.secondary}
-                        filled={isBookmarked}
-                        strokeWidth={0}
-                      />
-                    </Pressable>
-                    <Pressable onPress={() => console.warn('Share')} style={styles.actionItem} hitSlop={15}>
-                      <ShareIcon size={theme.iconSizesAlt.sm} stroke={theme.colors.text.secondary} strokeWidth={0} />
-                    </Pressable>
-                  </View>
-                </SafeAreaView>
-              </Animated.View>
-            )}
-
-            {allMedia[currentIndex]?.type === 'video' && videoSource && (
-              <Animated.View
-                style={[styles.videoControlsContainer, { opacity: uiOpacity }]}
-                pointerEvents={showUI ? 'box-none' : 'none'}
-              >
-                <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
-                  <View style={styles.videoControls} pointerEvents="auto">
-                    <Pressable
-                      onPress={togglePlayPause}
-                      style={styles.controlButton}
-                      accessibilityLabel="video_play_pause"
-                      accessibilityRole="button"
-                    >
-                      {player?.playing ? (
-                        <Pause
-                          size={theme.iconSizes.md}
-                          color={theme.colors.modal.iconColor}
-                          fill={theme.colors.modal.iconColor}
-                        />
-                      ) : (
-                        <Play
-                          size={theme.iconSizes.md}
-                          color={theme.colors.modal.iconColor}
-                          fill={theme.colors.modal.iconColor}
-                        />
-                      )}
-                    </Pressable>
-                    <Text style={styles.timeText} accessibilityLabel="video_current_time">
-                      {formatTime(currentTime)}
-                    </Text>
-                    <Pressable
-                      style={styles.progressBarContainer}
-                      onPress={handleProgressBarPress}
-                      onTouchStart={onProgressBarTouchStart}
-                      onTouchMove={onProgressBarTouchMove}
-                      onTouchEnd={onProgressBarTouchEnd}
-                      accessibilityLabel="video_progress_bar"
-                      accessibilityRole="adjustable"
-                    >
-                      <View ref={progressBarRef} style={styles.progressBar}>
-                        <View
-                          style={[
-                            styles.progressFill,
-                            { width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` },
-                          ]}
-                        >
-                          <View style={styles.progressThumb} />
-                        </View>
-                      </View>
-                    </Pressable>
-                    <Text style={styles.timeText} accessibilityLabel="video_duration">
-                      {formatTime(duration)}
-                    </Text>
-                    <Pressable
-                      onPress={toggleMute}
-                      style={styles.controlButton}
-                      accessibilityLabel="video_mute_toggle"
-                      accessibilityRole="button"
-                    >
-                      {isMuted ? (
-                        <VolumeX size={theme.iconSizes.md} color={theme.colors.modal.iconColor} />
-                      ) : (
-                        <Volume2 size={theme.iconSizes.md} color={theme.colors.modal.iconColor} />
-                      )}
-                    </Pressable>
-                    <Pressable
-                      onPress={() => setShowSpeedMenu(!showSpeedMenu)}
-                      style={styles.speedButton}
-                      accessibilityLabel="video_speed_menu"
-                      accessibilityRole="button"
-                    >
-                      <Text style={styles.speedText}>{playbackSpeed}x</Text>
-                    </Pressable>
-                  </View>
-
-                  {showSpeedMenu && (
-                    <View style={styles.speedMenu} pointerEvents="auto">
-                      {PLAYBACK_SPEEDS.map((speed) => (
-                        <Pressable
-                          key={String(speed)}
-                          onPress={() => handleSpeedChange(speed as any)}
-                          style={[styles.speedMenuItem, playbackSpeed === speed && styles.speedMenuItemActive]}
-                          accessibilityLabel={`video_speed_${speed}`}
-                          accessibilityRole="button"
-                        >
-                          <Text style={[styles.speedMenuText, playbackSpeed === speed && styles.speedMenuTextActive]}>
-                            {speed}x
-                          </Text>
-                        </Pressable>
-                      ))}
-                    </View>
+                  {tweet && (
+                    <ActionsRow
+                      tweet={tweet}
+                      size="modal"
+                      onReplyPress={handleReplyPress}
+                      onRepostPress={handleRepostPress}
+                      onLikePress={handleLikePress}
+                      onBookmarkPress={handleBookmarkPress}
+                      onSharePress={() => console.warn('Share')}
+                      hideViews
+                    />
                   )}
                 </SafeAreaView>
               </Animated.View>
-            )}
-          </Pressable>
-        </SafeAreaView>
-      </Modal>
 
-      <CreatePostModal
-        visible={isCreatePostModalVisible}
-        onClose={() => setIsCreatePostModalVisible(false)}
-        type={createPostType}
-        tweet={tweet || undefined}
-        onPost={createPostType === 'reply' ? handleReply : () => {}}
-        onRepost={() => {}}
-      />
-    </>
+              {/* User info for video - shown below actions */}
+              {isVideo && (
+                <Animated.View
+                  style={[styles.bottomUserInfo, { opacity: uiOpacity }]}
+                  pointerEvents={showUI ? 'box-none' : 'none'}
+                >
+                  <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
+                    <View style={styles.userInfoContent} pointerEvents="auto">
+                      <Pressable
+                        style={styles.bottomUserRow}
+                        onPress={handleUserProfilePress}
+                        accessibilityLabel="media_video_profile"
+                        accessibilityRole="button"
+                      >
+                        {tweet?.user?.avatarUrl && (
+                          <Image
+                            source={{ uri: tweet.user.avatarUrl }}
+                            style={styles.bottomAvatar}
+                            cachePolicy="memory-disk"
+                          />
+                        )}
+                        <View style={styles.bottomUserText}>
+                          <View style={styles.bottomUserNames}>
+                            <Text style={styles.bottomUserName} numberOfLines={1}>
+                              {tweet?.user?.name || 'Loading...'}
+                            </Text>
+                            <Text style={styles.bottomUserHandle} numberOfLines={1}>
+                              @{tweet?.user?.username || '...'}
+                            </Text>
+                          </View>
+                        </View>
+                      </Pressable>
+                      {tweet?.content && (
+                        <Text style={styles.bottomTweetText} numberOfLines={2}>
+                          {tweet.content}
+                        </Text>
+                      )}
+                    </View>
+                  </SafeAreaView>
+                </Animated.View>
+              )}
+
+              {/* Video controls */}
+              {isVideo && videoSource && (
+                <Animated.View
+                  style={[styles.videoControlsContainer, { opacity: uiOpacity }]}
+                  pointerEvents={showUI ? 'box-none' : 'none'}
+                >
+                  <SafeAreaView edges={['bottom']} style={styles.safeArea} pointerEvents="box-none">
+                    <View style={styles.videoControls} pointerEvents="auto">
+                      <Pressable
+                        onPress={togglePlayPause}
+                        style={styles.controlButton}
+                        accessibilityLabel="video_play_pause"
+                        accessibilityRole="button"
+                      >
+                        {player?.playing ? (
+                          <Pause
+                            size={theme.iconSizes.md}
+                            color={theme.colors.modal.iconColor}
+                            fill={theme.colors.modal.iconColor}
+                          />
+                        ) : (
+                          <Play
+                            size={theme.iconSizes.md}
+                            color={theme.colors.modal.iconColor}
+                            fill={theme.colors.modal.iconColor}
+                          />
+                        )}
+                      </Pressable>
+                      <Text style={styles.timeText} accessibilityLabel="video_current_time">
+                        {formatTime(currentTime)}
+                      </Text>
+                      <Pressable
+                        style={styles.progressBarContainer}
+                        onPress={handleProgressBarPress}
+                        onTouchStart={onProgressBarTouchStart}
+                        onTouchMove={onProgressBarTouchMove}
+                        onTouchEnd={onProgressBarTouchEnd}
+                        accessibilityLabel="video_progress_bar"
+                        accessibilityRole="adjustable"
+                      >
+                        <View ref={progressBarRef} style={styles.progressBar}>
+                          <View
+                            style={[
+                              styles.progressFill,
+                              { width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` },
+                            ]}
+                          >
+                            <View style={styles.progressThumb} />
+                          </View>
+                        </View>
+                      </Pressable>
+                      <Text style={styles.timeText} accessibilityLabel="video_duration">
+                        {duration > 0 ? formatTime(duration) : '--:--'}
+                      </Text>
+                      <Pressable
+                        onPress={toggleMute}
+                        style={styles.controlButton}
+                        accessibilityLabel="video_mute_toggle"
+                        accessibilityRole="button"
+                      >
+                        {isMuted ? (
+                          <VolumeX size={theme.iconSizes.md} color={theme.colors.modal.iconColor} />
+                        ) : (
+                          <Volume2 size={theme.iconSizes.md} color={theme.colors.modal.iconColor} />
+                        )}
+                      </Pressable>
+                      <Pressable
+                        onPress={() => setShowSpeedMenu(!showSpeedMenu)}
+                        style={styles.speedButton}
+                        accessibilityLabel="video_speed_menu"
+                        accessibilityRole="button"
+                      >
+                        <Text style={styles.speedText}>{playbackSpeed}x</Text>
+                      </Pressable>
+                    </View>
+
+                    {showSpeedMenu && (
+                      <View style={styles.speedMenu} pointerEvents="auto">
+                        {PLAYBACK_SPEEDS.map((speed) => (
+                          <Pressable
+                            key={String(speed)}
+                            onPress={() => handleSpeedChange(speed as any)}
+                            style={[styles.speedMenuItem, playbackSpeed === speed && styles.speedMenuItemActive]}
+                            accessibilityLabel={`video_speed_${speed}`}
+                            accessibilityRole="button"
+                          >
+                            <Text style={[styles.speedMenuText, playbackSpeed === speed && styles.speedMenuTextActive]}>
+                              {speed}x
+                            </Text>
+                          </Pressable>
+                        ))}
+                      </View>
+                    )}
+                  </SafeAreaView>
+                </Animated.View>
+              )}
+            </Pressable>
+          </SafeAreaView>
+
+          <RepostOptionsModal
+            isReposted={tweet?.isReposted ?? false}
+            onRepostPress={handleRepost}
+            onQuotePress={handleQuotePress}
+            onViewInteractionsPress={handleViewInteractionsPress}
+            bottomSheetModalRef={bottomSheetModalRef}
+          />
+
+          <CreatePostModal
+            visible={isCreatePostModalVisible}
+            onClose={handleCloseCreatePostModal}
+            type={createPostType}
+            tweet={tweet || undefined}
+            onPostReply={handleReply}
+            onPostQuote={handleQuote}
+          />
+        </BottomSheetModalProvider>
+      </GestureHandlerRootView>
+    </Modal>
   );
 }
 
-const createStyles = (theme: Theme) =>
+const createStyles = (theme: Theme, insets: EdgeInsets) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -637,6 +543,7 @@ const createStyles = (theme: Theme) =>
       right: 0,
       backgroundColor: theme.colors.modal.overlay,
       zIndex: 10,
+      paddingTop: insets.top,
     },
     topBarContent: {
       flexDirection: 'row',
@@ -683,10 +590,11 @@ const createStyles = (theme: Theme) =>
       right: 0,
       backgroundColor: theme.colors.modal.overlay,
       zIndex: 10,
+      paddingBottom: insets.bottom,
     },
     bottomUserInfo: {
       position: 'absolute',
-      bottom: USER_INFO_BOTTOM,
+      bottom: USER_INFO_BOTTOM + insets.bottom,
       left: 0,
       right: 0,
       backgroundColor: theme.colors.modal.overlay,
@@ -738,6 +646,7 @@ const createStyles = (theme: Theme) =>
       right: 0,
       backgroundColor: theme.colors.modal.overlay,
       zIndex: 10,
+      paddingBottom: insets.bottom,
     },
     actionsRow: {
       flexDirection: 'row',
@@ -770,7 +679,7 @@ const createStyles = (theme: Theme) =>
     },
     videoControlsContainer: {
       position: 'absolute',
-      bottom: VIDEO_CONTROLS_BOTTOM,
+      bottom: VIDEO_CONTROLS_BOTTOM + insets.bottom,
       left: 0,
       right: 0,
       backgroundColor: theme.colors.modal.overlay,
@@ -863,5 +772,8 @@ const createStyles = (theme: Theme) =>
     speedMenuTextActive: {
       color: theme.colors.modal.buttonActiveColor,
       fontFamily: theme.typography.fonts.bold,
+    },
+    gestureRoot: {
+      flex: 1,
     },
   });

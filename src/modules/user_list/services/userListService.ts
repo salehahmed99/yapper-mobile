@@ -1,7 +1,13 @@
 import api from '@/src/services/apiClient';
-import { IUser, mapUserDTOToUser } from '@/src/types/user';
+import { IUser } from '@/src/types/user';
 import { t } from 'i18next';
-import { getFollowersList, getFollowingList } from '../../profile/services/profileService';
+import {
+  getBlockedList,
+  getFollowersList,
+  getFollowingList,
+  getMutedList,
+  getMutualFollowers,
+} from '../../profile/services/profileService';
 import { IFollowerUser } from '../../profile/types';
 import { FetchUserListParams, IUserListResponse, IUserListResponseBackend } from '../types';
 const mapFollowerUserToUser = (follower: IFollowerUser): IUser => ({
@@ -49,6 +55,49 @@ export const getUserList = async (params: FetchUserListParams): Promise<IUserLis
     };
   }
 
+  if (type === 'mutualFollowers' && 'userId' in params) {
+    const response = await getMutualFollowers({
+      userId: params.userId,
+      cursor: params.cursor || '',
+      limit: 20,
+      following: true,
+    });
+
+    return {
+      users: response.data.data.map(mapFollowerUserToUser),
+      nextCursor: response.data.pagination.nextCursor,
+      hasMore: response.data.pagination.hasMore,
+    };
+  }
+
+  if (type === 'muted') {
+    const response = await getMutedList({
+      userId: '', // not used for muted list
+      cursor: params.cursor || '',
+      limit: 20,
+    });
+
+    return {
+      users: response.data.data.map(mapFollowerUserToUser),
+      nextCursor: response.data.pagination.nextCursor,
+      hasMore: response.data.pagination.hasMore,
+    };
+  }
+
+  if (type === 'blocked') {
+    const response = await getBlockedList({
+      userId: '', // not used for blocked list
+      cursor: params.cursor || '',
+      limit: 20,
+    });
+
+    return {
+      users: response.data.data.map(mapFollowerUserToUser),
+      nextCursor: response.data.pagination.nextCursor,
+      hasMore: response.data.pagination.hasMore,
+    };
+  }
+
   let endpoint: string;
 
   if ('tweetId' in params) {
@@ -66,9 +115,9 @@ export const getUserList = async (params: FetchUserListParams): Promise<IUserLis
       },
     });
     return {
-      users: response.data.data.data.map(mapUserDTOToUser),
-      hasMore: response.data.data.has_more,
-      nextCursor: response.data.data.has_more ? response.data.data.next_cursor : null,
+      users: response.data.data.data,
+      hasMore: response.data.data.hasMore,
+      nextCursor: response.data.data.nextCursor,
     };
   } catch (error: unknown) {
     const errorMessage =

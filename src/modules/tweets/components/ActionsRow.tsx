@@ -7,26 +7,41 @@ import ViewsIcon from '@/src/components/icons/ViewsIcon';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import { ITweet } from '../types';
 import TweetActionButton from './TweetActionButton';
+
 interface IActionsRowProps {
   tweet: ITweet;
   onReplyPress: () => void;
   onRepostPress: () => void;
-  onLikePress: (isLiked: boolean) => void;
+  onLikePress: () => void;
   onBookmarkPress: () => void;
-  isBookmarked: boolean;
   onSharePress: () => void;
-  size: 'small' | 'large';
+  size: 'small' | 'large' | 'modal';
+  containerStyle?: ViewStyle;
+  hideViews?: boolean;
 }
+
 const ActionsRow: React.FC<IActionsRowProps> = (props) => {
-  const { tweet, onReplyPress, onRepostPress, onLikePress, onBookmarkPress, onSharePress, isBookmarked, size } = props;
+  const {
+    tweet,
+    onReplyPress,
+    onRepostPress,
+    onLikePress,
+    onBookmarkPress,
+    onSharePress,
+    size,
+    containerStyle,
+    hideViews = false,
+  } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
+  const showViews = size === 'small' && !hideViews;
+
   return (
-    <View style={styles.actionsRow}>
+    <View style={[styles.actionsRow, size === 'modal' && styles.actionsRowModal, containerStyle]}>
       <TweetActionButton
         icon={ReplyIcon}
         count={tweet.repliesCount}
@@ -37,7 +52,7 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
       />
       <TweetActionButton
         icon={RepostIcon}
-        count={tweet.repostsCount}
+        count={tweet.repostsCount + tweet.quotesCount}
         onPress={onRepostPress}
         color={tweet.isReposted ? theme.colors.accent.repost : theme.colors.text.secondary}
         accessibilityLabel="tweet_button_repost"
@@ -48,14 +63,14 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
       <TweetActionButton
         icon={LikeIcon}
         count={tweet.likesCount}
-        onPress={() => onLikePress(tweet.isLiked)}
+        onPress={onLikePress}
         color={tweet.isLiked ? theme.colors.accent.like : theme.colors.text.secondary}
         filled={tweet.isLiked}
         accessibilityLabel="tweet_button_like"
         testID="tweet_button_like"
         size={size}
       />
-      {size === 'small' && (
+      {showViews && (
         <TweetActionButton
           icon={ViewsIcon}
           count={tweet.viewsCount}
@@ -67,9 +82,10 @@ const ActionsRow: React.FC<IActionsRowProps> = (props) => {
 
       <TweetActionButton
         icon={BookmarkIcon}
+        count={size === 'large' ? tweet.bookmarksCount : undefined}
         onPress={onBookmarkPress}
-        color={isBookmarked ? theme.colors.accent.bookmark : theme.colors.text.secondary}
-        filled={isBookmarked}
+        color={tweet.isBookmarked ? theme.colors.accent.bookmark : theme.colors.text.secondary}
+        filled={tweet.isBookmarked}
         accessibilityLabel="tweet_button_bookmark"
         testID="tweet_button_bookmark"
         size={size}
@@ -94,5 +110,11 @@ const createStyles = (theme: Theme) =>
       justifyContent: 'space-between',
       alignItems: 'center',
       marginTop: theme.spacing.xs,
+    },
+    actionsRowModal: {
+      marginTop: 0,
+      justifyContent: 'space-around',
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.sm,
     },
   });

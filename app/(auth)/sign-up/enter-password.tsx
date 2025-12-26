@@ -1,23 +1,25 @@
 import ActivityLoader from '@/src/components/ActivityLoader';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
+import i18n from '@/src/i18n';
 import BottomBar from '@/src/modules/auth/components/shared/BottomBar';
 import PasswordInput from '@/src/modules/auth/components/shared/PasswordInput';
 import AuthTitle from '@/src/modules/auth/components/shared/Title';
 import TopBar from '@/src/modules/auth/components/shared/TopBar';
 import { passwordSchema } from '@/src/modules/auth/schemas/schemas';
-import { signUpStep3 } from '@/src/modules/auth/services/signUpService';
+import { changeUserLanguage, signUpStep3 } from '@/src/modules/auth/services/signUpService';
 import { useSignUpStore } from '@/src/modules/auth/store/useSignUpStore';
 import { useAuthStore } from '@/src/store/useAuthStore';
-import { router } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 const EnterPasswordScreen = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { replace } = useNavigation();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   // Zustand store
@@ -35,13 +37,13 @@ const EnterPasswordScreen = () => {
   // Redirect if no email or verification token
   useEffect(() => {
     if (!email || !verificationToken) {
-      router.replace('/(auth)/sign-up/create-account-screen');
+      replace('/(auth)/sign-up/create-account-screen');
     }
-  }, [email, verificationToken]);
+  }, [email, verificationToken, replace]);
 
   // Validation
-  const isPasswordValid = password.length >= 8 ? passwordSchema.safeParse(password).success : true;
-  const isFormValid = password.length >= 8 && isPasswordValid && !isLoading;
+  const isPasswordValid = passwordSchema.safeParse(password).success;
+  const isFormValid = passwordSchema.safeParse(password).success && isPasswordValid && !isLoading;
 
   const onNextPress = async () => {
     if (!isFormValid) {
@@ -62,7 +64,8 @@ const EnterPasswordScreen = () => {
         language: 'en',
       });
       setSkipRedirect(true);
-      await loginUser(response.data.user, response.data.accessToken);
+      await loginUser(response.data.user, response.data.accessToken, response.data.refreshToken);
+      await changeUserLanguage(i18n.language);
 
       Toast.show({
         type: 'success',
@@ -71,7 +74,7 @@ const EnterPasswordScreen = () => {
       });
 
       // Navigate to next step or home
-      router.replace('/(auth)/sign-up/upload-photo');
+      replace('/(auth)/sign-up/upload-photo');
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : t('auth.signUp.enterPassword.errors.generic');
       Toast.show({ type: 'error', text1: t('auth.signUp.enterPassword.errors.error'), text2: message });

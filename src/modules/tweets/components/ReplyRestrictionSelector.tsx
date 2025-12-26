@@ -1,38 +1,35 @@
-import AccountIcon from '@/src/components/icons/AccountIcon';
+import AccountCheckIcon from '@/src/components/icons/AccountCheckIcon';
 import EmailIcon from '@/src/components/icons/EmailIcon';
 import GlobeIcon from '@/src/components/icons/GlobeIcon';
 import VerifiedIcon from '@/src/components/icons/VerifiedIcon';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import { ISvgIconProps } from '@/src/types/svg';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { ReplyRestrictionOptions } from '../types';
 
 interface IReplyRestrictionSelectorProps {
   onPress: () => void;
-  selectedOption: ReplyRestrictionOptions;
+  selectedOption: number;
 }
 
 const ReplyRestrictionSelector: React.FC<IReplyRestrictionSelectorProps> = (props) => {
   const { onPress, selectedOption } = props;
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = createStyles(theme);
 
-  const Icon: React.FC<ISvgIconProps> = useMemo(() => {
-    switch (selectedOption) {
-      case 'Everyone':
-        return GlobeIcon;
-      case 'Verified accounts':
-        return VerifiedIcon;
-      case 'Accounts you follow':
-        return AccountIcon;
-      case 'Only accounts you mention':
-        return EmailIcon;
-      default:
-        return GlobeIcon;
-    }
-  }, [selectedOption]);
+  const options = useMemo(
+    () => [
+      { label: t('tweets.replyRestriction.options.everyone'), icon: GlobeIcon },
+      { label: t('tweets.replyRestriction.options.verifiedAccounts'), icon: VerifiedIcon },
+      { label: t('tweets.replyRestriction.options.accountsYouFollow'), icon: AccountCheckIcon },
+      { label: t('tweets.replyRestriction.options.onlyAccountsYouMention'), icon: EmailIcon },
+    ],
+    [t],
+  );
+
+  const Icon = options[selectedOption].icon;
 
   return (
     <View style={styles.container}>
@@ -43,7 +40,9 @@ const ReplyRestrictionSelector: React.FC<IReplyRestrictionSelectorProps> = (prop
         testID="create_post_reply_restriction_selector"
       >
         <Icon size={16} stroke={theme.colors.accent.bookmark} strokeWidth={0} filled={true} />
-        <Text style={styles.text}>{selectedOption} can reply</Text>
+        <Text style={styles.text}>
+          {t('tweets.replyRestriction.canReply', { selection: options[selectedOption].label })}
+        </Text>
       </Pressable>
     </View>
   );

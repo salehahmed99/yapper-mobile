@@ -28,9 +28,11 @@ describe('UserInfoRow', () => {
     viewsCount: 0,
     isLiked: false,
     isReposted: false,
+    isBookmarked: false,
     images: [],
     videos: [],
     type: 'tweet',
+    mentions: [],
   };
 
   it('should render user info correctly', () => {

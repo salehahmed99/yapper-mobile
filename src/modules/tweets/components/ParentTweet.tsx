@@ -1,10 +1,12 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
 import React, { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { ITweet } from '../types';
+import { parseTweetBody } from '../utils/tweetParser';
+import TweetContent from './TweetContent';
 import TweetMedia from './TweetMedia';
 import UserInfoRow from './UserInfoRow';
 
@@ -15,16 +17,19 @@ interface IParentTweetProps {
 const ParentTweet: React.FC<IParentTweetProps> = (props) => {
   const { tweet, isVisible = true } = props;
   const { theme } = useTheme();
+  const { navigate } = useNavigation();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const segments = useMemo(() => parseTweetBody(tweet.content, tweet.mentions), [tweet.content, tweet.mentions]);
   return (
     <Pressable
       style={styles.container}
       accessibilityLabel="tweet_container_parent"
       onPress={() => {
-        router.push({
+        navigate({
           pathname: '/(protected)/tweets/[tweetId]',
           params: {
             tweetId: tweet.tweetId,
+            tweetUserId: tweet.user.id,
           },
         });
       }}
@@ -39,19 +44,10 @@ const ParentTweet: React.FC<IParentTweetProps> = (props) => {
         />
         <UserInfoRow tweet={tweet} />
       </View>
-      <View style={styles.tweetContent}>
-        <Text style={styles.tweetText}>{tweet.content}</Text>
-      </View>
-
+      <TweetContent segments={segments} />
       {/* Tweet Media */}
       {(tweet.images.length > 0 || tweet.videos.length > 0) && (
-        <TweetMedia
-          images={tweet.images}
-          videos={tweet.videos}
-          tweetId={tweet.tweetId}
-          isVisible={isVisible}
-          isParentMedia={true}
-        />
+        <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} />
       )}
     </Pressable>
   );
@@ -82,5 +78,6 @@ const createStyles = (theme: Theme) =>
     tweetText: {
       color: theme.colors.text.primary,
       fontFamily: theme.typography.fonts.regular,
+      textAlign: 'left',
     },
   });

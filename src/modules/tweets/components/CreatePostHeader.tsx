@@ -1,6 +1,7 @@
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -14,6 +15,7 @@ const CreatePostHeader: React.FC<ICreatePostHeaderProps> = (props) => {
 
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = createStyles(theme);
   return (
     <View style={[styles.header, { paddingTop: insets.top }]}>
@@ -23,7 +25,7 @@ const CreatePostHeader: React.FC<ICreatePostHeaderProps> = (props) => {
         accessibilityLabel="create_post_button_cancel"
         testID="create_post_button_cancel"
       >
-        <Text style={styles.cancelButtonText}>Cancel</Text>
+        <Text style={styles.cancelButtonText}>{t('tweets.createPost.cancel')}</Text>
       </Pressable>
       <Pressable
         onPress={handlePost}
@@ -32,7 +34,7 @@ const CreatePostHeader: React.FC<ICreatePostHeaderProps> = (props) => {
         accessibilityLabel="create_post_button_post"
         testID="create_post_button_post"
       >
-        <Text style={[styles.postButtonText]}>Post</Text>
+        <Text style={[styles.postButtonText]}>{t('tweets.createPost.post')}</Text>
       </Pressable>
     </View>
   );

@@ -8,14 +8,17 @@ export const followersKeys = {
   list: (params: IGetFollowersListParams) => [...followersKeys.lists(), params] as const,
 };
 
-interface UseFollowersListOptions
-  extends Omit<UseQueryOptions<IGetFollowersListResponse, Error>, 'queryKey' | 'queryFn'> {
+interface UseFollowersListOptions extends Omit<
+  UseQueryOptions<IGetFollowersListResponse, Error>,
+  'queryKey' | 'queryFn'
+> {
   userId: string;
   cursor?: string;
   limit?: number;
   following?: boolean;
   enabled?: boolean;
 }
+
 export const useFollowersList = ({
   userId,
   cursor = '',

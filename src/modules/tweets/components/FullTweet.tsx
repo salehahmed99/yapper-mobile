@@ -1,56 +1,78 @@
 import { DEFAULT_AVATAR_URL } from '@/src/constants/defaults';
 import { Theme } from '@/src/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
-import useMargins from '@/src/hooks/useSpacing';
 import { formatDateDDMMYYYY, formatShortTime } from '@/src/utils/dateUtils';
 import { formatCount } from '@/src/utils/formatCount';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { Image } from 'expo-image';
 import React, { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ITweet } from '../types';
+import { parseTweetBody } from '../utils/tweetParser';
 import ActionsRow from './ActionsRow';
+import CreatePostModal from './CreatePostModal';
 import ParentTweet from './ParentTweet';
-import RepostIndicator from './RepostIndicator';
+import RepostOptionsModal from './RepostOptionsModal';
+import TweetContent from './TweetContent';
 import TweetMedia from './TweetMedia';
 
 interface IFullTweetProps {
   tweet: ITweet;
-  onReplyPress: () => void;
-  onLike: (isLiked: boolean) => void;
-  onViewPostInteractions: (tweetId: string, ownerId: string) => void;
-  onBookmark: () => void;
-  onShare: () => void;
-  openSheet: () => void;
   onAvatarPress: (userId: string) => void;
+  onReply: (tweetId: string, content: string) => void;
+  onQuote: (tweetId: string, content: string) => void;
+  onRepost: (tweetId: string, isReposted: boolean) => void;
+  onLike: (tweetId: string, isLiked: boolean) => void;
+  onBookmark: (tweetId: string, isBookmarked: boolean) => void;
+  onViewPostInteractions: (tweetId: string, ownerId: string) => void;
+  onShare: () => void;
+  onMentionPress: (username: string) => void;
+  onHashtagPress: (hashtag: string) => void;
 }
 
 const FullTweet: React.FC<IFullTweetProps> = (props) => {
   const {
     tweet,
-    onReplyPress,
-    onLike,
-    // onBookmark,
-    onShare,
-    openSheet,
     onAvatarPress,
+    onReply,
+    onQuote,
+    onRepost,
+    onLike,
+    onBookmark,
+    onViewPostInteractions,
+    onShare,
+    onMentionPress,
+    onHashtagPress,
   } = props;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const { t } = useTranslation();
 
-  const { bottom } = useMargins();
+  const handleReplyPress = () => {
+    setCreatePostType('reply');
+    setIsCreatePostModalVisible(true);
+  };
 
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const handleQuotePress = () => {
+    setCreatePostType('quote');
+    setIsCreatePostModalVisible(true);
+  };
+
+  const [isCreatePostModalVisible, setIsCreatePostModalVisible] = useState(false);
+
+  const [createPostType, setCreatePostType] = useState<'tweet' | 'quote' | 'reply'>('tweet');
+
+  const bottomSheetModalRef = React.useRef<BottomSheetModal>(null);
+
+  const handleRepostPress = () => {
+    bottomSheetModalRef.current?.present();
+  };
+
+  const segments = useMemo(() => parseTweetBody(tweet.content, tweet.mentions), [tweet.content, tweet.mentions]);
 
   return (
-    <ScrollView
-      style={[styles.container, { marginBottom: bottom }]}
-      accessibilityLabel="full_tweet_container_main"
-      testID="full_tweet_container_main"
-    >
-      {tweet.type === 'repost' && (
-        <RepostIndicator repostById={tweet.repostedBy?.id} repostedByName={tweet.repostedBy?.name} />
-      )}
-
+    <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.userInfoContainer}>
           <Pressable
@@ -79,17 +101,13 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
         </View>
       </View>
 
-      <View style={styles.contentSection}>
-        <Text style={styles.tweetText} accessibilityLabel="full_tweet_content_text" testID="full_tweet_content_text">
-          {tweet.content}
-        </Text>
-      </View>
+      <TweetContent segments={segments} onMentionPress={onMentionPress} onHashtagPress={onHashtagPress} />
 
       {(tweet.images.length > 0 || tweet.videos.length > 0) && (
-        <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} isVisible={true} />
+        <TweetMedia images={tweet.images} videos={tweet.videos} tweetId={tweet.tweetId} />
       )}
 
-      {tweet.parentTweet && (
+      {tweet.type === 'quote' && tweet.parentTweet && (
         <View style={{ marginTop: theme.spacing.xs }}>
           <ParentTweet tweet={tweet.parentTweet} />
         </View>
@@ -110,7 +128,7 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
         <View style={styles.dot}></View>
         <Text style={styles.viewsCount} accessibilityLabel="full_tweet_views_count" testID="full_tweet_views_count">
           {formatCount(tweet.viewsCount)}
-          <Text style={styles.timestampText}> Views</Text>{' '}
+          <Text style={styles.timestampText}> {t('tweets.full_tweet.views')}</Text>{' '}
         </Text>
       </View>
 
@@ -118,15 +136,31 @@ const FullTweet: React.FC<IFullTweetProps> = (props) => {
         <ActionsRow
           tweet={tweet}
           size="large"
-          onReplyPress={onReplyPress}
-          onRepostPress={openSheet}
-          onLikePress={onLike}
-          onBookmarkPress={() => setIsBookmarked(!isBookmarked)}
-          isBookmarked={isBookmarked}
+          onReplyPress={handleReplyPress}
+          onRepostPress={handleRepostPress}
+          onLikePress={() => onLike(tweet.tweetId, tweet.isLiked)}
+          onBookmarkPress={() => onBookmark(tweet.tweetId, tweet.isBookmarked)}
           onSharePress={onShare}
         />
       </View>
-    </ScrollView>
+
+      <CreatePostModal
+        visible={isCreatePostModalVisible}
+        onClose={() => setIsCreatePostModalVisible(false)}
+        type={createPostType}
+        tweet={tweet}
+        onPostReply={onReply}
+        onPostQuote={onQuote}
+      />
+
+      <RepostOptionsModal
+        isReposted={tweet.isReposted}
+        onRepostPress={() => onRepost(tweet.tweetId, tweet.isReposted)}
+        onQuotePress={handleQuotePress}
+        onViewInteractionsPress={() => onViewPostInteractions(tweet.tweetId, tweet.user.id)}
+        bottomSheetModalRef={bottomSheetModalRef}
+      />
+    </View>
   );
 };
 
@@ -134,10 +168,50 @@ export default FullTweet;
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
+    headerBlur: {
+      flexDirection: 'column',
+      alignItems: 'center',
+      paddingHorizontal: theme.spacing.lg,
+      backgroundColor: theme.colors.background.primary + 'DF',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      zIndex: 10,
+    },
+    headerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      height: theme.ui.appBarHeight,
+      width: '100%',
+    },
+    headerButton: {
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    headerCenter: {
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    headerTitle: {
+      textAlign: 'center',
+      color: theme.colors.text.primary,
+      fontSize: 18,
+      fontFamily: theme.typography.fonts.extraBold,
+    },
+    headerRightActions: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.md,
+    },
     container: {
+      marginTop: theme.spacing.md,
       padding: theme.spacing.md,
-      paddingBottom: theme.spacing.xxxl,
       backgroundColor: theme.colors.background.primary,
+      paddingBottom: theme.spacing.xxl,
+      borderBottomWidth: 1,
+      borderColor: theme.colors.border,
     },
     header: {
       flexDirection: 'row',
@@ -158,6 +232,7 @@ const createStyles = (theme: Theme) =>
     },
     userDetails: {
       gap: 2,
+      alignItems: 'flex-start',
     },
     name: {
       fontFamily: theme.typography.fonts.bold,
@@ -174,12 +249,13 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       gap: theme.spacing.sm,
     },
-    contentSection: {},
+
     tweetText: {
       color: theme.colors.text.primary,
       fontFamily: theme.typography.fonts.regular,
       fontSize: theme.typography.sizes.md,
       lineHeight: theme.typography.sizes.md * 1.3,
+      textAlign: 'left',
     },
     timestampViewsSection: {
       paddingTop: theme.spacing.xl,

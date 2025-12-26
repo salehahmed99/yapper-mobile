@@ -5,6 +5,7 @@ import { useTheme } from '@/src/context/ThemeContext';
 import { Theme } from '@/src/constants/theme';
 import DisabledInput from '../shared/DisabledInput';
 import PasswordInput from '../shared/PasswordInput';
+import { passwordSchema } from '@/src/modules/auth/schemas/schemas';
 
 interface IResetPasswordProps {
   userIdentifier: string;
@@ -32,6 +33,8 @@ const ResetPassword: React.FC<IResetPasswordProps> = ({
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const validNewPassword = passwordSchema.safeParse(newPassword).success;
+  const validConfirmPassword = passwordSchema.safeParse(confirmPassword).success;
 
   return (
     <View style={styles.container}>
@@ -46,7 +49,7 @@ const ResetPassword: React.FC<IResetPasswordProps> = ({
         onChangeText={onNewPasswordChange}
         onToggleVisibility={onToggleNewPasswordVisibility}
         isVisible={isNewPasswordVisible}
-        showCheck={newPassword.length >= 1}
+        showCheck={newPassword.length > 0 && validNewPassword}
         status="success"
       />
 
@@ -56,7 +59,7 @@ const ResetPassword: React.FC<IResetPasswordProps> = ({
         onChangeText={onConfirmPasswordChange}
         onToggleVisibility={onToggleConfirmPasswordVisibility}
         isVisible={isConfirmPasswordVisible}
-        showCheck={confirmPassword.length > 0}
+        showCheck={confirmPassword.length > 0 && validConfirmPassword}
         status={confirmPassword.length > 0 && confirmPassword !== newPassword ? 'error' : 'success'}
         errorMessage={confirmPassword !== newPassword ? t('auth.forgotPassword.passwordMismatchDescription') : ''}
       />

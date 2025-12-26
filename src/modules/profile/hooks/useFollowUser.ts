@@ -1,7 +1,11 @@
 import { useAuthStore } from '@/src/store/useAuthStore';
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import Toast from 'react-native-toast-message';
+import { IExploreResponse, IWhoToFollowResponse } from '../../explore/types';
+import { ISearchUsersMappedPageData } from '../../search/types';
+import { ITweet, ITweets } from '../../tweets/types';
 import { followUser, unfollowUser } from '../services/profileService';
+import { updateUserStateInTweetsCache } from '../utils/profileCacheUtils';
 
 interface UseFollowUserReturn {
   isFollowing: boolean;
@@ -9,60 +13,157 @@ interface UseFollowUserReturn {
   toggleFollow: (userId: string) => Promise<void>;
   setIsFollowing: (value: boolean) => void;
 }
+
+interface FollowMutationVariables {
+  userId: string;
+  isFollowing: boolean;
+}
+
 export const useFollowUser = (initialFollowState: boolean = false): UseFollowUserReturn => {
   const [isFollowing, setIsFollowing] = useState(initialFollowState);
-  const [isLoading, setIsLoading] = useState(false);
-  const fetchAndUpdateUser = useAuthStore((state) => state.fetchAndUpdateUser);
+  const queryClient = useQueryClient();
+  const updateFollowCounts = useAuthStore((state) => state.updateFollowCounts);
+
+  const toggleFollowState = (tweet: ITweet) => {
+    return {
+      ...tweet,
+      user: {
+        ...tweet.user,
+        isFollowing: !tweet.user.isFollowing,
+      },
+    };
+  };
+
+  // Helper to update whoToFollow in explore cache
+  const updateExploreWhoToFollow = (
+    oldData: IExploreResponse | undefined,
+    userId: string,
+    newFollowingState: boolean,
+  ): IExploreResponse | undefined => {
+    if (!oldData?.data?.whoToFollow) return oldData;
+
+    return {
+      ...oldData,
+      data: {
+        ...oldData.data,
+        whoToFollow: oldData.data.whoToFollow.map((user) =>
+          user.id === userId ? { ...user, isFollowing: newFollowingState } : user,
+        ),
+      },
+    };
+  };
+
+  // Helper to update whoToFollow dedicated cache
+  const updateWhoToFollowCache = (
+    oldData: IWhoToFollowResponse | undefined,
+    userId: string,
+    newFollowingState: boolean,
+  ): IWhoToFollowResponse | undefined => {
+    if (!oldData?.data) return oldData;
+
+    return {
+      ...oldData,
+      data: oldData.data.map((user) => (user.id === userId ? { ...user, isFollowing: newFollowingState } : user)),
+    };
+  };
+
+  // Helper to update searchUsers cache
+  const updateSearchUsersCache = (
+    oldData: InfiniteData<ISearchUsersMappedPageData> | undefined,
+    userId: string,
+    newFollowingState: boolean,
+  ): InfiniteData<ISearchUsersMappedPageData> | undefined => {
+    if (!oldData?.pages) return oldData;
+
+    return {
+      ...oldData,
+      pages: oldData.pages.map((page) => {
+        if (!page?.data?.data) return page;
+
+        return {
+          ...page,
+          data: {
+            ...page.data,
+            data: page.data.data.map((user) =>
+              user.id === userId ? { ...user, isFollowing: newFollowingState } : user,
+            ),
+          },
+        };
+      }),
+    };
+  };
+
+  const followMutation = useMutation({
+    mutationFn: async (variables: FollowMutationVariables) => {
+      return variables.isFollowing ? unfollowUser(variables.userId) : followUser(variables.userId);
+    },
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey: ['profile'] });
+      await queryClient.cancelQueries({ queryKey: ['user', variables.userId] });
+      await queryClient.cancelQueries({ queryKey: ['tweets'] });
+      await queryClient.cancelQueries({ queryKey: ['followers'] });
+      await queryClient.cancelQueries({ queryKey: ['following'] });
+      await queryClient.cancelQueries({ queryKey: ['explore', 'forYou'] });
+      await queryClient.cancelQueries({ queryKey: ['whoToFollow'] });
+      await queryClient.cancelQueries({ queryKey: ['searchUsers'] });
+
+      setIsFollowing(!variables.isFollowing);
+
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: ['tweets'] }, (oldData) =>
+        updateUserStateInTweetsCache(oldData, variables.userId, toggleFollowState),
+      );
+
+      queryClient.setQueriesData<InfiniteData<ITweets>>({ queryKey: ['profile'] }, (oldData) =>
+        updateUserStateInTweetsCache(oldData, variables.userId, toggleFollowState),
+      );
+
+      // Update explore cache (whoToFollow section in ForYou tab)
+      queryClient.setQueryData<IExploreResponse>(['explore', 'forYou'], (oldData) =>
+        updateExploreWhoToFollow(oldData, variables.userId, !variables.isFollowing),
+      );
+
+      // Update dedicated whoToFollow cache (Show more screen)
+      queryClient.setQueriesData<IWhoToFollowResponse>({ queryKey: ['whoToFollow'] }, (oldData) =>
+        updateWhoToFollowCache(oldData, variables.userId, !variables.isFollowing),
+      );
+
+      // Update search users cache
+      queryClient.setQueriesData<InfiniteData<ISearchUsersMappedPageData>>({ queryKey: ['searchUsers'] }, (oldData) =>
+        updateSearchUsersCache(oldData, variables.userId, !variables.isFollowing),
+      );
+    },
+    onSuccess: async (data, variables) => {
+      // Update own following count optimistically
+      updateFollowCounts(!variables.isFollowing);
+
+      await queryClient.invalidateQueries({ queryKey: ['user', variables.userId] });
+      await queryClient.invalidateQueries({ queryKey: ['followers'] });
+      await queryClient.invalidateQueries({ queryKey: ['following'] });
+      await queryClient.invalidateQueries({ queryKey: ['userList'] });
+    },
+    onError: (error, variables) => {
+      setIsFollowing(variables.isFollowing);
+
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['user', variables.userId] });
+      queryClient.invalidateQueries({ queryKey: ['tweets'] });
+      queryClient.invalidateQueries({ queryKey: ['followers'] });
+      queryClient.invalidateQueries({ queryKey: ['following'] });
+      queryClient.invalidateQueries({ queryKey: ['userList'] });
+      queryClient.invalidateQueries({ queryKey: ['explore', 'forYou'] });
+      queryClient.invalidateQueries({ queryKey: ['whoToFollow'] });
+      queryClient.invalidateQueries({ queryKey: ['searchUsers'] });
+    },
+  });
 
   const toggleFollow = async (userId: string) => {
-    if (isLoading || !userId) return;
-
-    setIsLoading(true);
-    const previousState = isFollowing;
-
-    try {
-      // Optimistically update UI
-      setIsFollowing(!isFollowing);
-
-      if (isFollowing) {
-        await unfollowUser(userId);
-        Toast.show({
-          type: 'success',
-          text1: 'Unfollowed',
-          text2: 'You have unfollowed this user',
-          position: 'bottom',
-          visibilityTime: 2000,
-        });
-        await fetchAndUpdateUser();
-      } else {
-        await followUser(userId);
-        Toast.show({
-          type: 'success',
-          text1: 'Following',
-          text2: 'You are now following this user',
-          position: 'bottom',
-          visibilityTime: 2000,
-        });
-        await fetchAndUpdateUser();
-      }
-    } catch (error) {
-      setIsFollowing(previousState);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to update follow status';
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: errorMessage,
-        position: 'bottom',
-        visibilityTime: 3000,
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    if (followMutation.isPending || !userId) return;
+    await followMutation.mutateAsync({ userId, isFollowing });
   };
 
   return {
     isFollowing,
-    isLoading,
+    isLoading: followMutation.isPending,
     toggleFollow,
     setIsFollowing,
   };

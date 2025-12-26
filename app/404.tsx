@@ -1,10 +1,10 @@
 import { useTheme } from '@/src/context/ThemeContext';
-import { useRouter } from 'expo-router';
+import { useNavigation } from '@/src/hooks/useNavigation';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function NotFoundPage() {
-  const router = useRouter();
+  const { replace } = useNavigation();
   const { theme } = useTheme();
 
   return (
@@ -15,7 +15,7 @@ export default function NotFoundPage() {
       </Text>
 
       <TouchableOpacity
-        onPress={() => router.replace('/(protected)')}
+        onPress={() => replace('/(protected)')}
         style={[styles.button, { backgroundColor: theme.colors.background.secondary }]}
         accessibilityRole="button"
       >

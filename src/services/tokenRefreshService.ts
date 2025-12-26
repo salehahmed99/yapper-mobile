@@ -1,4 +1,4 @@
-import { getToken, saveToken } from '../utils/secureStorage';
+import { getRefreshToken, getToken, saveRefreshToken, saveToken } from '../utils/secureStorage';
 import api from './apiClient';
 
 class TokenRefreshService {
@@ -47,14 +47,31 @@ class TokenRefreshService {
     try {
       const { useAuthStore } = await import('../store/useAuthStore');
 
-      const response = await api.post('/auth/refresh');
-      const newToken = response.data?.data?.accessToken;
+      // Get the refresh token from secure storage
+      const refreshToken = await getRefreshToken();
+      if (!refreshToken) {
+        return null;
+      }
 
-      if (newToken) {
-        await saveToken(newToken);
-        useAuthStore.setState({ token: newToken });
+      // Send refresh token in request body for mobile
+      const response = await api.post('/auth/refresh', {
+        refresh_token: refreshToken,
+      });
+
+      const newAccessToken = response.data?.data?.accessToken;
+      const newRefreshToken = response.data?.data?.refreshToken;
+
+      if (newAccessToken) {
+        await saveToken(newAccessToken);
+        useAuthStore.setState({ token: newAccessToken });
+
+        // Update the refresh token if a new one was provided (token rotation)
+        if (newRefreshToken) {
+          await saveRefreshToken(newRefreshToken);
+        }
+
         this.lastRefreshTime = Date.now();
-        return newToken;
+        return newAccessToken;
       }
 
       return null;

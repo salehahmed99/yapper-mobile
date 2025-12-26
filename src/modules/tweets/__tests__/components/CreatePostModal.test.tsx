@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@/src/context/ThemeContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import CreatePostModal from '../../components/CreatePostModal';
@@ -23,12 +24,43 @@ jest.mock('@gorhom/bottom-sheet', () => ({
   BottomSheetModalProvider: ({ children }: any) => children,
 }));
 jest.mock('expo-image', () => ({ Image: 'Image' }));
+jest.mock('expo-image-picker', () => ({
+  getMediaLibraryPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  requestMediaLibraryPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  launchImageLibraryAsync: jest.fn(() => Promise.resolve({ canceled: false, assets: [] })),
+  getCameraPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  requestCameraPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  launchCameraAsync: jest.fn(() => Promise.resolve({ canceled: false, assets: [] })),
+}));
 jest.mock('@/src/store/useAuthStore', () => ({
   useAuthStore: jest.fn(() => ({ user: { avatarUrl: 'url' } })),
 }));
 
+jest.mock('react-native-controlled-mentions', () => ({
+  useMentions: jest.fn(({ value, onChange }) => ({
+    textInputProps: {
+      value,
+      onChangeText: onChange,
+    },
+    triggers: {
+      mention: {},
+    },
+  })),
+}));
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: false },
+    mutations: { retry: false },
+  },
+});
+
 const renderWithTheme = (component: React.ReactElement) => {
-  return render(<ThemeProvider>{component}</ThemeProvider>);
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>{component}</ThemeProvider>
+    </QueryClientProvider>,
+  );
 };
 
 describe('CreatePostModal', () => {

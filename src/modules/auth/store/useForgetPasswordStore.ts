@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { parsePhoneNumberFromString, CountryCode } from 'libphonenumber-js/max';
 import * as Localization from 'expo-localization';
+import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js/max';
+import { create } from 'zustand';
 import { emailSchema, phoneSchema, usernameSchema } from '../schemas/schemas';
 
 type TextType = 'email' | 'phone' | 'username' | null;
@@ -11,11 +11,13 @@ interface IForgotPasswordState {
   textType: TextType;
   resetToken: string;
   newPassword: string;
+  returnRoute: string | null;
 
   // Actions
   setIdentifier: (value: string) => void;
   setResetToken: (token: string) => void;
   setNewPassword: (password: string) => void;
+  setReturnRoute: (route: string | null) => void;
   detectTextType: (input: string) => TextType;
   reset: () => void;
 }
@@ -29,6 +31,7 @@ export const useForgotPasswordStore = create<IForgotPasswordState>((set) => {
     textType: null,
     resetToken: '',
     newPassword: '',
+    returnRoute: null,
 
     // Actions
     setIdentifier: (value: string) => set({ identifier: value }),
@@ -36,6 +39,8 @@ export const useForgotPasswordStore = create<IForgotPasswordState>((set) => {
     setResetToken: (token: string) => set({ resetToken: token }),
 
     setNewPassword: (password: string) => set({ newPassword: password }),
+
+    setReturnRoute: (route: string | null) => set({ returnRoute: route }),
 
     detectTextType: (input: string): TextType => {
       const trimmed = input.trim();
@@ -65,6 +70,6 @@ export const useForgotPasswordStore = create<IForgotPasswordState>((set) => {
       return null;
     },
 
-    reset: () => set({ identifier: '', textType: null, resetToken: '', newPassword: '' }),
+    reset: () => set({ identifier: '', textType: null, resetToken: '', newPassword: '', returnRoute: null }),
   };
 });

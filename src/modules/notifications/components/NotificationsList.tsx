@@ -1,0 +1,164 @@
+import { Theme } from '@/src/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
+import { FlashList } from '@shopify/flash-list';
+import { useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import NotificationContainer from '../containers/NotificationContainer';
+import { INotification } from '../types';
+
+interface INotificationsListProps {
+  data: INotification[];
+  onRefresh?: () => void;
+  refreshing?: boolean;
+  onEndReached?: () => void;
+  onEndReachedThreshold?: number;
+  isLoading?: boolean;
+  isFetchingNextPage?: boolean;
+  topSpacing?: number;
+  bottomSpacing?: number;
+  isTabActive?: boolean;
+  useCustomRefreshIndicator?: boolean;
+}
+const NotificationsList: React.FC<INotificationsListProps> = (props) => {
+  const {
+    data,
+    onRefresh,
+    refreshing,
+    onEndReached,
+    onEndReachedThreshold,
+    isLoading,
+    isFetchingNextPage,
+    topSpacing = 0,
+    bottomSpacing = 0,
+    useCustomRefreshIndicator = false,
+  } = props;
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+
+  const viewabilityConfig = useRef({
+    itemVisiblePercentThreshold: 90, // Item is considered visible when 90% is in view
+    waitForInteraction: false,
+  }).current;
+
+  const renderHeader = () => {
+    return (
+      <View>
+        {topSpacing > 0 && <View style={{ height: topSpacing }} />}
+        {useCustomRefreshIndicator && refreshing && (
+          <View
+            style={styles.customRefreshContainer}
+            accessibilityLabel="notifications_refreshing"
+            testID="notifications_refreshing"
+          >
+            <ActivityIndicator color={theme.colors.text.primary} />
+          </View>
+        )}
+      </View>
+    );
+  };
+
+  const renderFooter = () => {
+    return (
+      <View>
+        {isFetchingNextPage && (
+          <View
+            style={styles.loadingFooter}
+            accessibilityLabel="notifications_loading_more"
+            testID="notifications_loading_more"
+          >
+            <ActivityIndicator size="small" color={theme.colors.text.primary} />
+          </View>
+        )}
+        {bottomSpacing > 0 && <View style={{ height: bottomSpacing }} />}
+      </View>
+    );
+  };
+
+  const renderEmpty = () => (
+    <View style={styles.emptyState} testID="notifications_empty_state">
+      <Text style={styles.emptyText}>{t('notifications.emptyState')}</Text>
+    </View>
+  );
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer} accessibilityLabel="notifications_loading" testID="notifications_loading">
+        <ActivityIndicator size="large" color={theme.colors.text.primary} />
+      </View>
+    );
+  }
+
+  return (
+    <FlashList
+      style={styles.list}
+      data={data}
+      renderItem={({ item }) => <NotificationContainer notification={item} />}
+      keyExtractor={(item) => item.id}
+      scrollIndicatorInsets={{ top: topSpacing - insets.top, bottom: bottomSpacing - insets.bottom }}
+      refreshControl={
+        <RefreshControl
+          key={'refresh-' + topSpacing}
+          refreshing={refreshing ?? false}
+          onRefresh={onRefresh}
+          tintColor={useCustomRefreshIndicator ? 'transparent' : theme.colors.text.primary}
+          colors={useCustomRefreshIndicator ? ['transparent'] : [theme.colors.text.primary]}
+          progressViewOffset={topSpacing}
+        />
+      }
+      ItemSeparatorComponent={() => <View style={styles.separator} />}
+      accessibilityLabel="notifications_list_feed"
+      testID="notifications_list_feed"
+      ListHeaderComponent={renderHeader}
+      ListFooterComponent={renderFooter}
+      ListEmptyComponent={renderEmpty}
+      onEndReached={onEndReached}
+      onEndReachedThreshold={onEndReachedThreshold ?? 0.5}
+      removeClippedSubviews={false}
+      viewabilityConfig={viewabilityConfig}
+    />
+  );
+};
+
+export default NotificationsList;
+
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
+    separator: {
+      height: 1,
+      backgroundColor: theme.colors.border,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    loadingFooter: {
+      paddingVertical: 20,
+      alignItems: 'center',
+    },
+    customRefreshContainer: {
+      marginTop: -35,
+      paddingBottom: 10,
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '100%',
+    },
+    emptyState: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 40,
+    },
+    emptyText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.typography.sizes.md,
+      fontFamily: theme.typography.fonts.regular,
+    },
+    list: {
+      flex: 1,
+    },
+  });

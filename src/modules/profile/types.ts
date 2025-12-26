@@ -1,3 +1,4 @@
+import { ITweet } from '@/src/modules/tweets/types';
 import { IUser } from '@/src/types/user';
 
 interface IGetMyUserResponse {
@@ -12,16 +13,27 @@ interface IGetMyUserResponse {
   createdAt: string;
   followersCount: number;
   followingCount: number;
+  email: string;
+  language?: string;
 }
 
 export { IGetMyUserResponse };
+
+interface IMutualFollower {
+  userId: string;
+  name: string;
+  username: string;
+  avatarUrl: string;
+}
+
+export { IMutualFollower };
 
 interface IUserProfile extends IUser {
   isFollower: boolean;
   isFollowing: boolean;
   isMuted: boolean;
   isBlocked: boolean;
-  topMutualFollowers: unknown[];
+  topMutualFollowers: IMutualFollower[];
   mutualFollowersCount: number;
   followersCount: number;
   followingCount: number;
@@ -42,11 +54,39 @@ interface IGetUserByIdResponse {
   isFollowing: boolean;
   isMuted: boolean;
   isBlocked: boolean;
-  topMutualFollowers: unknown[];
+  topMutualFollowers: IMutualFollower[];
   mutualFollowersCount: string;
 }
 
 export { IGetUserByIdResponse, IUserProfile };
+
+interface IGetUserByUsernameData {
+  userId: string;
+  name: string;
+  username: string;
+  bio: string;
+  avatarUrl: string;
+  coverUrl: string | null;
+  country: string | null;
+  createdAt: string;
+  birthDate: string | null;
+  followersCount: number;
+  followingCount: number;
+  isFollower: boolean;
+  isFollowing: boolean;
+  isMuted: boolean;
+  isBlocked: boolean;
+  topMutualFollowers: { name: string; avatarUrl: string | null }[];
+  mutualFollowersCount: string;
+}
+
+interface IGetUserByUsernameResponse {
+  data: IGetUserByUsernameData;
+  count: number;
+  message: string;
+}
+
+export { IGetUserByUsernameData, IGetUserByUsernameResponse };
 
 interface IFollowerUser {
   userId: string;
@@ -112,12 +152,8 @@ interface IUserPostsPagination {
 }
 
 interface IUserPostsResponse {
-  data: {
-    data: unknown[];
-    pagination: IUserPostsPagination;
-  };
-  count: number;
-  message: string;
+  data: ITweet[];
+  pagination: IUserPostsPagination;
 }
 
 export { IUserPostsPagination, IUserPostsParams, IUserPostsResponse };
@@ -129,12 +165,8 @@ interface IUserMediaParams {
 }
 
 interface IUserMediaResponse {
-  data: {
-    data: unknown[];
-    pagination: IUserPostsPagination;
-  };
-  count: number;
-  message: string;
+  data: ITweet[];
+  pagination: IUserPostsPagination;
 }
 
 export { IUserMediaParams, IUserMediaResponse };
@@ -146,12 +178,8 @@ interface IUserLikesParams {
 }
 
 interface IUserLikesResponse {
-  data: {
-    data: unknown[];
-    pagination: IUserPostsPagination;
-  };
-  count: number;
-  message: string;
+  data: ITweet[];
+  pagination: IUserPostsPagination;
 }
 
 export { IUserLikesParams, IUserLikesResponse };
@@ -163,12 +191,8 @@ interface IUserRepliesParams {
 }
 
 interface IUserRepliesResponse {
-  data: {
-    data: unknown[];
-    pagination: IUserPostsPagination;
-  };
-  count: number;
-  message: string;
+  data: ITweet[];
+  pagination: IUserPostsPagination;
 }
 
 export { IUserRepliesParams, IUserRepliesResponse };

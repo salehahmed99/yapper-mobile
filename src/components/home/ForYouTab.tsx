@@ -24,9 +24,10 @@ const ForYouTab: React.FC = () => {
       scrollIndicatorInsets={{ top: theme.ui.appBarHeight + theme.ui.tabViewHeight, bottom: theme.ui.navHeight }}
       onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: false })}
       scrollEventThrottle={16}
+      testID="for_you_tab_scroll_view"
     >
       {Array.from({ length: 30 }).map((_, i) => (
-        <View key={i} style={styles.card}>
+        <View key={i} style={styles.card} testID={`for_you_tab_card_${i}`}>
           <Text style={styles.cardTitle}>{`${t('home.tabs.forYou')} ${i + 1}`}</Text>
           <Text style={styles.cardBody}>{t('home.sampleContent')}</Text>
         </View>

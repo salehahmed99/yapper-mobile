@@ -12,12 +12,23 @@ import { useUiShell } from '../../context/UiShellContext';
 interface IAppBarProps {
   title?: string;
   children?: React.ReactNode;
-  rightElement?: React.ReactNode;
   tabView?: React.ReactNode;
+  rightElement?: React.ReactNode;
+  leftElement?: React.ReactNode;
+  hideRightElement?: boolean;
+  hideLeftElement?: boolean;
 }
 
 const AppBar: React.FC<IAppBarProps> = (props) => {
-  const { title, children, rightElement, tabView } = props;
+  const {
+    title,
+    children,
+    rightElement,
+    leftElement,
+    tabView,
+    hideRightElement = false,
+    hideLeftElement = false,
+  } = props;
   const { theme } = useTheme();
   const user = useAuthStore((state) => state.user);
   const styles = createStyles(theme);
@@ -36,27 +47,30 @@ const AppBar: React.FC<IAppBarProps> = (props) => {
       {appBarVisible ? (
         <>
           <View style={styles.headerContainer}>
-            <View style={styles.sideContainer}>
-              {!isSideMenuOpen ? (
-                <Pressable
-                  onPress={toggleSideMenu}
-                  accessibilityLabel={t('accessibility.openMenu')}
-                  testID="appbar_menu_button"
-                  accessibilityRole="button"
-                  style={styles.avatarButton}
-                >
-                  <View style={styles.avatarBackground}>
-                    <Image
-                      source={{ uri: user?.avatarUrl || DEFAULT_AVATAR_URL }}
-                      style={styles.avatar}
-                      resizeMode="cover"
-                    />
-                  </View>
-                </Pressable>
-              ) : (
-                <View style={styles.avatarButton} />
-              )}
-            </View>
+            {!hideLeftElement && (
+              <View style={styles.sideContainer}>
+                {leftElement ??
+                  (!isSideMenuOpen ? (
+                    <Pressable
+                      onPress={toggleSideMenu}
+                      accessibilityLabel={t('accessibility.openMenu')}
+                      testID="appbar_menu_button"
+                      accessibilityRole="button"
+                      style={styles.avatarButton}
+                    >
+                      <View style={styles.avatarBackground}>
+                        <Image
+                          source={{ uri: user?.avatarUrl || DEFAULT_AVATAR_URL }}
+                          style={styles.avatar}
+                          resizeMode="cover"
+                        />
+                      </View>
+                    </Pressable>
+                  ) : (
+                    <View style={styles.avatarButton} />
+                  ))}
+              </View>
+            )}
 
             <View style={styles.center}>
               {children ? (
@@ -68,7 +82,7 @@ const AppBar: React.FC<IAppBarProps> = (props) => {
               )}
             </View>
 
-            <View style={styles.sideContainer}>{rightElement}</View>
+            {!hideRightElement && <View style={styles.sideContainer}>{rightElement}</View>}
           </View>
           {tabView && <View style={styles.tabContainer}>{tabView}</View>}
         </>
@@ -103,6 +117,8 @@ const createStyles = (theme: Theme) =>
       height: theme.ui.tabViewHeight,
       alignItems: 'center',
       justifyContent: 'center',
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
     },
     avatar: {
       width: theme.ui.avatar,
@@ -137,6 +153,7 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       justifyContent: 'center',
       flexDirection: 'row',
+      paddingHorizontal: theme.spacing.md,
     },
     sideContainer: { width: theme.ui.sideContainerWidth, alignItems: 'center', justifyContent: 'center' },
     avatarButton: {

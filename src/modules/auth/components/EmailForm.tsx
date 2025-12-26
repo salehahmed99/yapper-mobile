@@ -101,6 +101,7 @@ const createStyles = (theme: Theme) =>
       color: theme.colors.text.primary,
       fontSize: theme.typography.sizes.md,
       width: '100%',
+      textAlign: 'auto',
     },
     inputFocused: {
       borderColor: theme.colors.text.link,

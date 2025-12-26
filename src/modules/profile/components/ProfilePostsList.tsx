@@ -72,7 +72,7 @@ const ProfilePostsList: React.FC<IProfilePostsListProps> = memo((props) => {
       style={styles.container}
       data={data}
       renderItem={({ item }) => (
-        <TweetContainer tweet={item} isVisible={isTabActive && visibleTweetIds.has(item.tweetId)} />
+        <TweetContainer tweet={item} isVisible={isTabActive && visibleTweetIds.has(item.tweetId)} showThread={true} />
       )}
       keyExtractor={(item, index) => {
         if (item.type === 'repost') {

@@ -1,6 +1,6 @@
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import React, { useCallback } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Theme } from '../constants/theme';
 import { useTheme } from '../context/ThemeContext';
@@ -8,13 +8,15 @@ import { useTheme } from '../context/ThemeContext';
 interface ICustomBottomSheetProps {
   bottomSheetModalRef: React.RefObject<BottomSheetModal | null>;
   children?: React.ReactNode;
+  snapPoints?: (string | number)[];
+  onChange?: (index: number) => void;
+  enableContentPanningGesture?: boolean;
 }
 const CustomBottomSheet: React.FC<ICustomBottomSheetProps> = (props) => {
-  const { bottomSheetModalRef, children } = props;
+  const { bottomSheetModalRef, children, snapPoints, onChange, enableContentPanningGesture = true } = props;
 
   const { theme } = useTheme();
   const styles = createStyles(theme);
-
   const insets = useSafeAreaInsets();
 
   const renderBackdrop = useCallback(
@@ -31,17 +33,23 @@ const CustomBottomSheet: React.FC<ICustomBottomSheetProps> = (props) => {
     [theme],
   );
 
+  const ContentWrapper = snapPoints ? View : BottomSheetView;
+
   return (
     <BottomSheetModal
       ref={bottomSheetModalRef}
+      snapPoints={snapPoints}
+      onChange={onChange}
       backdropComponent={renderBackdrop}
       backgroundStyle={styles.backgroundStyle}
       handleIndicatorStyle={styles.handleIndicator}
       handleStyle={styles.handleContainer}
       enablePanDownToClose={true}
       enableOverDrag={true}
+      enableContentPanningGesture={enableContentPanningGesture}
+      topInset={insets.top}
     >
-      <BottomSheetView style={{ paddingBottom: insets.bottom }}>{children}</BottomSheetView>
+      <ContentWrapper style={[styles.contentWrapper, { paddingBottom: insets.bottom }]}>{children}</ContentWrapper>
     </BottomSheetModal>
   );
 };
@@ -60,6 +68,9 @@ const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.border,
       width: 40,
       height: 5,
+    },
+    contentWrapper: {
+      flex: 1,
     },
   });
 
