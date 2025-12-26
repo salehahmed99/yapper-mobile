@@ -5,6 +5,7 @@ A modern, feature-rich Twitter/X-inspired mobile application built with React Na
 ## 📋 Table of Contents
 
 - [Overview](#overview)
+- [Get the App](#get-the-app)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
@@ -26,88 +27,147 @@ A modern, feature-rich Twitter/X-inspired mobile application built with React Na
 
 Yapper Mobile is a cross-platform mobile application built with **Expo** and **React Native**, offering a Twitter-like social media experience. The app features:
 
-- 🔐 Secure authentication with Google Sign-In
-- 💬 Real-time chat and messaging with WebSocket support
+- 🔐 Secure authentication with multi-step sign-up and Google Sign-In
+- 💬 Real-time messaging and chat with WebSocket support
 - 📱 Beautiful, responsive UI with dark mode support
-- 🌍 Multi-language support (i18n)
-- 🔔 Push notifications
-- 🎨 Dynamic theming system
-- ⚡ Optimized performance with caching strategies
+- 🌍 Multi-language support (English & Arabic) with full RTL support
+- 🔔 Push and in-app notifications with aggregation
+- 🖼️ Rich media support (images, videos, audio)
+- 🧠 AI-powered tweet summarization
+- ⚡ Optimized performance with caching and pagination
 - 📊 Comprehensive testing and code quality checks
 - 🚀 Automated CI/CD pipeline with EAS
 
 ---
 
+## Get the App
+
+Experience Yapper Mobile on your Android device today! 🚀
+
+Head to the **[latest release](https://github.com/salehahmed99/yapper-mobile/releases/latest)** on GitHub to download the **APK** and install the app directly on your device.
+
+> ⚠️ Note: Ensure that your device allows installation from unknown sources.
+> iOS support is available via TestFlight or the App Store in future releases.
+
+Install now and join the conversation in real-time with a full-featured social experience!
+
+---
+
 ## Features
 
-### Authentication
+### Authentication & Onboarding
 
 - 🔐 Email/Phone/Username login
-- 📱 Sign-up with validation
+- 📱 Multi-step sign-up flow (X-style):
+  - Name, email, birthdate
+  - Email verification via OTP
+  - Profile photo selection
+  - “What should we call you?” screen
+  - Language selection
+  - Content preference onboarding
+  - Recommendations / “Don’t miss out” step
+
 - 🔑 Password reset functionality
 - 🔐 Secure token storage with Expo Secure Store
 - 🔄 Automatic token refresh
 - 📱 Google Sign-In integration
 
-### Social Features
+---
 
-- 📝 Create and share posts/tweets
-- ❤️ Like and bookmark posts
-- 💬 Reply and quote posts
-- 🔄 Repost/retweet functionality
-- 👥 Follow/unfollow users
-- 🔍 Search posts and users
-- 📊 Trending topics
+### Tweets & Posting
 
-### Real-time Communication
+- 📝 Create tweets, replies, quotes, and reposts
+- ❤️ Like, bookmark, and interact with posts
+- 🧵 Threaded replies displayed inline in the timeline
+- 📣 Mention users in tweets
+- 🖼️ Upload and display images and videos
+- 🎥 Video autoplay with mute/unmute controls
+- 🧠 AI-powered tweet summarization via Grok icon
+- 🔢 View counts displayed on tweets
+- Bottom sheet modals for reposts and post interactions
 
-- 💬 Direct messaging (DMs)
-- 🔔 Real-time notifications via WebSocket
-- ✍️ Typing indicators
-- 📱 Push notifications
-- 🔔 Notification center
+---
 
-### Exploration
+### Timeline & Feed
 
-- 🏠 Home feed with algorithms
-- 🔥 Trending and explore sections
+- 🏠 Home timeline with **For You** and **Following** feeds
+- 🔄 Pull-to-refresh support
+- ⚡ Paginated timeline for performance
+- Thread-aware rendering of replies
+- Smooth scrolling for media-heavy feeds
+
+---
+
+### Profiles
+
+- 👤 Full user profiles with bio, stats, profile photo, and banner
+- 📝 Edit profile modal for name, bio, location, website, date of birth, profile photo, and banner
+- 👥 Followers and following lists with counts
+- 🔄 Follow, unfollow, mute, and block functionality
+- 📑 Profile tab layout: Tweets, Replies, Photos, Videos, Likes
+
+---
+
+### Real-Time Messaging (DMs)
+
+- 💬 One-on-one real-time chat powered by WebSockets
+- Text messages and voice notes
+- Threaded replies
+- Typing indicators
+- Instant delivery without refresh
+- X-style chat UI
+
+---
+
+### Notifications
+
+- 🔔 In-app notifications triggered by: likes, reposts, replies, quotes, mentions
+- Push notifications for all actions plus new messages
+- Aggregation support:
+  - By users (e.g., “Saleh and Mohamed liked your post”)
+  - By posts (e.g., “Saleh liked 4 of your posts”)
+
+- Centralized notification center
+
+---
+
+### Search & Explore
+
+- 🔎 Full search for posts, users, hashtags, and posts by a specific user
+- 🏷️ Explore tabs with categories: For You, Trending, News, Sports, Entertainment
+- 📊 Dynamic trend detection
 - 👥 User recommendations
-- 🔍 Advanced search
 
-### User Profile
-
-- 👤 User profile with bio and stats
-- 📝 Tweet history
-- 👥 Followers/following lists
-- 🔗 Profile links
-- 🎨 Theme customization
+---
 
 ### Settings & Preferences
 
 - 🌓 Dark/light theme
-- 🌍 Language selection (i18n)
+- 🌍 Multi-language support (i18n) with full RTL support
 - 🔔 Notification preferences
 - 🔐 Privacy settings
 - 📱 Account management
 
+---
+
 ### Media & Rich Content
 
-- 📸 Image uploads and gallery
-- 🎥 Video support
-- 🎵 Audio recording
+- 📸 Image uploads and gallery support
+- 🎥 Video uploads and playback
+- 🎵 Audio recording (voice notes)
 - 📍 Location sharing
-- 🖼️ Media caching for performance
+- 🖼️ Media caching for optimized performance
 
 ---
 
-## Performance Optimization
+### Performance Optimization
 
 - 🚀 Image caching with Expo Image
 - 📦 Code splitting via Expo Router
 - ⚡ Memoization with React.memo
 - 🎯 FlatList optimization for large lists
 - 💾 Persistent caching for API responses
-- 🔄 Lazy loading for images and content
+- 🔄 Lazy loading of images and content
 
 ---
 
